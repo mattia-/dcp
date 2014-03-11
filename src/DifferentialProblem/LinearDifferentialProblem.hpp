@@ -77,7 +77,7 @@ namespace control_problem
 				 * \code
 				 *  LinearDifferentialProblem<T1, T2> foo; 
 				 *  LinearDifferentialProblem<T1, T2> bar = foo.clone ();
-				 * /endcode
+				 * \endcode
 			 	 */
 				LinearDifferentialProblem (const LinearDifferentialProblem& rhs);
 

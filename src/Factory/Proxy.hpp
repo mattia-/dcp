@@ -1,7 +1,7 @@
 #ifndef HH__PROXY__HH
 #define HH__PROXY__HH
 
-#include "GenericFactory.hpp"
+#include <Factory/GenericFactory.hpp>
 
 namespace control_problem
 {

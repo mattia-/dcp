@@ -1,5 +1,5 @@
-#include "GenericFactory.hpp"
-#include "Proxy.hpp"
+#include <Factory/GenericFactory.hpp>
+#include <Factory/Proxy.hpp>
 #include <string>
 #include <dolfin.h>
 

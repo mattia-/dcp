@@ -5,7 +5,8 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "AbstractDifferentialProblem.hpp"
+#include <DifferentialProblem/AbstractDifferentialProblem.hpp>
+#include <Factory/LinearSolverFactory.hpp>
 
 namespace control_problem
 {

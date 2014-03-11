@@ -1,6 +1,4 @@
-#include "GenericFactory.hpp"
-#include "Proxy.hpp"
-#include "LinearSolverFactory.hpp"
+#include <Factory/LinearSolverFactory.hpp>
 
 // this file will be compiled into a library linked to the library generated from LinearDifferentialSolver.
 // Once this library is loaded, the objects defined where will be created, and the corresponding creation rules will

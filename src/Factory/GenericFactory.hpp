@@ -150,5 +150,6 @@ namespace control_problem
 			
 			return tmp;
 		}
-}
+};
+
 #endif

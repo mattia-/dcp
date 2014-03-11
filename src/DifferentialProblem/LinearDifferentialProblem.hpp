@@ -135,9 +135,14 @@ namespace control_problem
 				//! Get const reference to the problem's solver 
 				/*! 
 			 	 *  \return a const reference to the problem's solver.
-			 	 *          Returns NULL if no solver is present
 			 	 */
 				const dolfin::GenericLinearSolver& solver () const;
+
+				//! Get const reference to the problem's solver's type
+				/*! 
+			 	 *  \return a const reference to the problem's solver's type.
+			 	 */
+				const std::string& solverType () const;
 
 				//! Get const reference to the problem's solution
 				/*!
@@ -259,17 +264,19 @@ namespace control_problem
 				/*!
 			 	 *  \param solver a const reference to the solver to be set
 			 	 */
-				void setSolver (const dolfin::GenericLinearSolver& solver);
+				void setSolver (const dolfin::GenericLinearSolver& solver, std::string solverType);
 
 				//! Set linear solver for the problem [2]
 				/*!
 			 	 *  \param solver a rvalue reference to the linear solver to be set
 			 	 */
-				void setSolver (dolfin::GenericLinearSolver&& solver);
+				void setSolver (dolfin::GenericLinearSolver&& solver, std::string solverType);
 
-				/****************** TODO *******************/
-				// Set solver through name using a factory //
-				/*******************************************/
+				//! Set linear solver for the problem [3]
+				/*!
+			 	 *  \param solver a rvalue reference to the linear solver to be set
+			 	 */
+				void setSolver (std::string solverType);
 
 				//! Set linear solver parameters [1]
 				/*!
@@ -338,6 +345,9 @@ namespace control_problem
 			 	 *  We use a pointer so that polymorphism can be applied.
 			 	 */
 				std::unique_ptr<dolfin::GenericLinearSolver> solver_;
+				
+				//! The solver's type, as a string
+				std::string solverType_;
 
 				//! Boolean flag to indicate if system has already been assembled
 				/*! 
@@ -382,6 +392,7 @@ namespace control_problem
 			linearForm_ (*functionSpace),
 			dirichletBCs_ (),
 			solver_ (nullptr),
+			solverType_ (),
 			solution_ (functionSpace),
 			isAssembled_ (0)
 			problemMatrix_ (new dolfin::Matrix),
@@ -400,6 +411,7 @@ namespace control_problem
 			linearForm_ (*functionSpace),
 			dirichletBCs_ (),
 			solver_ (nullptr),
+			solverType_ (),
 			solution_ (functionSpace),
 			isAssembled_ (0)
 			problemMatrix_ (new dolfin::Matrix),
@@ -418,6 +430,7 @@ namespace control_problem
 			linearForm_ (*functionSpace),
 			dirichletBCs_ (),
 			solver_ (nullptr),
+			solverType_ (),
 			solution_ (functionSpace),
 			isAssembled_ (0)
 			problemMatrix_ (new dolfin::Matrix),
@@ -435,6 +448,7 @@ namespace control_problem
 			linearForm_ (rhs.linearForm_),
 			dirichletBCs_ (rhs.dirichletBCs_),
 			solver_ (nullptr),
+			solverType_ (rhs.solverType_),
 			solution_ (rhs.solution_),
 			isAssembled_ (rhs.isAssembled_),
 			problemMatrix_ (new dolfin::Matrix (rhs.problemMatrix_)),
@@ -454,6 +468,7 @@ namespace control_problem
 			bilinearForm_ (std::move (rhs.bilinearForm_)),
 			linearForm_ (std::move (rhs.linearForm_)),
 			solver_ (std::move (rhs.solver_)),
+			solverType_ (std::move (rhs.solverType_)),
 			solution_ (std::move (rhs->solution_)),
 			isAssembled_ (std::move (rhs.isAssembled_)),
 			problemMatrix_ (std::move (rhs.problemMatrix_)),
@@ -538,6 +553,12 @@ namespace control_problem
 		}
 
 
+
+	template <class T_BilinearForm, class T_LinearForm>
+		const std::string& LinearDifferentialProblem<T_BilinearForm, T_LinearForm>::solverType () const
+		{
+			return solverType_;
+		}
 
 	template <class T_BilinearForm, class T_LinearForm>
 		const dolfin::Function& LinearDifferentialProblem<T_BilinearForm, T_LinearForm>::solution () const
@@ -676,19 +697,32 @@ namespace control_problem
 
 
 	template <class T_BilinearForm, class T_LinearForm>
-		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm>::setSolver (const dolfin::GenericLinearSolver& solver)
+		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm>::
+		setSolver (const dolfin::GenericLinearSolver& solver, std::string solverType)
 		{
 			solver_.reset (&solver);
+			solverType_ = solverType;
 		}
 
 
 
 	template <class T_BilinearForm, class T_LinearForm>
-		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm>::setSolver (dolfin::GenericLinearSolver&& solver)
+		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm>::
+		setSolver (dolfin::GenericLinearSolver&& solver, std::solverType)
 		{
 			solver_.reset (&solver); 
+			solverType_ = solverType;
 		}
 
+
+	
+	template <class T_BilinearForm, class T_LinearForm>
+		void setSolver (std::string solverType)
+		{
+			control_problem::LinearSolverFactory& factory = control_problem::LinearSolverFactory::Instance;
+			solver_ = factory.create (rhs.solverType_);
+		}
+	
 
 
 	template <class T_BilinearForm, class T_LinearForm>

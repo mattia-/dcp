@@ -305,7 +305,7 @@ namespace control_problem
 				 *  This method will make a copy of the current object totally independent from it
 				 *  \return a object of the same type as the one being copied
 				 */
-				LinearDifferentialProblem clone ();
+				LinearDifferentialProblem clone () const;
 
 				//! Solve problem
 				/*!
@@ -757,7 +757,7 @@ namespace control_problem
 
 	template <class T_BilinearForm, class T_LinearForm>
 		LinearDifferentialProblem<T_BilinearForm, T_LinearForm> LinearDifferentialProblem<T_BilinearForm, T_LinearForm>::
-		clone ()
+		clone () const
 		{
 			LinearDifferentialProblem newProblem (*mesh_, functionSpace_);
 			

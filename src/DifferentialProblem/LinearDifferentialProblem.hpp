@@ -73,6 +73,10 @@ namespace control_problem
 				/*! Note that this will copy the members that are shared pointers with the shared_ptr
 			 	 * copy constructor. This means that, for example, the \c solver_ member will share
 			 	 * ownership of the stored object with the contructor input argument.
+				 * Use \c clone() method if you want a deep copy of the object:
+				 * \code
+				 *  LinearDifferentialProblem<T1, T2> foo; 
+				 *  LinearDifferentialProblem<T1, T2> bar = foo.clone ();
 			 	 */
 				LinearDifferentialProblem (const LinearDifferentialProblem& rhs);
 
@@ -294,6 +298,13 @@ namespace control_problem
 
 
 				/******************* METHODS *******************/
+				
+				//! Clone the current objecy
+				/*!
+				 *  This method will make a copy of the current object totally independent from it
+				 *  \return a object of the same type as the one being copied
+				 */
+				LinearDifferentialProblem clone ();
 
 				//! Solve problem
 				/*!
@@ -454,7 +465,7 @@ namespace control_problem
 			problemMatrix_ (new dolfin::Matrix (rhs.problemMatrix_)),
 			rhsVector_ (rhs.rhsVector_)
 		{
-			control_problem::LinearSolverFactory& factory = control_problem::LinearSolverFactory::Instance;
+			control_problem::LinearSolverFactory& factory = control_problem::LinearSolverFactory::Instance();
 			solver_ = factory.create (rhs.solverType_);
 		}
 
@@ -739,6 +750,32 @@ namespace control_problem
 		setSolverParameters (const std::string& parameterName, const double& parameterValue)
 		{
 			solver_.parameters [parameterName] = parameterValue;	
+		}
+
+
+
+	template <class T_BilinearForm, class T_LinearForm>
+		LinearDifferentialProblem<T_BilinearForm, T_LinearForm> LinearDifferentialProblem<T_BilinearForm, T_LinearForm>::
+		clone ()
+		{
+			LinearDifferentialProblem newProblem (*mesh_, functionSpace_);
+			
+			newProblem.bilinearForm_ = bilinearForm_;
+			newProblem.linearForm_   = linearForm_;
+			newProblem.dirichletBCs_ = dirichletBCs_;
+			
+			control_problem::LinearSolverFactory& factory = control_problem::LinearSolverFactory::Instance();
+			newProblem.solver_ = factory.create (solverType_);
+			newProblem.solverType_ = solverType_;
+			
+			newProblem.solution_ = solution_;
+			
+			newProblem.isAssembled_ = isAssembled_;
+		
+			newProblem.problemMatrix_ = problemMatrix_;
+			newProblem.rhsVector_ = rhsVector_;
+
+			return newProblem;
 		}
 
 

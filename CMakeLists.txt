@@ -54,7 +54,7 @@ SET (CMAKE_SKIP_RPATH TRUE)
 
 # set directory for installation
 IF (NOT DEFINED INSTALL_DIR)
-	SET (INSTALL_DIR "${CMAKE_SOURCE_DIR}/../")
+	SET (INSTALL_DIR "${CMAKE_SOURCE_DIR}")
 ENDIF(NOT DEFINED INSTALL_DIR)
 
 # define path for installation of different types of files

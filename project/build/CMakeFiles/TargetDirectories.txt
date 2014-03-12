@@ -1,0 +1,2 @@
+/home/mattia/Dropbox/polimi/tesi/progetto_PACS/git_repo/src/build/CMakeFiles/doc.dir
+/home/mattia/Dropbox/polimi/tesi/progetto_PACS/git_repo/src/build/Factory/CMakeFiles/linearsolverproxy.dir

@@ -2,4 +2,4 @@
 SET (HEADERS AbstractDifferentialProblem.hpp  LinearDifferentialProblem.hpp)
 
 #  install target
-INSTALL (TARGETS ${HEADERS} "${INSTALL_DIR}/include/")
+INSTALL (FILES ${HEADERS} DESTINATION "${INSTALL_DIR}/include/")

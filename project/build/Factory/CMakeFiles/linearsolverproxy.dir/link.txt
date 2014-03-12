@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC -Wall -std=c++0x   -shared -Wl,-soname,liblinearsolverproxy.so -o liblinearsolverproxy.so CMakeFiles/linearsolverproxy.dir/LinearSolverProxy.cpp.o 

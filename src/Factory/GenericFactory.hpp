@@ -110,9 +110,12 @@ namespace control_problem
 			if (f == storedData_.end ())
 			{
 				std::cerr << "Warning: Identifier " << identifier << "not found in factory" << std::endl;
+				return nullptr;
 			}
-			   
-			return std::unique_ptr<T_AbstractProduct> (f->second());
+			else
+			{
+				return std::unique_ptr<T_AbstractProduct> (f->second());
+			}
 		}
 	
 

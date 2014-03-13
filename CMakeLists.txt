@@ -65,10 +65,12 @@ SET (HEADER_INSTALL_DIR "${INSTALL_DIR}/include")
 
 # define macro to install header files preserving folder structure
 MACRO(INSTALL_HEADERS_WITH_DIRECTORY HEADER_LIST)
-	SET (HEADERS ${HEADER_LIST})
+	SET (HEADERS ${HEADER_LIST}) # this divides the string passed as input into one variable for each filename
 	FOREACH(HEADER ${HEADERS})
-		GET_FILENAME_COMPONENT (DIR ${HEADER} PATH)
-		STRING (REGEX REPLACE ".*/src/" "" STRIPPED_DIR ${DIR})
+		GET_FILENAME_COMPONENT (DIR ${HEADER} PATH) # DIR is now equal to the path of ${HEADER}
+		                                            # (that is, we stripped away the name of the file)
+		STRING (REGEX REPLACE ".*/src/" "" STRIPPED_DIR ${DIR}) # substitute all the path that leads up to src/ with nothing
+		# STRIPPED_DIR now contains the path of the header relative to src/
 		INSTALL(FILES ${HEADER} DESTINATION ${HEADER_INSTALL_DIR}/${STRIPPED_DIR})
 	ENDFOREACH(HEADER)
 ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)

@@ -19,18 +19,26 @@ namespace control_problem
 
 		public:
 			//! Default constructor
-			/*! 
-			 * Default constructor provided by \c C++
-			 */
 			AbstractDifferentialProblem () = default;
+			
+			//! Constructor that takes a function space as input argument
+			AbstractDifferentialProblem (const dolfin::FunctionSpace& functionSpace);
+			
+			//! Constrtuctor that takes a function as input argument [1] (lvalue reference version)
+			AbstractDifferentialProblem (const dolfin::Function& solution);
+			
+			//! Constrtuctor that takes a function as input argument [2] (rvalue reference version)
+			AbstractDifferentialProblem (dolfin::Function&& solution);
 
 			//! Destructor
-			/*! Empty destructor, since members of the class are trivially 
+			/*! Default destructor, since members of the class are trivially 
 			 * destructible.
 			 * It is declared virtual so that derived classes' constructor
-			 * can be called on derived classes
+			 * can be called on derived classes.
+			 * The "default-ness" is set in implementation outside of the class for compatibility with
+			 * gcc-4.6, which does not allow virtual members to be defaulted in class
 			 */
-			virtual ~AbstractDifferentialProblem () = default;
+			virtual ~AbstractDifferentialProblem ();
 
 			//! Solve method
 			/*!
@@ -52,5 +60,32 @@ namespace control_problem
 		private:
 
 	};
+	
+	// =============================================================== //
+	// ====================== IMPLEMENTATION ========================= //
+	// =============================================================== //
+	
+	// ***** CONSTRUCTORS
+	AbstractDifferentialProblem::AbstractDifferentialProblem (const dolfin::FunctionSpace& functionSpace) : 
+		solution_ (functionSpace)
+	{  }
+
+
+
+	AbstractDifferentialProblem::AbstractDifferentialProblem (const dolfin::Function& solution) :
+		solution_ (solution)
+	{  }
+
+
+
+	AbstractDifferentialProblem::AbstractDifferentialProblem (dolfin::Function&& solution) :
+		solution_ (std::move (solution))
+	{  }
+	
+	
+	
+	// ***** DESTRUCTORS
+	// this is done for compatibility with gcc 4.6, which doesn't allow virtual members to be defualted in class body
+	AbstractDifferentialProblem::~AbstractDifferentialProblem () = default;
 }
 #endif

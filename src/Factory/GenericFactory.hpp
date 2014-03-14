@@ -10,7 +10,7 @@
 namespace control_problem
 {
 	/*! class GenericFactory
-	 *  \bried class containing a generic factory
+	 *  \brief class containing a generic factory
 	 * 
 	 *  A generic template-ized factory class. 
 	 *  Template arguments are
@@ -109,7 +109,7 @@ namespace control_problem
 			auto f = storedData_.find (identifier); 
 			if (f == storedData_.end ())
 			{
-				std::cerr << "Warning: Identifier " << identifier << "not found in factory" << std::endl;
+				std::cerr << "Warning: Identifier " << identifier << " not found in factory" << std::endl;
 				return nullptr;
 			}
 			else

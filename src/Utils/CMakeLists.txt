@@ -1,0 +1,6 @@
+# collect header files
+SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/SubdomainType.hpp) 
+
+#  install target
+#INSTALL (FILES ${HEADERS} DESTINATION "${HEADER_INSTALL_DIR}")
+INSTALL_HEADERS_WITH_DIRECTORY ("${HEADERS}")

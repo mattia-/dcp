@@ -2,6 +2,9 @@
 #include "Poisson.h"
 #include <memory>
 #include "DifferentialProblem/LinearDifferentialProblem.hpp"
+#include "Utils/SubdomainType.hpp"
+#include <iostream>
+#include <dlfcn.h>
 
 namespace Poisson
 {
@@ -43,12 +46,6 @@ namespace Poisson
 		{
 			return (x[0] < 0 + DOLFIN_EPS || x[0] > 1 - DOLFIN_EPS) && on_boundary;
 		}
-		
-		public:
-		~DirichletBoundary ()
-		{
-			std::cout << "I am destroyed :)" << std::endl;
-		}
 	};
 	
 	class UnitaryConstant : public dolfin::Expression
@@ -65,19 +62,10 @@ int main ()
 	// declare mesh
 	dolfin::UnitSquareMesh mesh (100, 100);
 	
-	dolfin::info (mesh, false);
 	// declare function space and linear/bilinear form
 	Poisson::FunctionSpace V (mesh);
 	Poisson::BilinearForm a (V, V);
 	Poisson::LinearForm L (V);
-	dolfin::cout << "ciao" << dolfin::endl;
-	std::unique_ptr<Poisson::BilinearForm> foo (new Poisson::BilinearForm (a));
-	dolfin::cout << "ciao" << dolfin::endl;
-//	foo.reset (&a);
-	dolfin::cout << "ciao" << dolfin::endl;
-//	foo.reset ();
-	if (foo == nullptr)
-		dolfin::cout << "ciao NULL" << dolfin::endl;
 	
 	// declare problem specific variables
 	Poisson::ExternalLoad f;
@@ -88,17 +76,10 @@ int main ()
 	
 	// assign neumann condition value
 	boost::shared_ptr<dolfin::Function> gg (new dolfin::Function (V));
-	L.set_coefficient ("g", gg);
 	L.f = f;
-//	L.g = neumannCondition;
-	boost::shared_ptr<Poisson::UnitaryConstant> c (new Poisson::UnitaryConstant);
-//	Poisson::UnitaryConstant c;
-//	a.c = *c;
-	a.set_coefficient ("c", c);
-	decltype(a) ba (a);
-	typedef decltype(a) myType;
-	ba.set_coefficient ("c", c);
-	foo->set_coefficient(0, c);
+	L.g = neumannCondition;
+	Poisson::UnitaryConstant c;
+	a.c = c;
 	
 	// set neumann condition boundary
 	dolfin::FacetFunction<std::size_t> meshFacets (mesh);
@@ -116,59 +97,35 @@ int main ()
 	
 	dolfin::plot (u);
 	
-	// solve with LU solver
-	dolfin::Function u2 (V);
-	boost::shared_ptr<dolfin::Matrix> A2 (new dolfin::Matrix);
-	dolfin::Vector b2;
+//	for (auto i : factory.registered ())
+//		std::cout << i << std::endl;
 	
-	dolfin::assemble (*A2, a);
-	dolfin::assemble (b2, L);
+	// -------------------------------------------------------------------- //
+	// define linear differential problem
+	control_problem::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> differentialProblem (mesh, V);
+
+	// set solver
+	differentialProblem.setSolver ("lu_solver", "default", "ilu");
+	differentialProblem.setSolver ("krylov_solver", "gmres", "ilu");
 	
-	dirichletBC.apply (*A2, b2);
+	// set dirichlet bc
+	differentialProblem.addDirichletBC (dirichletBC);
 	
-	dolfin::LUSolver solver;
-	std::unique_ptr<dolfin::GenericLinearSolver> solver2 (new dolfin::LUSolver (solver));
-	solver2->set_operator (A2);
-	solver2->solve (*u2.vector (), b2);
-	dolfin::plot (u2);
+	boost::shared_ptr<Poisson::UnitaryConstant> c2 (new Poisson::UnitaryConstant);
+	boost::shared_ptr<Poisson::ExternalLoad> f2 (new Poisson::ExternalLoad);
+	boost::shared_ptr<Poisson::NeumannCondition> g2 (new Poisson::NeumannCondition);
+	differentialProblem.setBilinearFormCoefficient ("c", c2);
+	differentialProblem.setLinearFormCoefficient ("f", f2);
+	differentialProblem.setLinearFormCoefficient ("g", g2);
+	differentialProblem.setBilinearFormIntegrationSubdomains (meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
+	differentialProblem.setLinearFormIntegrationSubdomains (meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
 	
-	// solve with Krylov solver
-	dolfin::Function u3 (V);
-	dolfin::Matrix A3;
-//	boost::shared_ptr<dolfin::Matrix> A3 (new dolfin::Matrix);
-	dolfin::Vector b3;
-	*gg = neumannCondition;	
-	dolfin::assemble (A3, a);
-//	dolfin::assemble (*A3, a);
-	dolfin::assemble (b3, L);
-	
-	dirichletBC.apply (A3, b3);
-//	dirichletBC.apply (*A3, b3);
-	
-	dolfin::KrylovSolver kSolver ("gmres", "ilu");
-	kSolver.set_operator (boost::shared_ptr<dolfin::Matrix> (new dolfin::Matrix (A3)));
-	kSolver.solve (*u3.vector (), b3);
-	
-	dolfin::plot (u3);
-	
+	// solve
+	differentialProblem.solve ();
+	differentialProblem.solve (true);
+	dolfin::plot (differentialProblem.solution ());
+
 	dolfin::interactive ();
 	
-	std::vector <int> vec (10, 5);
-	for (auto i : vec)
-	{
-		std::cout << i << std::endl;
-	}
-		
-	std::unique_ptr <int> intero (new int);
-	*intero = 8;
-	std::cout << *intero << std::endl;
-	
-	{
-	std::unique_ptr <Poisson::DirichletBoundary> aa (new Poisson::DirichletBoundary);
-	}
-	
-	int n;
-	std::cin >> n;
-
 	return 0;
 }

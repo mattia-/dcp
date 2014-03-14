@@ -11,6 +11,8 @@ ENDIF (DEFINED C_COMPILER)
 SET (PROJECT_NAME poisson)
 PROJECT (${PROJECT_NAME})
 
+SET (CMAKE_SKIP_RPATH TRUE)
+
 IF (NOT CMAKE_COMPILER_IS_GNUCXX)
 	MESSAGE (WARNING "-- *** Compiler ID is not GNU. 
 	Proceed, but this may cause problems")

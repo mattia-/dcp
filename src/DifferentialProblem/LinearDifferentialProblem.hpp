@@ -14,6 +14,13 @@ namespace control_problem
 	/*! \class LinearDifferentialProblem LinearDifferentialProblem.hpp
 	 *  \brief Class for linear differential problems.
 	 *
+	 *  This class represents problem of the form
+	 *  \f[
+	 *      \mbox{Find } u \in V : a \left(u, v\right) = F \left(v\right) \ \forall\,v\,\in\,V
+	 *  \f]
+	 *  with \f$ a \left(u, v\right) : V \times V \rightarrow \mathds{R}\f$ bilinear form on \f$V\f$
+	 *  and \f$ L \left(v\right) : V \rightarrow \mathds{R} \f$ linear form on the same space.
+	 *  
 	 *  It inherits publicly from \c AbstractDifferentialProblem
 	 *  and it extends its functionalities to a concrete differential
 	 *  problem.

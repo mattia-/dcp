@@ -910,7 +910,7 @@ namespace control_problem
 
 
 	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		void LinearDifferentialProblem<T_BilinearForm, T_LinearSolverFactory, T_LinearSolverFactory>::
+		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
 		setSolverParameters (const dolfin::Parameters& parameters)
 		{
 			solver_ -> update_parameters (parameters);

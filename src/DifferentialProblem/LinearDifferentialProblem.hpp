@@ -366,6 +366,13 @@ namespace control_problem
 			 	 *  \param parameterValue double containing the value of the linear solver parameter to be set
 			 	 */
 				void setSolverParameters (const std::string& parameterName, const double& parameterValue);
+				
+				//! Set linear solver parameters [3]
+				/*!
+				 *  \param parameters object of type dolfin::Parameters that contains all the parameters that
+				 *  should be passed to the linear solver
+				 */
+				void setSolverParameters (const dolfin::Parameters& parameters);
 
 				
 				/******************* METHODS *******************/
@@ -891,6 +898,15 @@ namespace control_problem
 		setSolverParameters (const std::string& parameterName, const double& parameterValue)
 		{
 			solver_ -> parameters [parameterName] = parameterValue;	
+		}
+
+
+
+	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+		void LinearDifferentialProblem<T_BilinearForm, T_LinearSolverFactory, T_LinearSolverFactory>::
+		setSolverParameters (const dolfin::Parameters& parameters)
+		{
+			solver_ -> update_parameters (parameters);
 		}
 
 

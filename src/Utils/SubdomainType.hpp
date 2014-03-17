@@ -9,11 +9,10 @@ namespace control_problem
 	 *  This class will be used to check which measure to use when setting
 	 *  integration subdomains on the linear form and the bilinear form.
 	 *  Possible values are:
-	 *  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO   
-	 *  \item INTERNAL_CELLS: sets integration subdomains of dimension equal to that of the mesh
-	 *  \item BOUNDARY_FACETS: sets integration subdomains of dimension mesh_dimension - 1 on the
+	 *  \li INTERNAL_CELLS: sets integration subdomains of dimension equal to that of the mesh
+	 *  \li BOUNDARY_FACETS: sets integration subdomains of dimension mesh_dimension - 1 on the
 	 *  boundary of the mesh
-	 *  \item INTERNAL_FACETS: sets integration subdomains of dimension mesh_dimension - 1 inside
+	 *  \li INTERNAL_FACETS: sets integration subdomains of dimension mesh_dimension - 1 inside
 	 *  the mesh
 	 */
 	enum class SubdomainType {INTERNAL_CELLS, BOUNDARY_FACETS, INTERNAL_FACETS};

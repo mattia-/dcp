@@ -816,9 +816,7 @@ namespace control_problem
 				}
 				else
 				{
-					std::cerr 
-						<< "Warning: unknown subdomain type when trying to apply mesh function to bilinear form" 
-						<< std::endl;
+					dolfin::warning ("unknown subdomain type requested while trying to apply mesh function to bilinear form"); 
 				}
 			}
 
@@ -844,9 +842,7 @@ namespace control_problem
 					}
 					else
 					{
-						std::cerr 
-							<< "Warning: unknown subdomain type when trying to apply mesh function to linear form" 
-							<< std::endl;
+						dolfin::warning ("unknown subdomain type requested while trying to apply mesh function to linear form"); 
 					}
 				}
 

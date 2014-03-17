@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <string>
 
 namespace control_problem
 {
@@ -109,7 +110,7 @@ namespace control_problem
 			auto f = storedData_.find (identifier); 
 			if (f == storedData_.end ())
 			{
-				std::cerr << "Warning: Identifier " << identifier << " not found in factory" << std::endl;
+				dolfin::warning ("identifier %s not found in factory", identifier.c_str ());
 				return nullptr;
 			}
 			else
@@ -133,9 +134,7 @@ namespace control_problem
 			auto f = storedData_.insert(std::make_pair(identifier, builder));
 		    if (f.second == false)
 			{
-				std::cerr 
-					<< "Warning: double registration in factory while trying to register product "
-					<< std::endl;
+				dolfin::warning ("double registration in factory while trying to register product %s", identifier.c_str ());
 			}
 		}
 

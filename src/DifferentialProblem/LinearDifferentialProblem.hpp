@@ -3,6 +3,7 @@
 
 #include <dolfin.h>
 #include <vector>
+#include <map>
 #include <string>
 #include <memory>
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
@@ -51,7 +52,7 @@ namespace control_problem
 			 	 *  \param functionSpace the problem finite element space as a const std::shared_ptr to dolfin::FunctionSpace
 				 *  \param solverType the type of the solver. Default: lu_solver
 				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+				 *  documentation, or use method \c list_<solverType>_methods). Default value: default
 				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
 				 *  value: default
 			 	 *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
@@ -71,7 +72,7 @@ namespace control_problem
 			 	 *  \param functionSpace the problem finite element space as a const dolfin::FunctionSpace&
 				 *  \param solverType the type of the solver. Default: lu_solver
 				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+				 *  documentation, or use method \c list_<solverType>_methods). Default value: default
 				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
 				 *  value: default
 			 	 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
@@ -91,7 +92,7 @@ namespace control_problem
 			 	 *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
 				 *  \param solverType the type of the solver. Default: lu_solver
 				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+				 *  documentation, or use method \c list_<solverType>_methods). Default value: default
 				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
 				 *  value: default
 			 	 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
@@ -389,7 +390,7 @@ namespace control_problem
 			 	 * This method solves the problem defined. It uses the private members' value to set the problem and then
 			 	 * stores the solution in the private member \c solution_
 			 	 */
-				void solve ();
+				virtual void solve ();
 
 				//! Solve problem specifying flag
 				/*!

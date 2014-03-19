@@ -1,5 +1,5 @@
-#ifndef HH__PROXY__HH
-#define HH__PROXY__HH
+#ifndef SRC_FACTORY_PROXY_HPP_INCLUDE_GUARD
+#define SRC_FACTORY_PROXY_HPP_INCLUDE_GUARD
 
 #include <Factory/GenericFactory.hpp>
 

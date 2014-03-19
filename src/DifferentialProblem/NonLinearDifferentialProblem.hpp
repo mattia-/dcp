@@ -1,20 +1,5 @@
-/*
- * Usiamo il solve di dolfin, che crea un NonLinearVariationalProblem e NonLinearVariationalSolver ogni volta, ma va beh, 
- * non sarà troppo grave
- * 
- * È sostanzialmente tutto come il LinearSolverParameters, tanto che possiamo copiare quella classe là e modificarla.
- * NB: ricordati che però nella forma ResidualForm va settata attraverso set_coefficient la soluzione, quindi nel costruttore
- * bisognerà obbligatoriamente passare una stringa che contiene il nome del dolfin::Coefficient che contiene la soluzione 
- * e settarla subito nel costruttore. Bisognerà anche mettere il nome di tale variabile in un membro privato, così che poi
- * il suo settaggio con setParameters sia segnalato con un warning.
- * 
- * Inoltre il metodo setSolverParameters aggiunge a un oggetto di tipo dolfin::Parameters privato della classe
- * e poi questo viene usato quando si chiama solve
- * 
- * Servirà anche un modo per settare il valore iniziale della soluzione, nel caso Newton non converga
-*/
-#ifndef HH__NONLINEARDIFFERENTIALPROBLEM__HH
-#define HH__NONLINEARDIFFERENTIALPROBLEM__HH
+#ifndef SRC_DIFFERENTIALPROBLEM_NONLINEARDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
+#define SRC_DIFFERENTIALPROBLEM_NONLINEARDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
 
 #include <dolfin.h>
 #include <vector>

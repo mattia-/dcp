@@ -377,6 +377,20 @@ namespace control_problem
 				
 				//! Set linear solver parameters [3]
 				/*!
+			 	 *  \param parameterName string containing the name of the linear solver parameter to be set
+			 	 *  \param parameterValue int containing the value of the linear solver parameter to be set
+			 	 */
+				void setSolverParameters (const std::string& parameterName, const int& parameterValue);
+				
+				//! Set linear solver parameters [4]
+				/*!
+			 	 *  \param parameterName string containing the name of the linear solver parameter to be set
+			 	 *  \param parameterValue bool containing the value of the linear solver parameter to be set
+			 	 */
+				void setSolverParameters (const std::string& parameterName, const bool& parameterValue);
+				
+				//! Set linear solver parameters [5]
+				/*!
 				 *  \param parameters object of type dolfin::Parameters that contains all the parameters that
 				 *  should be passed to the linear solver
 				 */
@@ -501,7 +515,7 @@ namespace control_problem
 			                       const std::string& solverType = "lu_solver",
 			                       const std::string& solverMethod = "default",
 			                       const std::string& solverPreconditioner = "default") :
-			AbstractDifferentialProblem (functionSpace),
+			AbstractDifferentialProblem (*functionSpace),
 			mesh_ (mesh),
 			functionSpace_ (functionSpace),
 			bilinearForm_ (*functionSpace, *functionSpace),
@@ -714,6 +728,8 @@ namespace control_problem
 			return solverType_;
 		}
 
+
+
 	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
 		const dolfin::Function& LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
 		solution () const
@@ -908,6 +924,24 @@ namespace control_problem
 
 	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
 		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+		setSolverParameters (const std::string& parameterName, const int& parameterValue)
+		{
+			solver_ -> parameters [parameterName] = parameterValue;	
+		}
+
+
+
+	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+		setSolverParameters (const std::string& parameterName, const bool& parameterValue)
+		{
+			solver_ -> parameters [parameterName] = parameterValue;	
+		}
+
+
+
+	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
 		setSolverParameters (const dolfin::Parameters& parameters)
 		{
 			solver_ -> update_parameters (parameters);
@@ -944,6 +978,7 @@ namespace control_problem
 			isAssembled_ = false;
 			solve ();
 		}
+	
 	
 
 	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>

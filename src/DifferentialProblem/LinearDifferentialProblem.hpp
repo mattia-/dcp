@@ -3,6 +3,7 @@
 
 #include <dolfin.h>
 #include <vector>
+#include <map>
 #include <string>
 #include <memory>
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
@@ -51,7 +52,7 @@ namespace control_problem
 			 	 *  \param functionSpace the problem finite element space as a const std::shared_ptr to dolfin::FunctionSpace
 				 *  \param solverType the type of the solver. Default: lu_solver
 				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+				 *  documentation, or use method \c list_<solverType>_methods). Default value: default
 				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
 				 *  value: default
 			 	 *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
@@ -71,7 +72,7 @@ namespace control_problem
 			 	 *  \param functionSpace the problem finite element space as a const dolfin::FunctionSpace&
 				 *  \param solverType the type of the solver. Default: lu_solver
 				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+				 *  documentation, or use method \c list_<solverType>_methods). Default value: default
 				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
 				 *  value: default
 			 	 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
@@ -91,7 +92,7 @@ namespace control_problem
 			 	 *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
 				 *  \param solverType the type of the solver. Default: lu_solver
 				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+				 *  documentation, or use method \c list_<solverType>_methods). Default value: default
 				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
 				 *  value: default
 			 	 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
@@ -376,6 +377,20 @@ namespace control_problem
 				
 				//! Set linear solver parameters [3]
 				/*!
+			 	 *  \param parameterName string containing the name of the linear solver parameter to be set
+			 	 *  \param parameterValue int containing the value of the linear solver parameter to be set
+			 	 */
+				void setSolverParameters (const std::string& parameterName, const int& parameterValue);
+				
+				//! Set linear solver parameters [4]
+				/*!
+			 	 *  \param parameterName string containing the name of the linear solver parameter to be set
+			 	 *  \param parameterValue bool containing the value of the linear solver parameter to be set
+			 	 */
+				void setSolverParameters (const std::string& parameterName, const bool& parameterValue);
+				
+				//! Set linear solver parameters [5]
+				/*!
 				 *  \param parameters object of type dolfin::Parameters that contains all the parameters that
 				 *  should be passed to the linear solver
 				 */
@@ -389,7 +404,7 @@ namespace control_problem
 			 	 * This method solves the problem defined. It uses the private members' value to set the problem and then
 			 	 * stores the solution in the private member \c solution_
 			 	 */
-				void solve ();
+				virtual void solve ();
 
 				//! Solve problem specifying flag
 				/*!
@@ -500,7 +515,7 @@ namespace control_problem
 			                       const std::string& solverType = "lu_solver",
 			                       const std::string& solverMethod = "default",
 			                       const std::string& solverPreconditioner = "default") :
-			AbstractDifferentialProblem (functionSpace),
+			AbstractDifferentialProblem (*functionSpace),
 			mesh_ (mesh),
 			functionSpace_ (functionSpace),
 			bilinearForm_ (*functionSpace, *functionSpace),
@@ -713,6 +728,8 @@ namespace control_problem
 			return solverType_;
 		}
 
+
+
 	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
 		const dolfin::Function& LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
 		solution () const
@@ -907,6 +924,24 @@ namespace control_problem
 
 	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
 		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+		setSolverParameters (const std::string& parameterName, const int& parameterValue)
+		{
+			solver_ -> parameters [parameterName] = parameterValue;	
+		}
+
+
+
+	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+		setSolverParameters (const std::string& parameterName, const bool& parameterValue)
+		{
+			solver_ -> parameters [parameterName] = parameterValue;	
+		}
+
+
+
+	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
 		setSolverParameters (const dolfin::Parameters& parameters)
 		{
 			solver_ -> update_parameters (parameters);
@@ -943,6 +978,7 @@ namespace control_problem
 			isAssembled_ = false;
 			solve ();
 		}
+	
 	
 
 	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>

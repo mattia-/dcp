@@ -1,7 +1,7 @@
 # create libraries
 SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericFactory.hpp 
-	${CMAKE_CURRENT_SOURCE_DIR}/LinearSolverFactory.hpp 
-	${CMAKE_CURRENT_SOURCE_DIR}/Proxy.hpp)
+	         ${CMAKE_CURRENT_SOURCE_DIR}/LinearSolverFactory.hpp 
+	         ${CMAKE_CURRENT_SOURCE_DIR}/Proxy.hpp)
 
 # INSTALLATION
 #INSTALL (FILES ${HEADERS} DESTINATION "${HEADER_INSTALL_DIR}")

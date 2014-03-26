@@ -36,7 +36,7 @@ namespace control_problem
 				Proxy (const T_Factory_Identifier& identifier);
 
 				//! The builder for the default construction. It must comply with the signature which we
-				// want to use for our factory
+				//! want to use for our factory
 				static std::unique_ptr<T_Factory_AbstractProduct> Build ()
 				{
 					return std::unique_ptr<T_Factory_AbstractProduct> (new T_ConcreteProduct ());

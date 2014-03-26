@@ -1,4 +1,6 @@
 #include <Utils/ComparisonFunctors.hpp>
+#include <utility>
+#include <tuple>
 
 namespace control_problem
 {
@@ -17,7 +19,7 @@ namespace control_problem
 		{
 			if (std::get<1> (lhs) != std::get<1> (rhs))
 			{
-				return std::get<1> (lhs) < std::get<2> (rhs);
+				return std::get<1> (lhs) < std::get<1> (rhs);
 			}
 			else
 			{

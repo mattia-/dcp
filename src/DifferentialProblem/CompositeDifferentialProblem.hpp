@@ -3,11 +3,156 @@
 
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
 #include <DifferentialProblem/LinearDifferentialProblem.hpp>
-#include <DifferentialProblem/NonLinearDifferentialProblem.hpp>
+#include <DifferentialProblem/NonlinearDifferentialProblem.hpp>
 #include <dolfin.h>
 #include <map>
-#include <set>
 #include <tuple>
+#include <memory>
+#include <iostream>
+#include <utility>
 
+namespace control_problem
+{
+	/*! \class CompositeDifferentialProblem CompositeDifferentialProblem.hpp
+	 *  \brief Class for multi-variable and multi-equation differential problem
+	 *  
+	 *  The class contains a map that associate a problem with its identifying name
+	 *  and a vector that stores the problem names in the order they should be solved.
+	 *  The aforementioned map associates a \c std::string to a pointer to 
+	 *  \c control_problem::AbstractDifferentialProblem.
+	 *  The class also offers the possibility to link a problem's coefficient to another problem's
+	 *  solution through the use of a \c std::map<std::tuple <std::string, std::string, std::string>, std::string> >
+	 */
+	class CompositeDifferentialProblem
+	{
+		// ---------------------------------------------------------------------------------------------//	
+
+		public:
+			/******************* CONSTRUCTORS ******************/
+			//! Default constructor is the default one, which means all the containers stored as protected
+			//!  members are empty
+			CompositeDifferentialProblem () = default;
+			
+			//! Copy constructor. Deleted, since it makes no sense for unique_ptr's
+			CompositeDifferentialProblem (const CompositeDifferentialProblem& rhs) = delete;
+			
+			//! Move constructor
+			CompositeDifferentialProblem (CompositeDifferentialProblem&& rhs) = default;
+			
+			
+			/******************* DESTRUCTOR *******************/
+			//! Default destructor
+			~CompositeDifferentialProblem () = default;
+			
+
+			/******************** OPERATORS *********************/
+			//! Copy operator. Deleted since it makes no sense for unique_ptr's
+			CompositeDifferentialProblem& operator= (const CompositeDifferentialProblem& rhs) = delete;
+			
+			//! Move operator
+			CompositeDifferentialProblem& operator= (CompositeDifferentialProblem&& rhs) = default;
+			
+
+			/******************** METHODS *********************/
+			//! Add problem to the map of problems to be solved
+			/*!
+			 *  The call from main is something like:
+			 *  \code
+			 *  control_problem::AbstractDifferentialProblem* foo = 
+			 *      new control_problem::LinearDifferentialProblem<bilinear_form_type, linear_form_type> (mesh, V));
+			 *  comp_diff_p.addProblem ("bar", &foo);
+			 *  \endcode
+			 *  The parameters are:
+			 *  \param problemName the problem name
+			 *  \param problem a double pointer to an \c AbstractDifferentialProblem. 
+			 *  The class will take ownership of the concrete problem setting the input pointer to \c nullptr.
+			 *  For example, referring to the snippet of code above, the class will contain (and have full ownership of)
+			 *  the problem *foo and will set foo to nullptr, so that it cannot be used to modify the class private
+			 *  members later on.
+			 *  The problem's name is inserted at the end of \c problemsOrder_
+			 */
+			void addProblem (const std::string& problemName, 
+			                 std::unique_ptr<AbstractDifferentialProblem>& auxProblem);
+			
+			//! Remove problem with the given name from the private member variables. A warning is issued if the name is 
+			//! not found
+			void removeProblem (const std::string& problemName);
+			
+			//! Set solve order of the problems
+			/*!
+			 *  \param problemsOrder a \c std::vector<std::string> in which the problems' names are ordered as one 
+			 *  wishes the stored problem to be ordered. No check is performed either on problems' names contained in 
+			 *  the input vector or on vectors' size. This means that, for example, the same problem can be 
+			 *  insterted more than once, if needed
+			 */
+			void reorderProblems (const std::vector<std::string>& problemsOrder);
+			
+			//! Links problems' coefficient and solution
+			/*!
+			 *  \param linkFrom identifies the problem whose parameter (passed as second argument to the function) 
+			 *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
+			 *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
+			 *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
+			 *  \c setCoefficient (see \c AbstractDifferentialProblem documentation for more details)
+			 *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
+			 *  identified by the second and the first arguments respectively. No check is performed on the
+			 *  existence of such problem
+			 *  \param forceRelinking boolean value (default FALSE). If the pair problem name - coefficient 
+			 *  identified by the first and the second string in the first argument already appears in the protected 
+			 *  member variable \c linkedProblems_, it will be relinked using the \c pair passed as first argument if 
+			 *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
+			 */
+			void linkProblems (const std::string& linkFrom, 
+			                   const std::string& linkedCoefficientName,
+			                   const std::string& linkedCoefficientType, 
+			                   const std::string& linkTo,
+			                   const bool& forceRelinking);
+			
+			//! Access problem with given name [1] (read only)
+			/*!
+			 *  \param name name of the problem to be accessed. If the name is not found, the function prints an
+			 *  error message and throws an exception through the function \c dolfin::error
+			 */
+			const control_problem::AbstractDifferentialProblem& problem (const std::string& problemName) const;
+			
+			//! Access problem with given name [2] (read and write)
+			/*!
+			 *  \param name name of the problem to be accessed. If the name is not found, the function prints an
+			 *  error message and throws an exception through the function \c dolfin::error
+			 */
+			control_problem::AbstractDifferentialProblem& problem (const std::string& problemName);
+			
+			//! Prints information on the problems: names list (in solution order) and links information.
+			//! It uses \c dolfin::cout stream
+			void print ();
+			
+			//! Solve all the problems in the order specified by the private member \c problemsOrder_
+			void solve ();
+			
+			//! Solve only the problem corresponding to the name given
+			/*!
+			 *  \param problemName a string identifying the problem to be solved. If no problem with that name
+			 *  is found, a warning is issued
+			 */
+			void solve (const std::string& problemName);
+			
+		// ---------------------------------------------------------------------------------------------//	
+
+		protected:
+			//! The stored problems
+			std::map <std::string, std::unique_ptr <control_problem::AbstractDifferentialProblem>> storedProblems_;
+
+			//! The solution order of the problems
+			std::vector <std::string> problemsOrder_;
+			
+			//! The map of links between problems. A map guarantees that no pair (problem, coefficient) is linked twice
+			//! against possibly different problems
+			std::map <std::tuple <std::string, std::string, std::string>, std::string> linkedProblems_;
+		// ---------------------------------------------------------------------------------------------//	
+
+		private:
+
+	};
+}
 
 #endif

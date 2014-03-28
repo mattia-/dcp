@@ -1,12 +1,12 @@
 # collect header files
 SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDifferentialProblem.hpp 
-	         ${CMAKE_CURRENT_SOURCE_DIR}/LinearDifferentialProblem.hpp
-	         ${CMAKE_CURRENT_SOURCE_DIR}/NonlinearDifferentialProblem.hpp
-	         ${CMAKE_CURRENT_SOURCE_DIR}/CompositeDifferentialProblem.hpp)
+             ${CMAKE_CURRENT_SOURCE_DIR}/LinearDifferentialProblem.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/NonlinearDifferentialProblem.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/CompositeDifferentialProblem.hpp)
 
 # collect source files
 SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/CompositeDifferentialProblem.cpp
-	         ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDifferentialProblem.cpp)
+             ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDifferentialProblem.cpp)
 
 # create shared library
 ADD_LIBRARY (differentialproblem SHARED ${SOURCES} ${HEADERS})

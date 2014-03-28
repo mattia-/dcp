@@ -12,843 +12,998 @@
 
 namespace control_problem
 {
-	/*! \class LinearDifferentialProblem LinearDifferentialProblem.hpp
-	 *  \brief Class for linear differential problems.
-	 *
-	 *  This class represents problem of the form
-	 *  \f[
-	 *      \mbox{Find } u \in V : a \left(u, v\right) = F \left(v\right) \ \forall\,v\,\in\,V
-	 *  \f]
-	 *  with \f$ a \left(u, v\right) : V \times V \rightarrow \mathds{R}\f$ bilinear form on \f$V\f$
-	 *  and \f$ L \left(v\right) : V \rightarrow \mathds{R} \f$ linear form on the same space.
-	 *  
-	 *  It inherits publicly from \c AbstractDifferentialProblem
-	 *  and it extends its functionalities to a concrete differential
-	 *  problem.
-	 *  Template arguments are:
-	 *  \arg T_BilinearForm the bilinear form type
-	 *  \arg T_LinearForm the linear form type
-	 *  \arg T_LinearSolverFactory the type of the factory that creates the linear solver. By default, it is set
-	 *  to control_problem::LinearSolverFactory
-	 *  This is needed because the dolfin function "coefficient_number" was neither declared
-	 *  virtual nor implemented by FEniCS's developers in the dolfin class "Form", from which
-	 *  we first thought to derive for the protected members of the LinearDifferentialProblem
-	 *  class
-	 */
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory = control_problem::LinearSolverFactory>
-		class LinearDifferentialProblem : public AbstractDifferentialProblem
-		{
-			// ---------------------------------------------------------------------------------------------//	
-
-			public:
-				/******************* CONSTRUCTORS *******************/
-				//! Default constructor is deleted. The class is not default constructable.
-				LinearDifferentialProblem () = delete;
-
-				//!  Constructor with shared pointers [1]
-				/*!
-			 	 *  \param mesh the problem mesh as a const std::shared_ptr to dolfin::Mesh
-			 	 *  \param functionSpace the problem finite element space as a const std::shared_ptr to dolfin::FunctionSpace
-				 *  \param solverType the type of the solver. Default: lu_solver
-				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods). Default value: default
-				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
-				 *  value: default
-			 	 *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
-			 	 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-			 	 *  as input.
-			 	 */
-				LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-			                           	   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-			                           	   const std::string& solverType,
-			                           	   const std::string& solverMethod,
-			                           	   const std::string& solverPreconditioner);
-				
-
-				//! Constructor with references [1]
-				/*!
-			 	 *  \param mesh the problem mesh as a const dolfin::Mesh&
-			 	 *  \param functionSpace the problem finite element space as a const dolfin::FunctionSpace&
-				 *  \param solverType the type of the solver. Default: lu_solver
-				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods). Default value: default
-				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
-				 *  value: default
-			 	 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
-			 	 *  initialized using the \c new operator and mesh's and functionSpace's copy constructor
-			 	 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-			 	 *  as input.
-			 	 */
-				LinearDifferentialProblem (const dolfin::Mesh& mesh, 
-			                           	   const dolfin::FunctionSpace& functionSpace,
-			                           	   const std::string& solverType,
-			                           	   const std::string& solverMethod,
-			                           	   const std::string& solverPreconditioner);
-
-				//! Constructor with rvalue references [1]
-				/*!
-			 	 *  \param mesh the problem mesh as a dolfin::Mesh&&
-			 	 *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
-				 *  \param solverType the type of the solver. Default: lu_solver
-				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods). Default value: default
-				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
-				 *  value: default
-			 	 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
-			 	 *  initialized using the \c new operator and mesh's and functionSpace's move constructor
-			 	 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-			 	 *  as input.
-			 	 */
-				LinearDifferentialProblem (dolfin::Mesh&& mesh, 
-			                           	   dolfin::FunctionSpace&& functionSpace,
-			                           	   const std::string& solverType,
-			                           	   const std::string& solverMethod,
-			                           	   const std::string& solverPreconditioner);
-
-				
-				//!  Constructor with shared pointers [2]
-				/*!
-			 	 *  \param mesh the problem mesh as a const std::shared_ptr to dolfin::Mesh
-			 	 *  \param functionSpace the problem finite element space as a const std::shared_ptr to dolfin::FunctionSpace
-				 *  \param bilinearForm a const reference to the problem's bilinear form
-				 *  \param linearForm a const reference to the problem's linear form
-				 *  \param solverType the type of the solver. Default: lu_solver
-				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods. Default value: default
-				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
-				 *  value: default
-			 	 *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
-			 	 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-			 	 *  as input.
-			 	 */
-				LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-			                           	   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-			                           	   const T_BilinearForm& bilinearForm,
-			                           	   const T_LinearForm& linearForm,
-			                           	   const std::string& solverType,
-			                           	   const std::string& solverMethod,
-			                           	   const std::string& solverPreconditioner);
-
-				//! Constructor with references [2]
-				/*!
-			 	 *  \param mesh the problem mesh as a const dolfin::Mesh&
-			 	 *  \param functionSpace the problem finite element space as a const dolfin::FunctionSpace&
-				 *  \param bilinearForm a const reference to the problem's bilinear form
-				 *  \param linearForm a const reference to the problem's linear form
-				 *  \param solverType the type of the solver. Default: lu_solver
-				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods. Default value: default
-				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
-				 *  value: default
-			 	 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
-			 	 *  initialized using the \c new operator and mesh's and functionSpace's copy constructor
-			 	 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-			 	 *  as input.
-			 	 */
-				LinearDifferentialProblem (const dolfin::Mesh& mesh, 
-			                           	   const dolfin::FunctionSpace& functionSpace,
-			                           	   const T_BilinearForm& bilinearForm,
-			                           	   const T_LinearForm& linearForm,
-			                           	   const std::string& solverType,
-			                           	   const std::string& solverMethod,
-			                           	   const std::string& solverPreconditioner);
-
-				//! Constructor with rvalue references [3]
-				/*!
-			 	 *  \param mesh the problem mesh as a dolfin::Mesh&&
-			 	 *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
-				 *  \param bilinearForm a rvalue reference to the problem's bilinear form
-				 *  \param linearForm a rvalue reference to the problem's linear form
-				 *  \param solverType the type of the solver. Default: lu_solver
-				 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-				 *  documentation, or use method \c list_<solverType>_methods. Default value: default
-				 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
-				 *  value: default
-			 	 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
-			 	 *  initialized using the \c new operator and mesh's and functionSpace's move constructor
-			 	 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-			 	 *  as input.
-			 	 */
-				LinearDifferentialProblem (dolfin::Mesh&& mesh, 
-			                           	   dolfin::FunctionSpace&& functionSpace,
-			                           	   T_BilinearForm&& bilinearForm,
-			                           	   T_LinearForm&& linearForm,
-			                           	   const std::string& solverType,
-			                           	   const std::string& solverMethod,
-			                           	   const std::string& solverPreconditioner);
-
-				
-				/******************* GETTERS *******************/
-				//! Get const reference to the problem's linear form
-				/*! 
-			 	 *  \return a const reference to the problem's linear form
-			 	 */
-				const T_BilinearForm& bilinearForm () const;
-
-				//! Get const reference to the problem's linear form
-				/*! 
-			 	 *  \return a const reference to the problem's linear form
-			 	 */
-				const T_LinearForm& linearForm () const;
-
-				//! Get const reference to the problem's solver 
-				/*! 
-			 	 *  \return a const reference to the problem's solver.
-			 	 */
-				const dolfin::GenericLinearSolver& solver () const;
-
-				//! Get const reference to the problem's linear operator
-				/*!
-			 	 *  \return a const reference to the problem's linear operator, which
-			 	 *  is a dolfin::Matrix
-			 	 */
-				const dolfin::Matrix& linearOperator () const;
-
-				//! Get const reference to the problem's right hand side
-				/*!
-			 	 *  \return a const reference to the problem's right hand side, which
-			 	 *  is a dolfin::Vector
-			 	 */
-				const dolfin::Vector& rhs () const;
-
-
-				/******************* SETTERS *******************/
-				
-				//! Set coefficient [1]. Override of virtual function in \c AbstractDifferentialProblem.
-				/*!
-				 *  Possible values for \c coefficientType are:
-				 *  \li bilinear_form to set the coefficient in the bilinear form
-				 *  \li linear_form to set the coefficient in the linear form
-				 *  
-				 *  See \c AbstractDifferentialProblem documentation for more details on the function
-				 */
-				virtual void setCoefficient (const std::string& coefficientType, 
-				                             const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-				                             const std::string& coefficientName);
-
-				//! Set coefficient [2]. Override of virtual function in \c AbstractDifferentialProblem.
-				/*!
-				 *  Possible values for \c coefficientType are:
-				 *  \li bilinear_form to set the coefficient in the bilinear form
-				 *  \li linear_form to set the coefficient in the linear form
-				 *  
-				 *  See \c AbstractDifferentialProblem documentation for more details on the function
-				 */
-				virtual void setCoefficient (const std::string& coefficientType,
-				                             const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-				                             const std::size_t& coefficientNumber);
-
-				//! Set integration subdomains for the forms. Override of virtual function in \c AbstractDifferentialProblem
-				/*! 
-				 *  Possible values for \c coefficientType are:
-				 *  \li bilinear_form to set the integration subdomain in the bilinear form
-				 *  \li linear_form to set the integration subdomain in the linear form
-				 *  
-				 *  See \c AbstractDifferentialProblem documentation for more details on the function
-				 */
-				virtual	void setIntegrationSubdomains (const std::string& coefficientType,
-													   const dolfin::MeshFunction<std::size_t>& meshFunction,
-													   const control_problem::SubdomainType& subdomainType);
-
-				
-				/******************* METHODS *******************/
-
-				//! Solve problem
-				/*!
-			 	 *  This method solves the problem defined. It uses the private members' value to set the problem and then
-			 	 *  stores the solution in the private member \c solution_. Note that it checks the protected member
-				 *  \c parameters_ to decided whether problem's matrix and vector should be reassembled and if
-				 *  the values of the parameters "desired_solver_type", "desired_solver_method" and 
-				 *  "desired_solver_preconditioner" match the values of "current_solver_type", "current_solver_method"
-				 *  and "current_solver_preconditioner". If they differ, it calls \c createSolver()
-			 	 */
-				virtual void solve ();
-
-				//! Solve problem specifying flag
-				/*!
-			 	 *  \param mustReassemble true if the system operators (matrix and right hand side vector)
-			 	 *         should be reassembled. It is false by default.
-			 	 */
-				void solve (const bool& mustReassemble);
-
-
-				/******************* DESTRUCTOR *******************/
-				
-				//! Destructor
-				/*! Default destructor, since members of the class are trivially 
-			 	 * destructible.
-			 	 * It is declared virtual so that derived classes' constructor
-			 	 * can be called on derived classes.
-			 	 * The "default-ness" is set in implementation outside of the class for compatibility with
-			 	 * gcc-4.6, which does not allow virtual members to be defaulted in class
-			 	 */
-				virtual ~LinearDifferentialProblem ();
-
-				// ---------------------------------------------------------------------------------------------//
-
-			protected:
-				//! Creates a linear solver object of type passed as input. 
-				/*!
-				 *  The solver will be created using the parameters "desired_solver_type", "desired_solver_method"
-				 *  and "desired_solver_preconditioner" set in the protected member \c parameters_. It will
-				 *  also set the parameters "current_solver_type", "current_solver_method" and 
-				 *  "current_solver_preconditioner" in the same set of parameters substituting the current values with 
-				 *  the values being used to create the solver
-				 */
-				std::unique_ptr<dolfin::GenericLinearSolver> createSolver ();
-				
-				//! The bilinear form
-				T_BilinearForm bilinearForm_;
-
-				//! The linear form
-				T_LinearForm linearForm_;
-
-				//! The solver
-				/*! 
-			 	 *  We use a pointer so that polymorphism can be applied.
-			 	 */
-				std::unique_ptr<dolfin::GenericLinearSolver> solver_;
-				
-				//! Matrix to hold the problem's discrete operator
-				/*!
-			 	 *  We use a boost::shared_ptr for compatibility with FEniCS, version 1.3.0.
-			 	 *  Note that there is no write access to this variable from outside the class,
-			 	 *  so it is guaranteed to be a unique shared_ptr
-			 	 */
-				boost::shared_ptr<dolfin::Matrix> problemMatrix_;
-
-				//! Vector to store the right hand side of the discrete problem
-				dolfin::Vector rhsVector_;
-
-				// ---------------------------------------------------------------------------------------------//
-
-			private:
-		};
-
-
-
-	// ============================================================================================== //
-	// ==================================== IMPLEMENTATION ========================================== //
-	// ============================================================================================== //
-
-
-	/******************* CONSTRUCTORS *******************/
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-		                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-			                       const std::string& solverType = "lu_solver",
-			                       const std::string& solverMethod = "default",
-			                       const std::string& solverPreconditioner = "default") :
-			AbstractDifferentialProblem (mesh, functionSpace),
-			bilinearForm_ (*functionSpace, *functionSpace),
-			linearForm_ (*functionSpace),
-			solver_ (nullptr),
-			problemMatrix_ (new dolfin::Matrix),
-			rhsVector_ ()
-		{ 
-			dolfin::log (dolfin::DBG, "Building LinearDifferentialProblem...");
-			
-			dolfin::log (dolfin::DBG, "Setting up parameters...");
-			parameters_.add ("current_solver_type", solverType);
-			parameters_.add ("current_solver_method", solverMethod);
-			parameters_.add ("current_solver_preconditioner", solverPreconditioner);
-			parameters_.add ("desired_solver_type", solverType);
-			parameters_.add ("desired_solver_method", solverMethod);
-			parameters_.add ("desired_solver_preconditioner", solverPreconditioner);
-			
-			dolfin::log (dolfin::DBG, "Creating solver...");
-			solver_ = createSolver ();
-			parameters_.add (solver_ -> parameters);
-			parameters_.add ("system_is_assembled", false);
-			parameters_.add ("force_reassemble_system", false);	
-			
-			dolfin::log (dolfin::DBG, "LinearDifferentialProblem created!");
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		LinearDifferentialProblem (const dolfin::Mesh& mesh, 
-		                           const dolfin::FunctionSpace& functionSpace,
-			                       const std::string& solverType = "lu_solver",
-			                       const std::string& solverMethod = "default",
-			                       const std::string& solverPreconditioner = "default") :
-			AbstractDifferentialProblem (mesh, functionSpace),
-			bilinearForm_ (functionSpace, functionSpace),
-			linearForm_ (functionSpace),
-			solver_ (nullptr),
-			problemMatrix_ (new dolfin::Matrix),
-			rhsVector_ ()
-		{ 
-			dolfin::log (dolfin::DBG, "Building LinearDifferentialProblem...");
-			
-			dolfin::log (dolfin::DBG, "Setting up parameters...");
-			parameters_.add ("current_solver_type", solverType);
-			parameters_.add ("current_solver_method", solverMethod);
-			parameters_.add ("current_solver_preconditioner", solverPreconditioner);
-			parameters_.add ("desired_solver_type", solverType);
-			parameters_.add ("desired_solver_method", solverMethod);
-			parameters_.add ("desired_solver_preconditioner", solverPreconditioner);
-			
-			dolfin::log (dolfin::DBG, "Creating solver...");
-			solver_ = createSolver ();
-			parameters_.add (solver_ -> parameters);
-			parameters_.add ("system_is_assembled", false);
-			parameters_.add ("force_reassemble_system", false);	
-			
-			dolfin::log (dolfin::DBG, "LinearDifferentialProblem created!");
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		LinearDifferentialProblem (dolfin::Mesh&& mesh, 
-		                           dolfin::FunctionSpace&& functionSpace,
-			                       const std::string& solverType = "lu_solver",
-			                       const std::string& solverMethod = "default",
-			                       const std::string& solverPreconditioner = "default") :
-			AbstractDifferentialProblem (mesh, functionSpace),
-			bilinearForm_ (functionSpace, functionSpace),
-			linearForm_ (functionSpace),
-			solver_ (nullptr),
-			problemMatrix_ (new dolfin::Matrix),
-			rhsVector_ ()
-		{ 
-			dolfin::log (dolfin::DBG, "Building LinearDifferentialProblem...");
-			
-			dolfin::log (dolfin::DBG, "Setting up parameters...");
-			parameters_.add ("current_solver_type", solverType);
-			parameters_.add ("current_solver_method", solverMethod);
-			parameters_.add ("current_solver_preconditioner", solverPreconditioner);
-			parameters_.add ("desired_solver_type", solverType);
-			parameters_.add ("desired_solver_method", solverMethod);
-			parameters_.add ("desired_solver_preconditioner", solverPreconditioner);
-		
-			dolfin::log (dolfin::DBG, "Creating solver...");
-			solver_ = createSolver ();
-			parameters_.add (solver_ -> parameters);
-			parameters_.add ("system_is_assembled", false);
-			parameters_.add ("force_reassemble_system", false);
-			
-			dolfin::log (dolfin::DBG, "LinearDifferentialProblem created!");
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-		                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-		                           const T_BilinearForm& bilinearForm,
-		                           const T_LinearForm& linearForm,
-		                           const std::string& solverType = "lu_solver",
-		                           const std::string& solverMethod = "default",
-		                           const std::string& solverPreconditioner = "default") :
-			AbstractDifferentialProblem (mesh, functionSpace),
-			bilinearForm_ (bilinearForm),
-			linearForm_ (linearForm),
-			solver_ (nullptr),
-			problemMatrix_ (new dolfin::Matrix),
-			rhsVector_ ()
-		{ 
-			dolfin::log (dolfin::DBG, "Building LinearDifferentialProblem...");
-			
-			dolfin::log (dolfin::DBG, "Setting up parameters...");
-			parameters_.add ("current_solver_type", solverType);
-			parameters_.add ("current_solver_method", solverMethod);
-			parameters_.add ("current_solver_preconditioner", solverPreconditioner);
-			parameters_.add ("desired_solver_type", solverType);
-			parameters_.add ("desired_solver_method", solverMethod);
-			parameters_.add ("desired_solver_preconditioner", solverPreconditioner);
-			
-			dolfin::log (dolfin::DBG, "Creating solver...");
-			solver_ = createSolver ();
-			parameters_.add (solver_ -> parameters);
-			parameters_.add ("system_is_assembled", false);
-			parameters_.add ("force_reassemble_system", false);
-			
-			dolfin::log (dolfin::DBG, "LinearDifferentialProblem created!");
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		LinearDifferentialProblem (const dolfin::Mesh& mesh, 
-		                           const dolfin::FunctionSpace& functionSpace,
-		                           const T_BilinearForm& bilinearForm,
-		                           const T_LinearForm& linearForm,
-			                       const std::string& solverType = "lu_solver",
-			                       const std::string& solverMethod = "default",
-			                       const std::string& solverPreconditioner = "default") :
-			AbstractDifferentialProblem (mesh, functionSpace),
-			bilinearForm_ (bilinearForm),
-			linearForm_ (linearForm),
-			solver_ (nullptr),
-			problemMatrix_ (new dolfin::Matrix),
-			rhsVector_ ()
-		{ 
-			dolfin::log (dolfin::DBG, "Building LinearDifferentialProblem...");
-			
-			dolfin::log (dolfin::DBG, "Setting up parameters...");
-			parameters_.add ("current_solver_type", solverType);
-			parameters_.add ("current_solver_method", solverMethod);
-			parameters_.add ("current_solver_preconditioner", solverPreconditioner);
-			parameters_.add ("desired_solver_type", solverType);
-			parameters_.add ("desired_solver_method", solverMethod);
-			parameters_.add ("desired_solver_preconditioner", solverPreconditioner);
-			
-			dolfin::log (dolfin::DBG, "Creating solver...");
-			solver_ = createSolver ();
-			parameters_.add (solver_ -> parameters);
-			parameters_.add ("system_is_assembled", false);
-			parameters_.add ("force_reassemble_system", false);	
-			
-			dolfin::log (dolfin::DBG, "LinearDifferentialProblem created!");
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		LinearDifferentialProblem (dolfin::Mesh&& mesh, 
-		                           dolfin::FunctionSpace&& functionSpace,
-		                           T_BilinearForm&& bilinearForm,
-		                           T_LinearForm&& linearForm,
-		                           const std::string& solverType = "lu_solver",
-		                           const std::string& solverMethod = "default",
-		                           const std::string& solverPreconditioner = "default") :
-			AbstractDifferentialProblem (mesh, functionSpace),
-			bilinearForm_ (std::move (bilinearForm)),
-			linearForm_ (std::move (linearForm)),
-			solver_ (nullptr),
-			problemMatrix_ (new dolfin::Matrix),
-			rhsVector_ ()
-		{
-			dolfin::log (dolfin::DBG, "Building LinearDifferentialProblem...");
-			
-			dolfin::log (dolfin::DBG, "Setting up parameters...");
-			parameters_.add ("current_solver_type", solverType);
-			parameters_.add ("current_solver_method", solverMethod);
-			parameters_.add ("current_solver_preconditioner", solverPreconditioner);
-			parameters_.add ("desired_solver_type", solverType);
-			parameters_.add ("desired_solver_method", solverMethod);
-			parameters_.add ("desired_solver_preconditioner", solverPreconditioner);
-			
-			dolfin::log (dolfin::DBG, "Creating solver...");
-			solver_ = createSolver ();
-			parameters_.add (solver_ -> parameters);
-			parameters_.add ("system_is_assembled", false);
-			parameters_.add ("force_reassemble_system", false);	
-			
-			dolfin::log (dolfin::DBG, "LinearDifferentialProblem created!");
-		}
-
-	
-	/******************* DESTRUCTOR *******************/
-
-	// this is done for compatibility with gcc-4.6, which doesn't allow virtual members to be defualted in class body
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		~LinearDifferentialProblem () = default;
-	
-	
-
-
-	/******************* GETTERS *******************/
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		const T_BilinearForm& LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		bilinearForm () const
-		{
-			return bilinearForm_;
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		const T_LinearForm& LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		linearForm () const
-		{
-			return linearForm_;
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		const dolfin::GenericLinearSolver& LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		solver () const
-		{
-			return *solver_;
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		const dolfin::Matrix& LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		linearOperator () const
-		{
-			return *problemMatrix_;
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		const dolfin::Vector& LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		rhs () const
-		{
-			return rhsVector_;
-		}
-
-
-
-	/******************* SETTERS *******************/
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		setCoefficient (const std::string& coefficientType, 
-		                const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-		                const std::string& coefficientName)
-		{
-			if (coefficientType == "bilinear_form")
-			{
-				dolfin::log (dolfin::DBG, "Setting bilinear form coefficient %s...", coefficientName.c_str ());
-				bilinearForm_.set_coefficient (coefficientName, coefficientValue);
-				dolfin::log (dolfin::DBG, "done!");
-			}
-			else if (coefficientType == "linear_form")
-			{
-				dolfin::log (dolfin::DBG, "Setting linear form coefficient %s...", coefficientName.c_str ());
-				linearForm_.set_coefficient (coefficientName, coefficientValue);
-				dolfin::log (dolfin::DBG, "done!");
-			}
-			else
-			{
-				dolfin::warning ("Cannot set coefficient in linear differential problem. Form type %s unknown",
-				                 coefficientType.c_str ());
-			}
-
-		}
-
-	
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		setCoefficient (const std::string& coefficientType,
-		                const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-		                const std::size_t& coefficientNumber)
-		{
-			if (coefficientType == "bilinear_form")
-			{
-				dolfin::log (dolfin::DBG, "Setting bilinear form coefficient number %d...", coefficientNumber);
-				bilinearForm_.set_coefficient (coefficientNumber, coefficientValue);
-				dolfin::log (dolfin::DBG, "done!");
-			}
-			else if (coefficientType == "linear_form")
-			{
-				dolfin::log (dolfin::DBG, "Setting linear form coefficient number %d...", coefficientNumber);
-				linearForm_.set_coefficient (coefficientNumber, coefficientValue);
-				dolfin::log (dolfin::DBG, "done!");
-			}
-			else
-			{
-				dolfin::warning ("Cannot set coefficient in linear differential problem. Form type %s unknown",
-				                 coefficientType.c_str ());
-			}
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		setIntegrationSubdomains (const std::string& coefficientType,
-		                          const dolfin::MeshFunction<std::size_t>& meshFunction,
-		                          const control_problem::SubdomainType& subdomainType)
-		{
-			if (coefficientType == "bilinear_form")
-			{
-				if (subdomainType == control_problem::SubdomainType::INTERNAL_CELLS)
-				{
-					dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on INTERNAL_CELLS...");
-					bilinearForm_.dx = meshFunction;
-					dolfin::log (dolfin::DBG, "done!");
-				}
-				else if (subdomainType == control_problem::SubdomainType::INTERNAL_FACETS)
-				{
-					dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on INTERNAL_FACETS...");
-					bilinearForm_.dS = meshFunction;
-					dolfin::log (dolfin::DBG, "done!");
-				}
-				else if (subdomainType == control_problem::SubdomainType::BOUNDARY_FACETS)
-				{
-					dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on BOUNDARY_FACETS...");
-					bilinearForm_.ds = meshFunction;
-					dolfin::log (dolfin::DBG, "done!");
-				}
-				else
-				{
-					dolfin::warning ("unknown subdomain type requested while trying to apply mesh function to bilinear form"); 
-				}
-			}
-			else if (coefficientType == "linear_form")
-			{
-				if (subdomainType == control_problem::SubdomainType::INTERNAL_CELLS)
-				{
-					dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on INTERNAL_CELLS...");
-					linearForm_.dx = meshFunction;
-					dolfin::log (dolfin::DBG, "done!");
-				}
-				else if (subdomainType == control_problem::SubdomainType::INTERNAL_FACETS)
-				{
-					dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on INTERNAL_FACETS...");
-					linearForm_.dS = meshFunction;
-					dolfin::log (dolfin::DBG, "done!");
-				}
-				else if (subdomainType == control_problem::SubdomainType::BOUNDARY_FACETS)
-				{
-					dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on BOUNDARY_FACETS...");
-					linearForm_.ds = meshFunction;
-					dolfin::log (dolfin::DBG, "done!");
-				}
-				else
-				{
-					dolfin::warning ("unknown subdomain type requested while trying to apply mesh function to linear form"); 
-				}
-			}
-			else
-			{
-				dolfin::warning ("Cannot set integration subdomain in linear differential problem. Form type %s unknown",
-				                 coefficientType.c_str ());
-			}
-
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		solve () 
-		{
-			// define auxiliary string variables
-			std::string desiredSolverType = parameters_ ["desired_solver_type"];
-			std::string desiredSolverMethod = parameters_ ["desired_solver_method"];
-			std::string desiredSolverPreconditioner = parameters_ ["desired_solver_preconditioner"];
-			
-			std::string currentSolverType = parameters_ ["current_solver_type"];
-			std::string currentSolverMethod = parameters_ ["current_solver_method"];
-			std::string currentSolverPreconditioner = parameters_ ["current_solver_preconditioner"];
-			
-			bool needSolverUpdate = 
-				(desiredSolverType != currentSolverType) 
-				|| 
-				(desiredSolverMethod != currentSolverMethod)  
-				||
-				(desiredSolverPreconditioner != currentSolverPreconditioner);
-			
-			if (needSolverUpdate)
-			{
-				dolfin::log (dolfin::DBG, "Updating solver...");
-				solver_ = createSolver ();
-				dolfin::log (dolfin::DBG, "done!");
-			}
-			
-			// define auxiliary string variables
-			bool systemIsAssembled = parameters_ ["system_is_assembled"];
-			bool forceReassembleSystem = parameters_ ["force_reassemble_system"];
-			bool needReassemble = !systemIsAssembled || forceReassembleSystem;
-			
-			if (needReassemble)
-			{
-				dolfin::log (dolfin::DBG, "Reassembling system...");
-				dolfin::assemble (*problemMatrix_, bilinearForm_);
-				dolfin::assemble (rhsVector_, linearForm_);
-				for (auto i : dirichletBCs_)
-				{
-					i.apply (*problemMatrix_, rhsVector_);
-				}
-				
-				solver_ -> set_operator (problemMatrix_);
-				
-				parameters_ ["system_is_assembled"] = true;
-				
-				dolfin::log (dolfin::DBG, "done!");
-			}
-			
-			dolfin::log (dolfin::DBG, "Solving problem...");
-			solver_ -> solve (*solution_.vector (), rhsVector_);
-			dolfin::log (dolfin::DBG, "done!");
-		}
-
-
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		solve (const bool& mustReassemble)
-		{
-			parameters_ ["system_is_assembled"] = mustReassemble;
-			solve ();
-		}
-	
-	
-
-	template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-		std::unique_ptr<dolfin::GenericLinearSolver> 
-		LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-		createSolver ()
-		{
-			std::string solverType = parameters_["desired_solver_type"];
-			std::string solverMethod = parameters_["desired_solver_method"];
-			std::string solverPreconditioner = parameters_["desired_solver_preconditioner"];
-			
-			if (solverType == "lu_solver")
-			{
-				dolfin::log (dolfin::DBG, "Creating lu_solver...");
-				std::unique_ptr<dolfin::GenericLinearSolver> solver (new dolfin::LUSolver (solverMethod));
-				
-				dolfin::log (dolfin::DBG, "Updating parameters...");
-				parameters_ ["current_solver_type"] = solverType;
-				parameters_ ["current_solver_method"] = solverMethod;
-				parameters_ ["current_solver_preconditioner"] = solverPreconditioner;
-
-				dolfin::log (dolfin::DBG, "done!");
-				
-				return solver;
-			}
-			else if (solverType == "krylov_solver")
-			{
-				dolfin::log (dolfin::DBG, "Creating krylov_solver...");
-				std::unique_ptr<dolfin::GenericLinearSolver> solver (new dolfin::KrylovSolver (solverMethod, 
-																							   solverPreconditioner));
-				
-				dolfin::log (dolfin::DBG, "Updating parameters...");
-				parameters_ ["current_solver_type"] = solverType;
-				parameters_ ["current_solver_method"] = solverMethod;
-				parameters_ ["current_solver_preconditioner"] = solverPreconditioner;
-
-				dolfin::log (dolfin::DBG, "done!");
-				
-				return solver;
-			}
-			else
-			{
-				dolfin::log (dolfin::DBG, "Creating solver of type %s...", solverType.c_str ());
-				control_problem::LinearSolverFactory& factory = control_problem::LinearSolverFactory::Instance ();
-				auto solver = factory.create (solverType);
-				
-				dolfin::log (dolfin::DBG, "Updating parameters...");
-				parameters_ ["current_solver_type"] = solverType;
-				parameters_ ["current_solver_method"] = solverMethod;
-				parameters_ ["current_solver_preconditioner"] = solverPreconditioner;
-
-				dolfin::log (dolfin::DBG, "done!");
-				
-				return solver;
-			}
-		}
+    /*! \class LinearDifferentialProblem LinearDifferentialProblem.hpp
+     *  \brief Class for linear differential problems.
+     *
+     *  This class represents problem of the form
+     *  \f[
+     *      \mbox{Find } u \in V : a \left(u, v\right) = F \left(v\right) \ \forall\,v\,\in\,V
+     *  \f]
+     *  with \f$ a \left(u, v\right) : V \times V \rightarrow \mathds{R}\f$ bilinear form on \f$V\f$
+     *  and \f$ L \left(v\right) : V \rightarrow \mathds{R} \f$ linear form on the same space.
+     *  
+     *  It inherits publicly from \c AbstractDifferentialProblem
+     *  and it extends its functionalities to a concrete differential
+     *  problem.
+     *  Template arguments are:
+     *  \arg T_BilinearForm the bilinear form type
+     *  \arg T_LinearForm the linear form type
+     *  \arg T_LinearSolverFactory the type of the factory that creates the linear solver. By default, it is set
+     *  to control_problem::LinearSolverFactory
+     *  This is needed because the dolfin function "coefficient_number" was neither declared
+     *  virtual nor implemented by FEniCS's developers in the dolfin class "Form", from which
+     *  we first thought to derive for the protected members of the LinearDifferentialProblem
+     *  class
+     */
+
+    template <class T_BilinearForm_, class T_LinearForm_, class T_LinearSolverFactory_ = control_problem::LinearSolverFactory>
+        class LinearDifferentialProblem : public AbstractDifferentialProblem
+        {
+            // ---------------------------------------------------------------------------------------------//  
+
+            public:
+                /******************* TYPEDEFS *******************/
+                typedef T_BilinearForm_        T_BilinearForm;
+                typedef T_LinearForm_          T_LinearForm;
+                typedef T_LinearSolverFactory_ T_LinearSolverFactory;
+                
+                
+                /******************* CONSTRUCTORS *******************/
+                //! Default constructor is deleted. The class is not default constructable.
+                LinearDifferentialProblem () = delete;
+
+                //!  Constructor with shared pointers [1]
+                /*!
+                 *  \param mesh the problem mesh as a const std::shared_ptr to dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a const std::shared_ptr to dolfin::FunctionSpace
+                 *  \param solverType the type of the solver. Default: lu_solver
+                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
+                 *  documentation, or use method \c list_<solverType>_methods). Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
+                 *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
+                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
+                 *  as input.
+                 */
+                LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                                           const std::string& solverType,
+                                           const std::string& solverMethod,
+                                           const std::string& solverPreconditioner);
+                
+
+                //! Constructor with references [1]
+                /*!
+                 *  \param mesh the problem mesh as a const dolfin::Mesh&
+                 *  \param functionSpace the problem finite element space as a const dolfin::FunctionSpace&
+                 *  \param solverType the type of the solver. Default: lu_solver
+                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
+                 *  documentation, or use method \c list_<solverType>_methods). Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
+                 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
+                 *  initialized using the \c new operator and mesh's and functionSpace's copy constructor
+                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
+                 *  as input.
+                 */
+                LinearDifferentialProblem (const dolfin::Mesh& mesh, 
+                                           const dolfin::FunctionSpace& functionSpace,
+                                           const std::string& solverType,
+                                           const std::string& solverMethod,
+                                           const std::string& solverPreconditioner);
+
+                //! Constructor with rvalue references [1]
+                /*!
+                 *  \param mesh the problem mesh as a dolfin::Mesh&&
+                 *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
+                 *  \param solverType the type of the solver. Default: lu_solver
+                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
+                 *  documentation, or use method \c list_<solverType>_methods). Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
+                 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
+                 *  initialized using the \c new operator and mesh's and functionSpace's move constructor
+                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
+                 *  as input.
+                 */
+                LinearDifferentialProblem (dolfin::Mesh&& mesh, 
+                                           dolfin::FunctionSpace&& functionSpace,
+                                           const std::string& solverType,
+                                           const std::string& solverMethod,
+                                           const std::string& solverPreconditioner);
+
+                
+                //!  Constructor with shared pointers [2]
+                /*!
+                 *  \param mesh the problem mesh as a const std::shared_ptr to dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a const std::shared_ptr to dolfin::FunctionSpace
+                 *  \param bilinearForm a const reference to the problem's bilinear form
+                 *  \param linearForm a const reference to the problem's linear form
+                 *  \param solverType the type of the solver. Default: lu_solver
+                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
+                 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
+                 *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
+                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
+                 *  as input.
+                 */
+                LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                                           const T_BilinearForm& bilinearForm,
+                                           const T_LinearForm& linearForm,
+                                           const std::string& solverType,
+                                           const std::string& solverMethod,
+                                           const std::string& solverPreconditioner);
+
+                //! Constructor with references [2]
+                /*!
+                 *  \param mesh the problem mesh as a const dolfin::Mesh&
+                 *  \param functionSpace the problem finite element space as a const dolfin::FunctionSpace&
+                 *  \param bilinearForm a const reference to the problem's bilinear form
+                 *  \param linearForm a const reference to the problem's linear form
+                 *  \param solverType the type of the solver. Default: lu_solver
+                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
+                 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
+                 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
+                 *  initialized using the \c new operator and mesh's and functionSpace's copy constructor
+                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
+                 *  as input.
+                 */
+                LinearDifferentialProblem (const dolfin::Mesh& mesh, 
+                                           const dolfin::FunctionSpace& functionSpace,
+                                           const T_BilinearForm& bilinearForm,
+                                           const T_LinearForm& linearForm,
+                                           const std::string& solverType,
+                                           const std::string& solverMethod,
+                                           const std::string& solverPreconditioner);
+
+                //! Constructor with rvalue references [3]
+                /*!
+                 *  \param mesh the problem mesh as a dolfin::Mesh&&
+                 *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
+                 *  \param bilinearForm a rvalue reference to the problem's bilinear form
+                 *  \param linearForm a rvalue reference to the problem's linear form
+                 *  \param solverType the type of the solver. Default: lu_solver
+                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
+                 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
+                 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
+                 *  initialized using the \c new operator and mesh's and functionSpace's move constructor
+                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
+                 *  as input.
+                 */
+                LinearDifferentialProblem (dolfin::Mesh&& mesh, 
+                                           dolfin::FunctionSpace&& functionSpace,
+                                           T_BilinearForm&& bilinearForm,
+                                           T_LinearForm&& linearForm,
+                                           const std::string& solverType,
+                                           const std::string& solverMethod,
+                                           const std::string& solverPreconditioner);
+
+                /******************* DESTRUCTOR *******************/
+                
+                //! Destructor
+                /*! Default destructor, since members of the class are trivially 
+                 * destructible.
+                 * It is declared virtual so that derived classes' constructor
+                 * can be called on derived classes.
+                 * The "default-ness" is set in implementation outside of the class for compatibility with
+                 * gcc-4.6, which does not allow virtual members to be defaulted in class
+                 */
+                virtual ~LinearDifferentialProblem ();
+
+                
+                /******************* GETTERS *******************/
+                //! Get const reference to the problem's linear form
+                /*! 
+                 *  \return a const reference to the problem's linear form
+                 */
+                const T_BilinearForm& bilinearForm () const;
+
+                //! Get const reference to the problem's linear form
+                /*! 
+                 *  \return a const reference to the problem's linear form
+                 */
+                const T_LinearForm& linearForm () const;
+
+                //! Get const reference to the problem's linear operator
+                /*!
+                 *  \return a const reference to the problem's linear operator, which
+                 *  is a dolfin::Matrix
+                 */
+                const dolfin::Matrix& linearOperator () const;
+
+                //! Get const reference to the problem's right hand side
+                /*!
+                 *  \return a const reference to the problem's right hand side, which
+                 *  is a dolfin::Vector
+                 */
+                const dolfin::Vector& rhs () const;
+
+
+                /******************* SETTERS *******************/
+                
+                //! Set coefficient [1]. Override of virtual function in \c AbstractDifferentialProblem.
+                /*!
+                 *  Possible values for \c coefficientType are:
+                 *  \li bilinear_form to set the coefficient in the bilinear form
+                 *  \li linear_form to set the coefficient in the linear form
+                 *  
+                 *  See \c AbstractDifferentialProblem documentation for more details on the function
+                 */
+                virtual void setCoefficient (const std::string& coefficientType, 
+                                             const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                             const std::string& coefficientName);
+
+                //! Set coefficient [2]. Override of virtual function in \c AbstractDifferentialProblem.
+                /*!
+                 *  Possible values for \c coefficientType are:
+                 *  \li bilinear_form to set the coefficient in the bilinear form
+                 *  \li linear_form to set the coefficient in the linear form
+                 *  
+                 *  See \c AbstractDifferentialProblem documentation for more details on the function
+                 */
+                virtual void setCoefficient (const std::string& coefficientType,
+                                             const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                             const std::size_t& coefficientNumber);
+
+                //! Set integration subdomains for the forms. Override of virtual function in \c AbstractDifferentialProblem
+                /*! 
+                 *  Possible values for \c coefficientType are:
+                 *  \li bilinear_form to set the integration subdomain in the bilinear form
+                 *  \li linear_form to set the integration subdomain in the linear form
+                 *  
+                 *  See \c AbstractDifferentialProblem documentation for more details on the function
+                 */
+                virtual void setIntegrationSubdomains (const std::string& formType,
+                                                       const dolfin::MeshFunction<std::size_t>& meshFunction,
+                                                       const control_problem::SubdomainType& subdomainType);
+                
+                //! Method to update class members. It checks for differences between desired and current solver parameters
+                //! and creates a new solver, setting also the proper parameters
+                virtual void update ();
+
+                
+                /******************* METHODS *******************/
+
+                //! Solve problem
+                /*!
+                 *  This method solves the problem defined. It uses the private members' value to set the problem and then
+                 *  stores the solution in the private member \c solution_. Note that it checks the protected member
+                 *  \c parameters to decided whether problem's matrix and vector should be reassembled and if
+                 *  the values of the parameters "desired_solver_type", "desired_solver_method" and 
+                 *  "desired_solver_preconditioner" match the values of "current_solver_type", "current_solver_method"
+                 *  and "current_solver_preconditioner". If they differ, it calls \c createSolver()
+                 */
+                virtual void solve ();
+
+                //! Solve problem specifying flag
+                /*!
+                 *  \param mustReassemble true if the system operators (matrix and right hand side vector)
+                 *         should be reassembled. It is false by default.
+                 */
+                void solve (const bool& mustReassemble);
+
+                //! Clone method. Overrides method in \c AbstractDifferentialProblem
+                virtual control_problem::LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
+                    clone () const;
+
+                // ---------------------------------------------------------------------------------------------//
+
+            protected:
+                //! Creates a linear solver object of type passed as input. 
+                /*!
+                 *  The solver will be created using the parameters "desired_solver_type", "desired_solver_method"
+                 *  and "desired_solver_preconditioner" set in the protected member \c parameters. It will
+                 *  also set the parameters "current_solver_type", "current_solver_method" and 
+                 *  "current_solver_preconditioner" in the same set of parameters substituting the current values with 
+                 *  the values being used to create the solver
+                 */
+                std::unique_ptr<dolfin::GenericLinearSolver> createSolver ();
+                
+                //! The bilinear form
+                T_BilinearForm bilinearForm_;
+
+                //! The linear form
+                T_LinearForm linearForm_;
+
+                //! The solver
+                /*! 
+                 *  We use a pointer so that polymorphism can be applied.
+                 */
+                std::unique_ptr<dolfin::GenericLinearSolver> solver_;
+                
+                //! Matrix to hold the problem's discrete operator
+                /*!
+                 *  We use a boost::shared_ptr for compatibility with FEniCS, version 1.3.0.
+                 *  Note that there is no write access to this variable from outside the class,
+                 *  so it is guaranteed to be a unique shared_ptr
+                 */
+                boost::shared_ptr<dolfin::Matrix> problemMatrix_;
+
+                //! Vector to store the right hand side of the discrete problem
+                dolfin::Vector rhsVector_;
+
+                // ---------------------------------------------------------------------------------------------//
+
+            private:
+        };
+
+
+
+    // ============================================================================================== //
+    // ==================================== IMPLEMENTATION ========================================== //
+    // ============================================================================================== //
+
+
+    /******************* CONSTRUCTORS *******************/
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                                   const std::string& solverType = "lu_solver",
+                                   const std::string& solverMethod = "default",
+                                   const std::string& solverPreconditioner = "default") :
+            AbstractDifferentialProblem (mesh, functionSpace),
+            bilinearForm_ (*functionSpace, *functionSpace),
+            linearForm_ (*functionSpace),
+            solver_ (nullptr),
+            problemMatrix_ (new dolfin::Matrix),
+            rhsVector_ ()
+        { 
+            dolfin::begin (dolfin::DBG, "Building LinearDifferentialProblem...");
+            
+            dolfin::log (dolfin::DBG, "Setting up parameters...");
+            parameters.add ("problem_type", "linear");
+            parameters.add ("current_solver_type", solverType);
+            parameters.add ("current_solver_method", solverMethod);
+            parameters.add ("current_solver_preconditioner", solverPreconditioner);
+            parameters.add ("desired_solver_type", solverType);
+            parameters.add ("desired_solver_method", solverMethod);
+            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("system_is_assembled", false);
+            parameters.add ("force_reassemble_system", false);  
+            
+            dolfin::begin (dolfin::DBG, "Creating solver...");
+            solver_ = createSolver ();
+            dolfin::end ();
+            
+            dolfin::end ();
+            
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        LinearDifferentialProblem (const dolfin::Mesh& mesh, 
+                                   const dolfin::FunctionSpace& functionSpace,
+                                   const std::string& solverType = "lu_solver",
+                                   const std::string& solverMethod = "default",
+                                   const std::string& solverPreconditioner = "default") :
+            AbstractDifferentialProblem (mesh, functionSpace),
+            bilinearForm_ (functionSpace, functionSpace),
+            linearForm_ (functionSpace),
+            solver_ (nullptr),
+            problemMatrix_ (new dolfin::Matrix),
+            rhsVector_ ()
+        { 
+            dolfin::begin (dolfin::DBG, "Building LinearDifferentialProblem...");
+            
+            dolfin::log (dolfin::DBG, "Setting up parameters...");
+            parameters.add ("problem_type", "linear");
+            parameters.add ("current_solver_type", solverType);
+            parameters.add ("current_solver_method", solverMethod);
+            parameters.add ("current_solver_preconditioner", solverPreconditioner);
+            parameters.add ("desired_solver_type", solverType);
+            parameters.add ("desired_solver_method", solverMethod);
+            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("system_is_assembled", false);
+            parameters.add ("force_reassemble_system", false);  
+            
+            dolfin::begin (dolfin::DBG, "Creating solver...");
+            solver_ = createSolver ();
+            dolfin::end ();
+            
+            dolfin::end ();
+            
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        LinearDifferentialProblem (dolfin::Mesh&& mesh, 
+                                   dolfin::FunctionSpace&& functionSpace,
+                                   const std::string& solverType = "lu_solver",
+                                   const std::string& solverMethod = "default",
+                                   const std::string& solverPreconditioner = "default") :
+            AbstractDifferentialProblem (mesh, functionSpace),
+            bilinearForm_ (functionSpace, functionSpace),
+            linearForm_ (functionSpace),
+            solver_ (nullptr),
+            problemMatrix_ (new dolfin::Matrix),
+            rhsVector_ ()
+        { 
+            dolfin::begin (dolfin::DBG, "Building LinearDifferentialProblem...");
+            
+            dolfin::log (dolfin::DBG, "Setting up parameters...");
+            parameters.add ("problem_type", "linear");
+            parameters.add ("current_solver_type", solverType);
+            parameters.add ("current_solver_method", solverMethod);
+            parameters.add ("current_solver_preconditioner", solverPreconditioner);
+            parameters.add ("desired_solver_type", solverType);
+            parameters.add ("desired_solver_method", solverMethod);
+            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("system_is_assembled", false);
+            parameters.add ("force_reassemble_system", false);
+        
+            dolfin::begin (dolfin::DBG, "Creating solver...");
+            solver_ = createSolver ();
+            dolfin::end ();
+            
+            dolfin::end ();
+            
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                                   const T_BilinearForm& bilinearForm,
+                                   const T_LinearForm& linearForm,
+                                   const std::string& solverType = "lu_solver",
+                                   const std::string& solverMethod = "default",
+                                   const std::string& solverPreconditioner = "default") :
+            AbstractDifferentialProblem (mesh, functionSpace),
+            bilinearForm_ (bilinearForm),
+            linearForm_ (linearForm),
+            solver_ (nullptr),
+            problemMatrix_ (new dolfin::Matrix),
+            rhsVector_ ()
+        { 
+            dolfin::begin (dolfin::DBG, "Building LinearDifferentialProblem...");
+            
+            dolfin::log (dolfin::DBG, "Setting up parameters...");
+            parameters.add ("problem_type", "linear");
+            parameters.add ("current_solver_type", solverType);
+            parameters.add ("current_solver_method", solverMethod);
+            parameters.add ("current_solver_preconditioner", solverPreconditioner);
+            parameters.add ("desired_solver_type", solverType);
+            parameters.add ("desired_solver_method", solverMethod);
+            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("system_is_assembled", false);
+            parameters.add ("force_reassemble_system", false);
+            
+            dolfin::begin (dolfin::DBG, "Creating solver...");
+            solver_ = createSolver ();
+            dolfin::end ();
+            
+            dolfin::end ();
+            
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        LinearDifferentialProblem (const dolfin::Mesh& mesh, 
+                                   const dolfin::FunctionSpace& functionSpace,
+                                   const T_BilinearForm& bilinearForm,
+                                   const T_LinearForm& linearForm,
+                                   const std::string& solverType = "lu_solver",
+                                   const std::string& solverMethod = "default",
+                                   const std::string& solverPreconditioner = "default") :
+            AbstractDifferentialProblem (mesh, functionSpace),
+            bilinearForm_ (bilinearForm),
+            linearForm_ (linearForm),
+            solver_ (nullptr),
+            problemMatrix_ (new dolfin::Matrix),
+            rhsVector_ ()
+        { 
+            dolfin::begin (dolfin::DBG, "Building LinearDifferentialProblem...");
+            
+            dolfin::log (dolfin::DBG, "Setting up parameters...");
+            parameters.add ("problem_type", "linear");
+            parameters.add ("current_solver_type", solverType);
+            parameters.add ("current_solver_method", solverMethod);
+            parameters.add ("current_solver_preconditioner", solverPreconditioner);
+            parameters.add ("desired_solver_type", solverType);
+            parameters.add ("desired_solver_method", solverMethod);
+            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("system_is_assembled", false);
+            parameters.add ("force_reassemble_system", false);  
+            
+            dolfin::begin (dolfin::DBG, "Creating solver...");
+            solver_ = createSolver ();
+            dolfin::end ();
+            
+            dolfin::end ();
+            
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        LinearDifferentialProblem (dolfin::Mesh&& mesh, 
+                                   dolfin::FunctionSpace&& functionSpace,
+                                   T_BilinearForm&& bilinearForm,
+                                   T_LinearForm&& linearForm,
+                                   const std::string& solverType = "lu_solver",
+                                   const std::string& solverMethod = "default",
+                                   const std::string& solverPreconditioner = "default") :
+            AbstractDifferentialProblem (mesh, functionSpace),
+            bilinearForm_ (std::move (bilinearForm)),
+            linearForm_ (std::move (linearForm)),
+            solver_ (nullptr),
+            problemMatrix_ (new dolfin::Matrix),
+            rhsVector_ ()
+        {
+            dolfin::begin (dolfin::DBG, "Building LinearDifferentialProblem...");
+            
+            dolfin::log (dolfin::DBG, "Setting up parameters...");
+            parameters.add ("problem_type", "linear");
+            parameters.add ("current_solver_type", solverType);
+            parameters.add ("current_solver_method", solverMethod);
+            parameters.add ("current_solver_preconditioner", solverPreconditioner);
+            parameters.add ("desired_solver_type", solverType);
+            parameters.add ("desired_solver_method", solverMethod);
+            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("system_is_assembled", false);
+            parameters.add ("force_reassemble_system", false);  
+            
+            dolfin::begin (dolfin::DBG, "Creating solver...");
+            solver_ = createSolver ();
+            dolfin::end ();
+            
+            dolfin::end ();
+            
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+        }
+
+    
+    /******************* DESTRUCTOR *******************/
+
+    // this is done for compatibility with gcc-4.6, which doesn't allow virtual members to be defualted in class body
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        ~LinearDifferentialProblem () = default;
+    
+    
+
+
+    /******************* GETTERS *******************/
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        const T_BilinearForm& LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        bilinearForm () const
+        {
+            return bilinearForm_;
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        const T_LinearForm& LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        linearForm () const
+        {
+            return linearForm_;
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        const dolfin::Matrix& LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        linearOperator () const
+        {
+            return *problemMatrix_;
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        const dolfin::Vector& LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        rhs () const
+        {
+            return rhsVector_;
+        }
+
+
+
+    /******************* SETTERS *******************/
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        setCoefficient (const std::string& coefficientType, 
+                        const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                        const std::string& coefficientName)
+        {
+            if (coefficientType == "bilinear_form")
+            {
+                dolfin::log (dolfin::DBG, "Setting bilinear form coefficient \"%s\"...", coefficientName.c_str ());
+                bilinearForm_.set_coefficient (coefficientName, coefficientValue);
+            }
+            else if (coefficientType == "linear_form")
+            {
+                dolfin::log (dolfin::DBG, "Setting linear form coefficient \"%s\"...", coefficientName.c_str ());
+                linearForm_.set_coefficient (coefficientName, coefficientValue);
+            }
+            else
+            {
+                dolfin::warning ("Cannot set coefficient in linear differential problem. Form type \"%s\" unknown",
+                                 coefficientType.c_str ());
+            }
+
+        }
+
+    
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        setCoefficient (const std::string& coefficientType,
+                        const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                        const std::size_t& coefficientNumber)
+        {
+            if (coefficientType == "bilinear_form")
+            {
+                dolfin::log (dolfin::DBG, "Setting bilinear form coefficient number %d...", coefficientNumber);
+                bilinearForm_.set_coefficient (coefficientNumber, coefficientValue);
+            }
+            else if (coefficientType == "linear_form")
+            {
+                dolfin::log (dolfin::DBG, "Setting linear form coefficient number %d...", coefficientNumber);
+                linearForm_.set_coefficient (coefficientNumber, coefficientValue);
+            }
+            else
+            {
+                dolfin::warning ("Cannot set coefficient in linear differential problem. Form type \"%s\" unknown",
+                                 coefficientType.c_str ());
+            }
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        setIntegrationSubdomains (const std::string& formType,
+                                  const dolfin::MeshFunction<std::size_t>& meshFunction,
+                                  const control_problem::SubdomainType& subdomainType)
+        {
+            if (formType == "bilinear_form")
+            {
+                if (subdomainType == control_problem::SubdomainType::INTERNAL_CELLS)
+                {
+                    dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on INTERNAL_CELLS...");
+                    bilinearForm_.dx = meshFunction;
+                }
+                else if (subdomainType == control_problem::SubdomainType::INTERNAL_FACETS)
+                {
+                    dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on INTERNAL_FACETS...");
+                    bilinearForm_.dS = meshFunction;
+                }
+                else if (subdomainType == control_problem::SubdomainType::BOUNDARY_FACETS)
+                {
+                    dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on BOUNDARY_FACETS...");
+                    bilinearForm_.ds = meshFunction;
+                }
+                else
+                {
+                    dolfin::warning ("unknown subdomain type requested while trying to apply mesh function to bilinear form"); 
+                }
+            }
+            else if (formType == "linear_form")
+            {
+                if (subdomainType == control_problem::SubdomainType::INTERNAL_CELLS)
+                {
+                    dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on INTERNAL_CELLS...");
+                    linearForm_.dx = meshFunction;
+                }
+                else if (subdomainType == control_problem::SubdomainType::INTERNAL_FACETS)
+                {
+                    dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on INTERNAL_FACETS...");
+                    linearForm_.dS = meshFunction;
+                }
+                else if (subdomainType == control_problem::SubdomainType::BOUNDARY_FACETS)
+                {
+                    dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on BOUNDARY_FACETS...");
+                    linearForm_.ds = meshFunction;
+                }
+                else
+                {
+                    dolfin::warning ("unknown subdomain type requested while trying to apply mesh function to linear form"); 
+                }
+            }
+            else
+            {
+                dolfin::warning ("Cannot set integration subdomain in linear differential problem. Form type \"%s\" unknown",
+                                 formType.c_str ());
+            }
+
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        update ()
+        {
+            // define auxiliary string variables
+            std::string desiredSolverType = parameters ["desired_solver_type"];
+            std::string desiredSolverMethod = parameters ["desired_solver_method"];
+            std::string desiredSolverPreconditioner = parameters ["desired_solver_preconditioner"];
+            
+            std::string currentSolverType = parameters ["current_solver_type"];
+            std::string currentSolverMethod = parameters ["current_solver_method"];
+            std::string currentSolverPreconditioner = parameters ["current_solver_preconditioner"];
+            
+            bool needSolverUpdate = desiredSolverType != currentSolverType 
+                                    || desiredSolverMethod != currentSolverMethod 
+                                    || desiredSolverPreconditioner != currentSolverPreconditioner;
+            
+            if (needSolverUpdate)
+            {
+                dolfin::begin (dolfin::DBG, "Updating solver...");
+                solver_ = createSolver ();
+                dolfin::end ();
+                
+                parameters ["system_is_assembled"] = false;
+            }
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        solve () 
+        {
+            update();
+            
+            // define auxiliary string variables
+            bool systemIsAssembled = parameters ["system_is_assembled"];
+            bool forceReassembleSystem = parameters ["force_reassemble_system"];
+            bool needReassemble = !systemIsAssembled || forceReassembleSystem;
+            
+            if (needReassemble)
+            {
+                dolfin::begin (dolfin::DBG, "Assembling system...");
+                
+                dolfin::assemble (*problemMatrix_, bilinearForm_);
+                dolfin::assemble (rhsVector_, linearForm_);
+                for (auto i : dirichletBCs_)
+                {
+                    i.apply (*problemMatrix_, rhsVector_);
+                }
+                
+                solver_ -> set_operator (problemMatrix_);
+                
+                parameters ["system_is_assembled"] = true;
+                
+                dolfin::end ();
+            }
+            
+            dolfin::begin (dolfin::DBG, "Solving problem...");
+            if (dolfin::get_log_level () > dolfin::DBG)
+            {
+                dolfin::end ();
+            }
+            
+            solver_ -> solve (*solution_.vector (), rhsVector_);
+            
+            if (dolfin::get_log_level () <= dolfin::DBG)
+            {
+                dolfin::end ();
+            }
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        solve (const bool& mustReassemble)
+        {
+            // save current value of parameter force_reassemble_system
+            bool forceReassembleSystemBackup = parameters ["force_reassemble_system"];
+            
+            // overwrite parameter force_reassemble_system with input value and solve problem
+            parameters ["force_reassemble_system"] = mustReassemble;
+            solve ();
+            
+            // restore value of parameter force_reassemble_system
+            parameters ["force_reassemble_system"] = forceReassembleSystemBackup;
+        }
+    
+    
+    
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        control_problem::LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
+        LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        clone () const
+        {
+            dolfin::begin (dolfin::DBG, "Cloning object...");
+            
+            if (dolfin::get_log_level () > dolfin::DBG)
+            {
+                dolfin::end ();
+            }
+            
+            dolfin::log (dolfin::DBG, "Creating new object of type LinearDifferentialProblem...");
+            
+            // create new object
+            control_problem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
+                clonedProblem 
+                (new control_problem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
+                        (*(this->mesh_), 
+                         *(this->functionSpace_), 
+                           this->bilinearForm_, 
+                           this->linearForm_
+                        )
+                );
+            
+            //copy dirichlet boundary conditions
+            dolfin::log (dolfin::DBG, "Copying Dirichlet boundary conditions...");
+            for (auto i : this->dirichletBCs_)
+            {
+                clonedProblem->addDirichletBC (i);
+            }
+            
+            // clear parameters set of newly created object so that it can be populated by the parameters of the object
+            // being created. Set "system_is_assembled" to false, though, because in order for it to work the newly
+            // created problem will have to reassemble matrix and rhs vector
+            dolfin::log (dolfin::DBG, "Copying parameters to new object...");
+            clonedProblem->parameters.clear ();
+            clonedProblem->parameters = this->parameters;
+            clonedProblem->update ();
+            clonedProblem->parameters ["system_is_assembled"] = false;
+            
+            // copy solution
+            dolfin::log (dolfin::DBG, "Copying solution...");
+            clonedProblem->solution_ = this->solution_;
+            
+            if (dolfin::get_log_level () <= dolfin::DBG)
+            {
+                dolfin::end ();
+            }
+            
+            return clonedProblem;
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        std::unique_ptr<dolfin::GenericLinearSolver> 
+        LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        createSolver ()
+        {
+            std::string currentSolverType = parameters["current_solver_type"];
+            std::string currentSolverMethod = parameters["current_solver_method"];
+            std::string currentSolverPreconditioner = parameters["current_solver_preconditioner"];
+            std::string desiredSolverType = parameters["desired_solver_type"];
+            std::string desiredSolverMethod = parameters["desired_solver_method"];
+            std::string desiredSolverPreconditioner = parameters["desired_solver_preconditioner"];
+            
+            if (desiredSolverType == "lu_solver")
+            {
+                dolfin::log (dolfin::DBG, "Creating lu_solver...");
+                std::unique_ptr<dolfin::GenericLinearSolver> solver (new dolfin::LUSolver (desiredSolverMethod));
+                
+                dolfin::log (dolfin::DBG, "Updating parameters...");
+                
+                // check if solver type has changed:
+                // ----- if the solver is still the same, just update the parameters
+                // ----- if the parameters do not have a parameters set corresponding to the one being created but
+                //       current and desired solver set are the same, that means that there is no solver at all, so
+                //       add solver parameters to parameters set
+                // ----- otherwise, remove current solver parameters and add new ones
+                if (parameters.has_parameter_set (desiredSolverType)) 
+                {
+                    parameters.update (solver -> parameters);
+                }
+                else if (currentSolverType == desiredSolverType 
+                         && currentSolverMethod == desiredSolverMethod 
+                         && currentSolverPreconditioner == desiredSolverPreconditioner)
+                {
+                    parameters.add (solver -> parameters);
+                }
+                else
+                {
+                    parameters.remove (currentSolverType);
+                    parameters.add (solver -> parameters);
+                }
+                
+                parameters ["current_solver_type"] = desiredSolverType;
+                parameters ["current_solver_method"] = desiredSolverMethod;
+                parameters ["current_solver_preconditioner"] = desiredSolverPreconditioner;
+
+                
+                return solver;
+            }
+            else if (desiredSolverType == "krylov_solver")
+            {
+                dolfin::log (dolfin::DBG, "Creating krylov_solver...");
+                std::unique_ptr<dolfin::GenericLinearSolver> solver (new dolfin::KrylovSolver (desiredSolverMethod, 
+                                                                                               desiredSolverPreconditioner));
+                
+                dolfin::log (dolfin::DBG, "Updating parameters...");
+                
+                // check if solver type has changed:
+                // ----- if the solver is still the same, just update the parameters
+                // ----- if the parameters do not have a parameters set corresponding to the one being created but
+                //       current and desired solver set are the same, that means that there is no solver at all, so
+                //       add solver parameters to parameters set
+                // ----- otherwise, remove current solver parameters and add new ones
+                if (parameters.has_parameter_set (desiredSolverType)) 
+                {
+                    parameters.update (solver -> parameters);
+                }
+                else if (currentSolverType == desiredSolverType 
+                         && currentSolverMethod == desiredSolverMethod 
+                         && currentSolverPreconditioner == desiredSolverPreconditioner)
+                {
+                    parameters.add (solver -> parameters);
+                }
+                else
+                {
+                    parameters.remove (currentSolverType);
+                    parameters.add (solver -> parameters);
+                }
+                
+                parameters ["current_solver_type"] = desiredSolverType;
+                parameters ["current_solver_method"] = desiredSolverMethod;
+                parameters ["current_solver_preconditioner"] = desiredSolverPreconditioner;
+
+                
+                return solver;
+            }
+            else
+            {
+                dolfin::log (dolfin::DBG, "Creating solver of type \"%s\"...", desiredSolverType.c_str ());
+                control_problem::LinearSolverFactory& factory = control_problem::LinearSolverFactory::Instance ();
+                auto solver = factory.create (desiredSolverType);
+                
+                dolfin::log (dolfin::DBG, "Updating parameters...");
+                
+                // check if solver type has changed:
+                // ----- if the solver is still the same, just update the parameters
+                // ----- if the parameters do not have a parameters set corresponding to the one being created but
+                //       current and desired solver set are the same, that means that there is no solver at all, so
+                //       add solver parameters to parameters set
+                // ----- otherwise, remove current solver parameters and add new ones
+                if (parameters.has_parameter_set (desiredSolverType)) 
+                {
+                    parameters.update (solver -> parameters);
+                }
+                else if (currentSolverType == desiredSolverType 
+                         && currentSolverMethod == desiredSolverMethod 
+                         && currentSolverPreconditioner == desiredSolverPreconditioner)
+                {
+                    parameters.add (solver -> parameters);
+                }
+                else
+                {
+                    parameters.remove (currentSolverType);
+                    parameters.add (solver -> parameters);
+                }
+                
+                parameters ["current_solver_type"] = desiredSolverType;
+                parameters ["current_solver_method"] = desiredSolverMethod;
+                parameters ["current_solver_preconditioner"] = desiredSolverPreconditioner;
+
+                
+                return solver;
+            }
+        }
 }
 #endif

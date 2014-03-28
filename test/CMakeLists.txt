@@ -1,26 +1,26 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 
 IF (DEFINED CXX_COMPILER)
-	SET (CMAKE_CXX_COMPILER ${CXX_COMPILER})
+    SET (CMAKE_CXX_COMPILER ${CXX_COMPILER})
 ENDIF (DEFINED CXX_COMPILER)
 
 IF (DEFINED C_COMPILER)
-	SET (CMAKE_C_COMPILER ${C_COMPILER})
+    SET (CMAKE_C_COMPILER ${C_COMPILER})
 ENDIF (DEFINED C_COMPILER)
 
-SET (PROJECT_NAME poisson)
+SET (PROJECT_NAME main)
 PROJECT (${PROJECT_NAME})
 
 SET (CMAKE_SKIP_RPATH TRUE)
 
 IF (NOT CMAKE_COMPILER_IS_GNUCXX)
-	MESSAGE (WARNING "-- *** Compiler ID is not GNU. 
-	Proceed, but this may cause problems")
+    MESSAGE (WARNING "-- *** Compiler ID is not GNU. 
+    Proceed, but this may cause problems")
 ENDIF (NOT CMAKE_COMPILER_IS_GNUCXX)
 
 IF (NOT CMAKE_COMPILER_IS_GNUCC)
-	MESSAGE (WARNING "-- *** Linker ID is not GNU. 
-	Proceed, but this may cause problems")
+    MESSAGE (WARNING "-- *** Linker ID is not GNU. 
+    Proceed, but this may cause problems")
 ENDIF (NOT CMAKE_COMPILER_IS_GNUCC)
-	
+    
 ADD_SUBDIRECTORY (src)

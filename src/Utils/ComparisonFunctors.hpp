@@ -14,19 +14,19 @@
 
 namespace control_problem
 {
-	/*! \class less
-	 *  \brief class that implements the "less than" comparison. 
-	 *  
-	 *  Its call operator returns true if first argument is less than the second argument, 0 otherwise
-	 *  This is not a template class. Instead, call operator is overloaded for every type we need in this
-	 *  project. If you want more generality, use \c std::less<T>
-	 */
-	class less
-	{
-		public:
-			//! Comparison operator for objects of type \c std::tuple<std::string, std::string, std::string>
-			bool operator() (const std::tuple <std::string, std::string, std::string>& lhs, 
-			                 const std::tuple <std::string, std::string, std::string>& rhs);
-	};
+    /*! \class less
+     *  \brief class that implements the "less than" comparison. 
+     *  
+     *  Its call operator returns true if first argument is less than the second argument, 0 otherwise
+     *  This is not a template class. Instead, call operator is overloaded for every type we need in this
+     *  project. If you want more generality, use \c std::less<T>
+     */
+    class less
+    {
+        public:
+            //! Comparison operator for objects of type \c std::tuple<std::string, std::string, std::string>
+            bool operator() (const std::tuple <std::string, std::string, std::string>& lhs, 
+                             const std::tuple <std::string, std::string, std::string>& rhs);
+    };
 }
 #endif

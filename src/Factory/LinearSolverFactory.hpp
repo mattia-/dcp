@@ -7,6 +7,6 @@
 
 namespace control_problem
 {
-	typedef GenericFactory <dolfin::GenericLinearSolver, std::string> LinearSolverFactory;
+    typedef GenericFactory <dolfin::GenericLinearSolver, std::string> LinearSolverFactory;
 }
 #endif

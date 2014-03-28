@@ -1,6 +1,6 @@
 # collect header files
 SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/SubdomainType.hpp
-	         ${CMAKE_CURRENT_SOURCE_DIR}/ComparisonFunctors.hpp) 
+             ${CMAKE_CURRENT_SOURCE_DIR}/ComparisonFunctors.hpp) 
 
 # collect source files
 SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/ComparisonFunctors.cpp)

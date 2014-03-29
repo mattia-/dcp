@@ -8,6 +8,13 @@ namespace control_problem
 {
 
     /******************* METHODS *******************/
+    std::size_t CompositeDifferentialProblem::size ()
+    {
+        return storedProblems_.size ();
+    }
+
+
+
     void CompositeDifferentialProblem::addProblem (const std::string& problemName, 
                                                    AbstractDifferentialProblem& problem)
     {

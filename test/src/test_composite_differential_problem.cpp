@@ -205,5 +205,7 @@ int main ()
     dolfin::plot (cdp[1].solution ()[0][1]);
     dolfin::plot (cdp.solution ("ldp"));
     dolfin::interactive ();
+    
+    dolfin::cout << "Problem size is: " << cdp.size () << dolfin::endl;
     return 0;
 }

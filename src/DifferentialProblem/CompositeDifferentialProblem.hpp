@@ -56,6 +56,9 @@ namespace control_problem
             
 
             /******************** METHODS *********************/
+            //! Get composite problem size, i.e. the number of problems stored
+            std::size_t size ();
+            
             //! Add problem to the map of problems to be solved [1]
             /*!
              *  The parameters are:

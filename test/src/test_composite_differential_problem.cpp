@@ -84,15 +84,10 @@ int main ()
     // =============================================================================================================== //
     // =============================================================================================================== //
     
-    dolfin::set_log_level (dolfin::DBG);
+//    dolfin::set_log_level (dolfin::DBG);
+    dolfin::set_log_level (dolfin::PROGRESS);
     
     control_problem::CompositeDifferentialProblem cdp;
-    
-    dolfin::cout << "-----------------" << dolfin::endl;
-    dolfin::cout << "CREATING PROBLEMS" << dolfin::endl;
-    dolfin::cout << "-----------------" << dolfin::endl;
-    
-    dolfin::cout << "Linear problem" << dolfin::endl;
     
     // declare meshes
     std::shared_ptr<dolfin::UnitSquareMesh> mesh (new dolfin::UnitSquareMesh (100, 100));
@@ -103,66 +98,62 @@ int main ()
     std::shared_ptr<NavierStokes::FunctionSpace> NLV (new NavierStokes::FunctionSpace (*NLmesh));
     
     // declare problems
-    std::unique_ptr<control_problem::AbstractDifferentialProblem> ldp 
-        (new control_problem::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> (*mesh, *V, "lu_solver"));
-    std::unique_ptr<control_problem::AbstractDifferentialProblem> nldp 
-        (new control_problem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> (*NLmesh, *NLV, "trial"));
+    control_problem::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> ldp (*mesh, *V, "lu_solver"); 
+//    std::unique_ptr<control_problem::AbstractDifferentialProblem> ldp 
+//        (new control_problem::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> (*mesh, *V, "lu_solver"));
+    control_problem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> nldp (*NLmesh, *NLV, "trial");
+//    std::unique_ptr<control_problem::AbstractDifferentialProblem> nldp 
+//        (new control_problem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> (*NLmesh, *NLV, "trial"));
     
     cdp.addProblem ("ldp", ldp);
     cdp.addProblem ("nldp", nldp);
-    cdp.print ();
-    
+//    cdp.print ();
+  
     std::vector<std::string> v;
     v.push_back ("ldp");
     v.push_back ("nldp");
     v.push_back ("ldp");
     v.push_back ("nldp");
     cdp.reorderProblems (v);
-    cdp.print ();
+//    cdp.print ();
     
     v.pop_back ();
     cdp.reorderProblems (v);
-    cdp.print ();
-    
-    // -----------------------------------------------------------------------------------------------------//
-    // --------------------------------------- LINEAR PROBLEM ----------------------------------------------//
-    // -----------------------------------------------------------------------------------------------------//
-    
-    cdp.problem ("ldp").parameters["desired_solver_type"] = "krylov_solver";
-    cdp.problem ("ldp").update ();
-    dolfin::info (cdp.problem ("ldp").parameters, true);
+//    cdp.print ();
+  
+  // -----------------------------------------------------------------------------------------------------//
+  // --------------------------------------- LINEAR PROBLEM ----------------------------------------------//
+  // -----------------------------------------------------------------------------------------------------//
     
     Poisson::NeumannCondition neumannCondition;
     Poisson::DirichletCondition dirichletCondition;
     Poisson::NeumannBoundary neumannBoundary;
     Poisson::DirichletBoundary dirichletBoundary;
     
-    dolfin::FacetFunction<std::size_t> meshFacets (*mesh);
-    meshFacets.set_all (1);
-    neumannBoundary.mark (meshFacets, 0);
+    boost::shared_ptr<dolfin::FacetFunction<std::size_t>> meshFacets (new dolfin::FacetFunction<std::size_t> (*mesh));
+    meshFacets->set_all (1);
+    neumannBoundary.mark (*meshFacets, 0);
     dolfin::DirichletBC dirichletBC (*V, dirichletCondition, dirichletBoundary);
 
-    cdp.problem ("ldp").addDirichletBC (dirichletBC);
     
     boost::shared_ptr<Poisson::UnitaryConstant> c2 (new Poisson::UnitaryConstant);
     boost::shared_ptr<Poisson::ExternalLoad> f2 (new Poisson::ExternalLoad);
     boost::shared_ptr<Poisson::NeumannCondition> g2 (new Poisson::NeumannCondition);
-    cdp.problem ("ldp").setCoefficient ("bilinear_form", c2, "c");
-    cdp.problem ("ldp").setCoefficient ("linear_form", f2, "f");
-    cdp.problem ("ldp").setCoefficient ("linear_form", g2, "g");
+    cdp["ldp"].setCoefficient ("bilinear_form", c2, "c");
+    cdp["ldp"].setCoefficient ("linear_form", f2, "f");
+    cdp["ldp"].setCoefficient ("linear_form", g2, "g");
     
-    cdp.problem ("ldp").setIntegrationSubdomains ("bilinear_form", meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
-    cdp.problem ("ldp").setIntegrationSubdomains ("linear_form", meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
+    cdp["ldp"].setIntegrationSubdomains ("bilinear_form", meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
+    cdp["ldp"].setIntegrationSubdomains ("linear_form", meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
+    
+    cdp["ldp"].addDirichletBC (dirichletBC);
     
     // solve
-    cdp.problem ("ldp").solve ();
-    dolfin::plot (cdp.problem ("ldp").solution ());
-    
     cdp.solve ("ldp");
-    dolfin::plot (cdp.problem ("ldp").solution ());
+//    dolfin::plot (cdp["ldp"].solution ());
 
     // -----------------------------------------------------------------------------------------------------//
-    // --------------------------------------- LINEAR PROBLEM ----------------------------------------------//
+    // ------------------------------------- NON LINEAR PROBLEM --------------------------------------------//
     // -----------------------------------------------------------------------------------------------------//
      
     // boundary condition
@@ -182,40 +173,36 @@ int main ()
 //    boost::shared_ptr<dolfin::Function> NLinitialGuess (new dolfin::Function (NLsolution));
     
     boost::shared_ptr<dolfin::Constant> NLnu2 (new dolfin::Constant (1e-6));
-    cdp.problem ("nldp").setCoefficient ("residual_form", NLnu2, "nu");
-    cdp.problem ("nldp").setCoefficient ("jacobian_form", NLnu2, "nu");
+    cdp["nldp"].setCoefficient ("residual_form", NLnu2, "nu");
+    cdp["nldp"].setCoefficient ("jacobian_form", NLnu2, "nu");
     
     for (auto i : NLboundaryConditions)
     {
-        cdp.problem ("nldp").addDirichletBC (*i);
+        cdp["nldp"].addDirichletBC (*i);
     }
     
-    cdp.problem ("nldp").solve ();
-    dolfin::plot (cdp.problem ("nldp").solution ()[0]);
-    dolfin::plot (cdp.problem ("nldp").solution ()[0][0]);
-    dolfin::plot (cdp.problem ("nldp").solution ()[0][1]);
-    dolfin::plot (cdp.problem ("nldp").solution ()[1]);
-    
     cdp.solve ("nldp");
-    dolfin::plot (cdp.problem ("nldp").solution ()[0]);
-    dolfin::plot (cdp.problem ("nldp").solution ()[0][0]);
-    dolfin::plot (cdp.problem ("nldp").solution ()[0][1]);
-    dolfin::plot (cdp.problem ("nldp").solution ()[1]);
+//    dolfin::plot (cdp.problem ("nldp").solution ()[0]);
+//    dolfin::plot (cdp.problem ("nldp").solution ()[0][0]);
+//    dolfin::plot (cdp.problem ("nldp").solution ()[0][1]);
+//    dolfin::plot (cdp.problem ("nldp").solution ()[1]);
     
-    dolfin::cout << dolfin::endl;
-    dolfin::cout << dolfin::endl;
-    dolfin::cout << dolfin::endl;
-    dolfin::cout << dolfin::endl;
-    dolfin::cout << "-----------------------------------------------------------------" << dolfin::endl;
-    dolfin::cout << dolfin::endl;
-    dolfin::cout << dolfin::endl;
-    dolfin::cout << dolfin::endl;
-    dolfin::cout << dolfin::endl;
+//    dolfin::cout << dolfin::endl;
+//    dolfin::cout << dolfin::endl;
+//    dolfin::cout << dolfin::endl;
+//    dolfin::cout << dolfin::endl;
+//    dolfin::cout << "-----------------------------------------------------------------" << dolfin::endl;
+//    dolfin::cout << dolfin::endl;
+//    dolfin::cout << dolfin::endl;
+//    dolfin::cout << dolfin::endl;
+//    dolfin::cout << dolfin::endl;
     
     cdp.solve ();
     
     dolfin::plot (cdp.solution ("nldp")[0]);
-    dolfin::plot (cdp.solution ()[0]);
+    dolfin::plot (cdp.solution ("nldp")[0][0]);
+    dolfin::plot (cdp.solution ("nldp")[1]);
+    dolfin::plot (cdp[1].solution ()[0][1]);
     dolfin::plot (cdp.solution ("ldp"));
     dolfin::interactive ();
     return 0;

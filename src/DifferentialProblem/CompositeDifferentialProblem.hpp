@@ -126,7 +126,7 @@ namespace control_problem
              *  error message and throws an exception through the function \c dolfin::error
              *  \return a reference to the problem
              */
-            const control_problem::AbstractDifferentialProblem& problem (const std::string& problemName) const;
+            const control_problem::AbstractDifferentialProblem& operator[] (const std::string& name) const;
             
             //! Access problem with given name [2] (read and write)
             /*!
@@ -134,7 +134,25 @@ namespace control_problem
              *  error message and throws an exception through the function \c dolfin::error
              *  \return a reference to the problem
              */
-            control_problem::AbstractDifferentialProblem& problem (const std::string& problemName);
+            control_problem::AbstractDifferentialProblem& operator[] (const std::string& name);
+            
+            //! Access problem with given position in vector \c problemsOrder_ [1] (read only)
+            /*!
+             *  \param position position of the problem to be accessed in the private member vector \c problemsOrder_. 
+             *  If \c position is greater than vector size, the function prints an error message and throws an exception 
+             *  through the function \c dolfin::error
+             *  \return a reference to the problem
+             */
+            const control_problem::AbstractDifferentialProblem& operator[] (const std::size_t& position) const;
+            
+            //! Access problem with given position in vector \c problemsOrder_ [2] (read and write)
+            /*!
+             *  \param position position of the problem to be accessed in the private member vector \c problemsOrder_. 
+             *  If \c position is greater than vector size, the function prints an error message and throws an exception 
+             *  through the function \c dolfin::error
+             *  \return a reference to the problem
+             */
+            control_problem::AbstractDifferentialProblem& operator[] (const std::size_t& position);
             
             //! Prints information on the problems: names list (in solution order) and links information.
             //! It uses \c dolfin::cout stream
@@ -149,13 +167,6 @@ namespace control_problem
              *  is found, a warning is issued
              */
             void solve (const std::string& problemName);
-            
-            //! Access problems' solution.
-            /*! \return a reference to a vector of \c dolfin::Function 's containing references to the
-             * problems' solutions. The order in which such solutions are stored into the vector is given
-             * by the protected member \c problemsOrder_
-             */
-             const std::vector<std::reference_wrapper<const dolfin::Function>> solution () const;
             
             //! Access solution of the problem identified by given name
             /*!

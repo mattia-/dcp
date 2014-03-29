@@ -248,26 +248,51 @@ namespace control_problem
 
 
     const control_problem::AbstractDifferentialProblem& 
-    CompositeDifferentialProblem::problem (const std::string& problemName) const
+    CompositeDifferentialProblem::operator[] (const std::string& name) const
     {
-        auto problemIterator = storedProblems_.find (problemName);
+        auto problemIterator = storedProblems_.find (name);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::error ("Problem %s not found in stored problems map", problemName.c_str ());
+            dolfin::error ("Problem \"%s\" not found in stored problems map", name.c_str ());
         }
         return *(problemIterator->second);
     }
 
 
 
-    control_problem::AbstractDifferentialProblem& CompositeDifferentialProblem::problem (const std::string& problemName)
+    control_problem::AbstractDifferentialProblem& 
+    CompositeDifferentialProblem::operator[] (const std::string& name)
     {
-        auto problemIterator = storedProblems_.find (problemName);
+        auto problemIterator = storedProblems_.find (name);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::error ("Problem %s not found in stored problems map", problemName.c_str ());
+            dolfin::error ("Problem \"%s\" not found in stored problems map", name.c_str ());
         }
         return *(problemIterator->second);
+    }
+
+
+
+    const control_problem::AbstractDifferentialProblem& 
+    CompositeDifferentialProblem::operator[] (const std::size_t& position) const
+    {
+        if (position >= problemsOrder_.size ())
+        {
+            dolfin::error ("Input value \"%d\" is greater than problems vector size", position);
+        }
+        return this->operator[] (problemsOrder_ [position]);
+    }
+
+
+
+    control_problem::AbstractDifferentialProblem& 
+    CompositeDifferentialProblem::operator[] (const std::size_t& position)
+    {
+        if (position >= problemsOrder_.size ())
+        {
+            dolfin::error ("Input value \"%d\" is greater than problems vector size", position);
+        }
+        return this->operator[] (problemsOrder_ [position]);
     }
 
 
@@ -323,7 +348,11 @@ namespace control_problem
 
     void CompositeDifferentialProblem::solve (const std::string& problemName)
     {
-        dolfin::begin ("Solving problem %s...", problemName.c_str ());
+        dolfin::begin (dolfin::PROGRESS, "Solving problem \"%s\"...", problemName.c_str ());
+        if (dolfin::get_log_level () > dolfin::PROGRESS)
+        {
+            dolfin::end ();
+        }
         
         // get problem with given name from map. Variable problemIterator will be a
         // std::map <std::string, std::unique_ptr <control_problem::AbstractDifferentialProblem>::iterator
@@ -407,29 +436,20 @@ namespace control_problem
             dolfin::end ();
         }
             
-        dolfin::end ();
-    }
-    
-
-    const std::vector<std::reference_wrapper<const dolfin::Function>> CompositeDifferentialProblem::solution () const
-    {
-        std::vector <std::reference_wrapper<const dolfin::Function>> solution;
-        
-        // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-        // non c'è proprio un modo per fare contare con auto?
-        for (auto i : problemsOrder_)
+        if (dolfin::get_log_level () <= dolfin::PROGRESS)
         {
-            solution.push_back (this->solution (i));
+            dolfin::end ();
         }
-        return solution;
     }
-     
+   
+
+
     const dolfin::Function& CompositeDifferentialProblem::solution (const std::string& problemName) const
     {
         auto problemIterator = storedProblems_.find (problemName);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::error ("Problem %s not found in stored problems map", problemName.c_str ());
+            dolfin::error ("Problem \"%s\" not found in stored problems map", problemName.c_str ());
         }
         return (problemIterator->second)->solution ();
     }

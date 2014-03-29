@@ -147,27 +147,27 @@ namespace control_problem
              *  class \c control_problem::SubdomainType
              */
             virtual void setIntegrationSubdomains (const std::string& formType,
-                                                   const dolfin::MeshFunction<std::size_t>& meshFunction,
+                                                   boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                    const control_problem::SubdomainType& subdomainType) = 0;
 
             //! Add Dirichlet boundary condition to the problem [1]
             /*!
              *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the problem
              */
-            void addDirichletBC (const dolfin::DirichletBC& dirichletCondition);
+            virtual void addDirichletBC (const dolfin::DirichletBC& dirichletCondition);
 
             //! Add Dirichlet boundary condition to the problem [2]
             /*!
              *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the problem
              */
-            void addDirichletBC (dolfin::DirichletBC&& dirichletCondition);
+            virtual void addDirichletBC (dolfin::DirichletBC&& dirichletCondition);
 
             //! Remove Dirichlet boundary condition with given position
             /*!
              *  \param i the position in the vector of the boundary condition to be removed.
              *            If i is greater than the size of the vector, nothing is removed.
              */
-            void removeDirichletBC (const std::vector<dolfin::DirichletBC>::iterator& i);
+            virtual void removeDirichletBC (const std::vector<dolfin::DirichletBC>::iterator& i);
             
             //! This method is meant to be overridden only if needed in the derived classes. It checks for possible
             //! private members to update (e.g. the solver, if the solver method string in the parameters
@@ -190,7 +190,7 @@ namespace control_problem
             //! Clone method
             /*!
              *  \return a ptr to a \c control_problem::AbstractDifferentialProblem containing a copy of the object on 
-             *  which it is called. Such copy will be completely independent from the object on which it is called
+             *  which it is called. 
              */
             virtual control_problem::AbstractDifferentialProblem* clone () const = 0;
 

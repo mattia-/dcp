@@ -260,8 +260,30 @@ namespace control_problem
                  *  See \c AbstractDifferentialProblem documentation for more details on the function
                  */
                 virtual void setIntegrationSubdomains (const std::string& formType,
-                                                       const dolfin::MeshFunction<std::size_t>& meshFunction,
+                                                       boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                        const control_problem::SubdomainType& subdomainType);
+
+                //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c AbstractDifferentialProblem
+                /*!
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to false.
+                 *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the problem
+                 */
+                virtual void addDirichletBC (const dolfin::DirichletBC& dirichletCondition);
+
+                //! Add Dirichlet boundary condition to the problem [2]. Overrides method in \c AbstractDifferentialProblem
+                /*!
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to false.
+                 *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the problem
+                 */
+                virtual void addDirichletBC (dolfin::DirichletBC&& dirichletCondition);
+
+                //! Remove Dirichlet boundary condition with given position. Overrides method in \c AbstractDifferentialProblem
+                /*!
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to false.
+                 *  \param i the position in the vector of the boundary condition to be removed.
+                 *            If i is greater than the size of the vector, nothing is removed.
+                 */
+                virtual void removeDirichletBC (const std::vector<dolfin::DirichletBC>::iterator& i);
                 
                 //! Method to update class members. It checks for differences between desired and current solver parameters
                 //! and creates a new solver, setting also the proper parameters
@@ -635,11 +657,13 @@ namespace control_problem
             {
                 dolfin::log (dolfin::DBG, "Setting bilinear form coefficient \"%s\"...", coefficientName.c_str ());
                 bilinearForm_.set_coefficient (coefficientName, coefficientValue);
+                parameters ["system_is_assembled"] = false;
             }
             else if (coefficientType == "linear_form")
             {
                 dolfin::log (dolfin::DBG, "Setting linear form coefficient \"%s\"...", coefficientName.c_str ());
                 linearForm_.set_coefficient (coefficientName, coefficientValue);
+                parameters ["system_is_assembled"] = false;
             }
             else
             {
@@ -661,11 +685,13 @@ namespace control_problem
             {
                 dolfin::log (dolfin::DBG, "Setting bilinear form coefficient number %d...", coefficientNumber);
                 bilinearForm_.set_coefficient (coefficientNumber, coefficientValue);
+                parameters ["system_is_assembled"] = false;
             }
             else if (coefficientType == "linear_form")
             {
                 dolfin::log (dolfin::DBG, "Setting linear form coefficient number %d...", coefficientNumber);
                 linearForm_.set_coefficient (coefficientNumber, coefficientValue);
+                parameters ["system_is_assembled"] = false;
             }
             else
             {
@@ -679,7 +705,7 @@ namespace control_problem
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         setIntegrationSubdomains (const std::string& formType,
-                                  const dolfin::MeshFunction<std::size_t>& meshFunction,
+                                  boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                   const control_problem::SubdomainType& subdomainType)
         {
             if (formType == "bilinear_form")
@@ -687,17 +713,20 @@ namespace control_problem
                 if (subdomainType == control_problem::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on INTERNAL_CELLS...");
-                    bilinearForm_.dx = meshFunction;
+                    bilinearForm_.set_cell_domains (meshFunction);
+                    parameters ["system_is_assembled"] = false;
                 }
                 else if (subdomainType == control_problem::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on INTERNAL_FACETS...");
-                    bilinearForm_.dS = meshFunction;
+                    bilinearForm_.set_interior_facet_domains (meshFunction);
+                    parameters ["system_is_assembled"] = false;
                 }
                 else if (subdomainType == control_problem::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on BOUNDARY_FACETS...");
-                    bilinearForm_.ds = meshFunction;
+                    bilinearForm_.set_exterior_facet_domains (meshFunction);
+                    parameters ["system_is_assembled"] = false;
                 }
                 else
                 {
@@ -709,17 +738,19 @@ namespace control_problem
                 if (subdomainType == control_problem::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on INTERNAL_CELLS...");
-                    linearForm_.dx = meshFunction;
+                    linearForm_.set_cell_domains (meshFunction);
+                    parameters ["system_is_assembled"] = false;
                 }
                 else if (subdomainType == control_problem::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on INTERNAL_FACETS...");
-                    linearForm_.dS = meshFunction;
+                    linearForm_.set_interior_facet_domains (meshFunction);
+                    parameters ["system_is_assembled"] = false;
                 }
                 else if (subdomainType == control_problem::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on BOUNDARY_FACETS...");
-                    linearForm_.ds = meshFunction;
+                    linearForm_.set_exterior_facet_domains (meshFunction);
                 }
                 else
                 {
@@ -732,6 +763,35 @@ namespace control_problem
                                  formType.c_str ());
             }
 
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        addDirichletBC (const dolfin::DirichletBC& dirichletCondition)
+        {
+            dirichletBCs_.emplace_back (dirichletCondition);
+            parameters ["system_is_assembled"] = false;
+        }
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        addDirichletBC (dolfin::DirichletBC&& dirichletCondition)
+        {
+            dirichletBCs_.emplace_back (dirichletCondition);
+            parameters ["system_is_assembled"] = false;
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        removeDirichletBC (const std::vector<dolfin::DirichletBC>::iterator& i)
+        {
+            dirichletBCs_.erase (i);
+            parameters ["system_is_assembled"] = false;
         }
 
 
@@ -769,7 +829,7 @@ namespace control_problem
         void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         solve () 
         {
-            update();
+            update ();
             
             // define auxiliary string variables
             bool systemIsAssembled = parameters ["system_is_assembled"];
@@ -845,10 +905,10 @@ namespace control_problem
             control_problem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
                 clonedProblem 
                 (new control_problem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
-                        (*(this->mesh_), 
-                         *(this->functionSpace_), 
-                           this->bilinearForm_, 
-                           this->linearForm_
+                        (this->mesh_,
+                         this->functionSpace_,
+                         this->bilinearForm_, 
+                         this->linearForm_
                         )
                 );
             

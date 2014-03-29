@@ -246,9 +246,8 @@ namespace control_problem
                  *  See \c AbstractDifferentialProblem documentation for more details on the function
                  */
                 virtual void setIntegrationSubdomains (const std::string& formType,
-                                                       const dolfin::MeshFunction<std::size_t>& meshFunction,
+                                                       boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                        const control_problem::SubdomainType& subdomainType);
-
                 
                 /******************* METHODS *******************/
 
@@ -680,7 +679,7 @@ namespace control_problem
     template <class T_ResidualForm, class T_JacobianForm>
         void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
         setIntegrationSubdomains (const std::string& formType,
-                                  const dolfin::MeshFunction<std::size_t>& meshFunction,
+                                  boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                   const control_problem::SubdomainType& subdomainType)
         {
             if (formType == "residual_form")
@@ -688,21 +687,21 @@ namespace control_problem
                 if (subdomainType == control_problem::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on INTERNAL_CELLS...");
-                    residualForm_.dx = meshFunction;
+                    residualForm_.set_cell_domains (meshFunction);
                 }
                 else if (subdomainType == control_problem::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on INTERNAL_FACETS...");
-                    residualForm_.dS = meshFunction;
+                    residualForm_.set_interior_facet_domains (meshFunction);
                 }
                 else if (subdomainType == control_problem::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on BOUNDARY_FACETS...");
-                    residualForm_.ds = meshFunction;
+                    residualForm_.set_exterior_facet_domains (meshFunction);
                 }
                 else
                 {
-                    dolfin::warning ("Unknown subdomain type requested while trying to apply mesh function to residual form"); 
+                    dolfin::warning ("unknown subdomain type requested while trying to apply mesh function to residual form"); 
                 }
             }
             else if (formType == "jacobian_form")
@@ -710,26 +709,26 @@ namespace control_problem
                 if (subdomainType == control_problem::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on INTERNAL_CELLS...");
-                    jacobianForm_.dx = meshFunction;
+                    jacobianForm_.set_cell_domains (meshFunction);
                 }
                 else if (subdomainType == control_problem::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on INTERNAL_FACETS...");
-                    jacobianForm_.dS = meshFunction;
+                    jacobianForm_.set_interior_facet_domains (meshFunction);
                 }
                 else if (subdomainType == control_problem::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on BOUNDARY_FACETS...");
-                    jacobianForm_.ds = meshFunction;
+                    jacobianForm_.set_exterior_facet_domains (meshFunction);
                 }
                 else
                 {
-                    dolfin::warning ("Unknown subdomain type requested while trying to apply mesh function to jacobian form"); 
+                    dolfin::warning ("unknown subdomain type requested while trying to apply mesh function to jacobian form"); 
                 }
             }
             else
             {
-                dolfin::warning ("Cannot set integration subdomain in non linear differential problem. Form type \"%s\" unknown",
+                dolfin::warning ("Cannot set integration subdomain in linear differential problem. Form type \"%s\" unknown",
                                  formType.c_str ());
             }
 
@@ -848,12 +847,12 @@ namespace control_problem
             // create new object
             control_problem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>* clonedProblem 
                 (new control_problem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm> 
-                        (*(this->mesh_), 
-                         *(this->functionSpace_), 
-                           this->residualForm_, 
-                           this->jacobianForm_,
-                          (this->parameters) ["residual_form_solution_name"],
-                          (this->parameters) ["jacobian_form_solution_name"]
+                        ( this->mesh_,
+                          this->functionSpace_,
+                          this->residualForm_, 
+                          this->jacobianForm_,
+                         (this->parameters) ["residual_form_solution_name"],
+                         (this->parameters) ["jacobian_form_solution_name"]
                         )
                 );
             

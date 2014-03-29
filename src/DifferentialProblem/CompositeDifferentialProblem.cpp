@@ -32,7 +32,7 @@ namespace control_problem
         dolfin::log (dolfin::DBG, "Inserting problem in problems map with name \"%s\"...", problemName.c_str ());
         auto result = storedProblems_.insert (std::make_pair (problemName, std::move (clonedProblem)));
         
-        // if problem was not inserted in list, issue a warning; else, add it also to the vector problemsOrder_
+        // if problem was not inserted in list, issue a warning; else, add it also to the vector solveOrder_
         if (result.second == false)
         {
             dolfin::warning ("Problem \"%s\" already exist in composite differential problem", problemName.c_str ());
@@ -40,7 +40,7 @@ namespace control_problem
         else
         {
             dolfin::log (dolfin::DBG, "Inserting problem in problem-names vector with name \"%s\"...", problemName.c_str ());
-            problemsOrder_.emplace_back (problemName);
+            solveOrder_.emplace_back (problemName);
         }
         if (dolfin::get_log_level () <= dolfin::DBG)
         {
@@ -62,7 +62,7 @@ namespace control_problem
         dolfin::log (dolfin::DBG, "Inserting problem in problems map with name \"%s\"...", problemName.c_str ());
         auto result = storedProblems_.insert (std::make_pair (problemName, std::move (problem)));
         
-        // if problem was not inserted in list, issue a warning; else, add it also to the vector problemsOrder_
+        // if problem was not inserted in list, issue a warning; else, add it also to the vector solveOrder_
         if (result.second == false)
         {
             dolfin::warning ("Problem \"%s\" already exist in composite differential problem", problemName.c_str ());
@@ -70,7 +70,7 @@ namespace control_problem
         else
         {
             dolfin::log (dolfin::DBG, "Inserting problem in problem-names vector with name \"%s\"...", problemName.c_str ());
-            problemsOrder_.emplace_back (problemName);
+            solveOrder_.emplace_back (problemName);
         }
         if (dolfin::get_log_level () <= dolfin::DBG)
         {
@@ -93,7 +93,7 @@ namespace control_problem
         dolfin::log (dolfin::DBG, "Removing problem \"%s\" from problems map...", problemName.c_str ());
         auto result = storedProblems_.erase (problemName);
         
-        // if problem was not inserted in list, issue a warning; else, add it also to the vector problemsOrder_
+        // if problem was not inserted in list, issue a warning; else, add it also to the vector solveOrder_
         // remember that erase returns the number of elements removed, which in the case of a map is at most 1
         if (result < 1) 
         {
@@ -107,31 +107,31 @@ namespace control_problem
         else
         {
             // 1)
-            // remove problemName from problemsOrder_. Remember that we cannot be sure that such name is 
+            // remove problemName from solveOrder_. Remember that we cannot be sure that such name is 
             // unique in vector and that problems are not in any kind of order.
             // std::find will return an iterator to the element if found and vector::end () if not found
             dolfin::log (dolfin::DBG, "Removing every occurrence of problem \"%s\" from problem-names vector...", 
                          problemName.c_str ());
             int erasedCount = 0;
-            auto problemPosition = find (problemsOrder_.begin (), problemsOrder_.end (), problemName);
-            while (problemPosition != problemsOrder_.end ())
+            auto problemPosition = find (solveOrder_.begin (), solveOrder_.end (), problemName);
+            while (problemPosition != solveOrder_.end ())
             {
                 ++erasedCount;
-                problemsOrder_.erase (problemPosition);
-                problemPosition = find (problemsOrder_.begin (), problemsOrder_.end (), problemName);
+                solveOrder_.erase (problemPosition);
+                problemPosition = find (solveOrder_.begin (), solveOrder_.end (), problemName);
             }
             dolfin::log (dolfin::DBG, "Removed %d entries from problem-names vector", erasedCount);
             
             // 2)
-            // remove problemName from linkedProblems_.
+            // remove problemName from problemsLinks_.
             // We use an important statement from the c++ standard: 
             // When erasing from a map, iterators, pointers and references referring to elements removed by the 
             // function are invalidated. All other iterators, pointers and references keep their validity.
             dolfin::log (dolfin::DBG, "Removing every occurrence of problem \"%s\" from links map...", 
                          problemName.c_str ());
             erasedCount = 0;
-            auto linksIterator = linkedProblems_.begin (); // iterator pointing to the first element of the set
-            while (linksIterator != linkedProblems_.end ())
+            auto linksIterator = problemsLinks_.begin (); // iterator pointing to the first element of the set
+            while (linksIterator != problemsLinks_.end ())
             {
                 // delete element if problemName appears either as first or as third element in the tuple
                 if (std::get<0> (linksIterator->first) == problemName || linksIterator->second == problemName)
@@ -141,7 +141,7 @@ namespace control_problem
                                        // This is performed before erasing element, 
                                        // so that increment is still valid
                     
-                    linkedProblems_.erase (auxIterator);
+                    problemsLinks_.erase (auxIterator);
                     ++erasedCount;
                 }
                 else
@@ -160,10 +160,10 @@ namespace control_problem
 
 
 
-    void CompositeDifferentialProblem::reorderProblems (const std::vector<std::string>& problemsOrder)
+    void CompositeDifferentialProblem::reorderProblems (const std::vector<std::string>& solveOrder)
     {
         dolfin::log (dolfin::DBG, "Setting problems order...");
-        problemsOrder_ = problemsOrder;
+        solveOrder_ = solveOrder;
     }
 
 
@@ -190,16 +190,16 @@ namespace control_problem
         // to enhance readability
         auto link = std::make_pair (std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType), linkTo);
 
-        // search for map key in linkedProblems_. 
+        // search for map key in problemsLinks_. 
         // remember that the key (i.e. link.first) is an std::tuple<std::string, std::string, std::string>
         // auto keyword used to enhance readability in place of 
         // std::map <std::tuple <std::string, std::string, std::string>, std::string>::iterator 
-        auto linkPosition = linkedProblems_.find (link.first);
+        auto linkPosition = problemsLinks_.find (link.first);
 
-        if (linkPosition == linkedProblems_.end ()) // if key not found in map, insert link
+        if (linkPosition == problemsLinks_.end ()) // if key not found in map, insert link
         {
             dolfin::log (dolfin::DBG, "Inserting link in links map...");
-            linkedProblems_.insert (link);
+            problemsLinks_.insert (link);
             if (dolfin::get_log_level () <= dolfin::DBG)
             {
                 dolfin::end ();
@@ -219,7 +219,7 @@ namespace control_problem
                 << linkPosition->second 
                 << dolfin::endl;
 
-            linkedProblems_.erase (linkPosition);
+            problemsLinks_.erase (linkPosition);
 
             dolfin::cout << "and inserting link: " << dolfin::endl;
             dolfin::cout << "\t(" 
@@ -232,7 +232,7 @@ namespace control_problem
                 << link.second 
                 << dolfin::endl;
 
-            linkedProblems_.insert (link);
+            problemsLinks_.insert (link);
             if (dolfin::get_log_level () <= dolfin::DBG)
             {
                 dolfin::end ();
@@ -283,11 +283,11 @@ namespace control_problem
     const control_problem::AbstractDifferentialProblem& 
     CompositeDifferentialProblem::operator[] (const std::size_t& position) const
     {
-        if (position >= problemsOrder_.size ())
+        if (position >= solveOrder_.size ())
         {
             dolfin::error ("Input value \"%d\" is greater than problems vector size", position);
         }
-        return this->operator[] (problemsOrder_ [position]);
+        return this->operator[] (solveOrder_ [position]);
     }
 
 
@@ -295,11 +295,11 @@ namespace control_problem
     control_problem::AbstractDifferentialProblem& 
     CompositeDifferentialProblem::operator[] (const std::size_t& position)
     {
-        if (position >= problemsOrder_.size ())
+        if (position >= solveOrder_.size ())
         {
             dolfin::error ("Input value \"%d\" is greater than problems vector size", position);
         }
-        return this->operator[] (problemsOrder_ [position]);
+        return this->operator[] (solveOrder_ [position]);
     }
 
 
@@ -307,14 +307,14 @@ namespace control_problem
     void CompositeDifferentialProblem::print ()
     {
         dolfin::cout << "Problems solve order:" << dolfin::endl;
-        for (auto i : problemsOrder_)
+        for (auto i : solveOrder_)
         {
             dolfin::cout << "\t" << i << dolfin::endl; 
         }
         dolfin::cout << dolfin::endl;
 
         dolfin::cout << "Problems links:" << dolfin::endl;
-        for (auto &i : linkedProblems_)
+        for (auto &i : problemsLinks_)
         {
             dolfin::cout << "("
                 << std::get<0> (i.first)
@@ -332,7 +332,7 @@ namespace control_problem
 
     void CompositeDifferentialProblem::solve ()
     {
-        // this function iterates over problemsOrder_ and calls solve (problemName) for each problem, thus delegating
+        // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving
         dolfin::begin (dolfin::DBG, "Solving problems...");
         if (dolfin::get_log_level () > dolfin::DBG)
@@ -340,7 +340,7 @@ namespace control_problem
             dolfin::end ();
         }
         
-        for (auto problem : problemsOrder_)
+        for (auto problem : solveOrder_)
         {
             solve (problem);
         }
@@ -375,7 +375,7 @@ namespace control_problem
         control_problem::AbstractDifferentialProblem& problem = *(problemIterator->second);
 
         // 1)
-        // loop over linkedProblems_. Remember it is a map. Elements in it are order according to the default
+        // loop over problemsLinks_. Remember it is a map. Elements in it are order according to the default
         // lexicographical ordering
         dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
 
@@ -384,8 +384,8 @@ namespace control_problem
             dolfin::end ();
         }
         
-        auto linksIterator = linkedProblems_.begin ();
-        while (linksIterator != linkedProblems_.end () && std::get<0> (linksIterator->first) < problemName)
+        auto linksIterator = problemsLinks_.begin ();
+        while (linksIterator != problemsLinks_.end () && std::get<0> (linksIterator->first) < problemName)
         {
             dolfin::log (dolfin::DBG, 
                          "Considering link: (%s, %s, %s) -> %s...",

@@ -65,7 +65,7 @@ namespace control_problem
              *  \param problemName the problem name
              *  \param problem a const reference to an \c AbstractDifferentialProblem. 
              *  The class will make a copy of the input problem calling the method \c clone().
-             *  The problem's name is inserted at the end of \c problemsOrder_
+             *  The problem's name is inserted at the end of \c solveOrder_
              */
             void addProblem (const std::string& problemName, AbstractDifferentialProblem& problem);
             
@@ -84,7 +84,7 @@ namespace control_problem
              *  For example, referring to the snippet of code above, the class will contain (and have full ownership of)
              *  the problem *foo and will set foo to nullptr, so that it cannot be used to modify the class private
              *  members later on.
-             *  The problem's name is inserted at the end of \c problemsOrder_
+             *  The problem's name is inserted at the end of \c solveOrder_
              */
             void addProblem (const std::string& problemName, 
                              std::unique_ptr<AbstractDifferentialProblem>& problem);
@@ -95,12 +95,12 @@ namespace control_problem
             
             //! Set solve order of the problems
             /*!
-             *  \param problemsOrder a \c std::vector<std::string> in which the problems' names are ordered as one 
+             *  \param solveOrder a \c std::vector<std::string> in which the problems' names are ordered as one 
              *  wishes the stored problem to be ordered. No check is performed either on problems' names contained in 
              *  the input vector or on vectors' size. This means that, for example, the same problem can be 
              *  insterted more than once, if needed
              */
-            void reorderProblems (const std::vector<std::string>& problemsOrder);
+            void reorderProblems (const std::vector<std::string>& solveOrder);
             
             //! Links problems' coefficient and solution
             /*!
@@ -114,7 +114,7 @@ namespace control_problem
              *  existence of such problem
              *  \param forceRelinking boolean value (default FALSE). If the pair problem name - coefficient 
              *  identified by the first and the second string in the first argument already appears in the protected 
-             *  member variable \c linkedProblems_, it will be relinked using the \c pair passed as first argument if 
+             *  member variable \c problemsLinks_, it will be relinked using the \c pair passed as first argument if 
              *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
              */
             void linkProblems (const std::string& linkFrom, 
@@ -139,18 +139,18 @@ namespace control_problem
              */
             control_problem::AbstractDifferentialProblem& operator[] (const std::string& name);
             
-            //! Access problem with given position in vector \c problemsOrder_ [1] (read only)
+            //! Access problem with given position in vector \c solveOrder_ [1] (read only)
             /*!
-             *  \param position position of the problem to be accessed in the private member vector \c problemsOrder_. 
+             *  \param position position of the problem to be accessed in the private member vector \c solveOrder_. 
              *  If \c position is greater than vector size, the function prints an error message and throws an exception 
              *  through the function \c dolfin::error
              *  \return a reference to the problem
              */
             const control_problem::AbstractDifferentialProblem& operator[] (const std::size_t& position) const;
             
-            //! Access problem with given position in vector \c problemsOrder_ [2] (read and write)
+            //! Access problem with given position in vector \c solveOrder_ [2] (read and write)
             /*!
-             *  \param position position of the problem to be accessed in the private member vector \c problemsOrder_. 
+             *  \param position position of the problem to be accessed in the private member vector \c solveOrder_. 
              *  If \c position is greater than vector size, the function prints an error message and throws an exception 
              *  through the function \c dolfin::error
              *  \return a reference to the problem
@@ -161,7 +161,7 @@ namespace control_problem
             //! It uses \c dolfin::cout stream
             void print ();
             
-            //! Solve all the problems in the order specified by the private member \c problemsOrder_
+            //! Solve all the problems in the order specified by the private member \c solveOrder_
             void solve ();
             
             //! Solve only the problem corresponding to the name given
@@ -186,11 +186,11 @@ namespace control_problem
             std::map <std::string, std::unique_ptr <control_problem::AbstractDifferentialProblem>> storedProblems_;
 
             //! The solution order of the problems
-            std::vector <std::string> problemsOrder_;
+            std::vector <std::string> solveOrder_;
             
             //! The map of links between problems. A map guarantees that no pair (problem, coefficient) is linked twice
             //! against possibly different problems
-            std::map <std::tuple <std::string, std::string, std::string>, std::string> linkedProblems_;
+            std::map <std::tuple <std::string, std::string, std::string>, std::string> problemsLinks_;
         // ---------------------------------------------------------------------------------------------//  
 
         private:

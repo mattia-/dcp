@@ -1,46 +1,33 @@
-#ifndef SRC_DIFFERENTIALPROBLEM_LINEARDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
-#define SRC_DIFFERENTIALPROBLEM_LINEARDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
+#ifndef SRC_FUNCTIONAL_FUNCTIONAL_HPP_INCLUDE_GUARD
+#define SRC_FUNCTIONAL_FUNCTIONAL_HPP_INCLUDE_GUARD
 
 #include <dolfin.h>
-#include <vector>
 #include <string>
 #include <memory>
-#include <DifferentialProblem/AbstractDifferentialProblem.hpp>
-#include <Factory/LinearSolverFactory.hpp>
 #include <Utils/SubdomainType.hpp>
 
 namespace control_problem
 {
-    /*! \class LinearDifferentialProblem LinearDifferentialProblem.hpp
-     *  \brief Class for linear differential problems.
+    /*! \class Functional Functional.hpp
+     *  \brief Class for functionals.
      *
-     *  This class represents problem of the form
-     *  \f[
-     *      \mbox{Find } u \in V : a \left(u, v\right) = F \left(v\right) \ \forall\,v\,\in\,V
-     *  \f]
-     *  with \f$ a \left(u, v\right) : V \times V \rightarrow \mathds{R}\f$ bilinear form on \f$V\f$
-     *  and \f$ L \left(v\right) : V \rightarrow \mathds{R} \f$ linear form on the same space.
+     *  This class represents a generic functional.
+     *  It contains the functional representation and the functional gradient.
+     *  The class is template-ized over the type of the functional, which must be derived from \c dolfin::Form (and will
+     *  typically defined in a ufl file with the keyword \c forms).
      *  
-     *  It inherits publicly from \c AbstractDifferentialProblem
-     *  and it extends its functionalities to a concrete differential
-     *  problem.
-     *  Template arguments are:
-     *  \arg T_BilinearForm the bilinear form type
-     *  \arg T_LinearForm the linear form type
-     *  \arg T_LinearSolverFactory the type of the factory that creates the linear solver. By default, it is set
-     *  to \c control_problem::LinearSolverFactory
+     *  Template argument is:
+     *  \arg T_Form_ the functional form type
      */
 
-    template <class T_BilinearForm_, class T_LinearForm_, class T_LinearSolverFactory_ = control_problem::LinearSolverFactory>
-        class LinearDifferentialProblem : public AbstractDifferentialProblem
+    template <class T_Form_>
+        class Functional
         {
             // ---------------------------------------------------------------------------------------------//  
 
             public:
                 /******************* TYPEDEFS *******************/
-                typedef T_BilinearForm_        T_BilinearForm;
-                typedef T_LinearForm_          T_LinearForm;
-                typedef T_LinearSolverFactory_ T_LinearSolverFactory;
+                typedef T_Form_ T_Form;
                 
                 
                 /******************* CONSTRUCTORS *******************/
@@ -49,14 +36,13 @@ namespace control_problem
 
                 //!  Constructor with shared pointers [1]
                 /*!
-                 *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
-                 *  \c dolfin::FunctionSpace
-                 *  \param solverType the type of the solver. Default: \c lu_solver
+                 *  \param mesh the mesh over which the functional is defined as a const std::shared_ptr to dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a const std::shared_ptr to dolfin::FunctionSpace
+                 *  \param solverType the type of the solver. Default: lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods). Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for \c lu_solvers. Default
-                 *  value: \c default
+                 *  documentation, or use method \c list_<solverType>_methods). Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
                  *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
@@ -70,13 +56,13 @@ namespace control_problem
 
                 //! Constructor with references [1]
                 /*!
-                 *  \param mesh the problem mesh as a const \c dolfin::Mesh&
-                 *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
-                 *  \param solverType the type of the solver. Default: \c lu_solver
+                 *  \param mesh the problem mesh as a const dolfin::Mesh&
+                 *  \param functionSpace the problem finite element space as a const dolfin::FunctionSpace&
+                 *  \param solverType the type of the solver. Default: lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods). Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
-                 *  value: \c default
+                 *  documentation, or use method \c list_<solverType>_methods). Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
                  *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
                  *  initialized using the \c new operator and mesh's and functionSpace's copy constructor
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
@@ -90,13 +76,13 @@ namespace control_problem
 
                 //! Constructor with rvalue references [1]
                 /*!
-                 *  \param mesh the problem mesh as a \c dolfin::Mesh&&
-                 *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
-                 *  \param solverType the type of the solver. Default: \c lu_solver
+                 *  \param mesh the problem mesh as a dolfin::Mesh&&
+                 *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
+                 *  \param solverType the type of the solver. Default: lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods). Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
-                 *  value: \c default
+                 *  documentation, or use method \c list_<solverType>_methods). Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
                  *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
                  *  initialized using the \c new operator and mesh's and functionSpace's move constructor
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
@@ -111,16 +97,15 @@ namespace control_problem
                 
                 //!  Constructor with shared pointers [2]
                 /*!
-                 *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
-                 *  \c dolfin::FunctionSpace
+                 *  \param mesh the problem mesh as a const std::shared_ptr to dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a const std::shared_ptr to dolfin::FunctionSpace
                  *  \param bilinearForm a const reference to the problem's bilinear form
                  *  \param linearForm a const reference to the problem's linear form
-                 *  \param solverType the type of the solver. Default: \c lu_solver
+                 *  \param solverType the type of the solver. Default: lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods. Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
-                 *  value: \c default
+                 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
                  *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
@@ -135,15 +120,15 @@ namespace control_problem
 
                 //! Constructor with references [2]
                 /*!
-                 *  \param mesh the problem mesh as a const \c dolfin::Mesh&
-                 *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
+                 *  \param mesh the problem mesh as a const dolfin::Mesh&
+                 *  \param functionSpace the problem finite element space as a const dolfin::FunctionSpace&
                  *  \param bilinearForm a const reference to the problem's bilinear form
                  *  \param linearForm a const reference to the problem's linear form
-                 *  \param solverType the type of the solver. Default: \c lu_solver
+                 *  \param solverType the type of the solver. Default: lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods. Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
-                 *  value: \c default
+                 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
                  *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
                  *  initialized using the \c new operator and mesh's and functionSpace's copy constructor
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
@@ -159,15 +144,15 @@ namespace control_problem
 
                 //! Constructor with rvalue references [3]
                 /*!
-                 *  \param mesh the problem mesh as a \c dolfin::Mesh&&
-                 *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
+                 *  \param mesh the problem mesh as a dolfin::Mesh&&
+                 *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
                  *  \param bilinearForm a rvalue reference to the problem's bilinear form
                  *  \param linearForm a rvalue reference to the problem's linear form
-                 *  \param solverType the type of the solver. Default: \c lu_solver
+                 *  \param solverType the type of the solver. Default: lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods. Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
-                 *  value: \c default
+                 *  documentation, or use method \c list_<solverType>_methods. Default value: default
+                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu_solvers. Default
+                 *  value: default
                  *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
                  *  initialized using the \c new operator and mesh's and functionSpace's move constructor
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
@@ -189,7 +174,7 @@ namespace control_problem
                  * It is declared virtual so that derived classes' constructor
                  * can be called on derived classes.
                  * The "default-ness" is set in implementation outside of the class for compatibility with
-                 * \c gcc-4.6, which does not allow virtual members to be defaulted in class
+                 * gcc-4.6, which does not allow virtual members to be defaulted in class
                  */
                 virtual ~LinearDifferentialProblem ();
 
@@ -210,14 +195,14 @@ namespace control_problem
                 //! Get const reference to the problem's linear operator
                 /*!
                  *  \return a const reference to the problem's linear operator, which
-                 *  is a \c dolfin::Matrix
+                 *  is a dolfin::Matrix
                  */
                 const dolfin::Matrix& linearOperator () const;
 
                 //! Get const reference to the problem's right hand side
                 /*!
                  *  \return a const reference to the problem's right hand side, which
-                 *  is a \c dolfin::Vector
+                 *  is a dolfin::Vector
                  */
                 const dolfin::Vector& rhs () const;
 
@@ -227,8 +212,8 @@ namespace control_problem
                 //! Set coefficient [1]. Override of virtual function in \c AbstractDifferentialProblem.
                 /*!
                  *  Possible values for \c coefficientType are:
-                 *  \li \c bilinear_form to set the coefficient in the bilinear form
-                 *  \li \c linear_form to set the coefficient in the linear form
+                 *  \li bilinear_form to set the coefficient in the bilinear form
+                 *  \li linear_form to set the coefficient in the linear form
                  *  
                  *  See \c AbstractDifferentialProblem documentation for more details on the function
                  */
@@ -239,8 +224,8 @@ namespace control_problem
                 //! Set coefficient [2]. Override of virtual function in \c AbstractDifferentialProblem.
                 /*!
                  *  Possible values for \c coefficientType are:
-                 *  \li \c bilinear_form to set the coefficient in the bilinear form
-                 *  \li \c linear_form to set the coefficient in the linear form
+                 *  \li bilinear_form to set the coefficient in the bilinear form
+                 *  \li linear_form to set the coefficient in the linear form
                  *  
                  *  See \c AbstractDifferentialProblem documentation for more details on the function
                  */
@@ -251,8 +236,8 @@ namespace control_problem
                 //! Set integration subdomains for the forms. Override of virtual function in \c AbstractDifferentialProblem
                 /*! 
                  *  Possible values for \c coefficientType are:
-                 *  \li \c bilinear_form to set the integration subdomain in the bilinear form
-                 *  \li \c linear_form to set the integration subdomain in the linear form
+                 *  \li bilinear_form to set the integration subdomain in the bilinear form
+                 *  \li linear_form to set the integration subdomain in the linear form
                  *  
                  *  See \c AbstractDifferentialProblem documentation for more details on the function
                  */
@@ -262,21 +247,21 @@ namespace control_problem
 
                 //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c AbstractDifferentialProblem
                 /*!
-                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to false.
                  *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the problem
                  */
                 virtual void addDirichletBC (const dolfin::DirichletBC& dirichletCondition);
 
                 //! Add Dirichlet boundary condition to the problem [2]. Overrides method in \c AbstractDifferentialProblem
                 /*!
-                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to false.
                  *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the problem
                  */
                 virtual void addDirichletBC (dolfin::DirichletBC&& dirichletCondition);
 
                 //! Remove Dirichlet boundary condition with given position. Overrides method in \c AbstractDifferentialProblem
                 /*!
-                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to false.
                  *  \param i the position in the vector of the boundary condition to be removed.
                  *            If i is greater than the size of the vector, nothing is removed.
                  */
@@ -292,18 +277,18 @@ namespace control_problem
                 //! Solve problem
                 /*!
                  *  This method solves the problem defined. It uses the private members' value to set the problem and then
-                 *  stores the solution in the private member \c solution_. Note that it checks the problem's member
+                 *  stores the solution in the private member \c solution_. Note that it checks the protected member
                  *  \c parameters to decided whether problem's matrix and vector should be reassembled and if
-                 *  the values of the parameters \c desired_solver_type, \c desired_solver_method and 
-                 *  \c desired_solver_preconditioner match the values of \c current_solver_type, \c current_solver_method
-                 *  and \c current_solver_preconditioner. If they differ, it calls \c createSolver()
+                 *  the values of the parameters "desired_solver_type", "desired_solver_method" and 
+                 *  "desired_solver_preconditioner" match the values of "current_solver_type", "current_solver_method"
+                 *  and "current_solver_preconditioner". If they differ, it calls \c createSolver()
                  */
                 virtual void solve ();
 
                 //! Solve problem specifying flag
                 /*!
-                 *  \param mustReassemble set it to \c true if the system operators (matrix and right hand side vector)
-                 *         should be reassembled. It is \c false by default.
+                 *  \param mustReassemble true if the system operators (matrix and right hand side vector)
+                 *         should be reassembled. It is false by default.
                  */
                 void solve (const bool& mustReassemble);
 
@@ -316,10 +301,10 @@ namespace control_problem
             protected:
                 //! Creates a linear solver object of type passed as input. 
                 /*!
-                 *  The solver will be created using the parameters \c desired_solver_type, \c desired_solver_method
-                 *  and \c desired_solver_preconditioner set in the protected member \c parameters. It will
-                 *  also set the parameters \c current_solver_type, \c current_solver_method and 
-                 *  \c current_solver_preconditioner in the same set of parameters substituting the current values with 
+                 *  The solver will be created using the parameters "desired_solver_type", "desired_solver_method"
+                 *  and "desired_solver_preconditioner" set in the protected member \c parameters. It will
+                 *  also set the parameters "current_solver_type", "current_solver_method" and 
+                 *  "current_solver_preconditioner" in the same set of parameters substituting the current values with 
                  *  the values being used to create the solver
                  */
                 std::unique_ptr<dolfin::GenericLinearSolver> createSolver ();
@@ -338,9 +323,9 @@ namespace control_problem
                 
                 //! Matrix to hold the problem's discrete operator
                 /*!
-                 *  We use a \c boost::shared_ptr for compatibility with FEniCS, version 1.3.0.
+                 *  We use a boost::shared_ptr for compatibility with FEniCS, version 1.3.0.
                  *  Note that there is no write access to this variable from outside the class,
-                 *  so it is guaranteed to be a unique shared pointer
+                 *  so it is guaranteed to be a unique shared_ptr
                  */
                 boost::shared_ptr<dolfin::Matrix> problemMatrix_;
 
@@ -1064,3 +1049,4 @@ namespace control_problem
         }
 }
 #endif
+

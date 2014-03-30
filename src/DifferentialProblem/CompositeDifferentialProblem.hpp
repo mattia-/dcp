@@ -18,7 +18,7 @@ namespace control_problem
     /*! \class CompositeDifferentialProblem CompositeDifferentialProblem.hpp
      *  \brief Class for multi-variable and multi-equation differential problem
      *  
-     *  The class contains a map that associate a problem with its identifying name
+     *  The class contains a \c std::map that associate a problem with its identifying name
      *  and a vector that stores the problem names in the order they should be solved.
      *  The aforementioned map associates a \c std::string to a pointer to 
      *  \c control_problem::AbstractDifferentialProblem.
@@ -112,7 +112,7 @@ namespace control_problem
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
-             *  \param forceRelinking boolean value (default FALSE). If the pair problem name - coefficient 
+             *  \param forceRelinking boolean value (default \c FALSE). If the pair (problem name - coefficient) 
              *  identified by the first and the second string in the first argument already appears in the protected 
              *  member variable \c problemsLinks_, it will be relinked using the \c pair passed as first argument if 
              *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)

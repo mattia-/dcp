@@ -9,8 +9,10 @@ namespace control_problem
         mesh_ (mesh),
         functionSpace_ (functionSpace),
         dirichletBCs_ (),
-        solution_ (*functionSpace)
-    { }
+        solution_ (*functionSpace_)
+    { 
+        dolfin::log (dolfin::DBG, "Abstract differential problem created");
+    }
 
 
 
@@ -20,8 +22,10 @@ namespace control_problem
         mesh_ (new dolfin::Mesh (mesh)),
         functionSpace_ (new dolfin::FunctionSpace (functionSpace)),
         dirichletBCs_ (),
-        solution_ (functionSpace)
-    { }
+        solution_ (*functionSpace_)
+    { 
+        dolfin::log (dolfin::DBG, "Abstract differential problem created");
+    }
 
 
 
@@ -31,8 +35,10 @@ namespace control_problem
         mesh_ (std::make_shared<dolfin::Mesh> (mesh)),
         functionSpace_ (std::make_shared<dolfin::FunctionSpace> (functionSpace)),
         dirichletBCs_ (),
-        solution_ (functionSpace)
-    { }
+        solution_ (*functionSpace_)
+    { 
+        dolfin::log (dolfin::DBG, "Abstract differential problem created");
+    }
 
 
 
@@ -81,6 +87,7 @@ namespace control_problem
     /********************** SETTERS ***********************/
     void AbstractDifferentialProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition)
     {
+        dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions vector...");
         dirichletBCs_.emplace_back (dirichletCondition);
     }
 
@@ -88,6 +95,7 @@ namespace control_problem
 
     void AbstractDifferentialProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition)
     {
+        dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions vector...");
         dirichletBCs_.emplace_back (dirichletCondition);
     }
 
@@ -95,6 +103,7 @@ namespace control_problem
 
     void AbstractDifferentialProblem::removeDirichletBC (const std::vector<dolfin::DirichletBC>::iterator& i)
     {
+        dolfin::log (dolfin::DBG, "Removing dirichlet boundary condition from boundary conditions vector...");
         dirichletBCs_.erase (i);
     }
     

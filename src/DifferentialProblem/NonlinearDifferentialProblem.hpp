@@ -59,7 +59,7 @@ namespace control_problem
                 NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
                                               const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                               const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName);
+                                              const std::string& jacobianFormSolutionName = "" );
                 
 
                 //! Constructor with references [1]
@@ -79,7 +79,7 @@ namespace control_problem
                 NonlinearDifferentialProblem (const dolfin::Mesh& mesh, 
                                               const dolfin::FunctionSpace& functionSpace,
                                               const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName);
+                                              const std::string& jacobianFormSolutionName = "" );
 
                 //! Constructor with rvalue references [1]
                 /*!
@@ -98,7 +98,7 @@ namespace control_problem
                 NonlinearDifferentialProblem (dolfin::Mesh&& mesh, 
                                               dolfin::FunctionSpace&& functionSpace,
                                               const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName);
+                                              const std::string& jacobianFormSolutionName = "" );
 
                 
                 //!  Constructor with shared pointers [2]
@@ -122,7 +122,7 @@ namespace control_problem
                                               const T_ResidualForm& residualForm,
                                               const T_JacobianForm& jacobianForm,
                                               const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName);
+                                              const std::string& jacobianFormSolutionName = "" );
 
                 //! Constructor with references [2]
                 /*!
@@ -145,7 +145,7 @@ namespace control_problem
                                               const T_ResidualForm& residualForm,
                                               const T_JacobianForm& jacobianForm,
                                               const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName);
+                                              const std::string& jacobianFormSolutionName = "" );
 
                 //! Constructor with rvalue references [3]
                 /*!
@@ -168,7 +168,8 @@ namespace control_problem
                                               T_ResidualForm&& residualForm,
                                               T_JacobianForm&& jacobianForm,
                                               const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName);
+                                              const std::string& jacobianFormSolutionName = "" );
+                
 
                 /******************* DESTRUCTOR *******************/
                 
@@ -220,7 +221,7 @@ namespace control_problem
                  */
                 virtual void setCoefficient (const std::string& coefficientType, 
                                              const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-                                             const std::string& coefficientName);
+                                             const std::string& coefficientName = "default");
 
                 //! Set coefficient [2]. Override of virtual function in \c AbstractDifferentialProblem.
                 /*!
@@ -294,10 +295,10 @@ namespace control_problem
         NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
                                       const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                       const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName = "") : 
+                                      const std::string& jacobianFormSolutionName) : 
             AbstractDifferentialProblem (mesh, functionSpace),
-            residualForm_ (*functionSpace),
-            jacobianForm_ (*functionSpace, *functionSpace)
+            residualForm_ (*functionSpace_),
+            jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
             dolfin::begin (dolfin::DBG, "Building NonlinearDifferentialProblem...");
             
@@ -340,10 +341,10 @@ namespace control_problem
         NonlinearDifferentialProblem (const dolfin::Mesh& mesh, 
                                       const dolfin::FunctionSpace& functionSpace,
                                       const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName = "") : 
+                                      const std::string& jacobianFormSolutionName) : 
             AbstractDifferentialProblem (mesh, functionSpace),
-            residualForm_ (functionSpace),
-            jacobianForm_ (functionSpace, functionSpace)
+            residualForm_ (*functionSpace_),
+            jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
             dolfin::begin (dolfin::DBG, "Building NonlinearDifferentialProblem...");
             
@@ -386,10 +387,10 @@ namespace control_problem
         NonlinearDifferentialProblem (dolfin::Mesh&& mesh, 
                                       dolfin::FunctionSpace&& functionSpace,
                                       const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName = "") : 
+                                      const std::string& jacobianFormSolutionName) : 
             AbstractDifferentialProblem (mesh, functionSpace),
-            residualForm_ (functionSpace),
-            jacobianForm_ (functionSpace, functionSpace)
+            residualForm_ (*functionSpace_),
+            jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
             dolfin::begin (dolfin::DBG, "Building NonlinearDifferentialProblem...");
             
@@ -434,7 +435,7 @@ namespace control_problem
                                       const T_ResidualForm& residualForm,
                                       const T_JacobianForm& jacobianForm,
                                       const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName = "") : 
+                                      const std::string& jacobianFormSolutionName) : 
             AbstractDifferentialProblem (mesh, functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
@@ -482,7 +483,7 @@ namespace control_problem
                                       const T_ResidualForm& residualForm,
                                       const T_JacobianForm& jacobianForm,
                                       const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName = "") : 
+                                      const std::string& jacobianFormSolutionName) : 
             AbstractDifferentialProblem (mesh, functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
@@ -530,7 +531,7 @@ namespace control_problem
                                       T_ResidualForm&& residualForm,
                                       T_JacobianForm&& jacobianForm,
                                       const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName = "") : 
+                                      const std::string& jacobianFormSolutionName) : 
             AbstractDifferentialProblem (mesh, functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
@@ -609,7 +610,7 @@ namespace control_problem
         void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
         setCoefficient (const std::string& coefficientType, 
                         const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-                        const std::string& coefficientName = "default")
+                        const std::string& coefficientName)
         {
             if (coefficientType == "residual_form")
             {

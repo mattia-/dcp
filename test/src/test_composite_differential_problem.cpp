@@ -84,8 +84,8 @@ int main ()
     // =============================================================================================================== //
     // =============================================================================================================== //
     
-//    dolfin::set_log_level (dolfin::DBG);
-    dolfin::set_log_level (dolfin::PROGRESS);
+    dolfin::set_log_level (dolfin::DBG);
+//    dolfin::set_log_level (dolfin::PROGRESS);
     
     control_problem::CompositeDifferentialProblem cdp;
     
@@ -136,10 +136,11 @@ int main ()
     dolfin::DirichletBC dirichletBC (*V, dirichletCondition, dirichletBoundary);
 
     
-    boost::shared_ptr<Poisson::UnitaryConstant> c2 (new Poisson::UnitaryConstant);
+//    boost::shared_ptr<Poisson::UnitaryConstant> c2 (new Poisson::UnitaryConstant);
+    Poisson::UnitaryConstant c2;
     boost::shared_ptr<Poisson::ExternalLoad> f2 (new Poisson::ExternalLoad);
     boost::shared_ptr<Poisson::NeumannCondition> g2 (new Poisson::NeumannCondition);
-    cdp["ldp"].setCoefficient ("bilinear_form", c2, "c");
+    cdp["ldp"].setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (c2), "c");
     cdp["ldp"].setCoefficient ("linear_form", f2, "f");
     cdp["ldp"].setCoefficient ("linear_form", g2, "g");
     
@@ -181,7 +182,7 @@ int main ()
         cdp["nldp"].addDirichletBC (*i);
     }
     
-    cdp.solve ("nldp");
+    cdp.solve ("nldp", true);
 //    dolfin::plot (cdp.problem ("nldp").solution ()[0]);
 //    dolfin::plot (cdp.problem ("nldp").solution ()[0][0]);
 //    dolfin::plot (cdp.problem ("nldp").solution ()[0][1]);
@@ -198,6 +199,7 @@ int main ()
 //    dolfin::cout << dolfin::endl;
     
     cdp.solve ();
+    cdp.solve (true);
     
     dolfin::plot (cdp.solution ("nldp")[0]);
     dolfin::plot (cdp.solution ("nldp")[0][0]);

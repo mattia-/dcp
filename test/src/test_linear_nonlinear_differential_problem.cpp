@@ -160,8 +160,12 @@ int main ()
     differentialProblem.setCoefficient ("linear_form", f2, "f");
     differentialProblem.setCoefficient ("linear_form", g2, "g");
     
-    differentialProblem.setIntegrationSubdomains ("bilinear_form", meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
-    differentialProblem.setIntegrationSubdomains ("linear_form", meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
+    differentialProblem.setIntegrationSubdomains ("bilinear_form",
+                                                  dolfin::reference_to_no_delete_pointer (meshFacets),
+                                                  control_problem::SubdomainType::BOUNDARY_FACETS);
+    differentialProblem.setIntegrationSubdomains ("linear_form", 
+                                                  dolfin::reference_to_no_delete_pointer (meshFacets),
+                                                  control_problem::SubdomainType::BOUNDARY_FACETS);
     
     // solve
     differentialProblem.solve ();
@@ -203,8 +207,12 @@ int main ()
     differentialProblem2.setCoefficient ("linear_form", f2, "f");
     differentialProblem2.setCoefficient ("linear_form", g2, "g");
     
-    differentialProblem2.setIntegrationSubdomains ("bilinear_form", meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
-    differentialProblem2.setIntegrationSubdomains ("linear_form", meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
+    differentialProblem2.setIntegrationSubdomains ("bilinear_form", 
+                                                   dolfin::reference_to_no_delete_pointer (meshFacets),
+                                                   control_problem::SubdomainType::BOUNDARY_FACETS);
+    differentialProblem2.setIntegrationSubdomains ("linear_form", 
+                                                   dolfin::reference_to_no_delete_pointer (meshFacets),
+                                                   control_problem::SubdomainType::BOUNDARY_FACETS);
     
     // solve
     differentialProblem2.solve ();
@@ -247,8 +255,12 @@ int main ()
     differentialProblem3.setCoefficient ("linear_form", f2, "f");
     differentialProblem3.setCoefficient ("linear_form", g2, "g");
     
-    differentialProblem3.setIntegrationSubdomains ("bilinear_form", meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
-    differentialProblem3.setIntegrationSubdomains ("linear_form", meshFacets, control_problem::SubdomainType::BOUNDARY_FACETS);
+    differentialProblem3.setIntegrationSubdomains ("bilinear_form", 
+                                                   dolfin::reference_to_no_delete_pointer (meshFacets),
+                                                   control_problem::SubdomainType::BOUNDARY_FACETS);
+    differentialProblem3.setIntegrationSubdomains ("linear_form", 
+                                                   dolfin::reference_to_no_delete_pointer (meshFacets),
+                                                   control_problem::SubdomainType::BOUNDARY_FACETS);
     
     // solve
     differentialProblem3.solve ();

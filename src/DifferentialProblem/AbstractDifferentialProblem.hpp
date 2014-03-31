@@ -165,7 +165,7 @@ namespace control_problem
 
             //! Remove Dirichlet boundary condition with given position
             /*!
-             *  \param i the position in the vector of the boundary condition to be removed.
+             *  \param i iterator to the position in the vector of the boundary condition to be removed.
              *            If i is greater than the size of the vector, nothing is removed.
              */
             virtual void removeDirichletBC (const std::vector<dolfin::DirichletBC>::iterator& i);

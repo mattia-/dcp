@@ -30,8 +30,7 @@ namespace control_problem
                 
                 //! The constructor, which also does the registration
                 /*! Input arguments are:
-                 *  \param the identifier that will be identify the object in the factory
-                 *  \param the policy for the builder. Default value is USE_DEFAULT_CONSTRUCTOR
+                 *  \param the identifier that will identify the object in the factory
                  */
                 Proxy (const T_Factory_Identifier& identifier);
 

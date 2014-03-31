@@ -25,8 +25,9 @@ namespace control_problem
 
             //!  Constructor with shared pointers
             /*!
-             *  \param mesh the problem mesh as a const std::shared_ptr to dolfin::Mesh
-             *  \param functionSpace the problem finite element space as a const std::shared_ptr to dolfin::FunctionSpace
+             *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
+             *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
+             *  \c dolfin::FunctionSpace
              *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
              *  The bilinear and linear form will be created too, calling the constructor which takes the function space
              *  as input.
@@ -37,8 +38,8 @@ namespace control_problem
 
             //! Constructor with references
             /*!
-             *  \param mesh the problem mesh as a const dolfin::Mesh&
-             *  \param functionSpace the problem finite element space as a const dolfin::FunctionSpace&
+             *  \param mesh the problem mesh as a const \c dolfin::Mesh&
+             *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
              *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
              *  initialized using the \c new operator and mesh's and functionSpace's copy constructor
              *  The bilinear and linear form will be created too, calling the constructor which takes the function space
@@ -49,8 +50,8 @@ namespace control_problem
 
             //! Constructor with rvalue references
             /*!
-             *  \param mesh the problem mesh as a dolfin::Mesh&&
-             *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
+             *  \param mesh the problem mesh as a \c dolfin::Mesh&&
+             *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
              *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
              *  initialized using the \c new operator and mesh's and functionSpace's move constructor
              *  The bilinear and linear form will be created too, calling the constructor which takes the function space
@@ -96,7 +97,7 @@ namespace control_problem
 
             //! Get const reference to the problem's dirichlet boundary conditions vector
             /*! 
-             *  \return a const reference to the problem's dirichletBC vector
+             *  \return a const reference to the problem's \c dirichletBC vector
              */
             const std::vector<dolfin::DirichletBC>& dirichletBCs () const;
 
@@ -164,7 +165,7 @@ namespace control_problem
 
             //! Remove Dirichlet boundary condition with given position
             /*!
-             *  \param i the position in the vector of the boundary condition to be removed.
+             *  \param i iterator to the position in the vector of the boundary condition to be removed.
              *            If i is greater than the size of the vector, nothing is removed.
              */
             virtual void removeDirichletBC (const std::vector<dolfin::DirichletBC>::iterator& i);
@@ -180,8 +181,7 @@ namespace control_problem
 
             //! Solve method
             /*!
-             * Solves differential problem storing the solution 
-             * in the private member solution.
+             * Solves differential problem storing the solution in the private member \c solution_.
              * It is a pure virtual method that needs to be overridden
              * in any concrete instance of the class
              */
@@ -189,7 +189,7 @@ namespace control_problem
             
             //! Clone method
             /*!
-             *  \return a ptr to a \c control_problem::AbstractDifferentialProblem containing a copy of the object on 
+             *  \return a pointer to a \c control_problem::AbstractDifferentialProblem containing a copy of the object on 
              *  which it is called. 
              */
             virtual control_problem::AbstractDifferentialProblem* clone () const = 0;
@@ -203,14 +203,14 @@ namespace control_problem
         protected:
             //! The problem mesh
             /*! 
-             *  Stored as a shared_ptr because it may be common to more than 
+             *  Stored as a \c shared_ptr because it may be common to more than 
              *  one problem
              */
             std::shared_ptr<dolfin::Mesh> mesh_;
 
             //! The problem finite element space
             /*! 
-             *  Stored as a shared_ptr because it may be common to more than 
+             *  Stored as a \c shared_ptr because it may be common to more than 
              *  one problem
              */
             std::shared_ptr<dolfin::FunctionSpace> functionSpace_;

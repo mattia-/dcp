@@ -6,6 +6,15 @@
 
 namespace control_problem
 {
+    /******************* CONSTRUCTORS ******************/
+    CompositeDifferentialProblem::CompositeDifferentialProblem () : 
+        storedProblems_ (),
+        solveOrder_ (),
+        problemsLinks_ (),
+        needsLinksScanning_ (true)
+    {  }
+
+    
 
     /******************* METHODS *******************/
     std::size_t CompositeDifferentialProblem::size ()
@@ -151,6 +160,8 @@ namespace control_problem
             }
             dolfin::log (dolfin::DBG, "Removed %d entries from links map", erasedCount);
             
+            needsLinksScanning_ = true;
+            
             if (dolfin::get_log_level () <= dolfin::DBG)
             {
                 dolfin::end ();
@@ -172,7 +183,7 @@ namespace control_problem
                                                      const std::string& linkedCoefficientName,
                                                      const std::string& linkedCoefficientType, 
                                                      const std::string& linkTo,
-                                                     const bool& forceRelinking = false)
+                                                     const bool& forceRelinking)
     {
         dolfin::begin (dolfin::DBG, "Setting up link (%s, %s, %s) -> %s...",
                        linkFrom.c_str (),
@@ -204,6 +215,8 @@ namespace control_problem
             {
                 dolfin::end ();
             }
+            
+            needsLinksScanning_ = true;
         }
         else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
         // current link and insert the new one
@@ -233,6 +246,9 @@ namespace control_problem
                 << dolfin::endl;
 
             problemsLinks_.insert (link);
+            
+            needsLinksScanning_ = true;
+            
             if (dolfin::get_log_level () <= dolfin::DBG)
             {
                 dolfin::end ();
@@ -330,7 +346,7 @@ namespace control_problem
 
 
 
-    void CompositeDifferentialProblem::solve ()
+    void CompositeDifferentialProblem::solve (const bool& forceRelinking)
     {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving
@@ -342,8 +358,12 @@ namespace control_problem
         
         for (auto problem : solveOrder_)
         {
-            solve (problem);
+            solve (problem, forceRelinking);
         }
+        
+        // at this point, all links were scanned, so needsLinksScanning_ can be set to false. If no operation on
+        // links is performed before the next call to solve(), there is no need to scan links again
+        needsLinksScanning_ = false;
         
         if (dolfin::get_log_level () <= dolfin::DBG)
         {
@@ -353,7 +373,7 @@ namespace control_problem
 
 
 
-    void CompositeDifferentialProblem::solve (const std::string& problemName)
+    void CompositeDifferentialProblem::solve (const std::string& problemName, const bool& forceRelinking)
     {
         dolfin::begin (dolfin::PROGRESS, "Solving problem \"%s\"...", problemName.c_str ());
         if (dolfin::get_log_level () > dolfin::PROGRESS)
@@ -361,9 +381,16 @@ namespace control_problem
             dolfin::end ();
         }
         
+        if (forceRelinking == true)
+        {
+            needsLinksScanning_ = true;
+            dolfin::log (dolfin::DBG, "Input variable overrides protected member needsLinksScanning_. Value now: %s",
+                         needsLinksScanning_ ? "true" : "false");
+        }
+        
         // get problem with given name from map. Variable problemIterator will be a
         // std::map <std::string, std::unique_ptr <control_problem::AbstractDifferentialProblem>::iterator
-        dolfin::log (dolfin::DBG, "Looking for problem \"%s\" in problems map", problemName.c_str ());
+        dolfin::log (dolfin::DBG, "Looking for problem \"%s\" in problems map...", problemName.c_str ());
         auto problemIterator = storedProblems_.find (problemName);
 
         if (problemIterator == storedProblems_.end ())
@@ -377,60 +404,73 @@ namespace control_problem
         // 1)
         // loop over problemsLinks_. Remember it is a map. Elements in it are order according to the default
         // lexicographical ordering
-        dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
+        if (needsLinksScanning_ == true)
+        {
+            dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
 
-        if (dolfin::get_log_level () > dolfin::PROGRESS)
-        {
-            dolfin::end ();
-        }
-        
-        auto linksIterator = problemsLinks_.begin ();
-        while (linksIterator != problemsLinks_.end () && std::get<0> (linksIterator->first) < problemName)
-        {
-            dolfin::log (dolfin::DBG, 
-                         "Considering link: (%s, %s, %s) -> %s...",
-                         (std::get<0> (linksIterator -> first)).c_str (),
-                         (std::get<1> (linksIterator -> first)).c_str (),
-                         (std::get<2> (linksIterator -> first)).c_str (),
-                         (linksIterator -> second).c_str ());
-            
-            if (std::get<0> (linksIterator->first) == problemName)
+            if (dolfin::get_log_level () > dolfin::PROGRESS)
             {
-                // check if target problem of the link exists
-                dolfin::log (dolfin::DBG, "Looking for link target in problems map...");
-                auto targetProblemIterator = storedProblems_.find (linksIterator->second);
-                if (targetProblemIterator == storedProblems_.end ())
+                dolfin::end ();
+            }
+
+            auto linksIterator = problemsLinks_.begin ();
+            while (linksIterator != problemsLinks_.end () && std::get<0> (linksIterator->first) < problemName)
+            {
+                dolfin::log (dolfin::DBG, 
+                             "Considering link: (%s, %s, %s) -> %s...",
+                             (std::get<0> (linksIterator -> first)).c_str (),
+                             (std::get<1> (linksIterator -> first)).c_str (),
+                             (std::get<2> (linksIterator -> first)).c_str (),
+                             (linksIterator -> second).c_str ());
+
+                if (std::get<0> (linksIterator->first) == problemName)
                 {
-                    dolfin::warning ("Cannot link problem \"%s\" to problem \"%s\". No such problem found in \
-                                     stored problems map. Aborting...",
-                                     problemName.c_str (),
-                                     linksIterator->second.c_str ());
-                    return;
+                    // check if target problem of the link exists
+                    dolfin::log (dolfin::DBG, "Looking for link target in problems map...");
+                    auto targetProblemIterator = storedProblems_.find (linksIterator->second);
+                    if (targetProblemIterator == storedProblems_.end ())
+                    {
+                        dolfin::warning ("Cannot link problem \"%s\" to problem \"%s\". No such problem found in \
+                                         stored problems map. Aborting...",
+                                         problemName.c_str (),
+                                         linksIterator->second.c_str ());
+                        return;
+                    }
+
+                    control_problem::AbstractDifferentialProblem& targetProblem = *(targetProblemIterator->second);
+
+                    dolfin::log (dolfin::PROGRESS, 
+                                 "Linking coefficient \"%s\" of type \"%s\" to solution of problem \"%s\"",
+                                 (std::get<1> (linksIterator->first)).c_str (),
+                                 (std::get<2> (linksIterator->first)).c_str (),
+                                 (linksIterator->second).c_str ());
+
+                    problem.setCoefficient (std::get<2> (linksIterator->first), 
+                                            dolfin::reference_to_no_delete_pointer (targetProblem.solution ()),
+                                            std::get<1> (linksIterator->first));
+                }
+                else
+                {
+                    dolfin::log (dolfin::DBG, "Considered link does not match name of problem being solved. Skipping...");
                 }
 
-                control_problem::AbstractDifferentialProblem& targetProblem = *(targetProblemIterator->second);
-
-                dolfin::log (dolfin::PROGRESS, 
-                             "Linking coefficient \"%s\" of type \"%s\" to solution of problem \"%s\"",
-                             (std::get<1> (linksIterator->first)).c_str (),
-                             (std::get<2> (linksIterator->first)).c_str (),
-                             (linksIterator->second).c_str ());
-
-                problem.setCoefficient (std::get<2> (linksIterator->first), 
-                                        boost::shared_ptr<dolfin::Function> (new dolfin::Function (targetProblem.solution ())),
-                                        std::get<1> (linksIterator->first));
+                ++linksIterator;
             }
-            ++linksIterator;
+
+            if (dolfin::get_log_level () <= dolfin::PROGRESS)
+            {
+                dolfin::end ();
+            }
         }
-        
-        if (dolfin::get_log_level () <= dolfin::PROGRESS)
+        else
         {
-            dolfin::end ();
+            dolfin::log (dolfin::DBG, "No links scanning performed. Protected member needsLinksScanning_ value: %s",
+                         needsLinksScanning_ ? "true" : "false");
         }
 
         // 2)
         // solve problem
-        dolfin::begin (dolfin::PROGRESS, "Calling solve method for problem \"%s\"", problemName.c_str ());
+        dolfin::begin (dolfin::PROGRESS, "Calling solve method for problem \"%s\"...", problemName.c_str ());
         if (dolfin::get_log_level () > dolfin::PROGRESS)
         {
             dolfin::end ();
@@ -448,9 +488,16 @@ namespace control_problem
             dolfin::end ();
         }
     }
+    
+
+
+    void CompositeDifferentialProblem::solve (const char* problemName, const bool& forceRelinking)
+    {
+        solve (std::string (problemName), forceRelinking);
+    }
+    
+
    
-
-
     const dolfin::Function& CompositeDifferentialProblem::solution (const std::string& problemName) const
     {
         auto problemIterator = storedProblems_.find (problemName);

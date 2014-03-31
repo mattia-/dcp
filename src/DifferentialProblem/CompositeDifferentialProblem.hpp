@@ -18,7 +18,7 @@ namespace control_problem
     /*! \class CompositeDifferentialProblem CompositeDifferentialProblem.hpp
      *  \brief Class for multi-variable and multi-equation differential problem
      *  
-     *  The class contains a map that associate a problem with its identifying name
+     *  The class contains a \c std::map that associate a problem with its identifying name
      *  and a vector that stores the problem names in the order they should be solved.
      *  The aforementioned map associates a \c std::string to a pointer to 
      *  \c control_problem::AbstractDifferentialProblem.
@@ -31,9 +31,8 @@ namespace control_problem
 
         public:
             /******************* CONSTRUCTORS ******************/
-            //! Default constructor is the default one, which means all the containers stored as protected
-            //!  members are empty
-            CompositeDifferentialProblem () = default;
+            //! Default constructor 
+            CompositeDifferentialProblem ();
             
             //! Copy constructor. Deleted, since it makes no sense for unique_ptr's
             CompositeDifferentialProblem (const CompositeDifferentialProblem& rhs) = delete;
@@ -112,7 +111,7 @@ namespace control_problem
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
-             *  \param forceRelinking boolean value (default FALSE). If the pair problem name - coefficient 
+             *  \param forceRelinking boolean value (default \c FALSE). If the pair (problem name - coefficient) 
              *  identified by the first and the second string in the first argument already appears in the protected 
              *  member variable \c problemsLinks_, it will be relinked using the \c pair passed as first argument if 
              *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
@@ -121,7 +120,7 @@ namespace control_problem
                                const std::string& linkedCoefficientName,
                                const std::string& linkedCoefficientType, 
                                const std::string& linkTo,
-                               const bool& forceRelinking);
+                               const bool& forceRelinking = false);
             
             //! Access problem with given name [1] (read only)
             /*!
@@ -162,14 +161,32 @@ namespace control_problem
             void print ();
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_
-            void solve ();
+            /*!
+             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
+             *  member variable needsLinksScanning_. Default value is \c false
+             */
+            void solve (const bool& forceRelinking = false);
             
-            //! Solve only the problem corresponding to the name given
+            //! Solve the problem corresponding to the name given [1]
             /*!
              *  \param problemName a string identifying the problem to be solved. If no problem with that name
              *  is found, a warning is issued
+             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
+             *  member variable needsLinksScanning_. Default value is \c false
              */
-            void solve (const std::string& problemName);
+            void solve (const std::string& problemName, const bool& forceRelinking = false);
+            
+            //! Solve the problem corresponding to the name given [2]
+            /*!
+             *  This method is provided only to allow calls like
+             *  \code
+             *  solve ("foo_problem");
+             *  \endcode
+             *  In this case, the compiler would in fact otherwise call \c solve \c (const \c bool&) which is the 
+             *  best-matching implicit conversion for a parameter of type \c const \c char*. Using this method,
+             *  the version of \c solve that takes a \c std::string is called as expected.
+             */
+            void solve (const char* problemName, const bool& forceRelinking = false);
             
             //! Access solution of the problem identified by given name
             /*!
@@ -191,6 +208,11 @@ namespace control_problem
             //! The map of links between problems. A map guarantees that no pair (problem, coefficient) is linked twice
             //! against possibly different problems
             std::map <std::tuple <std::string, std::string, std::string>, std::string> problemsLinks_;
+            
+            //! Boolean flag. It is set to \c true if the problems links have been changed in any way and 
+            //! should be scanned before solving the problems
+            bool needsLinksScanning_;
+            
         // ---------------------------------------------------------------------------------------------//  
 
         private:

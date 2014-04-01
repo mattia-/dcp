@@ -106,6 +106,8 @@ int main ()
 //        (new controlproblem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> (*NLmesh, *NLV, "trial"));
     
     cdp.addProblem ("ldp", ldp);
+    
+    nldp.parameters["clone_method"] = "deep_clone";
     cdp.addProblem ("nldp", nldp);
 //    cdp.print ();
   

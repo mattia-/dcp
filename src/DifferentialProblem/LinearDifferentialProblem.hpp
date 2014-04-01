@@ -188,12 +188,13 @@ namespace controlproblem
                 /******************* DESTRUCTOR *******************/
                 
                 //! Destructor
-                /*! Default destructor, since members of the class are trivially 
-                 * destructible.
-                 * It is declared virtual so that derived classes' constructor
-                 * can be called on derived classes.
-                 * The "default-ness" is set in implementation outside of the class for compatibility with
-                 * \c gcc-4.6, which does not allow virtual members to be defaulted in class
+                /*! 
+                 *  Default destructor, since members of the class are trivially 
+                 *  destructible.
+                 *  It is declared virtual so that derived classes' constructor
+                 *  can be called on derived classes.
+                 *  The "default-ness" is set in implementation outside of the class for compatibility with
+                 *  \c gcc-4.6, which does not allow virtual members to be defaulted in class
                  */
                 virtual ~LinearDifferentialProblem ();
 
@@ -312,6 +313,15 @@ namespace controlproblem
                 void solve (const bool& mustReassemble);
 
                 //! Clone method. Overrides method in \c AbstractDifferentialProblem
+                /*!
+                 *  Note that it uses variable \c clone_method in \c parameters to decide which kind of cloning to
+                 *  perform. Values for such variable can be either \c deep_clone or \c shallow_clone. The first means
+                 *  that the new object is created calling the constructor that takes a mesh and a function space as 
+                 *  input, thus creating a copy of such objects and returning a completely independent cloned object. 
+                 *  The second cloning type calls the constructor that takes shared pointers as input: the mesh and
+                 *  the function space are not copied but shared between the current object and its clone. 
+                 *  The default value for \clone_method is \shallow_clone
+                 */
                 virtual controlproblem::LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
                     clone () const;
 
@@ -391,6 +401,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -429,6 +440,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -467,6 +479,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);
+            parameters.add ("clone_method", "shallow_clone");
         
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -507,6 +520,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -547,6 +561,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -587,6 +602,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -904,18 +920,38 @@ namespace controlproblem
                 dolfin::end ();
             }
             
+            std::string cloneMethod = parameters["clone_method"];
+            
+            dolfin::log (dolfin::DBG, "Clone method: %s", cloneMethod.c_str ());
             dolfin::log (dolfin::DBG, "Creating new object of type LinearDifferentialProblem...");
             
             // create new object
-            controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
-                clonedProblem 
-                (new controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
-                        (this->mesh_,
-                         this->functionSpace_,
-                         this->bilinearForm_, 
-                         this->linearForm_
-                        )
-                );
+            controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory>* clonedProblem;
+            if (cloneMethod == "shallow_clone")
+            {
+                clonedProblem = 
+                    new controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
+                    (this->mesh_,
+                     this->functionSpace_,
+                     this->bilinearForm_, 
+                     this->linearForm_
+                    );
+            }
+            else if (cloneMethod == "deep_clone")
+            {
+                clonedProblem =
+                    new controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
+                    (*(this->mesh_),
+                     *(this->functionSpace_),
+                       this->bilinearForm_, 
+                       this->linearForm_
+                    );
+            }
+            else
+            {
+                dolfin::error ("Cannot clone linear differential problem. Unknown clone method: \"%s\"",
+                               cloneMethod.c_str ());
+            }
             
             //copy dirichlet boundary conditions
             dolfin::log (dolfin::DBG, "Copying Dirichlet boundary conditions...");

@@ -264,6 +264,15 @@ namespace controlproblem
                 void solve (const dolfin::Parameters& solverParameters);
 
                 //! Clone method. Overrides method in \c AbstractDifferentialProblem
+                /*!
+                 *  Note that it uses variable \c clone_method in \c parameters to decide which kind of cloning to
+                 *  perform. Values for such variable can be either \c deep_clone or \c shallow_clone. The first means
+                 *  that the new object is created calling the constructor that takes a mesh and a function space as 
+                 *  input, thus creating a copy of such objects and returning a completely independent cloned object. 
+                 *  The second cloning type calls the constructor that takes shared pointers as input: the mesh and
+                 *  the function space are not copied but shared between the current object and its clone. 
+                 *  The default value for \clone_method is \shallow_clone
+                 */
                 virtual controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>*
                     clone () const;
                 
@@ -315,6 +324,7 @@ namespace controlproblem
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             boost::shared_ptr <dolfin::Function> tmpSolution (new dolfin::Function (solution_));
@@ -361,6 +371,7 @@ namespace controlproblem
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             boost::shared_ptr <dolfin::Function> tmpSolution (new dolfin::Function (solution_));
@@ -407,6 +418,7 @@ namespace controlproblem
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             boost::shared_ptr <dolfin::Function> tmpSolution (new dolfin::Function (solution_));
@@ -455,6 +467,7 @@ namespace controlproblem
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             boost::shared_ptr <dolfin::Function> tmpSolution (new dolfin::Function (solution_));
@@ -503,6 +516,7 @@ namespace controlproblem
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             boost::shared_ptr <dolfin::Function> tmpSolution (new dolfin::Function (solution_));
@@ -551,6 +565,7 @@ namespace controlproblem
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             
@@ -841,19 +856,42 @@ namespace controlproblem
                 dolfin::end ();
             }
             
+            std::string cloneMethod = parameters["clone_method"];
+            
+            dolfin::log (dolfin::DBG, "Clone method: %s", cloneMethod.c_str ());
             dolfin::log (dolfin::DBG, "Creating new object of type NonlinearDifferentialProblem...");
+            
             // create new object
-            controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>* clonedProblem 
-                (new controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm> 
+            controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>* clonedProblem;
+            if (cloneMethod == "shallow_clone")
+            {
+                clonedProblem = 
+                    new controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm> 
                         ( this->mesh_,
                           this->functionSpace_,
                           this->residualForm_, 
                           this->jacobianForm_,
                          (this->parameters) ["residual_form_solution_name"],
                          (this->parameters) ["jacobian_form_solution_name"]
-                        )
-                );
-            
+                        );
+            }
+            else if (cloneMethod == "deep_clone")
+            {
+                clonedProblem = 
+                    new controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm> 
+                        (*(this->mesh_),
+                         *(this->functionSpace_),
+                           this->residualForm_, 
+                           this->jacobianForm_,
+                          (this->parameters) ["residual_form_solution_name"],
+                          (this->parameters) ["jacobian_form_solution_name"]
+                        );
+            }
+            else
+            {
+                dolfin::error ("Cannot clone nonlinear differential problem. Unknown clone method: \"%s\"",
+                               cloneMethod.c_str ());
+            }
             //copy dirichlet boundary conditions
             dolfin::log (dolfin::DBG, "Copying Dirichlet boundary conditions...");
             for (auto i : this->dirichletBCs_)

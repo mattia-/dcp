@@ -13,7 +13,7 @@
 #include <vector>
 #include <functional>
 
-namespace control_problem
+namespace controlproblem
 {
     /*! \class CompositeDifferentialProblem CompositeDifferentialProblem.hpp
      *  \brief Class for multi-variable and multi-equation differential problem
@@ -21,7 +21,7 @@ namespace control_problem
      *  The class contains a \c std::map that associate a problem with its identifying name
      *  and a vector that stores the problem names in the order they should be solved.
      *  The aforementioned map associates a \c std::string to a pointer to 
-     *  \c control_problem::AbstractDifferentialProblem.
+     *  \c controlproblem::AbstractDifferentialProblem.
      *  The class also offers the possibility to link a problem's coefficient to another problem's
      *  solution through the use of a \c std::map<std::tuple <std::string, std::string, std::string>, std::string> >
      */
@@ -72,8 +72,8 @@ namespace control_problem
             /*!
              *  The call from main is something like:
              *  \code
-             *  std::unique_ptr<control_problem::AbstractDifferentialProblem> foo = 
-             *      new control_problem::LinearDifferentialProblem<bilinear_form_type, linear_form_type> (mesh, V));
+             *  std::unique_ptr<controlproblem::AbstractDifferentialProblem> foo = 
+             *      new controlproblem::LinearDifferentialProblem<bilinear_form_type, linear_form_type> (mesh, V));
              *  comp_diff_p.addProblem ("bar", &foo);
              *  \endcode
              *  The parameters are:
@@ -128,7 +128,7 @@ namespace control_problem
              *  error message and throws an exception through the function \c dolfin::error
              *  \return a reference to the problem
              */
-            const control_problem::AbstractDifferentialProblem& operator[] (const std::string& name) const;
+            const controlproblem::AbstractDifferentialProblem& operator[] (const std::string& name) const;
             
             //! Access problem with given name [2] (read and write)
             /*!
@@ -136,7 +136,7 @@ namespace control_problem
              *  error message and throws an exception through the function \c dolfin::error
              *  \return a reference to the problem
              */
-            control_problem::AbstractDifferentialProblem& operator[] (const std::string& name);
+            controlproblem::AbstractDifferentialProblem& operator[] (const std::string& name);
             
             //! Access problem with given position in vector \c solveOrder_ [1] (read only)
             /*!
@@ -145,7 +145,7 @@ namespace control_problem
              *  through the function \c dolfin::error
              *  \return a reference to the problem
              */
-            const control_problem::AbstractDifferentialProblem& operator[] (const std::size_t& position) const;
+            const controlproblem::AbstractDifferentialProblem& operator[] (const std::size_t& position) const;
             
             //! Access problem with given position in vector \c solveOrder_ [2] (read and write)
             /*!
@@ -154,7 +154,7 @@ namespace control_problem
              *  through the function \c dolfin::error
              *  \return a reference to the problem
              */
-            control_problem::AbstractDifferentialProblem& operator[] (const std::size_t& position);
+            controlproblem::AbstractDifferentialProblem& operator[] (const std::size_t& position);
             
             //! Prints information on the problems: names list (in solution order) and links information.
             //! It uses \c dolfin::cout stream
@@ -200,7 +200,7 @@ namespace control_problem
 
         protected:
             //! The stored problems
-            std::map <std::string, std::unique_ptr <control_problem::AbstractDifferentialProblem>> storedProblems_;
+            std::map <std::string, std::unique_ptr <controlproblem::AbstractDifferentialProblem>> storedProblems_;
 
             //! The solution order of the problems
             std::vector <std::string> solveOrder_;

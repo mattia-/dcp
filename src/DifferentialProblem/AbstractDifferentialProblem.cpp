@@ -1,6 +1,6 @@
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
 
-namespace control_problem
+namespace controlproblem
 {
     /************************* CONSTRUCTORS ********************/
     AbstractDifferentialProblem::AbstractDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh,

@@ -5,7 +5,7 @@
 #include <Utils/SubdomainType.hpp>
 #include <memory>
 
-namespace control_problem
+namespace controlproblem
 {
     /*! \class AbstractDifferentialProblem AbstractDifferentialProblem.hpp
      *  \brief Abstract base class for differential problems. 
@@ -145,11 +145,11 @@ namespace control_problem
              *  subdomain to set
              *  \param meshFunction the mesh function used to set the integration subdomains
              *  \param subdomainType the type of the subdomains, chosen among those provided by the enumeration
-             *  class \c control_problem::SubdomainType
+             *  class \c controlproblem::SubdomainType
              */
             virtual void setIntegrationSubdomains (const std::string& formType,
                                                    boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                   const control_problem::SubdomainType& subdomainType) = 0;
+                                                   const controlproblem::SubdomainType& subdomainType) = 0;
 
             //! Add Dirichlet boundary condition to the problem [1]
             /*!
@@ -189,10 +189,10 @@ namespace control_problem
             
             //! Clone method
             /*!
-             *  \return a pointer to a \c control_problem::AbstractDifferentialProblem containing a copy of the object on 
+             *  \return a pointer to a \c controlproblem::AbstractDifferentialProblem containing a copy of the object on 
              *  which it is called. 
              */
-            virtual control_problem::AbstractDifferentialProblem* clone () const = 0;
+            virtual controlproblem::AbstractDifferentialProblem* clone () const = 0;
 
             /********************** VARIABLES ***********************/
             //! the problem parameters

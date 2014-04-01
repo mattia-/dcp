@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 
-namespace control_problem
+namespace controlproblem
 {
     /*! class GenericFactory
      *  \brief class containing a generic factory

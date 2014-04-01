@@ -6,7 +6,7 @@
 #include <memory>
 #include <Utils/SubdomainType.hpp>
 
-namespace control_problem
+namespace controlproblem
 {
     /*! \class Functional Functional.hpp
      *  \brief Class for functionals.
@@ -148,7 +148,7 @@ namespace control_problem
                   */
                  void setIntegrationSubdomains (const std::string& formType,
                                                 boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                const control_problem::SubdomainType& subdomainType);
+                                                const controlproblem::SubdomainType& subdomainType);
 
                  //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c AbstractDifferentialProblem
                  /*!
@@ -198,7 +198,7 @@ namespace control_problem
                 void solve (const bool& mustReassemble);
 
                 //! Clone method. Overrides method in \c AbstractDifferentialProblem
-                 control_problem::Functional<T_FunctionalForm>*
+                 controlproblem::Functional<T_FunctionalForm>*
                     clone () const;
 
                 // ---------------------------------------------------------------------------------------------//
@@ -593,23 +593,23 @@ namespace control_problem
         void Functional<T_FunctionalForm>::
         setIntegrationSubdomains (const std::string& formType,
                                   boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                  const control_problem::SubdomainType& subdomainType)
+                                  const controlproblem::SubdomainType& subdomainType)
         {
             if (formType == "bilinear_form")
             {
-                if (subdomainType == control_problem::SubdomainType::INTERNAL_CELLS)
+                if (subdomainType == controlproblem::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on INTERNAL_CELLS...");
                     bilinearForm_.set_cell_domains (meshFunction);
                     parameters ["system_is_assembled"] = false;
                 }
-                else if (subdomainType == control_problem::SubdomainType::INTERNAL_FACETS)
+                else if (subdomainType == controlproblem::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on INTERNAL_FACETS...");
                     bilinearForm_.set_interior_facet_domains (meshFunction);
                     parameters ["system_is_assembled"] = false;
                 }
-                else if (subdomainType == control_problem::SubdomainType::BOUNDARY_FACETS)
+                else if (subdomainType == controlproblem::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on BOUNDARY_FACETS...");
                     bilinearForm_.set_exterior_facet_domains (meshFunction);
@@ -622,19 +622,19 @@ namespace control_problem
             }
             else if (formType == "linear_form")
             {
-                if (subdomainType == control_problem::SubdomainType::INTERNAL_CELLS)
+                if (subdomainType == controlproblem::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on INTERNAL_CELLS...");
                     linearForm_.set_cell_domains (meshFunction);
                     parameters ["system_is_assembled"] = false;
                 }
-                else if (subdomainType == control_problem::SubdomainType::INTERNAL_FACETS)
+                else if (subdomainType == controlproblem::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on INTERNAL_FACETS...");
                     linearForm_.set_interior_facet_domains (meshFunction);
                     parameters ["system_is_assembled"] = false;
                 }
-                else if (subdomainType == control_problem::SubdomainType::BOUNDARY_FACETS)
+                else if (subdomainType == controlproblem::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on BOUNDARY_FACETS...");
                     linearForm_.set_exterior_facet_domains (meshFunction);
@@ -775,7 +775,7 @@ namespace control_problem
     
     
     template <class T_FunctionalForm>
-        control_problem::Functional<T_FunctionalForm>*
+        controlproblem::Functional<T_FunctionalForm>*
         Functional<T_FunctionalForm>::
         clone () const
         {
@@ -789,9 +789,9 @@ namespace control_problem
             dolfin::log (dolfin::DBG, "Creating new object of type Functional...");
             
             // create new object
-            control_problem::Functional <T_FunctionalForm>*
+            controlproblem::Functional <T_FunctionalForm>*
                 clonedProblem 
-                (new control_problem::Functional <T_FunctionalForm> 
+                (new controlproblem::Functional <T_FunctionalForm> 
                         (this->mesh_,
                          this->functionSpace_,
                          this->bilinearForm_, 
@@ -917,7 +917,7 @@ namespace control_problem
             else
             {
                 dolfin::log (dolfin::DBG, "Creating solver of type \"%s\"...", desiredSolverType.c_str ());
-                control_problem::LinearSolverFactory& factory = control_problem::LinearSolverFactory::Instance ();
+                controlproblem::LinearSolverFactory& factory = controlproblem::LinearSolverFactory::Instance ();
                 auto solver = factory.create (desiredSolverType);
                 
                 dolfin::log (dolfin::DBG, "Updating parameters...");

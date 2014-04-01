@@ -1,8 +1,8 @@
 #ifndef SRC_UTILS_COMPARISONFUNCTORS_HPP_INCLUDE_GUARD
 #define SRC_UTILS_COMPARISONFUNCTORS_HPP_INCLUDE_GUARD
 
-/*! This file contains definitions of the function object \c control_problem::less, 
- * \c control_problem::greater, \c control_problem::equal_to, ... so that we can use them in 
+/*! This file contains definitions of the function object \c controlproblem::less, 
+ * \c controlproblem::greater, \c controlproblem::equal_to, ... so that we can use them in 
  * standard library containers that need an ordering relationship throughout this
  * project. We prefer not to specialize comparison operators in std library (e.g. \c std::less<T>,
  * \c std::greater<T>, ...) because otherwise projects that use this library will also inherit 
@@ -12,7 +12,7 @@
 #include <utility>
 #include <string>
 
-namespace control_problem
+namespace controlproblem
 {
     /*! \class less
      *  \brief class that implements the "less than" comparison. 

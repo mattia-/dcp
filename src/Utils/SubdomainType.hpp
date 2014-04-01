@@ -1,7 +1,7 @@
 #ifndef SRC_UTILS_SUBDOMAINTYPE_HPP_INCLUDE_GUARD
 #define SRC_UTILS_SUBDOMAINTYPE_HPP_INCLUDE_GUARD
 
-namespace control_problem
+namespace controlproblem
 {
     //! \class SubdomainType 
     /*!  \brief Enumeration class used to identify domain parts

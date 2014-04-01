@@ -2,7 +2,7 @@
 #include <utility>
 #include <tuple>
 
-namespace control_problem
+namespace controlproblem
 {
     bool less::operator() (const std::tuple <std::string, std::string, std::string>& lhs, 
                            const std::tuple <std::string, std::string, std::string>& rhs)

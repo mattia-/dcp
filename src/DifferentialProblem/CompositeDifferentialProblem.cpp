@@ -4,7 +4,7 @@
 #include <dolfin.h>
 #include <algorithm>
 
-namespace control_problem
+namespace controlproblem
 {
     /******************* CONSTRUCTORS ******************/
     CompositeDifferentialProblem::CompositeDifferentialProblem () : 
@@ -35,7 +35,7 @@ namespace control_problem
         
         // create new problem object
         dolfin::log (dolfin::DBG, "Creating new problem object...");
-        std::unique_ptr<control_problem::AbstractDifferentialProblem> clonedProblem (problem.clone ());
+        std::unique_ptr<controlproblem::AbstractDifferentialProblem> clonedProblem (problem.clone ());
         
         // insert problem into storedProblems_ taking ownership
         dolfin::log (dolfin::DBG, "Inserting problem in problems map with name \"%s\"...", problemName.c_str ());
@@ -270,7 +270,7 @@ namespace control_problem
 
 
 
-    const control_problem::AbstractDifferentialProblem& 
+    const controlproblem::AbstractDifferentialProblem& 
     CompositeDifferentialProblem::operator[] (const std::string& name) const
     {
         auto problemIterator = storedProblems_.find (name);
@@ -283,7 +283,7 @@ namespace control_problem
 
 
 
-    control_problem::AbstractDifferentialProblem& 
+    controlproblem::AbstractDifferentialProblem& 
     CompositeDifferentialProblem::operator[] (const std::string& name)
     {
         auto problemIterator = storedProblems_.find (name);
@@ -296,7 +296,7 @@ namespace control_problem
 
 
 
-    const control_problem::AbstractDifferentialProblem& 
+    const controlproblem::AbstractDifferentialProblem& 
     CompositeDifferentialProblem::operator[] (const std::size_t& position) const
     {
         if (position >= solveOrder_.size ())
@@ -308,7 +308,7 @@ namespace control_problem
 
 
 
-    control_problem::AbstractDifferentialProblem& 
+    controlproblem::AbstractDifferentialProblem& 
     CompositeDifferentialProblem::operator[] (const std::size_t& position)
     {
         if (position >= solveOrder_.size ())
@@ -389,7 +389,7 @@ namespace control_problem
         }
         
         // get problem with given name from map. Variable problemIterator will be a
-        // std::map <std::string, std::unique_ptr <control_problem::AbstractDifferentialProblem>::iterator
+        // std::map <std::string, std::unique_ptr <controlproblem::AbstractDifferentialProblem>::iterator
         dolfin::log (dolfin::DBG, "Looking for problem \"%s\" in problems map...", problemName.c_str ());
         auto problemIterator = storedProblems_.find (problemName);
 
@@ -399,7 +399,7 @@ namespace control_problem
             return;
         }
 
-        control_problem::AbstractDifferentialProblem& problem = *(problemIterator->second);
+        controlproblem::AbstractDifferentialProblem& problem = *(problemIterator->second);
 
         // 1)
         // loop over problemsLinks_. Remember it is a map. Elements in it are order according to the default
@@ -437,7 +437,7 @@ namespace control_problem
                         return;
                     }
 
-                    control_problem::AbstractDifferentialProblem& targetProblem = *(targetProblemIterator->second);
+                    controlproblem::AbstractDifferentialProblem& targetProblem = *(targetProblemIterator->second);
 
                     dolfin::log (dolfin::PROGRESS, 
                                  "Linking coefficient \"%s\" of type \"%s\" to solution of problem \"%s\"",

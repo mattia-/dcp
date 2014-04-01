@@ -3,7 +3,7 @@
 
 #include <Factory/GenericFactory.hpp>
 
-namespace control_problem
+namespace controlproblem
 {
     /*! \class Proxy
      *  \brief A class that provides registration into a factory.

@@ -1,7 +1,11 @@
 #ifndef SRC_DIFFERENTIALPROBLEM_ABSTRACTDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
 #define SRC_DIFFERENTIALPROBLEM_ABSTRACTDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
 
-#include <dolfin.h>
+#include <dolfin/mesh/Mesh.h>
+#include <dolfin/function/FunctionSpace.h>
+#include <dolfin/function/Function.h>
+#include <dolfin/fem/DirichletBC.h>
+#include <dolfin/parameter/Parameters.h>
 #include <Utils/SubdomainType.hpp>
 #include <memory>
 

@@ -1,7 +1,13 @@
 #ifndef SRC_DIFFERENTIALPROBLEM_NONLINEARDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
 #define SRC_DIFFERENTIALPROBLEM_NONLINEARDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
 
-#include <dolfin.h>
+#include <dolfin/mesh/Mesh.h>
+#include <dolfin/function/FunctionSpace.h>
+#include <dolfin/fem/solve.h>
+#include <dolfin/la/Matrix.h>
+#include <dolfin/la/Vector.h>
+#include <dolfin/log/dolfin_log.h>
+#include <dolfin/parameter/Parameters.h>
 #include <vector>
 #include <string>
 #include <memory>

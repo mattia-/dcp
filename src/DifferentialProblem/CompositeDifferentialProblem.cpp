@@ -3,6 +3,7 @@
 #include <tuple>
 #include <dolfin.h>
 #include <algorithm>
+#include <dolfin/log/dolfin_log.h>
 
 namespace controlproblem
 {

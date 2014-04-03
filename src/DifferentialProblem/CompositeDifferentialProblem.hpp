@@ -4,7 +4,6 @@
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
 #include <DifferentialProblem/LinearDifferentialProblem.hpp>
 #include <DifferentialProblem/NonlinearDifferentialProblem.hpp>
-#include <dolfin.h>
 #include <map>
 #include <tuple>
 #include <memory>

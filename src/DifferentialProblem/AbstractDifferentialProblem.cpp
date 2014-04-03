@@ -3,8 +3,8 @@
 namespace controlproblem
 {
     /************************* CONSTRUCTORS ********************/
-    AbstractDifferentialProblem::AbstractDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh,
-                                                              const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
+    AbstractDifferentialProblem::AbstractDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh,
+                                                              const boost::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
         parameters ("differential_problem_parameters"),
         mesh_ (mesh),
         functionSpace_ (functionSpace),
@@ -32,8 +32,8 @@ namespace controlproblem
     AbstractDifferentialProblem::AbstractDifferentialProblem (dolfin::Mesh&& mesh, 
                                                               dolfin::FunctionSpace&& functionSpace) : 
         parameters ("differential_problem_parameters"),
-        mesh_ (std::make_shared<dolfin::Mesh> (mesh)),
-        functionSpace_ (std::make_shared<dolfin::FunctionSpace> (functionSpace)),
+        mesh_ (new dolfin::Mesh (std::move (mesh))),
+        functionSpace_ (new dolfin::FunctionSpace (std::move (functionSpace))),
         dirichletBCs_ (),
         solution_ (*functionSpace_)
     { 
@@ -43,7 +43,7 @@ namespace controlproblem
 
 
     /************************* DESTRUCTOR ********************/
-    // this is done for compatibility with gcc 4.6, which doesn't allow virtual members to be defualted in class body
+    // this is done for compatibility with gcc 4.6, which doesn't allow virtual members to be defaulted in class body
     AbstractDifferentialProblem::~AbstractDifferentialProblem () = default;
 
 

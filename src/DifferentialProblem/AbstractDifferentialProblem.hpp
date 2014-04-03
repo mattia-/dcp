@@ -1,9 +1,14 @@
 #ifndef SRC_DIFFERENTIALPROBLEM_ABSTRACTDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
 #define SRC_DIFFERENTIALPROBLEM_ABSTRACTDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
 
-#include <dolfin.h>
+#include <dolfin/mesh/Mesh.h>
+#include <dolfin/mesh/MeshFunction.h>
+#include <dolfin/function/FunctionSpace.h>
+#include <dolfin/function/Function.h>
+#include <dolfin/fem/DirichletBC.h>
+#include <dolfin/parameter/Parameters.h>
+#include <boost/shared_ptr.hpp>
 #include <Utils/SubdomainType.hpp>
-#include <memory>
 
 namespace controlproblem
 {
@@ -25,15 +30,15 @@ namespace controlproblem
 
             //!  Constructor with shared pointers
             /*!
-             *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
-             *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
+             *  \param mesh the problem mesh as a const \c boost::shared_ptr to \c dolfin::Mesh
+             *  \param functionSpace the problem finite element space as a const \c boost::shared_ptr to 
              *  \c dolfin::FunctionSpace
              *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
              *  The bilinear and linear form will be created too, calling the constructor which takes the function space
              *  as input.
              */
-            AbstractDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                         const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
+            AbstractDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                         const boost::shared_ptr<dolfin::FunctionSpace> functionSpace);
 
 
             //! Constructor with references
@@ -114,9 +119,9 @@ namespace controlproblem
              *  to set coefficients in all hierarchy.
              *  Parameters are:
              *  \param coefficientType used to disambiguate between different member variables to choose which coefficient
-             *  \param coefficientValue value of the coefficient
-             *  \param coefficientName string identifying the coefficient
              *  to set
+             *  \param coefficientValue value of the coefficient
+             *  \param coefficientName string identifying the coefficient to set
              */
             virtual void setCoefficient (const std::string& coefficientType, 
                                          const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
@@ -127,10 +132,10 @@ namespace controlproblem
              *  This method is meant to be overridden in derived classes, so that we can have a uniform interface
              *  to set coefficients in all hierarchy.
              *  Parameters are:
-             *  \param coefficientType used to disambiguate between different member variables to choose which coefficient
-             *  \param coefficientValue value of the coefficient
-             *  \param coefficientNumber integer identifying the coefficient
+             *  \param coefficientType used to disambiguate between different member variables to choose which coefficient 
              *  to set
+             *  \param coefficientValue value of the coefficient
+             *  \param coefficientNumber integer identifying the coefficient to set
              */
             virtual void setCoefficient (const std::string& coefficientType,
                                          const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
@@ -187,12 +192,13 @@ namespace controlproblem
              */
             virtual void solve () = 0;
             
-            //! Clone method
+            //! Clone method [1]
             /*!
              *  \return a pointer to a \c controlproblem::AbstractDifferentialProblem containing a copy of the object on 
              *  which it is called. 
              */
             virtual controlproblem::AbstractDifferentialProblem* clone () const = 0;
+
 
             /********************** VARIABLES ***********************/
             //! the problem parameters
@@ -206,14 +212,14 @@ namespace controlproblem
              *  Stored as a \c shared_ptr because it may be common to more than 
              *  one problem
              */
-            std::shared_ptr<dolfin::Mesh> mesh_;
+            boost::shared_ptr<dolfin::Mesh> mesh_;
 
             //! The problem finite element space
             /*! 
              *  Stored as a \c shared_ptr because it may be common to more than 
              *  one problem
              */
-            std::shared_ptr<dolfin::FunctionSpace> functionSpace_;
+            boost::shared_ptr<dolfin::FunctionSpace> functionSpace_;
 
             //! The Dirichlet's boundary conditions vector
             std::vector<dolfin::DirichletBC> dirichletBCs_;

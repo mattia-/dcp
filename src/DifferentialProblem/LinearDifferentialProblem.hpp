@@ -1,7 +1,16 @@
 #ifndef SRC_DIFFERENTIALPROBLEM_LINEARDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
 #define SRC_DIFFERENTIALPROBLEM_LINEARDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
 
-#include <dolfin.h>
+#include <dolfin/mesh/Mesh.h>
+#include <dolfin/mesh/MeshFunction.h>
+#include <dolfin/function/FunctionSpace.h>
+#include <dolfin/la/LinearSolver.h>
+#include <dolfin/la/GenericLinearSolver.h>
+#include <dolfin/la/Matrix.h>
+#include <dolfin/la/Vector.h>
+#include <dolfin/log/dolfin_log.h>
+#include <dolfin/parameter/Parameters.h>
+#include <boost/shared_ptr.hpp>
 #include <vector>
 #include <string>
 #include <memory>
@@ -49,8 +58,8 @@ namespace controlproblem
 
                 //!  Constructor with shared pointers [1]
                 /*!
-                 *  \param mesh the problem mesh as a \c const \c std::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a \c const \c std::shared_ptr to 
+                 *  \param mesh the problem mesh as a \c const \c boost::shared_ptr to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a \c const \c boost::shared_ptr to 
                  *  \c dolfin::FunctionSpace
                  *  \param solverType the type of the solver. Default: \c lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
@@ -61,8 +70,8 @@ namespace controlproblem
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                           const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                            const std::string& solverType = "lu_solver",
                                            const std::string& solverMethod = "default",
                                            const std::string& solverPreconditioner = "default");
@@ -113,8 +122,8 @@ namespace controlproblem
                 
                 //!  Constructor with shared pointers [2]
                 /*!
-                 *  \param mesh the problem mesh as a \c const \c std::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a \c const \c std::shared_ptr to 
+                 *  \param mesh the problem mesh as a \c const \c boost::shared_ptr to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a \c const \c boost::shared_ptr to 
                  *  \c dolfin::FunctionSpace
                  *  \param bilinearForm a \c const reference to the problem's bilinear form
                  *  \param linearForm a \c const reference to the problem's linear form
@@ -127,8 +136,8 @@ namespace controlproblem
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                           const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                            const T_BilinearForm& bilinearForm,
                                            const T_LinearForm& linearForm,
                                            const std::string& solverType = "lu_solver",
@@ -160,7 +169,7 @@ namespace controlproblem
                                            const std::string& solverMethod = "default",
                                            const std::string& solverPreconditioner = "default");
 
-                //! Constructor with rvalue references [3]
+                //! Constructor with rvalue references [2]
                 /*!
                  *  \param mesh the problem mesh as a \c dolfin::Mesh&&
                  *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
@@ -188,12 +197,13 @@ namespace controlproblem
                 /******************* DESTRUCTOR *******************/
                 
                 //! Destructor
-                /*! Default destructor, since members of the class are trivially 
-                 * destructible.
-                 * It is declared virtual so that derived classes' constructor
-                 * can be called on derived classes.
-                 * The "default-ness" is set in implementation outside of the class for compatibility with
-                 * \c gcc-4.6, which does not allow virtual members to be defaulted in class
+                /*! 
+                 *  Default destructor, since members of the class are trivially 
+                 *  destructible.
+                 *  It is declared virtual so that derived classes' constructor
+                 *  can be called on derived classes.
+                 *  The "default-ness" is set in implementation outside of the class for compatibility with
+                 *  \c gcc-4.6, which does not allow virtual members to be defaulted in class
                  */
                 virtual ~LinearDifferentialProblem ();
 
@@ -312,6 +322,19 @@ namespace controlproblem
                 void solve (const bool& mustReassemble);
 
                 //! Clone method. Overrides method in \c AbstractDifferentialProblem
+                /*!
+                 *  It uses the parameter \c clone_method to decide which type of cloning to perform.
+                 *  Possible values for such parameter are:
+                 *  \li deep_clone the new object is created calling the constructor that takes a mesh and a function 
+                 *  space as input, thus creating a copy of such objects and returning a completely independent 
+                 *  cloned object. 
+                 *  \li shallow_clone calls the constructor that takes shared pointers as input: the mesh and
+                 *  the function space are not copied but shared between the current object and its clone. 
+                 *  
+                 *  The default value for parameter \clone_method is \shallow_clone
+                 *  
+                 *  \return a pointer to the cloned object
+                 */
                 virtual controlproblem::LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
                     clone () const;
 
@@ -367,8 +390,8 @@ namespace controlproblem
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                   const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                    const std::string& solverType,
                                    const std::string& solverMethod,
                                    const std::string& solverPreconditioner) :
@@ -391,6 +414,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -429,6 +453,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -467,6 +492,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);
+            parameters.add ("clone_method", "shallow_clone");
         
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -481,8 +507,8 @@ namespace controlproblem
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                   const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                    const T_BilinearForm& bilinearForm,
                                    const T_LinearForm& linearForm,
                                    const std::string& solverType,
@@ -507,6 +533,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -547,6 +574,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -587,6 +615,7 @@ namespace controlproblem
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
+            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -904,18 +933,38 @@ namespace controlproblem
                 dolfin::end ();
             }
             
+            std::string cloneMethod = parameters["clone_method"];
+            
+            dolfin::log (dolfin::DBG, "Clone method: %s", cloneMethod.c_str ());
             dolfin::log (dolfin::DBG, "Creating new object of type LinearDifferentialProblem...");
             
             // create new object
-            controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
-                clonedProblem 
-                (new controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
-                        (this->mesh_,
-                         this->functionSpace_,
-                         this->bilinearForm_, 
-                         this->linearForm_
-                        )
-                );
+            controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory>* clonedProblem;
+            if (cloneMethod == "shallow_clone")
+            {
+                clonedProblem = 
+                    new controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
+                    (this->mesh_,
+                     this->functionSpace_,
+                     this->bilinearForm_, 
+                     this->linearForm_
+                    );
+            }
+            else if (cloneMethod == "deep_clone")
+            {
+                clonedProblem =
+                    new controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
+                    (*(this->mesh_),
+                     *(this->functionSpace_),
+                       this->bilinearForm_, 
+                       this->linearForm_
+                    );
+            }
+            else
+            {
+                dolfin::error ("Cannot clone linear differential problem. Unknown clone method: \"%s\"",
+                               cloneMethod.c_str ());
+            }
             
             //copy dirichlet boundary conditions
             dolfin::log (dolfin::DBG, "Copying Dirichlet boundary conditions...");

@@ -2,15 +2,16 @@
 #define SRC_DIFFERENTIALPROBLEM_NONLINEARDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
 
 #include <dolfin/mesh/Mesh.h>
+#include <dolfin/mesh/MeshFunction.h>
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/fem/solve.h>
 #include <dolfin/la/Matrix.h>
 #include <dolfin/la/Vector.h>
 #include <dolfin/log/dolfin_log.h>
 #include <dolfin/parameter/Parameters.h>
+#include <boost/shared_ptr.hpp>
 #include <vector>
 #include <string>
-#include <memory>
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
 
 namespace controlproblem
@@ -50,8 +51,8 @@ namespace controlproblem
 
                 //!  Constructor with shared pointers [1]
                 /*!
-                 *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
+                 *  \param mesh the problem mesh as a const \c boost::shared_ptr to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a const \c boost::shared_ptr to 
                  *  \c dolfin::FunctionSpace
                  *  \param residualFormSolutionName a string that identifies the name of the function representing the problem
                  *  solution in the residual form 
@@ -62,8 +63,8 @@ namespace controlproblem
                  *  The residual and jacobian form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                              const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                NonlinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                              const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                               const std::string& residualFormSolutionName,
                                               const std::string& jacobianFormSolutionName = "" );
                 
@@ -109,8 +110,8 @@ namespace controlproblem
                 
                 //!  Constructor with shared pointers [2]
                 /*!
-                 *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a const \c std::shared_ptr 
+                 *  \param mesh the problem mesh as a const \c boost::shared_ptr to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a const \c boost::shared_ptr 
                  *  \c to dolfin::FunctionSpace
                  *  \param residualForm a const reference to the problem's residual form
                  *  \param jacobianForm a const reference to the problem's jacobian form
@@ -123,8 +124,8 @@ namespace controlproblem
                  *  The residual and jacobian form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                              const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                NonlinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                              const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                               const T_ResidualForm& residualForm,
                                               const T_JacobianForm& jacobianForm,
                                               const std::string& residualFormSolutionName,
@@ -153,7 +154,7 @@ namespace controlproblem
                                               const std::string& residualFormSolutionName,
                                               const std::string& jacobianFormSolutionName = "" );
 
-                //! Constructor with rvalue references [3]
+                //! Constructor with rvalue references [2]
                 /*!
                  *  \param mesh the problem mesh as a \c dolfin::Mesh&&
                  *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
@@ -271,13 +272,17 @@ namespace controlproblem
 
                 //! Clone method. Overrides method in \c AbstractDifferentialProblem
                 /*!
-                 *  Note that it uses variable \c clone_method in \c parameters to decide which kind of cloning to
-                 *  perform. Values for such variable can be either \c deep_clone or \c shallow_clone. The first means
-                 *  that the new object is created calling the constructor that takes a mesh and a function space as 
-                 *  input, thus creating a copy of such objects and returning a completely independent cloned object. 
-                 *  The second cloning type calls the constructor that takes shared pointers as input: the mesh and
+                 *  It uses the parameter \c clone_method to decide which type of cloning to perform.
+                 *  Possible values for such parameter are:
+                 *  \li deep_clone the new object is created calling the constructor that takes a mesh and a function 
+                 *  space as input, thus creating a copy of such objects and returning a completely independent 
+                 *  cloned object. 
+                 *  \li shallow_clone calls the constructor that takes shared pointers as input: the mesh and
                  *  the function space are not copied but shared between the current object and its clone. 
-                 *  The default value for \clone_method is \shallow_clone
+                 *  
+                 *  The default value for parameter \clone_method is \shallow_clone
+                 *  
+                 *  \return a pointer to the cloned object
                  */
                 virtual controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>*
                     clone () const;
@@ -307,8 +312,8 @@ namespace controlproblem
 
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                      const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        NonlinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                      const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                       const std::string& residualFormSolutionName,
                                       const std::string& jacobianFormSolutionName) : 
             AbstractDifferentialProblem (mesh, functionSpace),
@@ -448,8 +453,8 @@ namespace controlproblem
 
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                      const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        NonlinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                      const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                       const T_ResidualForm& residualForm,
                                       const T_JacobianForm& jacobianForm,
                                       const std::string& residualFormSolutionName,

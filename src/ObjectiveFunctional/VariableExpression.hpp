@@ -3,6 +3,7 @@
 
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Expression.h>
+#include <dolfin/common/Array.h>
 #include <boost/shared_ptr.hpp>
 #include <map>
 #include <vector>
@@ -128,15 +129,11 @@ namespace controlproblem
              *  Input arguments are:
              *  \param variable string identifying the variable we want to set
              *  \param value the value of such variable, given as a shared pointer to a \c dolfin::GenericFunction
-             *  \param forceInsertion if set to \c true, the map will be updated with the new value passed as
-             *  input argument if the key (i.e. \c variable) is found in map. If false, the old value will be preserved
-             *  and a warning will be issued. Default value: \c false
              *  
              *  The pair created by the two input arguments will be inserted in the protected member \c variables_
              */
-            void addVariable (const std::string& variable, 
-                              const boost::shared_ptr <const dolfin::GenericFunction> value,
-                              const bool& forceInsertion = false);
+            void setCoefficient (const std::string& variableName, 
+                                 const boost::shared_ptr <const dolfin::GenericFunction> value);
 
 
             /******************* METHODS *******************/
@@ -163,16 +160,15 @@ namespace controlproblem
              *  \param variableName string to identify the variable we want to evaluate
              *  \param x the coordinates of the point at which evaluate the variable
              */
-            virtual void eval (const std::string& variableName, 
-                               dolfin::Array<double>& values, 
-                               const dolfin::Array<double>& x) const;
+            virtual void evaluateVariable (const std::string& variableName, 
+                                           dolfin::Array<double>& values, 
+                                           const dolfin::Array<double>& x) const;
 
         // ---------------------------------------------------------------------------------------------//  
         protected:
             //! The map that associates variables' names and values
-            std::map <std::string, boost::shared_ptr <const dolfin::GenericFunction>> variables_;
+            std::map <std::string, boost::shared_ptr<const dolfin::GenericFunction> > variables_;
     };
 }
 
 #endif
-

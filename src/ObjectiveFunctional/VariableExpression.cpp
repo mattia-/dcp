@@ -1,4 +1,4 @@
-#include <Functional/VariableExpression.hpp>
+#include <ObjectiveFunctional/VariableExpression.hpp>
 #include <utility>
 #include <memory>
 
@@ -82,36 +82,12 @@ namespace controlproblem
 
 
     /******************* SETTERS *******************/
-    void VariableExpression::addVariable (const std::string& variable, 
-                                          const boost::shared_ptr <const dolfin::GenericFunction> value,
-                                          const bool& forceInsertion)
+    void VariableExpression::setCoefficient (const std::string& variableName, 
+                                             const boost::shared_ptr <const dolfin::GenericFunction> value)
     {
-        dolfin::begin (dolfin::DBG, "Inserting variable in map...");
-        if (dolfin::get_log_level () > dolfin::DBG)
-        {
-            dolfin::end ();
-        }
+        dolfin::log (dolfin::DBG, "Inserting variable in map...");
         
-        auto result = variables_.insert (std::make_pair (variable, value));
-        
-        if (result.second == false)
-        {
-            if (forceInsertion == false)
-            {
-                dolfin::warning ("Variable \"%s\" already present in map", variable.c_str ());
-            }
-            else
-            {
-                dolfin::log (dolfin::DBG, "Updating value of variable \"%s\"...", variable.c_str ());
-                variables_.erase (result.first);
-                variables_.insert (std::make_pair (variable, value) );
-            }
-        }
-        
-        if (dolfin::get_log_level () <= dolfin::DBG)
-        {
-            dolfin::end ();
-        }
+        variables_ [variableName] = value;
     }
 
 
@@ -134,9 +110,9 @@ namespace controlproblem
 
     
 
-    void VariableExpression::eval (const std::string& variableName,
-                                   dolfin::Array<double>& values,
-                                   const dolfin::Array<double>& x) const
+    void VariableExpression::evaluateVariable (const std::string& variableName,
+                                               dolfin::Array<double>& values,
+                                               const dolfin::Array<double>& x) const
     {
         dolfin::begin (dolfin::DBG, "Looking for variable \"%s\" in stored map...", variableName.c_str ());
         if (dolfin::get_log_level () > dolfin::DBG)
@@ -148,7 +124,7 @@ namespace controlproblem
         
         if (variable == variables_.end ())
         {
-            dolfin::error ("Cannot find variable \"%s\" in VariableExpression stored map");
+            dolfin::error ("Cannot find variable \"%s\" in VariableExpression stored map", variableName.c_str ());
         }
         
         (variable -> second) -> eval (values, x);

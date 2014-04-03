@@ -1,0 +1,12 @@
+# UFL file for the functional test
+
+# define finite element space
+cell = triangle
+element = FiniteElement ("Lagrange", cell, 1)
+
+f = Coefficient (element)
+
+form1 = f * dx
+
+forms = [form1]
+

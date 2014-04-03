@@ -92,10 +92,10 @@ int main ()
     dolfin::cout << "------------------------------------------------------------------------------------------------" << dolfin::endl;
     
     // declare mesh
-    std::shared_ptr<dolfin::UnitSquareMesh> mesh (new dolfin::UnitSquareMesh (100, 100));
+    boost::shared_ptr<dolfin::UnitSquareMesh> mesh (new dolfin::UnitSquareMesh (100, 100));
     
     // declare function space and linear/bilinear form
-    std::shared_ptr<Poisson::FunctionSpace> V (new Poisson::FunctionSpace (*mesh));
+    boost::shared_ptr<Poisson::FunctionSpace> V (new Poisson::FunctionSpace (*mesh));
     Poisson::BilinearForm a (*V, *V);
     Poisson::LinearForm L (*V);
     
@@ -129,7 +129,7 @@ int main ()
     
     dolfin::plot (u);
     
-//    dolfin::set_log_level (dolfin::DBG);
+    dolfin::set_log_level (dolfin::DBG);
     
     dolfin::cout << "------------------------------------------------------------------------------------------------" << dolfin::endl;
     dolfin::cout << "------------------------------ WITH LINEARDIFFERENTIALPROBLEM CLASS ----------------------------" << dolfin::endl;
@@ -299,10 +299,10 @@ int main ()
     dolfin::cout << "----------------------------------- NORMAL SOLUTION PROCESS ------------------------------------" << dolfin::endl;
     dolfin::cout << "------------------------------------------------------------------------------------------------" << dolfin::endl;
     // define mesh
-    std::shared_ptr<dolfin::UnitSquareMesh> NLmesh (new dolfin::UnitSquareMesh (20, 20));
+    boost::shared_ptr<dolfin::UnitSquareMesh> NLmesh (new dolfin::UnitSquareMesh (20, 20));
     
     // define vector space
-    std::shared_ptr<NavierStokes::FunctionSpace> NLV (new NavierStokes::FunctionSpace (*NLmesh));
+    boost::shared_ptr<NavierStokes::FunctionSpace> NLV (new NavierStokes::FunctionSpace (*NLmesh));
     
     // define variational form
     NavierStokes::ResidualForm NLF (*NLV);
@@ -483,6 +483,10 @@ int main ()
     std::unique_ptr <controlproblem::AbstractDifferentialProblem> NLptr (NLdifferentialProblem3.clone ());
     NLptr -> solve ();
     dolfin::plot (NLptr->solution ()[0]);
+    
+    controlproblem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> NLdifferentialProblem4 = NLdifferentialProblem2;
+
+    std::unique_ptr <controlproblem::AbstractDifferentialProblem> Lptr1 (differentialProblem.clone ());
     
     return 0;
 }

@@ -2,6 +2,7 @@
 #define SRC_DIFFERENTIALPROBLEM_LINEARDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
 
 #include <dolfin/mesh/Mesh.h>
+#include <dolfin/mesh/MeshFunction.h>
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/la/LinearSolver.h>
 #include <dolfin/la/GenericLinearSolver.h>
@@ -9,6 +10,7 @@
 #include <dolfin/la/Vector.h>
 #include <dolfin/log/dolfin_log.h>
 #include <dolfin/parameter/Parameters.h>
+#include <boost/shared_ptr.hpp>
 #include <vector>
 #include <string>
 #include <memory>
@@ -56,8 +58,8 @@ namespace controlproblem
 
                 //!  Constructor with shared pointers [1]
                 /*!
-                 *  \param mesh the problem mesh as a \c const \c std::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a \c const \c std::shared_ptr to 
+                 *  \param mesh the problem mesh as a \c const \c boost::shared_ptr to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a \c const \c boost::shared_ptr to 
                  *  \c dolfin::FunctionSpace
                  *  \param solverType the type of the solver. Default: \c lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
@@ -68,8 +70,8 @@ namespace controlproblem
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                           const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                            const std::string& solverType = "lu_solver",
                                            const std::string& solverMethod = "default",
                                            const std::string& solverPreconditioner = "default");
@@ -120,8 +122,8 @@ namespace controlproblem
                 
                 //!  Constructor with shared pointers [2]
                 /*!
-                 *  \param mesh the problem mesh as a \c const \c std::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a \c const \c std::shared_ptr to 
+                 *  \param mesh the problem mesh as a \c const \c boost::shared_ptr to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a \c const \c boost::shared_ptr to 
                  *  \c dolfin::FunctionSpace
                  *  \param bilinearForm a \c const reference to the problem's bilinear form
                  *  \param linearForm a \c const reference to the problem's linear form
@@ -134,8 +136,8 @@ namespace controlproblem
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                           const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                            const T_BilinearForm& bilinearForm,
                                            const T_LinearForm& linearForm,
                                            const std::string& solverType = "lu_solver",
@@ -167,7 +169,7 @@ namespace controlproblem
                                            const std::string& solverMethod = "default",
                                            const std::string& solverPreconditioner = "default");
 
-                //! Constructor with rvalue references [3]
+                //! Constructor with rvalue references [2]
                 /*!
                  *  \param mesh the problem mesh as a \c dolfin::Mesh&&
                  *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
@@ -321,13 +323,17 @@ namespace controlproblem
 
                 //! Clone method. Overrides method in \c AbstractDifferentialProblem
                 /*!
-                 *  Note that it uses variable \c clone_method in \c parameters to decide which kind of cloning to
-                 *  perform. Values for such variable can be either \c deep_clone or \c shallow_clone. The first means
-                 *  that the new object is created calling the constructor that takes a mesh and a function space as 
-                 *  input, thus creating a copy of such objects and returning a completely independent cloned object. 
-                 *  The second cloning type calls the constructor that takes shared pointers as input: the mesh and
+                 *  It uses the parameter \c clone_method to decide which type of cloning to perform.
+                 *  Possible values for such parameter are:
+                 *  \li deep_clone the new object is created calling the constructor that takes a mesh and a function 
+                 *  space as input, thus creating a copy of such objects and returning a completely independent 
+                 *  cloned object. 
+                 *  \li shallow_clone calls the constructor that takes shared pointers as input: the mesh and
                  *  the function space are not copied but shared between the current object and its clone. 
-                 *  The default value for \clone_method is \shallow_clone
+                 *  
+                 *  The default value for parameter \clone_method is \shallow_clone
+                 *  
+                 *  \return a pointer to the cloned object
                  */
                 virtual controlproblem::LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
                     clone () const;
@@ -384,8 +390,8 @@ namespace controlproblem
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                   const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                    const std::string& solverType,
                                    const std::string& solverMethod,
                                    const std::string& solverPreconditioner) :
@@ -501,8 +507,8 @@ namespace controlproblem
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
+                                   const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                    const T_BilinearForm& bilinearForm,
                                    const T_LinearForm& linearForm,
                                    const std::string& solverType,

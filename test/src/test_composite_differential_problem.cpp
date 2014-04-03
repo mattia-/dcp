@@ -90,12 +90,12 @@ int main ()
     controlproblem::CompositeDifferentialProblem cdp;
     
     // declare meshes
-    std::shared_ptr<dolfin::UnitSquareMesh> mesh (new dolfin::UnitSquareMesh (100, 100));
-    std::shared_ptr<dolfin::UnitSquareMesh> NLmesh (new dolfin::UnitSquareMesh (20, 20));
+    boost::shared_ptr<dolfin::UnitSquareMesh> mesh (new dolfin::UnitSquareMesh (100, 100));
+    boost::shared_ptr<dolfin::UnitSquareMesh> NLmesh (new dolfin::UnitSquareMesh (20, 20));
     
     // declare function spaces
-    std::shared_ptr<Poisson::FunctionSpace> V (new Poisson::FunctionSpace (*mesh));
-    std::shared_ptr<NavierStokes::FunctionSpace> NLV (new NavierStokes::FunctionSpace (*NLmesh));
+    boost::shared_ptr<Poisson::FunctionSpace> V (new Poisson::FunctionSpace (*mesh));
+    boost::shared_ptr<NavierStokes::FunctionSpace> NLV (new NavierStokes::FunctionSpace (*NLmesh));
     
     // declare problems
     controlproblem::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> ldp (*mesh, *V, "lu_solver"); 

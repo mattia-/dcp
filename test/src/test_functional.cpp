@@ -92,18 +92,29 @@ class ProvaVE : public controlproblem::VariableExpression
         void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
         {
             dolfin::Array<double> bValues (3);
-            evaluateVariable ("b", bValues, x);
-            std::cout << "Culo" << std::endl;
+            dolfin::Function bb (function ("b"));
+            bb.eval (bValues, x);
+
+            dolfin::Array<double> cValues (3);
+            evaluateVariable ("c", cValues, x);
+            
+            std::cout << "valori a caso:" << std::endl;
             std::cout << value_rank () << std::endl;
             std::cout << inside (x) << std::endl;
-
+            
             dolfin::cout << "bValues: " << dolfin::endl;
             dolfin::cout << bValues[0] << dolfin::endl;
             dolfin::cout << bValues[1] << dolfin::endl;
             dolfin::cout << bValues[2] << dolfin::endl;
             dolfin::cout << dolfin::endl;
 
-            values [0] = 5 + bValues [0];
+            dolfin::cout << "cValues: " << dolfin::endl;
+            dolfin::cout << cValues[0] << dolfin::endl;
+            dolfin::cout << cValues[1] << dolfin::endl;
+            dolfin::cout << cValues[2] << dolfin::endl;
+            dolfin::cout << dolfin::endl;
+            
+            values [0] = 5 + bValues [0] + cValues [0];
             values [1] = 4 * x [0] + x [1] * x [2];
             values [2] = 4 * x [0] + x [1] * x [2];
         }
@@ -155,6 +166,9 @@ int main ()
 
     objF.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (b), "f");
     objF.setCoefficient ("gradient", dolfin::reference_to_no_delete_pointer (b), "b");
+    
+    boost::shared_ptr<dolfin::Constant> con (new dolfin::Constant (42));
+    objF.setCoefficient ("gradient", con, "c");
 
     dolfin::cout << objF.evaluateFunctional () << dolfin::endl;
     
@@ -181,5 +195,19 @@ int main ()
     dolfin::cout << values[1] << dolfin::endl;
     dolfin::cout << values[2] << dolfin::endl;
     dolfin::cout << dolfin::endl;
+    
+    
+    a->setCoefficient ("c", con);
+    dolfin::Function dunz1 (V);
+    dunz1 = *a;
+    Poisson::UnitaryConstant cccc;
+    dolfin::Function dunz2 (V);
+    dunz2 = cccc;
+    dolfin::Function dunz3 (V);
+    dunz3 = dunz1 + dunz2;
+    dolfin::plot (dunz3);
+//    dolfin::plot (dolfin::grad(dunz3));
+//    dolfin::plot (dolfin::nabla_grad(dunz3));
+    dolfin::interactive ();
     return 0;
 }

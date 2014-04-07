@@ -6,16 +6,12 @@ namespace controlproblem
     AbstractObjectiveFunctional::AbstractObjectiveFunctional (const boost::shared_ptr <const dolfin::Mesh> mesh) : 
         mesh_ (mesh)
     {
-        dolfin::log (dolfin::DBG, "Abstract objective functional created");
+        dolfin::log (dolfin::DBG, "AbstractObjectiveFunctional object created");
     }
 
     AbstractObjectiveFunctional::AbstractObjectiveFunctional (const dolfin::Mesh& mesh) : 
         mesh_ (new dolfin::Mesh (mesh))
     {
-        dolfin::log (dolfin::DBG, "Abstract objective functional created");
+        dolfin::log (dolfin::DBG, "AbstractObjectiveFunctional object created");
     }
-
-    /************************* DESTRUCTOR ********************/
-    // this is done for compatibility with gcc 4.6, which doesn't allow virtual members to be defaulted in class body
-    AbstractObjectiveFunctional::~AbstractObjectiveFunctional () = default;
 }

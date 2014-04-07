@@ -24,7 +24,7 @@ namespace controlproblem
      *  
      *  Template arguments are:
      *  \arg T_FunctionalForm_ the functional form type
-     *  \arg T_Gradient_ the gradient type, which has to be a class derived from \c dolfin::Expression
+     *  \arg T_Gradient_ the gradient type, which has to be a class derived from \c controlproblem::VariableExpression
      */
 
     template <class T_FunctionalForm_, class T_Gradient_>
@@ -114,7 +114,7 @@ namespace controlproblem
              *  Default destructor, since members of the class are trivially 
              *  destructible.
              */
-            virtual ~ObjectiveFunctional ();
+            virtual ~ObjectiveFunctional () {};
 
 
             /******************* GETTERS *******************/
@@ -207,7 +207,7 @@ namespace controlproblem
             gradient_ (new T_Gradient)
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
-        dolfin::log (dolfin::DBG, "ObjectiveFunctional created");
+        dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
         dolfin::end ();
     }
 
@@ -221,7 +221,7 @@ namespace controlproblem
             gradient_ (new T_Gradient)
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
-        dolfin::log (dolfin::DBG, "ObjectiveFunctional created");
+        dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
         dolfin::end ();
     }
 
@@ -237,7 +237,7 @@ namespace controlproblem
             gradient_ (new T_Gradient (gradient))
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
-        dolfin::log (dolfin::DBG, "ObjectiveFunctional created");
+        dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
         dolfin::end ();
     }
 
@@ -253,7 +253,7 @@ namespace controlproblem
             gradient_ (new T_Gradient (gradient))
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
-        dolfin::log (dolfin::DBG, "ObjectiveFunctional created");
+        dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
         dolfin::end ();
     }
 
@@ -273,13 +273,6 @@ namespace controlproblem
         dolfin::log (dolfin::DBG, "Copy of ObjectiveFunctional created");
         dolfin::end ();
     }
-
-
-
-    /******************* DESTRUCTOR *******************/
-    template <class T_FunctionalForm, class T_Gradient>
-        ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        ~ObjectiveFunctional () = default;
 
 
 

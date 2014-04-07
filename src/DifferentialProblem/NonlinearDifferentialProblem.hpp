@@ -183,12 +183,8 @@ namespace controlproblem
                 //! Destructor
                 /*! Default destructor, since members of the class are trivially 
                  * destructible.
-                 * It is declared virtual so that derived classes' constructor
-                 * can be called on derived classes.
-                 * The "default-ness" is set in implementation outside of the class for compatibility with
-                 * gcc-4.6, which does not allow virtual members to be defaulted in class
                  */
-                virtual ~NonlinearDifferentialProblem ();
+                virtual ~NonlinearDifferentialProblem () {};
 
                 
                 /******************* GETTERS *******************/
@@ -352,7 +348,7 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
         }
 
 
@@ -399,7 +395,7 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
         }
             
 
@@ -446,7 +442,7 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
         }
             
 
@@ -495,7 +491,7 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
         }
 
     
@@ -544,7 +540,7 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
         }
             
 
@@ -594,19 +590,8 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
         }
-    
-
-
-
-    /******************* DESTRUCTOR *******************/
-
-    // this is done for compatibility with gcc-4.6, which doesn't allow virtual members to be defualted in class body
-    template <class T_ResidualForm, class T_JacobianForm>
-        NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
-        ~NonlinearDifferentialProblem () = default;
-    
     
 
 
@@ -769,9 +754,12 @@ namespace controlproblem
             dolfin::log (dolfin::DBG, "Creating temporary vectors of dolfin::DirichletBC pointers...");
             // create vector of POINTERS to DirichletBC. This is needed to call the function dolfin::solve
             std::vector<const dolfin::DirichletBC*> tmpDirichletBCs (dirichletBCs_.size (), nullptr);
-            for (std::size_t i = 0; i < dirichletBCs_.size (); ++i)
+            std::size_t counter = 0;
+            
+            for (auto i = dirichletBCs_.begin (); i != dirichletBCs_.end (); ++i)
             {
-                tmpDirichletBCs[i] = &dirichletBCs_[i];
+                tmpDirichletBCs[counter] = &(i->second);
+                counter++;
             }
             // note that when tmpDirichletBCs gets destroyd (upon exit of the function) the vector distructor will
             // call DirichletBC* destructor, which means that the pointers will be destroyed but the object they point
@@ -785,27 +773,16 @@ namespace controlproblem
             dolfin::log (dolfin::DBG, "Solver parameters set name is: %s", solverParametersSetName.c_str ());
             if (tmpDirichletBCs.size () != 0)
             {
-                if (dolfin::get_log_level () > dolfin::DBG)
-                {
-                    dolfin::end ();
-                }
                 dolfin::solve (residualForm_ == 0, solution_, tmpDirichletBCs, jacobianForm_, 
                                parameters (solverParametersSetName));
             }
             else
             {
-                if (dolfin::get_log_level () > dolfin::DBG)
-                {
-                    dolfin::end ();
-                }
                 dolfin::solve (residualForm_ == 0, solution_, jacobianForm_, 
                                parameters (solverParametersSetName));
             }
             
-            if (dolfin::get_log_level () <= dolfin::DBG)
-            {
-                dolfin::end ();
-            }
+            dolfin::end ();
         }
 
 
@@ -819,9 +796,12 @@ namespace controlproblem
             dolfin::log (dolfin::DBG, "Creating temporary vectors of dolfin::DirichletBC pointers...");
             // create vector of POINTERS to DirichletBC. This is needed to call the function dolfin::solve
             std::vector<const dolfin::DirichletBC*> tmpDirichletBCs (dirichletBCs_.size (), nullptr);
-            for (std::size_t i = 0; i < dirichletBCs_.size (); ++i)
+            std::size_t counter = 0;
+            
+            for (auto i = dirichletBCs_.begin (); i != dirichletBCs_.end (); ++i)
             {
-                tmpDirichletBCs[i] = &dirichletBCs_[i];
+                tmpDirichletBCs[counter] = &(i->second);
+                counter++;
             }
             // note that when tmpDirichletBCs gets destroyd (upon exit of the function) the vector distructor will
             // call DirichletBC* destructor, which means that the pointers will be destroyed but the object they point
@@ -832,25 +812,14 @@ namespace controlproblem
             // Parameters passed to the solver are those stored in the input variable
             if (tmpDirichletBCs.size () != 0)
             {
-                if (dolfin::get_log_level () > dolfin::DBG)
-                {
-                    dolfin::end ();
-                }
                 dolfin::solve (residualForm_ == 0, solution_, tmpDirichletBCs, jacobianForm_, solverParameters);
             }
             else
             {
-                if (dolfin::get_log_level () > dolfin::DBG)
-                {
-                    dolfin::end ();
-                }
                 dolfin::solve (residualForm_ == 0, solution_, jacobianForm_, solverParameters);
             }
             
-            if (dolfin::get_log_level () <= dolfin::DBG)
-            {
-                dolfin::end ();
-            }
+            dolfin::end ();
         }
     
     
@@ -861,11 +830,6 @@ namespace controlproblem
         clone () const
         {
             dolfin::begin (dolfin::DBG, "Cloning object...");
-            
-            if (dolfin::get_log_level () > dolfin::DBG)
-            {
-                dolfin::end ();
-            }
             
             std::string cloneMethod = parameters["clone_method"];
             
@@ -905,9 +869,9 @@ namespace controlproblem
             }
             //copy dirichlet boundary conditions
             dolfin::log (dolfin::DBG, "Copying Dirichlet boundary conditions...");
-            for (auto i : this->dirichletBCs_)
+            for (auto &i : this->dirichletBCs_)
             {
-                clonedProblem->addDirichletBC (i);
+                clonedProblem->addDirichletBC (i.second, i.first);
             }
             
             // clear parameters set of newly created object so that it can be populated by the parameters of the object
@@ -920,10 +884,7 @@ namespace controlproblem
             dolfin::log (dolfin::DBG, "Copying solution...");
             clonedProblem->solution_ = this->solution_;
             
-            if (dolfin::get_log_level () <= dolfin::DBG)
-            {
-                dolfin::end ();
-            }
+            dolfin::end ();
             
             return clonedProblem;
         }

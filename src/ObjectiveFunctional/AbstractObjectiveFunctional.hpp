@@ -39,7 +39,7 @@ namespace controlproblem
             /******************* DESTRUCTOR *******************/
 
             //! Default destructor
-            virtual ~AbstractObjectiveFunctional ();
+            virtual ~AbstractObjectiveFunctional () {};
 
             
             /******************* GETTERS *******************/

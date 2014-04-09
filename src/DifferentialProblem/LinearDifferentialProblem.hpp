@@ -200,12 +200,8 @@ namespace controlproblem
                 /*! 
                  *  Default destructor, since members of the class are trivially 
                  *  destructible.
-                 *  It is declared virtual so that derived classes' constructor
-                 *  can be called on derived classes.
-                 *  The "default-ness" is set in implementation outside of the class for compatibility with
-                 *  \c gcc-4.6, which does not allow virtual members to be defaulted in class
                  */
-                virtual ~LinearDifferentialProblem ();
+                virtual ~LinearDifferentialProblem () {};
 
                 
                 /******************* GETTERS *******************/
@@ -278,23 +274,32 @@ namespace controlproblem
                 /*!
                  *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
                  *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the problem
+                 *  \param bcName the name identifying the boundary condition. If empty, 
+                 *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+                 *  
+                 *  \return boolean flag, with \c true representing success and \c false representing failure
                  */
-                virtual void addDirichletBC (const dolfin::DirichletBC& dirichletCondition);
+                virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, std::string bcName = "");
 
                 //! Add Dirichlet boundary condition to the problem [2]. Overrides method in \c AbstractDifferentialProblem
                 /*!
                  *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
                  *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the problem
+                 *  \param bcName the name identifying the boundary condition. If empty, 
+                 *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+                 *  
+                 *  \return boolean flag, with \c true representing success and \c false representing failure
                  */
-                virtual void addDirichletBC (dolfin::DirichletBC&& dirichletCondition);
+                virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, std::string bcName = "");
 
                 //! Remove Dirichlet boundary condition with given position. Overrides method in \c AbstractDifferentialProblem
                 /*!
                  *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
-                 *  \param i the position in the vector of the boundary condition to be removed.
-                 *            If i is greater than the size of the vector, nothing is removed.
+                 *  \param bcName name of the boundary condition to be removed.
+                 *  
+                 *  \return boolean flag, with \c true representing success and \c false representing failure
                  */
-                virtual void removeDirichletBC (const std::vector<dolfin::DirichletBC>::iterator& i);
+                virtual bool removeDirichletBC (const std::string& bcName);
                 
                 //! Method to update class members. It checks for differences between desired and current solver parameters
                 //! and creates a new solver, setting also the proper parameters
@@ -331,7 +336,7 @@ namespace controlproblem
                  *  \li shallow_clone calls the constructor that takes shared pointers as input: the mesh and
                  *  the function space are not copied but shared between the current object and its clone. 
                  *  
-                 *  The default value for parameter \clone_method is \shallow_clone
+                 *  The default value for parameter \c clone_method is \c shallow_clone
                  *  
                  *  \return a pointer to the cloned object
                  */
@@ -422,7 +427,7 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem object created");
         }
 
 
@@ -461,7 +466,7 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem object created");
         }
 
 
@@ -500,7 +505,7 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem object created");
         }
 
 
@@ -541,7 +546,7 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem object created");
         }
 
 
@@ -582,7 +587,7 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem object created");
         }
 
 
@@ -623,19 +628,10 @@ namespace controlproblem
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "LinearDifferentialProblem created");
+            dolfin::log (dolfin::DBG, "LinearDifferentialProblem object created");
         }
 
     
-    /***************** DESTRUCTOR ******************/
-
-    // this is done for compatibility with gcc-4.6, which doesn't allow virtual members to be defualted in class body
-    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        ~LinearDifferentialProblem () = default;
-    
-    
-
 
     /******************* GETTERS *******************/
 
@@ -798,34 +794,75 @@ namespace controlproblem
 
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        addDirichletBC (const dolfin::DirichletBC& dirichletCondition)
+        bool LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        addDirichletBC (const dolfin::DirichletBC& dirichletCondition, std::string bcName)
         {
-            dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions vector...");
-            dirichletBCs_.emplace_back (dirichletCondition);
-            parameters ["system_is_assembled"] = false;
+            if (bcName.empty ())
+            {
+                bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
+                dirichletBCsCounter_++;
+            }
+
+            dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
+                         bcName.c_str ());
+            auto result = dirichletBCs_.insert (std::make_pair (bcName, dirichletCondition));
+
+            if (result.second == false)
+            {
+                dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map", bcName.c_str ());
+            }
+            else
+            {
+                parameters ["system_is_assembled"] = false;
+            }
+
+            return result.second;
         }
 
     
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        addDirichletBC (dolfin::DirichletBC&& dirichletCondition)
+        bool LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        addDirichletBC (dolfin::DirichletBC&& dirichletCondition, std::string bcName)
         {
-            dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions vector...");
-            dirichletBCs_.emplace_back (dirichletCondition);
-            parameters ["system_is_assembled"] = false;
+            if (bcName.empty ())
+            {
+                bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
+                dirichletBCsCounter_++;
+            }
+
+            dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
+                         bcName.c_str ());
+            auto result = dirichletBCs_.insert (std::make_pair (bcName, dirichletCondition));
+
+            if (result.second == false)
+            {
+                dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map", bcName.c_str ());
+            }
+            else
+            {
+                parameters ["system_is_assembled"] = false;
+            }
+
+            return result.second;
         }
 
 
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        removeDirichletBC (const std::vector<dolfin::DirichletBC>::iterator& i)
+        bool LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        removeDirichletBC (const std::string& bcName)
         {
-            dolfin::log (dolfin::DBG, "Removing dirichlet boundary condition from boundary conditions vector...");
-            dirichletBCs_.erase (i);
-            parameters ["system_is_assembled"] = false;
+            dolfin::log (dolfin::DBG, "Removing dirichlet boundary condition \"%s\" from boundary conditions map...", 
+                         bcName.c_str ());
+            std::size_t nErasedElements = dirichletBCs_.erase (bcName);
+
+            if (nErasedElements == 0)
+            {
+                dolfin::warning ("Dirichlet boundary condition not found in map");
+            }
+
+            return nErasedElements == 1? true : false;
         }
 
 
@@ -876,9 +913,9 @@ namespace controlproblem
                 
                 dolfin::assemble (*problemMatrix_, bilinearForm_);
                 dolfin::assemble (rhsVector_, linearForm_);
-                for (auto i : dirichletBCs_)
+                for (auto &i : dirichletBCs_)
                 {
-                    i.apply (*problemMatrix_, rhsVector_);
+                    i.second.apply (*problemMatrix_, rhsVector_);
                 }
                 
                 solver_ -> set_operator (problemMatrix_);
@@ -889,17 +926,10 @@ namespace controlproblem
             }
             
             dolfin::begin (dolfin::DBG, "Solving problem...");
-            if (dolfin::get_log_level () > dolfin::DBG)
-            {
-                dolfin::end ();
-            }
             
             solver_ -> solve (*solution_.vector (), rhsVector_);
             
-            if (dolfin::get_log_level () <= dolfin::DBG)
-            {
-                dolfin::end ();
-            }
+            dolfin::end ();
         }
 
 
@@ -927,11 +957,6 @@ namespace controlproblem
         clone () const
         {
             dolfin::begin (dolfin::DBG, "Cloning object...");
-            
-            if (dolfin::get_log_level () > dolfin::DBG)
-            {
-                dolfin::end ();
-            }
             
             std::string cloneMethod = parameters["clone_method"];
             
@@ -968,9 +993,9 @@ namespace controlproblem
             
             //copy dirichlet boundary conditions
             dolfin::log (dolfin::DBG, "Copying Dirichlet boundary conditions...");
-            for (auto i : this->dirichletBCs_)
+            for (auto &i : this->dirichletBCs_)
             {
-                clonedProblem->addDirichletBC (i);
+                clonedProblem->addDirichletBC (i.second, i.first);
             }
             
             // clear parameters set of newly created object so that it can be populated by the parameters of the object
@@ -986,10 +1011,7 @@ namespace controlproblem
             dolfin::log (dolfin::DBG, "Copying solution...");
             clonedProblem->solution_ = this->solution_;
             
-            if (dolfin::get_log_level () <= dolfin::DBG)
-            {
-                dolfin::end ();
-            }
+            dolfin::end ();
             
             return clonedProblem;
         }

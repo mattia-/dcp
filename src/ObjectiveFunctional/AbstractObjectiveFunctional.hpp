@@ -39,10 +39,16 @@ namespace controlproblem
             /******************* DESTRUCTOR *******************/
 
             //! Default destructor
-            virtual ~AbstractObjectiveFunctional ();
+            virtual ~AbstractObjectiveFunctional () {};
 
             
             /******************* GETTERS *******************/
+            //! Get const reference to the mesh
+            /*! 
+             *  \return a const reference to the mesh 
+             */
+            virtual const dolfin::Mesh& mesh () const;
+
             //! Get const reference to the functional
             /*! 
              *  \return a const reference to the functional form

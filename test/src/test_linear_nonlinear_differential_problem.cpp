@@ -151,7 +151,7 @@ int main ()
 //    dolfin::info (differentialProblem.parameters, true);
 
     // set dirichlet bc
-    differentialProblem.addDirichletBC (dirichletBC);
+    differentialProblem.addDirichletBC (dirichletBC, "my_name");
     
     boost::shared_ptr<Poisson::UnitaryConstant> c2 (new Poisson::UnitaryConstant);
     boost::shared_ptr<Poisson::ExternalLoad> f2 (new Poisson::ExternalLoad);
@@ -487,6 +487,28 @@ int main ()
     controlproblem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> NLdifferentialProblem4 = NLdifferentialProblem2;
 
     std::unique_ptr <controlproblem::AbstractDifferentialProblem> Lptr1 (differentialProblem.clone ());
+    
+    NLdifferentialProblem3.solve ();
+    dolfin::plot (NLdifferentialProblem3.solution ()[0]);
+    dolfin::plot (NLdifferentialProblem3.solution ()[0][0]);
+    dolfin::plot (NLdifferentialProblem3.solution ()[0][1]);
+    dolfin::plot (NLdifferentialProblem3.solution ()[1]);
+    
+    differentialProblem.solve ();
+    dolfin::plot (differentialProblem.solution ());
+    
+    std::map <std::string, dolfin::DirichletBC> mappa = differentialProblem.dirichletBCs ();
+    for (auto &i : mappa)
+        std::cout << i.first << std::endl;
+    
+    mappa = NLdifferentialProblem3.dirichletBCs ();
+    for (auto &i : mappa)
+        std::cout << i.first << std::endl;
+    
+    differentialProblem.removeDirichletBC ("culo");
+    auto res = differentialProblem.removeDirichletBC ("my_name");
+    std::cout << "res = " << res << std::endl;
+    
     
     return 0;
 }

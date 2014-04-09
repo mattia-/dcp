@@ -3,6 +3,7 @@
 
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Expression.h>
+#include <dolfin/function/Function.h>
 #include <dolfin/common/Array.h>
 #include <boost/shared_ptr.hpp>
 #include <map>
@@ -115,19 +116,15 @@ namespace controlproblem
             /*! 
              *  Default destructor, since members of the class are trivially 
              *  destructible.
-             *  It is declared virtual so that derived classes' constructor
-             *  can be called on derived classes.
-             *  The "default-ness" is set in implementation outside of the class for compatibility with
-             *  \c gcc-4.6, which does not allow virtual members to be defaulted in class
              */
-            virtual ~VariableExpression ();
+            virtual ~VariableExpression () {};
 
 
             /******************* SETTERS *******************/
             //! Sets value for the variable with given name
             /*! 
              *  Input arguments are:
-             *  \param variable string identifying the variable we want to set
+             *  \param variableName string identifying the variable we want to set
              *  \param value the value of such variable, given as a shared pointer to a \c dolfin::GenericFunction
              *  
              *  The pair created by the two input arguments will be inserted in the protected member \c variables_
@@ -136,11 +133,33 @@ namespace controlproblem
                                  const boost::shared_ptr <const dolfin::GenericFunction> value);
 
 
+            /******************* GETTERS *******************/
+            //! Get variable with given name and return it as a \c const \c dolfin::Function&
+            /*! 
+             *  Input arguments are:
+             *  \param variableName the name of the variable to be returned. The method will look for an object with key
+             *  matching \c name in the map \c variables_
+             *
+             *  \return the function, if found, as a \c const \c dolfin::Function&
+             */
+            const dolfin::Function& function (const std::string& variableName) const;
+
+            //! Get variable with given name and return it as a \c const \c dolfin::Expression&
+            /*! 
+             *  Input arguments are:
+             *  \param variableName the name of the variable to be returned. The method will look for an object with key
+             *  matching \c name in the map \c variables_
+             *
+             *  \return the function, if found, as a \c const \c dolfin::Expression&
+             */
+            const dolfin::Expression& expression (const std::string& variableName) const;
+
+
             /******************* METHODS *******************/
             //! Evaluate at given point in given cell. Overrides method in \c dolfin::Expression
             /*!
              *  Input arguments are:
-             *  \param values the values at the point
+             *  \param values array that will contain the evaluated function at the given point
              *  \param x the coordinates of the point
              *  \param cell the cell which contains the given point
              */
@@ -149,7 +168,7 @@ namespace controlproblem
             //! Evaluate at given point in given cell. Overrides method in \c dolfin::Expression
             /*!
              *  Input arguments are:
-             *  \param values the values at the point
+             *  \param values array that will contain the evaluated function at the given point
              *  \param x the coordinates of the point
              */
             virtual void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const;
@@ -158,6 +177,7 @@ namespace controlproblem
             /*!
              *  Input arguments are:
              *  \param variableName string to identify the variable we want to evaluate
+             *  \param values array that will contain the evaluated function at the given point
              *  \param x the coordinates of the point at which evaluate the variable
              */
             virtual void evaluateVariable (const std::string& variableName, 

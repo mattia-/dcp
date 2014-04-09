@@ -75,11 +75,7 @@ namespace controlproblem
         dolfin::log (dolfin::DBG, "VariableExpression object created");
     }
 
-
-    /******************* DESTRUCTOR *******************/
-    VariableExpression::~VariableExpression () = default;
     
-
 
     /******************* SETTERS *******************/
     void VariableExpression::setCoefficient (const std::string& variableName, 
@@ -92,6 +88,23 @@ namespace controlproblem
 
 
     
+    /******************* GETTERS *******************/
+    const dolfin::Function& VariableExpression::function (const std::string& variableName) const
+    {
+        auto variable = variables_.find (variableName);
+        return *(boost::dynamic_pointer_cast<const dolfin::Function> (variable -> second));
+    }
+
+    
+
+    const dolfin::Expression& VariableExpression::expression (const std::string& variableName) const
+    {
+        auto variable = variables_.find (variableName);
+        return *(boost::dynamic_pointer_cast<const dolfin::Expression> (variable -> second));
+    }
+        
+    
+
     /******************* METHODS *******************/
     void VariableExpression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x, const ufc::cell& cell) const
     {
@@ -99,7 +112,7 @@ namespace controlproblem
         eval(values, x); 
     }
 
-    
+
 
     void VariableExpression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
     {
@@ -108,30 +121,21 @@ namespace controlproblem
                              "Missing eval() function (must be overloaded)");
     }
 
-    
+
 
     void VariableExpression::evaluateVariable (const std::string& variableName,
                                                dolfin::Array<double>& values,
                                                const dolfin::Array<double>& x) const
     {
-        dolfin::begin (dolfin::DBG, "Looking for variable \"%s\" in stored map...", variableName.c_str ());
-        if (dolfin::get_log_level () > dolfin::DBG)
-        {
-            dolfin::end ();
-        }
-        
+        dolfin::log (dolfin::DBG, "Looking for variable \"%s\" in map...", variableName.c_str ());
+
         auto variable = variables_.find (variableName);
-        
+
         if (variable == variables_.end ())
         {
-            dolfin::error ("Cannot find variable \"%s\" in VariableExpression stored map", variableName.c_str ());
+            dolfin::error ("Cannot find variable \"%s\" in VariableExpression map", variableName.c_str ());
         }
-        
-        (variable -> second) -> eval (values, x);
 
-        if (dolfin::get_log_level () <= dolfin::DBG)
-        {
-            dolfin::end ();
-        }
+        (variable -> second) -> eval (values, x);
     }
 }

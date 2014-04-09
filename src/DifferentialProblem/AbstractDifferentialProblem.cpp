@@ -1,4 +1,8 @@
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
+#include <dolfin/log/dolfin_log.h>
+#include <map>
+#include <string>
+#include <utility>
 
 namespace controlproblem
 {
@@ -9,9 +13,10 @@ namespace controlproblem
         mesh_ (mesh),
         functionSpace_ (functionSpace),
         dirichletBCs_ (),
-        solution_ (*functionSpace_)
+        solution_ (*functionSpace_),
+        dirichletBCsCounter_ (0)
     { 
-        dolfin::log (dolfin::DBG, "Abstract differential problem created");
+        dolfin::log (dolfin::DBG, "AbstractDifferentialProblem object created");
     }
 
 
@@ -22,9 +27,10 @@ namespace controlproblem
         mesh_ (new dolfin::Mesh (mesh)),
         functionSpace_ (new dolfin::FunctionSpace (functionSpace)),
         dirichletBCs_ (),
-        solution_ (*functionSpace_)
+        solution_ (*functionSpace_),
+        dirichletBCsCounter_ (0)
     { 
-        dolfin::log (dolfin::DBG, "Abstract differential problem created");
+        dolfin::log (dolfin::DBG, "AbstractDifferentialProblem object created"); 
     }
 
 
@@ -35,16 +41,11 @@ namespace controlproblem
         mesh_ (new dolfin::Mesh (std::move (mesh))),
         functionSpace_ (new dolfin::FunctionSpace (std::move (functionSpace))),
         dirichletBCs_ (),
-        solution_ (*functionSpace_)
+        solution_ (*functionSpace_),
+        dirichletBCsCounter_ (0)
     { 
-        dolfin::log (dolfin::DBG, "Abstract differential problem created");
+        dolfin::log (dolfin::DBG, "AbstractDifferentialProblem object created"); 
     }
-
-
-
-    /************************* DESTRUCTOR ********************/
-    // this is done for compatibility with gcc 4.6, which doesn't allow virtual members to be defaulted in class body
-    AbstractDifferentialProblem::~AbstractDifferentialProblem () = default;
 
 
 
@@ -63,14 +64,19 @@ namespace controlproblem
 
 
 
-    const dolfin::DirichletBC& AbstractDifferentialProblem::dirichletBC (const std::size_t& i) const
+    const dolfin::DirichletBC& AbstractDifferentialProblem::dirichletBC (const std::string& bcName) const
     {
-        return dirichletBCs_[i];
+        auto bcIterator = dirichletBCs_.find (bcName);
+        if (bcIterator == dirichletBCs_.end ())
+        {
+            dolfin::error ("Cannot find dirichletBC with name \"%s\" in map", bcName.c_str ());
+        }
+        return bcIterator -> second;
     }
 
 
 
-    const std::vector<dolfin::DirichletBC>& AbstractDifferentialProblem::dirichletBCs () const
+    const std::map<std::string, dolfin::DirichletBC>& AbstractDifferentialProblem::dirichletBCs () const
     {
         return dirichletBCs_;
     }
@@ -85,26 +91,65 @@ namespace controlproblem
 
 
     /********************** SETTERS ***********************/
-    void AbstractDifferentialProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition)
+    bool AbstractDifferentialProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
+                                                      std::string bcName)
     {
-        dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions vector...");
-        dirichletBCs_.emplace_back (dirichletCondition);
+        if (bcName.empty ())
+        {
+            bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
+            dirichletBCsCounter_++;
+        }
+        
+        dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
+                     bcName.c_str ());
+        auto result = dirichletBCs_.insert (std::make_pair (bcName, dirichletCondition));
+        
+        if (result.second == false)
+        {
+            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map", bcName.c_str ());
+        }
+        
+        return result.second;
     }
 
 
 
-    void AbstractDifferentialProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition)
+    bool AbstractDifferentialProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition,
+                                                      std::string bcName)
     {
-        dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions vector...");
-        dirichletBCs_.emplace_back (dirichletCondition);
+        std::string bcName_ (bcName);
+        if (bcName_.empty ())
+        {
+            bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
+            dirichletBCsCounter_++;
+        }
+        
+        dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
+                     bcName.c_str ());
+        auto result = dirichletBCs_.insert (std::make_pair (bcName, dirichletCondition));
+        
+        if (result.second == false)
+        {
+            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map", bcName.c_str ());
+        }
+        
+        return result.second;
     }
 
 
 
-    void AbstractDifferentialProblem::removeDirichletBC (const std::vector<dolfin::DirichletBC>::iterator& i)
+    bool AbstractDifferentialProblem::removeDirichletBC (const std::string& bcName)
     {
-        dolfin::log (dolfin::DBG, "Removing dirichlet boundary condition from boundary conditions vector...");
-        dirichletBCs_.erase (i);
+        dolfin::log (dolfin::DBG, "Removing dirichlet boundary condition \"%s\" from boundary conditions map...", 
+                     bcName.c_str ());
+        std::size_t nErasedElements = dirichletBCs_.erase (bcName);
+        
+        if (nErasedElements == 0)
+        {
+            dolfin::warning ("Dirichlet boundary condition not found in map");
+        }
+        
+        return nErasedElements == 1? true : false;
     }
     
 

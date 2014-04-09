@@ -29,11 +29,7 @@ namespace controlproblem
                                                    AbstractDifferentialProblem& problem)
     {
         dolfin::begin (dolfin::DBG, "Inserting problem \"%s\" in composite differential problem...", problemName.c_str ());
-        if (dolfin::get_log_level () > dolfin::DBG)
-        {
-            dolfin::end ();
-        }
-        
+         
         // create new problem object
         dolfin::log (dolfin::DBG, "Creating new problem object...");
         std::unique_ptr<controlproblem::AbstractDifferentialProblem> clonedProblem (problem.clone ());
@@ -52,21 +48,13 @@ namespace controlproblem
             dolfin::log (dolfin::DBG, "Inserting problem in problem-names vector with name \"%s\"...", problemName.c_str ());
             solveOrder_.emplace_back (problemName);
         }
-        if (dolfin::get_log_level () <= dolfin::DBG)
-        {
-            dolfin::end ();
-        }
-        
+        dolfin::end ();
     }
     
     void CompositeDifferentialProblem::addProblem (const std::string& problemName, 
                                                    std::unique_ptr<AbstractDifferentialProblem>& problem)
     {
         dolfin::begin (dolfin::DBG, "Inserting problem \"%s\" in composite differential problem...", problemName.c_str ());
-        if (dolfin::get_log_level () > dolfin::DBG)
-        {
-            dolfin::end ();
-        }
         
         // insert problem into storedProblems_ taking ownership
         dolfin::log (dolfin::DBG, "Inserting problem in problems map with name \"%s\"...", problemName.c_str ());
@@ -82,10 +70,7 @@ namespace controlproblem
             dolfin::log (dolfin::DBG, "Inserting problem in problem-names vector with name \"%s\"...", problemName.c_str ());
             solveOrder_.emplace_back (problemName);
         }
-        if (dolfin::get_log_level () <= dolfin::DBG)
-        {
-            dolfin::end ();
-        }
+        dolfin::end ();
     }
 
 
@@ -93,11 +78,6 @@ namespace controlproblem
     void CompositeDifferentialProblem::removeProblem (const std::string& problemName)
     {
         dolfin::begin (dolfin::DBG, "Removing problem \"%s\" from composite differential problem...", problemName.c_str ());
-        
-        if (dolfin::get_log_level () > dolfin::DBG)
-        {
-            dolfin::end ();
-        }
         
         // delete problem from storedProblems_
         dolfin::log (dolfin::DBG, "Removing problem \"%s\" from problems map...", problemName.c_str ());
@@ -107,10 +87,6 @@ namespace controlproblem
         // remember that erase returns the number of elements removed, which in the case of a map is at most 1
         if (result < 1) 
         {
-            if (dolfin::get_log_level () <= dolfin::DBG)
-            {
-                dolfin::end ();
-            }
             dolfin::warning ("Problem \"%s\" was not removed from composite differential problem. Maybe you used a wrong name?", 
                              problemName.c_str ());
         }
@@ -163,10 +139,7 @@ namespace controlproblem
             
             needsLinksScanning_ = true;
             
-            if (dolfin::get_log_level () <= dolfin::DBG)
-            {
-                dolfin::end ();
-            }
+            dolfin::end ();
         }
     }
 
@@ -192,11 +165,6 @@ namespace controlproblem
                        linkedCoefficientType.c_str (),
                        linkTo.c_str ());
         
-        if (dolfin::get_log_level () > dolfin::DBG)
-        {
-            dolfin::end ();
-        }
-        
         // create pair containing the link information passed as input arguments.
         // auto keyword used in place of std::pair <std::tuple <std::string, std::string, std::string>, std::string> 
         // to enhance readability
@@ -212,10 +180,6 @@ namespace controlproblem
         {
             dolfin::log (dolfin::DBG, "Inserting link in links map...");
             problemsLinks_.insert (link);
-            if (dolfin::get_log_level () <= dolfin::DBG)
-            {
-                dolfin::end ();
-            }
             
             needsLinksScanning_ = true;
         }
@@ -250,10 +214,6 @@ namespace controlproblem
             
             needsLinksScanning_ = true;
             
-            if (dolfin::get_log_level () <= dolfin::DBG)
-            {
-                dolfin::end ();
-            }
         }
         else
         {
@@ -262,11 +222,8 @@ namespace controlproblem
                              (std::get<1> (link.first)).c_str (),
                              (std::get<2> (link.first)).c_str (),
                              (link.second).c_str ());
-            if (dolfin::get_log_level () <= dolfin::DBG)
-            {
-                dolfin::end ();
-            }
         }
+        dolfin::end ();
     }
 
 
@@ -351,11 +308,7 @@ namespace controlproblem
     {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving
-        dolfin::begin (dolfin::DBG, "Solving problems...");
-        if (dolfin::get_log_level () > dolfin::DBG)
-        {
-            dolfin::end ();
-        }
+        dolfin::begin ("Solving problems...");
         
         for (auto problem : solveOrder_)
         {
@@ -366,21 +319,14 @@ namespace controlproblem
         // links is performed before the next call to solve(), there is no need to scan links again
         needsLinksScanning_ = false;
         
-        if (dolfin::get_log_level () <= dolfin::DBG)
-        {
-            dolfin::end ();
-        }
+        dolfin::end ();
     }
 
 
 
     void CompositeDifferentialProblem::solve (const std::string& problemName, const bool& forceRelinking)
     {
-        dolfin::begin (dolfin::PROGRESS, "Solving problem \"%s\"...", problemName.c_str ());
-        if (dolfin::get_log_level () > dolfin::PROGRESS)
-        {
-            dolfin::end ();
-        }
+        dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
         
         if (forceRelinking == true)
         {
@@ -408,11 +354,6 @@ namespace controlproblem
         if (needsLinksScanning_ == true)
         {
             dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
-
-            if (dolfin::get_log_level () > dolfin::PROGRESS)
-            {
-                dolfin::end ();
-            }
 
             auto linksIterator = problemsLinks_.begin ();
             while (linksIterator != problemsLinks_.end () && std::get<0> (linksIterator->first) < problemName)
@@ -458,10 +399,7 @@ namespace controlproblem
                 ++linksIterator;
             }
 
-            if (dolfin::get_log_level () <= dolfin::PROGRESS)
-            {
-                dolfin::end ();
-            }
+            dolfin::end ();
         }
         else
         {
@@ -471,23 +409,10 @@ namespace controlproblem
 
         // 2)
         // solve problem
-        dolfin::begin (dolfin::PROGRESS, "Calling solve method for problem \"%s\"...", problemName.c_str ());
-        if (dolfin::get_log_level () > dolfin::PROGRESS)
-        {
-            dolfin::end ();
-        }
-        
+        dolfin::log (dolfin::PROGRESS, "Calling solve method on problem...");
         problem.solve ();
         
-        if (dolfin::get_log_level () <= dolfin::PROGRESS)
-        {
-            dolfin::end ();
-        }
-            
-        if (dolfin::get_log_level () <= dolfin::PROGRESS)
-        {
-            dolfin::end ();
-        }
+        dolfin::end ();
     }
     
 

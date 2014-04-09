@@ -189,7 +189,7 @@ namespace controlproblem
             
             //! Access solution of the problem identified by given name
             /*!
-             *  \param name name of the problem to be accessed. If the name is not found, the function prints an
+             *  \param problemName name of the problem to be accessed. If the name is not found, the function prints an
              *  error message and throws an exception through the function \c dolfin::error
              *  \return a reference to the problems' solution
              */

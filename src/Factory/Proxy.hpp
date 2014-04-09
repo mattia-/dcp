@@ -30,7 +30,7 @@ namespace controlproblem
                 
                 //! The constructor, which also does the registration
                 /*! Input arguments are:
-                 *  \param the identifier that will identify the object in the factory
+                 *  \param identifier the identifier that will identify the object in the factory
                  */
                 Proxy (const T_Factory_Identifier& identifier);
 

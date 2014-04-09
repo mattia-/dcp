@@ -16,7 +16,7 @@
 #include <memory>
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
 #include <Factory/LinearSolverFactory.hpp>
-#include <Utils/SubdomainType.hpp>
+#include <DifferentialProblem/SubdomainType.hpp>
 
 namespace controlproblem
 {

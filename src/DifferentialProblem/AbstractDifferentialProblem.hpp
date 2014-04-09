@@ -8,7 +8,7 @@
 #include <dolfin/fem/DirichletBC.h>
 #include <dolfin/parameter/Parameters.h>
 #include <boost/shared_ptr.hpp>
-#include <Utils/SubdomainType.hpp>
+#include <DifferentialProblem/SubdomainType.hpp>
 #include <map>
 #include <string>
 

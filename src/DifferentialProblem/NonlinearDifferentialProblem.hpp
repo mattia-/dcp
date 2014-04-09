@@ -13,6 +13,7 @@
 #include <vector>
 #include <string>
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
+#include <DifferentialProblem/SubdomainType.hpp>
 
 namespace controlproblem
 {

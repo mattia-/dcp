@@ -8,7 +8,7 @@
 #include <boost/shared_ptr.hpp>
 #include <string>
 #include <ObjectiveFunctional/VariableExpression.hpp>
-#include <Utils/SubdomainType.hpp>
+#include <DifferentialProblem/SubdomainType.hpp>
 
 namespace controlproblem
 {

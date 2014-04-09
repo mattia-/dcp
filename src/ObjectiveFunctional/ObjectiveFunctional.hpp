@@ -8,7 +8,7 @@
 #include <boost/shared_ptr.hpp>
 #include <string>
 #include <memory>
-#include <Utils/SubdomainType.hpp>
+#include <DifferentialProblem/SubdomainType.hpp>
 #include <ObjectiveFunctional/VariableExpression.hpp>
 #include <ObjectiveFunctional/AbstractObjectiveFunctional.hpp>
 

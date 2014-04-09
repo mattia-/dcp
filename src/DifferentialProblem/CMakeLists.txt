@@ -2,7 +2,8 @@
 SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDifferentialProblem.hpp 
              ${CMAKE_CURRENT_SOURCE_DIR}/LinearDifferentialProblem.hpp
              ${CMAKE_CURRENT_SOURCE_DIR}/NonlinearDifferentialProblem.hpp
-             ${CMAKE_CURRENT_SOURCE_DIR}/CompositeDifferentialProblem.hpp)
+             ${CMAKE_CURRENT_SOURCE_DIR}/CompositeDifferentialProblem.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/SubdomainType.hpp)
 
 # collect source files
 SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/CompositeDifferentialProblem.cpp

@@ -14,4 +14,13 @@ namespace controlproblem
     {
         dolfin::log (dolfin::DBG, "AbstractObjectiveFunctional object created");
     }
+    
+    
+
+    /******************* GETTERS *******************/
+    const dolfin::Mesh& AbstractObjectiveFunctional::mesh () const
+    {
+        return *mesh_;
+    }
+
 }

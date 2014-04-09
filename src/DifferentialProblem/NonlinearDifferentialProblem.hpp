@@ -276,7 +276,7 @@ namespace controlproblem
                  *  \li shallow_clone calls the constructor that takes shared pointers as input: the mesh and
                  *  the function space are not copied but shared between the current object and its clone. 
                  *  
-                 *  The default value for parameter \clone_method is \shallow_clone
+                 *  The default value for parameter \c clone_method is \c shallow_clone
                  *  
                  *  \return a pointer to the cloned object
                  */

@@ -24,7 +24,7 @@ namespace controlproblem
      *  
      *  Template arguments are:
      *  \arg T_FunctionalForm_ the functional form type
-     *  \arg T_Gradient_ the gradient type, which has to be a class derived from \c controlproblem::VariableExpression
+     *  \arg T_Gradient_ the gradient type, which must be a class derived from \c controlproblem::VariableExpression
      */
 
     template <class T_FunctionalForm_, class T_Gradient_>
@@ -99,13 +99,14 @@ namespace controlproblem
              *  Construct from object of type ObjectiveFunctional<T_FunctionalForm, T_Gradient>.
              *  Input arguments are:
              *  \param rhs the object to copy
-             *  \param copy_mode. It can be either \c deep_copy or \c shallow_copy. If the former is selected, the new
+             *  \param copyMode the type of copy to be performed. 
+             *  It can be either \c deep_copy or \c shallow_copy. If the former is selected, the new
              *  object will be created calling the constructor that takes a refenrence to \c dolfin::Mesh, so that the
              *  mesh itself is created. If the latter is selected, the pointer will be copied, adding the new 
              *  ObjectiveFunctional object to the ownership pool of the mesh object. Default value: \c shallow_copy
              */
             ObjectiveFunctional (const ObjectiveFunctional<T_FunctionalForm, T_Gradient>& rhs,
-                                 const std::string& copy_mode = "shallow_copy");
+                                 const std::string& copyMode = "shallow_copy");
 
             
             /******************* DESTRUCTOR *******************/
@@ -160,8 +161,7 @@ namespace controlproblem
              */
             virtual double evaluateFunctional () const;
 
-            //! Evaluate the stored functional gradient at given point. Overrides method in 
-            //! \c AbstractObjectiveFunctional
+            //! Evaluate at given point in given cell
             /*!
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */
@@ -169,7 +169,8 @@ namespace controlproblem
                                            const dolfin::Array<double>& x, 
                                            const ufc::cell& cell) const;
 
-            //! Evaluate at given point in given cell
+            //! Evaluate the stored functional gradient at given point. Overrides method in 
+            //! \c AbstractObjectiveFunctional
             /*!
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */
@@ -262,8 +263,8 @@ namespace controlproblem
     template <class T_FunctionalForm, class T_Gradient>
         ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
         ObjectiveFunctional (const ObjectiveFunctional<T_FunctionalForm, T_Gradient>& rhs, 
-                             const std::string& copy_mode) :
-            AbstractObjectiveFunctional (copy_mode == "shallow_copy" ? 
+                             const std::string& copyMode) :
+            AbstractObjectiveFunctional (copyMode == "shallow_copy" ? 
                                          rhs.mesh_ : 
                                          boost::shared_ptr<const dolfin::Mesh> (new dolfin::Mesh (*(rhs.mesh_)))),
             functional_ (rhs.functional_),

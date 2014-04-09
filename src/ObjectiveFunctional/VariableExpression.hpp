@@ -124,7 +124,7 @@ namespace controlproblem
             //! Sets value for the variable with given name
             /*! 
              *  Input arguments are:
-             *  \param variable string identifying the variable we want to set
+             *  \param variableName string identifying the variable we want to set
              *  \param value the value of such variable, given as a shared pointer to a \c dolfin::GenericFunction
              *  
              *  The pair created by the two input arguments will be inserted in the protected member \c variables_
@@ -159,7 +159,7 @@ namespace controlproblem
             //! Evaluate at given point in given cell. Overrides method in \c dolfin::Expression
             /*!
              *  Input arguments are:
-             *  \param values the values at the point
+             *  \param values array that will contain the evaluated function at the given point
              *  \param x the coordinates of the point
              *  \param cell the cell which contains the given point
              */
@@ -168,7 +168,7 @@ namespace controlproblem
             //! Evaluate at given point in given cell. Overrides method in \c dolfin::Expression
             /*!
              *  Input arguments are:
-             *  \param values the values at the point
+             *  \param values array that will contain the evaluated function at the given point
              *  \param x the coordinates of the point
              */
             virtual void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const;
@@ -177,6 +177,7 @@ namespace controlproblem
             /*!
              *  Input arguments are:
              *  \param variableName string to identify the variable we want to evaluate
+             *  \param values array that will contain the evaluated function at the given point
              *  \param x the coordinates of the point at which evaluate the variable
              */
             virtual void evaluateVariable (const std::string& variableName, 

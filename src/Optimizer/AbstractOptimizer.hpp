@@ -1,11 +1,13 @@
-#ifndef SRC_DESCENTMETHOD_ABSTRACTDESCENTMETHOD_HPP_INCLUDE_GUARD
-#define SRC_DESCENTMETHOD_ABSTRACTDESCENTMETHOD_HPP_INCLUDE_GUARD
+#ifndef SRC_OPTIMIZER_ABSTRACTOPTIMIZER_HPP_INCLUDE_GUARD
+#define SRC_OPTIMIZER_ABSTRACTOPTIMIZER_HPP_INCLUDE_GUARD
 
 #include <dolfin/parameter/Parameters.h>
+#include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Function.h>
 #include <dolfin/function/Expression.h>
 #include <ObjectiveFunctional/AbstractObjectiveFunctional.hpp>
 #include <DifferentialProblem/CompositeDifferentialProblem.hpp>
+#include <functional>
 
 namespace controlproblem
 {
@@ -43,10 +45,16 @@ namespace controlproblem
              *  \param problem the composite differential problem that represents the primal/adjoint system
              *  \param objectiveFunctional the objective functional to be minimized
              *  \param point the starting point for the minimization algorithm
+             *  \param updater callable object to update the control parameter value. It can be either be a function 
+             *  pointer, a function object or a lambda expression
              */
             virtual void apply (const controlproblem::CompositeDifferentialProblem& problem,
                                 const controlproblem::AbstractObjectiveFunctional& objectiveFunctional, 
-                                dolfin::Function& point) = 0;
+                                dolfin::Function& point,
+                                const std::function 
+                                <
+                                    void (controlproblem::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                >& updater) = 0;
             
 
             /********************** VARIABLES ***********************/

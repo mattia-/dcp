@@ -134,23 +134,23 @@ namespace controlproblem
 
 
             /******************* GETTERS *******************/
-            //! Get variable with given name and return it as a \c const \c dolfin::Function&
+            //! Get variable with given name and return it as a <tt> const dolfin::Function& </tt>
             /*! 
              *  Input arguments are:
              *  \param variableName the name of the variable to be returned. The method will look for an object with key
              *  matching \c name in the map \c variables_
              *
-             *  \return the function, if found, as a \c const \c dolfin::Function&
+             *  \return the function, if found, as a <tt> const dolfin::Function& </tt>
              */
             const dolfin::Function& function (const std::string& variableName) const;
 
-            //! Get variable with given name and return it as a \c const \c dolfin::Expression&
+            //! Get variable with given name and return it as a <tt> const dolfin::Expression& </tt>
             /*! 
              *  Input arguments are:
              *  \param variableName the name of the variable to be returned. The method will look for an object with key
              *  matching \c name in the map \c variables_
              *
-             *  \return the function, if found, as a \c const \c dolfin::Expression&
+             *  \return the function, if found, as a <tt> const dolfin::Expression& </tt>
              */
             const dolfin::Expression& expression (const std::string& variableName) const;
 

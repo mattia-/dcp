@@ -220,14 +220,14 @@ namespace controlproblem
         protected:
             //! The problem mesh
             /*! 
-             *  Stored as a \c shared_ptr because it may be common to more than 
+             *  Stored as a \c boost::shared_ptr because it may be common to more than 
              *  one problem
              */
             boost::shared_ptr<dolfin::Mesh> mesh_;
 
             //! The problem finite element space
             /*! 
-             *  Stored as a \c shared_ptr because it may be common to more than 
+             *  Stored as a \c boost::shared_ptr because it may be common to more than 
              *  one problem
              */
             boost::shared_ptr<dolfin::FunctionSpace> functionSpace_;
@@ -239,7 +239,7 @@ namespace controlproblem
             dolfin::Function solution_;
             
             //! Counter of dirichletBC inserted in the protected member map. It is used to create a unique
-            //! name for insertion of dirichlet bcs if the input argument \c bcName to \c addDirichletBC is
+            //! name for insertion of dirichlet bcs if the input argument \c bcName to \c addDirichletBC() is
             //! left empty
             int dirichletBCsCounter_;
 

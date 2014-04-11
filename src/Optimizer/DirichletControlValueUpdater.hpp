@@ -11,9 +11,9 @@ namespace controlproblem
     /*! \class DirichletControlValueUpdater DirichletControlValueUpdater.hpp
      *  \brief Class to update the value of the control variable in Dirichlet boundary control problems.
      *  
-     *  This class is a functor which can be passed to the method \c apply of any class
+     *  This class is a functor which can be passed to the method \c apply() of any class
      *  of the \c AbstractOptimizer hierarchy, which will use it to update the value of
-     *  the control parameter in the \c DifferentialProblem (also passed to the method \c apply 
+     *  the control parameter in the \c DifferentialProblem (also passed to the method \c apply()
      *  of the same class) as the optimization proceeds.
      */
     class DirichletControlValueUpdater
@@ -29,7 +29,7 @@ namespace controlproblem
             /*! 
              *  Input arguments are:
              *  \param problemName string that identifies the problem (in the \c CompositeDifferentialProblem object 
-             *  passed as input to \c this->operator()() ) which contains the control parameter to be updated
+             *  passed as input to <tt> this->operator() ()</tt> ) which contains the control parameter to be updated
              *  \param dirichletBCName the name under which the control Dirichlet boundary condition is stored in the 
              *  protected member \c map in the problem
              *  \param dirichletBoundary the boundary over which the control Dirichlet condition should be enforced

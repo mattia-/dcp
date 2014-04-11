@@ -14,7 +14,7 @@ namespace controlproblem
      *  \brief Class that implements the gradient method with backtracking.
      *  
      *  This class provides the implementation of the gradient method as a descent method
-     *  for optimazation of funcionals. It is derived from \c AbstractOptimizer.
+     *  for optimazation of funcionals. It is derived from \c controlproblem::AbstractOptimizer.
      *  Let \f$ J \f$ be the functional to be minimized and \f$ \psi \left( \alpha \right) \f$ the function defined as:
      *  \f[
      *      \psi \left( \alpha \right) = J \left( \mathbf{u} + \alpha\,\mathbf{d} \right)

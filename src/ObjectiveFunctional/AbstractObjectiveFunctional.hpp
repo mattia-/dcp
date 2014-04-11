@@ -32,7 +32,7 @@ namespace controlproblem
             //! Constructor with \c shared_ptr
             AbstractObjectiveFunctional (const boost::shared_ptr <const dolfin::Mesh> mesh);
             
-            //! Constructor with \c const reference
+            //! Constructor with <tt> const reference </tt>
             AbstractObjectiveFunctional (const dolfin::Mesh& mesh);
 
 

@@ -1,0 +1,33 @@
+# UFL file for Navier-Stokes simulation
+#
+# define mesh dimension
+cell = triangle
+
+# define function spaces
+Eta = VectorElement ("Lagrange", cell, 2)
+Phi = FiniteElement ("Lagrange", cell, 1)
+T = Eta * Phi
+
+# define test and trial functions
+trial = TrialFunction (T)
+test = TestFunction (T)
+
+xi, theta = split (trial)
+eta, phi = split (test)
+
+# define coefficients
+nu = Constant (cell)
+u = Coefficient (Eta)
+F_u = Coefficient (Eta)
+F_p = Coefficient (Phi)
+
+# bilinear form
+a = nu * inner (grad (xi), grad (eta)) * dx \
+     + inner (dot (transpose (grad (u)), xi), eta) * dx \
+     - inner (dot (grad (xi), u), eta) * dx \
+     - inner (theta, div (eta)) * dx \
+     + inner (div (xi), phi) * dx \
+     + dot (u, cell.n) * dot (xi, eta) * ds (0)
+
+# linear form
+L = inner (F_u, eta) * dx + inner (F_p, phi) * dx

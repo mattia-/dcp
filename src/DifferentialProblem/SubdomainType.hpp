@@ -3,8 +3,7 @@
 
 namespace controlproblem
 {
-    //! \class SubdomainType 
-    /*!  \brief Enumeration class used to identify domain parts
+    /*! \brief Enumeration class used to identify domain parts
      *
      *  This class will be used to check which measure to use when setting
      *  integration subdomains on the linear form and the bilinear form.

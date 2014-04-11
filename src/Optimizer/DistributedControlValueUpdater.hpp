@@ -11,9 +11,9 @@ namespace controlproblem
     /*! \class DistributedControlValueUpdater DistributedControlValueUpdater.hpp
      *  \brief Class to update the value of the control variable in distributed control problems.
      *  
-     *  This class is a functor which can be passed to the method \c apply of any class
+     *  This class is a functor which can be passed to the method \c apply() of any class
      *  of the \c AbstractOptimizer hierarchy, which will use it to update the value of
-     *  the control parameter in the \c DifferentialProblem (also passed to the method \c apply 
+     *  the control parameter in the \c DifferentialProblem (also passed to the method \c apply()
      *  of the same class) as the optimization proceeds.
      */
     class DistributedControlValueUpdater
@@ -29,7 +29,7 @@ namespace controlproblem
             /*! 
              *  Input arguments are:
              *  \param problemName string that identifies the problem (in the \c CompositeDifferentialProblem object 
-             *  passed as input to \c this->operator()() ) which contains the control parameter to be updated
+             *  passed as input to <tt>this->operator() () </tt>) which contains the control parameter to be updated
              *  \param coefficientType the type of the coefficient representing the control parameter inside the problem. 
              *  This will be used by the call to \c controlproblem::AbstractDifferentialProblem::setCoefficient()
              *  \param coefficientName the name of the coefficient representing the control parameter in the problem 

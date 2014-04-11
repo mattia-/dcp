@@ -22,7 +22,8 @@ namespace controlproblem
      *  The aforementioned map associates a \c std::string to a pointer to 
      *  \c controlproblem::AbstractDifferentialProblem.
      *  The class also offers the possibility to link a problem's coefficient to another problem's
-     *  solution through the use of a \c std::map<std::tuple <std::string, std::string, std::string>, std::string> >
+     *  solution through the use of a 
+     *  <tt> std::map<std::tuple <std::string, std::string, std::string>, std::pair <std::string, int>> </tt>
      */
     class CompositeDifferentialProblem
     {
@@ -77,7 +78,7 @@ namespace controlproblem
              *  \endcode
              *  The parameters are:
              *  \param problemName the problem name
-             *  \param problem a unique pointer to an \c AbstractDifferentialProblem. 
+             *  \param problem a unique pointer to a \c controlproblem::AbstractDifferentialProblem. 
              *  The class will take ownership of the concrete problem setting the input pointer to \c nullptr.
              *  For example, referring to the snippet of code above, the class will contain (and have full ownership of)
              *  the problem *foo and will set foo to nullptr, so that it cannot be used to modify the class private
@@ -100,19 +101,19 @@ namespace controlproblem
              */
             void reorderProblems (const std::vector<std::string>& solveOrder);
             
-            //! Links problems' coefficient and solution
+            //! Links problems' coefficient and solution [1]
             /*!
              *  \param linkFrom identifies the problem whose parameter (passed as second argument to the function) 
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
              *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
-             *  \c setCoefficient (see \c AbstractDifferentialProblem documentation for more details)
+             *  \c setCoefficient (see \c controlproblem::AbstractDifferentialProblem documentation for more details)
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
-             *  \param forceRelinking boolean value (default \c FALSE). If the pair (problem name - coefficient) 
+             *  \param forceRelinking boolean value (default \c false). If the pair (problem name - coefficient) 
              *  identified by the first and the second string in the first argument already appears in the protected 
-             *  member variable \c problemsLinks_, it will be relinked using the \c pair passed as first argument if 
+             *  member variable \c problemsLinks_, it will be relinked using the \c std::pair passed as first argument if 
              *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
              */
             void linkProblems (const std::string& linkFrom, 
@@ -121,10 +122,34 @@ namespace controlproblem
                                const std::string& linkTo,
                                const bool& forceRelinking = false);
             
+            //! Links problems' coefficient and solution [2]
+            /*!
+             *  \param linkFrom identifies the problem whose parameter (passed as second argument to the function) 
+             *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
+             *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
+             *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
+             *  \c setCoefficient (see \c controlproblem::AbstractDifferentialProblem documentation for more details)
+             *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
+             *  identified by the second and the first arguments respectively. No check is performed on the
+             *  existence of such problem
+             *  \param linkToComponent identifies the component of the solution of the problem indentified by \c linkTo
+             *  that should be used as coefficient in the problem identified by \c linkFrom
+             *  \param forceRelinking boolean value (default \c false). If the pair (problem name, coefficient) 
+             *  identified by the first and the second string in the first argument already appears in the protected 
+             *  member variable \c problemsLinks_, it will be relinked using the \c std::pair passed as first argument if 
+             *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
+             */
+            void linkProblems (const std::string& linkFrom, 
+                               const std::string& linkedCoefficientName,
+                               const std::string& linkedCoefficientType, 
+                               const std::string& linkTo,
+                               const int& linkToComponent,
+                               const bool& forceRelinking = false);
+            
             //! Access problem with given name [1] (read only)
             /*!
              *  \param name name of the problem to be accessed. If the name is not found, the function prints an
-             *  error message and throws an exception through the function \c dolfin::error
+             *  error message and throws an exception through the function \c dolfin::error()
              *  \return a reference to the problem
              */
             const controlproblem::AbstractDifferentialProblem& operator[] (const std::string& name) const;
@@ -132,7 +157,7 @@ namespace controlproblem
             //! Access problem with given name [2] (read and write)
             /*!
              *  \param name name of the problem to be accessed. If the name is not found, the function prints an
-             *  error message and throws an exception through the function \c dolfin::error
+             *  error message and throws an exception through the function \c dolfin::error()
              *  \return a reference to the problem
              */
             controlproblem::AbstractDifferentialProblem& operator[] (const std::string& name);
@@ -141,7 +166,7 @@ namespace controlproblem
             /*!
              *  \param position position of the problem to be accessed in the private member vector \c solveOrder_. 
              *  If \c position is greater than vector size, the function prints an error message and throws an exception 
-             *  through the function \c dolfin::error
+             *  through the function \c dolfin::error()
              *  \return a reference to the problem
              */
             const controlproblem::AbstractDifferentialProblem& operator[] (const std::size_t& position) const;
@@ -150,7 +175,7 @@ namespace controlproblem
             /*!
              *  \param position position of the problem to be accessed in the private member vector \c solveOrder_. 
              *  If \c position is greater than vector size, the function prints an error message and throws an exception 
-             *  through the function \c dolfin::error
+             *  through the function \c dolfin::error()
              *  \return a reference to the problem
              */
             controlproblem::AbstractDifferentialProblem& operator[] (const std::size_t& position);
@@ -160,37 +185,19 @@ namespace controlproblem
             void print ();
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_
-            /*!
-             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
-             *  member variable needsLinksScanning_. Default value is \c false
-             */
-            void solve (const bool& forceRelinking = false);
+            void solve ();
             
             //! Solve the problem corresponding to the name given [1]
             /*!
              *  \param problemName a string identifying the problem to be solved. If no problem with that name
              *  is found, a warning is issued
-             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
-             *  member variable needsLinksScanning_. Default value is \c false
              */
-            void solve (const std::string& problemName, const bool& forceRelinking = false);
-            
-            //! Solve the problem corresponding to the name given [2]
-            /*!
-             *  This method is provided only to allow calls like
-             *  \code
-             *  solve ("foo_problem");
-             *  \endcode
-             *  In this case, the compiler would in fact otherwise call \c solve \c (const \c bool&) which is the 
-             *  best-matching implicit conversion for a parameter of type \c const \c char*. Using this method,
-             *  the version of \c solve that takes a \c std::string is called as expected.
-             */
-            void solve (const char* problemName, const bool& forceRelinking = false);
+            void solve (const std::string& problemName);
             
             //! Access solution of the problem identified by given name
             /*!
              *  \param problemName name of the problem to be accessed. If the name is not found, the function prints an
-             *  error message and throws an exception through the function \c dolfin::error
+             *  error message and throws an exception through the function \c dolfin::error()
              *  \return a reference to the problems' solution
              */
             const dolfin::Function& solution (const std::string& problemName) const;
@@ -204,13 +211,23 @@ namespace controlproblem
             //! The solution order of the problems
             std::vector <std::string> solveOrder_;
             
-            //! The map of links between problems. A map guarantees that no pair (problem, coefficient) is linked twice
-            //! against possibly different problems
-            std::map <std::tuple <std::string, std::string, std::string>, std::string> problemsLinks_;
-            
-            //! Boolean flag. It is set to \c true if the problems links have been changed in any way and 
-            //! should be scanned before solving the problems
-            bool needsLinksScanning_;
+            //! The map of links between problems. 
+            /*!
+             *  It is stored as a <tt> map <(string, string, string), (string, int)> </tt> where:
+             *  \li the first \c string contains the name of the problem whose coefficient should be linked against 
+             *  some other problem's solution
+             *  \li the second \c string contains the type of such coefficient, in a form that can be passed to
+             *  \c controlproblem::AbstractDifferentialProblem::setCoefficients
+             *  \li the third \c string contains the name of said coefficient in the problem
+             *  \li the fourth \c string contains the name of the problem whose solution should be used to set the 
+             *  coefficient identified by the first three strings
+             *  \li finally, the last field, which is an \c int, defines which component of the solution of the problem
+             *  identified by the fourth \c string should be used in the link. If the whole solution should be used, \c -1
+             *  is used as a placeholder
+             *  A map guarantees that no tuple (problem, coefficient type, coefficient name) 
+             *  is linked twice against possibly different problems
+             */
+            std::map <std::tuple <std::string, std::string, std::string>, std::pair <std::string, int>> problemsLinks_;
             
         // ---------------------------------------------------------------------------------------------//  
 

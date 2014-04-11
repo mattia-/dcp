@@ -58,8 +58,8 @@ namespace controlproblem
 
                 //!  Constructor with shared pointers [1]
                 /*!
-                 *  \param mesh the problem mesh as a \c const \c boost::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a \c const \c boost::shared_ptr to 
+                 *  \param mesh the problem mesh as a <tt> const boost::shared_ptr </tt> to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a <tt> const boost::shared_ptr </tt> to 
                  *  \c dolfin::FunctionSpace
                  *  \param solverType the type of the solver. Default: \c lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
@@ -79,8 +79,8 @@ namespace controlproblem
 
                 //! Constructor with references [1]
                 /*!
-                 *  \param mesh the problem mesh as a \c const \c dolfin::Mesh&
-                 *  \param functionSpace the problem finite element space as a \c const \c dolfin::FunctionSpace&
+                 *  \param mesh the problem mesh as a <tt> const dolfin::Mesh& </tt>
+                 *  \param functionSpace the problem finite element space as a <tt> const dolfin::FunctionSpace& </tt>
                  *  \param solverType the type of the solver. Default: \c lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
                  *  documentation, or use method \c list_<solverType>_methods). Default value: \c default
@@ -122,8 +122,8 @@ namespace controlproblem
                 
                 //!  Constructor with shared pointers [2]
                 /*!
-                 *  \param mesh the problem mesh as a \c const \c boost::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a \c const \c boost::shared_ptr to 
+                 *  \param mesh the problem mesh as a <tt> const boost::shared_ptr </tt> to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a <tt>const boost::shared_ptr </tt> to 
                  *  \c dolfin::FunctionSpace
                  *  \param bilinearForm a \c const reference to the problem's bilinear form
                  *  \param linearForm a \c const reference to the problem's linear form
@@ -146,8 +146,8 @@ namespace controlproblem
 
                 //! Constructor with references [2]
                 /*!
-                 *  \param mesh the problem mesh as a \c const \c dolfin::Mesh&
-                 *  \param functionSpace the problem finite element space as a \c const \c dolfin::FunctionSpace&
+                 *  \param mesh the problem mesh as a <tt>const dolfin::Mesh& </tt>
+                 *  \param functionSpace the problem finite element space as a <tt>const dolfin::FunctionSpace& </tt>
                  *  \param bilinearForm a \c const reference to the problem's bilinear form
                  *  \param linearForm a \c const reference to the problem's linear form
                  *  \param solverType the type of the solver. Default: \c lu_solver

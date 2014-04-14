@@ -14378,18 +14378,18 @@ public:
 /// tensor corresponding to the local contribution to a form from
 /// the integral over a cell.
 
-class adjoint_cell_integral_1_otherwise: public ufc::cell_integral
+class adjoint_cell_integral_1_0: public ufc::cell_integral
 {
 public:
 
   /// Constructor
-  adjoint_cell_integral_1_otherwise() : ufc::cell_integral()
+  adjoint_cell_integral_1_0() : ufc::cell_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~adjoint_cell_integral_1_otherwise()
+  virtual ~adjoint_cell_integral_1_0()
   {
     // Do nothing
   }
@@ -14401,9 +14401,9 @@ public:
                                int cell_orientation) const
   {
     // Number of operations (multiply-add pairs) for Jacobian data:      3
-    // Number of operations (multiply-add pairs) for geometry tensor:    15
-    // Number of operations (multiply-add pairs) for tensor contraction: 63
-    // Total number of operations (multiply-add pairs):                  81
+    // Number of operations (multiply-add pairs) for geometry tensor:    30
+    // Number of operations (multiply-add pairs) for tensor contraction: 134
+    // Total number of operations (multiply-add pairs):                  167
     
     // Compute Jacobian
     double J[4];
@@ -14418,21 +14418,36 @@ public:
     const double det = std::abs(detJ);
     
     // Compute geometry tensor
-    const double G0_0 = det*w[1][0]*(1.0);
-    const double G0_1 = det*w[1][1]*(1.0);
-    const double G0_2 = det*w[1][2]*(1.0);
-    const double G1_0 = det*w[0][0]*(1.0);
-    const double G1_1 = det*w[0][1]*(1.0);
-    const double G1_2 = det*w[0][2]*(1.0);
-    const double G1_3 = det*w[0][3]*(1.0);
-    const double G1_4 = det*w[0][4]*(1.0);
-    const double G1_5 = det*w[0][5]*(1.0);
-    const double G2_6 = det*w[0][6]*(1.0);
-    const double G2_7 = det*w[0][7]*(1.0);
-    const double G2_8 = det*w[0][8]*(1.0);
-    const double G2_9 = det*w[0][9]*(1.0);
-    const double G2_10 = det*w[0][10]*(1.0);
-    const double G2_11 = det*w[0][11]*(1.0);
+    const double G0_0 = det*w[3][0]*(1.0);
+    const double G0_1 = det*w[3][1]*(1.0);
+    const double G0_2 = det*w[3][2]*(1.0);
+    const double G1_0 = det*w[2][0]*(1.0);
+    const double G1_1 = det*w[2][1]*(1.0);
+    const double G1_2 = det*w[2][2]*(1.0);
+    const double G2_0 = det*w[0][0]*(1.0);
+    const double G2_1 = det*w[0][1]*(1.0);
+    const double G2_2 = det*w[0][2]*(1.0);
+    const double G2_3 = det*w[0][3]*(1.0);
+    const double G2_4 = det*w[0][4]*(1.0);
+    const double G2_5 = det*w[0][5]*(1.0);
+    const double G3_0 = det*w[1][0]*(1.0);
+    const double G3_1 = det*w[1][1]*(1.0);
+    const double G3_2 = det*w[1][2]*(1.0);
+    const double G3_3 = det*w[1][3]*(1.0);
+    const double G3_4 = det*w[1][4]*(1.0);
+    const double G3_5 = det*w[1][5]*(1.0);
+    const double G4_6 = det*w[0][6]*(1.0);
+    const double G4_7 = det*w[0][7]*(1.0);
+    const double G4_8 = det*w[0][8]*(1.0);
+    const double G4_9 = det*w[0][9]*(1.0);
+    const double G4_10 = det*w[0][10]*(1.0);
+    const double G4_11 = det*w[0][11]*(1.0);
+    const double G5_6 = det*w[1][6]*(1.0);
+    const double G5_7 = det*w[1][7]*(1.0);
+    const double G5_8 = det*w[1][8]*(1.0);
+    const double G5_9 = det*w[1][9]*(1.0);
+    const double G5_10 = det*w[1][10]*(1.0);
+    const double G5_11 = det*w[1][11]*(1.0);
     
     // Compute element tensor
     double A0[15];
@@ -14453,54 +14468,105 @@ public:
     A0[14] = A0[12] - 0.0416666666666667*G0_0 + 0.0416666666666668*G0_2;
     
     double A1[15];
-    A1[0] = 0.0166666666666666*G1_0 - 0.00277777777777778*G1_1 - 0.00277777777777778*G1_2 - 0.0111111111111111*G1_3;
-    A1[1] = -0.00277777777777778*G1_0 + 0.0166666666666667*G1_1 - 0.00277777777777781*G1_2 - 0.0111111111111111*G1_4;
-    A1[2] = -0.00277777777777778*G1_0 - 0.0027777777777778*G1_1 + 0.0166666666666667*G1_2 - 0.0111111111111111*G1_5;
+    A1[0] = 0.0;
+    A1[1] = 0.0;
+    A1[2] = 0.0;
     A1[8] = 0.0;
-    A1[3] = -0.0111111111111111*G1_0 + 0.0888888888888888*G1_3 + 0.0444444444444443*G1_4 + 0.0444444444444443*G1_5;
+    A1[3] = 0.0;
     A1[9] = 0.0;
-    A1[4] = -0.0111111111111111*G1_1 + 0.0444444444444443*G1_3 + 0.0888888888888887*G1_4 + 0.0444444444444443*G1_5;
+    A1[4] = 0.0;
     A1[10] = 0.0;
-    A1[5] = -0.0111111111111111*G1_2 + 0.0444444444444443*G1_3 + 0.0444444444444443*G1_4 + 0.0888888888888887*G1_5;
+    A1[5] = 0.0;
     A1[11] = 0.0;
     A1[6] = 0.0;
-    A1[12] = 0.0;
+    A1[12] = -0.0833333333333333*G1_0 - 0.0416666666666666*G1_1 - 0.0416666666666666*G1_2;
     A1[7] = 0.0;
-    A1[13] = 0.0;
-    A1[14] = 0.0;
+    A1[13] = A1[12] + 0.0416666666666667*G1_0 - 0.0416666666666668*G1_1;
+    A1[14] = A1[12] + 0.0416666666666667*G1_0 - 0.0416666666666668*G1_2;
     
     double A2[15];
-    A2[0] = 0.0;
-    A2[1] = 0.0;
-    A2[2] = 0.0;
-    A2[8] = -0.00277777777777778*G2_6 - 0.0027777777777778*G2_7 + 0.0166666666666667*G2_8 - 0.0111111111111111*G2_11;
-    A2[3] = 0.0;
-    A2[9] = -0.0111111111111111*G2_6 + 0.0888888888888888*G2_9 + 0.0444444444444443*G2_10 + 0.0444444444444443*G2_11;
-    A2[4] = 0.0;
-    A2[10] = -0.0111111111111111*G2_7 + 0.0444444444444443*G2_9 + 0.0888888888888887*G2_10 + 0.0444444444444443*G2_11;
-    A2[5] = 0.0;
-    A2[11] = -0.0111111111111111*G2_8 + 0.0444444444444443*G2_9 + 0.0444444444444443*G2_10 + 0.0888888888888887*G2_11;
-    A2[6] = 0.0166666666666666*G2_6 - 0.00277777777777778*G2_7 - 0.00277777777777778*G2_8 - 0.0111111111111111*G2_9;
+    A2[0] = 0.0166666666666666*G2_0 - 0.00277777777777778*G2_1 - 0.00277777777777778*G2_2 - 0.0111111111111111*G2_3;
+    A2[1] = -0.00277777777777778*G2_0 + 0.0166666666666667*G2_1 - 0.00277777777777781*G2_2 - 0.0111111111111111*G2_4;
+    A2[2] = -0.00277777777777778*G2_0 - 0.0027777777777778*G2_1 + 0.0166666666666667*G2_2 - 0.0111111111111111*G2_5;
+    A2[8] = 0.0;
+    A2[3] = -0.0111111111111111*G2_0 + 0.0888888888888888*G2_3 + 0.0444444444444443*G2_4 + 0.0444444444444443*G2_5;
+    A2[9] = 0.0;
+    A2[4] = -0.0111111111111111*G2_1 + 0.0444444444444443*G2_3 + 0.0888888888888887*G2_4 + 0.0444444444444443*G2_5;
+    A2[10] = 0.0;
+    A2[5] = -0.0111111111111111*G2_2 + 0.0444444444444443*G2_3 + 0.0444444444444443*G2_4 + 0.0888888888888887*G2_5;
+    A2[11] = 0.0;
+    A2[6] = 0.0;
     A2[12] = 0.0;
-    A2[7] = -0.00277777777777778*G2_6 + 0.0166666666666667*G2_7 - 0.00277777777777781*G2_8 - 0.0111111111111111*G2_10;
+    A2[7] = 0.0;
     A2[13] = 0.0;
     A2[14] = 0.0;
     
-    A[0] = A0[0] + A1[0] + A2[0];
-    A[1] = A0[1] + A1[1] + A2[1];
-    A[2] = A0[2] + A1[2] + A2[2];
-    A[3] = A0[3] + A1[3] + A2[3];
-    A[4] = A0[4] + A1[4] + A2[4];
-    A[5] = A0[5] + A1[5] + A2[5];
-    A[6] = A0[6] + A1[6] + A2[6];
-    A[7] = A0[7] + A1[7] + A2[7];
-    A[8] = A0[8] + A1[8] + A2[8];
-    A[9] = A0[9] + A1[9] + A2[9];
-    A[10] = A0[10] + A1[10] + A2[10];
-    A[11] = A0[11] + A1[11] + A2[11];
-    A[12] = A0[12] + A1[12] + A2[12];
-    A[13] = A0[13] + A1[13] + A2[13];
-    A[14] = A0[14] + A1[14] + A2[14];
+    double A3[15];
+    A3[0] = -0.0166666666666666*G3_0 + 0.00277777777777778*G3_1 + 0.00277777777777778*G3_2 + 0.0111111111111111*G3_3;
+    A3[1] = 0.00277777777777778*G3_0 - 0.0166666666666667*G3_1 + 0.00277777777777781*G3_2 + 0.0111111111111111*G3_4;
+    A3[2] = 0.00277777777777778*G3_0 + 0.0027777777777778*G3_1 - 0.0166666666666667*G3_2 + 0.0111111111111111*G3_5;
+    A3[8] = 0.0;
+    A3[3] = 0.0111111111111111*G3_0 - 0.0888888888888888*G3_3 - 0.0444444444444443*G3_4 - 0.0444444444444443*G3_5;
+    A3[9] = 0.0;
+    A3[4] = 0.0111111111111111*G3_1 - 0.0444444444444443*G3_3 - 0.0888888888888887*G3_4 - 0.0444444444444443*G3_5;
+    A3[10] = 0.0;
+    A3[5] = 0.0111111111111111*G3_2 - 0.0444444444444443*G3_3 - 0.0444444444444443*G3_4 - 0.0888888888888887*G3_5;
+    A3[11] = 0.0;
+    A3[6] = 0.0;
+    A3[12] = 0.0;
+    A3[7] = 0.0;
+    A3[13] = 0.0;
+    A3[14] = 0.0;
+    
+    double A4[15];
+    A4[0] = 0.0;
+    A4[1] = 0.0;
+    A4[2] = 0.0;
+    A4[8] = -0.00277777777777778*G4_6 - 0.0027777777777778*G4_7 + 0.0166666666666667*G4_8 - 0.0111111111111111*G4_11;
+    A4[3] = 0.0;
+    A4[9] = -0.0111111111111111*G4_6 + 0.0888888888888888*G4_9 + 0.0444444444444443*G4_10 + 0.0444444444444443*G4_11;
+    A4[4] = 0.0;
+    A4[10] = -0.0111111111111111*G4_7 + 0.0444444444444443*G4_9 + 0.0888888888888887*G4_10 + 0.0444444444444443*G4_11;
+    A4[5] = 0.0;
+    A4[11] = -0.0111111111111111*G4_8 + 0.0444444444444443*G4_9 + 0.0444444444444443*G4_10 + 0.0888888888888887*G4_11;
+    A4[6] = 0.0166666666666666*G4_6 - 0.00277777777777778*G4_7 - 0.00277777777777778*G4_8 - 0.0111111111111111*G4_9;
+    A4[12] = 0.0;
+    A4[7] = -0.00277777777777778*G4_6 + 0.0166666666666667*G4_7 - 0.00277777777777781*G4_8 - 0.0111111111111111*G4_10;
+    A4[13] = 0.0;
+    A4[14] = 0.0;
+    
+    double A5[15];
+    A5[0] = 0.0;
+    A5[1] = 0.0;
+    A5[2] = 0.0;
+    A5[8] = 0.00277777777777778*G5_6 + 0.0027777777777778*G5_7 - 0.0166666666666667*G5_8 + 0.0111111111111111*G5_11;
+    A5[3] = 0.0;
+    A5[9] = 0.0111111111111111*G5_6 - 0.0888888888888888*G5_9 - 0.0444444444444443*G5_10 - 0.0444444444444443*G5_11;
+    A5[4] = 0.0;
+    A5[10] = 0.0111111111111111*G5_7 - 0.0444444444444443*G5_9 - 0.0888888888888887*G5_10 - 0.0444444444444443*G5_11;
+    A5[5] = 0.0;
+    A5[11] = 0.0111111111111111*G5_8 - 0.0444444444444443*G5_9 - 0.0444444444444443*G5_10 - 0.0888888888888887*G5_11;
+    A5[6] = -0.0166666666666666*G5_6 + 0.00277777777777778*G5_7 + 0.00277777777777778*G5_8 + 0.0111111111111111*G5_9;
+    A5[12] = 0.0;
+    A5[7] = 0.00277777777777778*G5_6 - 0.0166666666666667*G5_7 + 0.00277777777777781*G5_8 + 0.0111111111111111*G5_10;
+    A5[13] = 0.0;
+    A5[14] = 0.0;
+    
+    A[0] = A0[0] + A1[0] + A2[0] + A3[0] + A4[0] + A5[0];
+    A[1] = A0[1] + A1[1] + A2[1] + A3[1] + A4[1] + A5[1];
+    A[2] = A0[2] + A1[2] + A2[2] + A3[2] + A4[2] + A5[2];
+    A[3] = A0[3] + A1[3] + A2[3] + A3[3] + A4[3] + A5[3];
+    A[4] = A0[4] + A1[4] + A2[4] + A3[4] + A4[4] + A5[4];
+    A[5] = A0[5] + A1[5] + A2[5] + A3[5] + A4[5] + A5[5];
+    A[6] = A0[6] + A1[6] + A2[6] + A3[6] + A4[6] + A5[6];
+    A[7] = A0[7] + A1[7] + A2[7] + A3[7] + A4[7] + A5[7];
+    A[8] = A0[8] + A1[8] + A2[8] + A3[8] + A4[8] + A5[8];
+    A[9] = A0[9] + A1[9] + A2[9] + A3[9] + A4[9] + A5[9];
+    A[10] = A0[10] + A1[10] + A2[10] + A3[10] + A4[10] + A5[10];
+    A[11] = A0[11] + A1[11] + A2[11] + A3[11] + A4[11] + A5[11];
+    A[12] = A0[12] + A1[12] + A2[12] + A3[12] + A4[12] + A5[12];
+    A[13] = A0[13] + A1[13] + A2[13] + A3[13] + A4[13] + A5[13];
+    A[14] = A0[14] + A1[14] + A2[14] + A3[14] + A4[14] + A5[14];
   }
 
 };
@@ -14755,7 +14821,7 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "8057abed6227e4a53d0b423a412c1a74d8ea5ad99a659a3578edf79e572e9b799cbef2b27c4149b0efa6c146cb4d3e7a7e684ba7bad49780403a2b9e0125c7e7";
+    return "ccc14f3856fd285314f63882fb896c2ec71c449a1b0fd0a26c786c76bc385f079b46ea73f0d2f073c24a4902787116a7bc6eb7a13bc768cae17a8fdc142b8951";
   }
 
   /// Return the rank of the global tensor (r)
@@ -14767,13 +14833,13 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 2;
+    return 4;
   }
 
   /// Return the number of cell domains
   virtual std::size_t num_cell_domains() const
   {
-    return 0;
+    return 1;
   }
 
   /// Return the number of exterior facet domains
@@ -14835,6 +14901,16 @@ public:
       }
     case 2:
       {
+        return new adjoint_finite_element_2();
+        break;
+      }
+    case 3:
+      {
+        return new adjoint_finite_element_3();
+        break;
+      }
+    case 4:
+      {
         return new adjoint_finite_element_3();
         break;
       }
@@ -14860,6 +14936,16 @@ public:
       }
     case 2:
       {
+        return new adjoint_dofmap_2();
+        break;
+      }
+    case 3:
+      {
+        return new adjoint_dofmap_3();
+        break;
+      }
+    case 4:
+      {
         return new adjoint_dofmap_3();
         break;
       }
@@ -14871,6 +14957,15 @@ public:
   /// Create a new cell integral on sub domain i
   virtual ufc::cell_integral* create_cell_integral(std::size_t i) const
   {
+    switch (i)
+    {
+    case 0:
+      {
+        return new adjoint_cell_integral_1_0();
+        break;
+      }
+    }
+    
     return 0;
   }
 
@@ -14895,7 +14990,7 @@ public:
   /// Create a new cell integral on everywhere else
   virtual ufc::cell_integral* create_default_cell_integral() const
   {
-    return new adjoint_cell_integral_1_otherwise();
+    return 0;
   }
 
   /// Create a new exterior facet integral on everywhere else
@@ -14938,14 +15033,14 @@ public:
 namespace adjoint
 {
 
-class CoefficientSpace_F_p: public dolfin::FunctionSpace
+class CoefficientSpace_P: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_F_p(const dolfin::Mesh& mesh):
+  CoefficientSpace_P(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()), mesh)))
@@ -14954,7 +15049,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_F_p(boost::shared_ptr<const dolfin::Mesh> mesh):
+  CoefficientSpace_P(boost::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()), *mesh)))
@@ -14965,7 +15060,7 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_F_p(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  CoefficientSpace_P(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()), mesh,
@@ -14975,7 +15070,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_F_p(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  CoefficientSpace_P(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()), *mesh, constrained_domain)))
@@ -14986,7 +15081,7 @@ public:
   //--- Constructors for restricted function space, 2 different versions ---
 
   // Create restricted function space (reference version)
-  CoefficientSpace_F_p(const dolfin::Restriction& restriction):
+  CoefficientSpace_P(const dolfin::Restriction& restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()),
@@ -14996,7 +15091,7 @@ public:
   }
 
   // Create restricted function space (shared pointer version)
-  CoefficientSpace_F_p(boost::shared_ptr<const dolfin::Restriction> restriction):
+  CoefficientSpace_P(boost::shared_ptr<const dolfin::Restriction> restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()),
@@ -15006,20 +15101,20 @@ public:
   }
 
   // Copy constructor
-  ~CoefficientSpace_F_p()
+  ~CoefficientSpace_P()
   {
   }
 
 };
 
-class CoefficientSpace_F_u: public dolfin::FunctionSpace
+class CoefficientSpace_U: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_F_u(const dolfin::Mesh& mesh):
+  CoefficientSpace_U(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_2()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_2()), mesh)))
@@ -15028,7 +15123,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_F_u(boost::shared_ptr<const dolfin::Mesh> mesh):
+  CoefficientSpace_U(boost::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_2()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_2()), *mesh)))
@@ -15039,7 +15134,7 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_F_u(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  CoefficientSpace_U(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_2()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_2()), mesh,
@@ -15049,7 +15144,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_F_u(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  CoefficientSpace_U(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_2()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_2()), *mesh, constrained_domain)))
@@ -15060,7 +15155,7 @@ public:
   //--- Constructors for restricted function space, 2 different versions ---
 
   // Create restricted function space (reference version)
-  CoefficientSpace_F_u(const dolfin::Restriction& restriction):
+  CoefficientSpace_U(const dolfin::Restriction& restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_2()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_2()),
@@ -15070,7 +15165,7 @@ public:
   }
 
   // Create restricted function space (shared pointer version)
-  CoefficientSpace_F_u(boost::shared_ptr<const dolfin::Restriction> restriction):
+  CoefficientSpace_U(boost::shared_ptr<const dolfin::Restriction> restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_2()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_2()),
@@ -15080,7 +15175,7 @@ public:
   }
 
   // Copy constructor
-  ~CoefficientSpace_F_u()
+  ~CoefficientSpace_U()
   {
   }
 
@@ -15155,6 +15250,80 @@ public:
 
   // Copy constructor
   ~CoefficientSpace_nu()
+  {
+  }
+
+};
+
+class CoefficientSpace_p: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_p(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_p(boost::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_p(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_p(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for restricted function space, 2 different versions ---
+
+  // Create restricted function space (reference version)
+  CoefficientSpace_p(const dolfin::Restriction& restriction):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()),
+                                                                                     reference_to_no_delete_pointer(restriction))))
+  {
+    // Do nothing
+  }
+
+  // Create restricted function space (shared pointer version)
+  CoefficientSpace_p(boost::shared_ptr<const dolfin::Restriction> restriction):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new adjoint_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new adjoint_dofmap_3()),
+                                                                                     restriction)))
+  {
+    // Do nothing
+  }
+
+  // Copy constructor
+  ~CoefficientSpace_p()
   {
   }
 
@@ -15582,9 +15751,13 @@ public:
 
 };
 
-typedef CoefficientSpace_F_u Form_L_FunctionSpace_1;
+typedef CoefficientSpace_u Form_L_FunctionSpace_1;
 
-typedef CoefficientSpace_F_p Form_L_FunctionSpace_2;
+typedef CoefficientSpace_U Form_L_FunctionSpace_2;
+
+typedef CoefficientSpace_p Form_L_FunctionSpace_3;
+
+typedef CoefficientSpace_P Form_L_FunctionSpace_4;
 
 class Form_L: public dolfin::Form
 {
@@ -15592,7 +15765,7 @@ public:
 
   // Constructor
   Form_L(const dolfin::FunctionSpace& V0):
-    dolfin::Form(1, 2), F_u(*this, 0), F_p(*this, 1)
+    dolfin::Form(1, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
@@ -15600,32 +15773,36 @@ public:
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& F_u, const dolfin::GenericFunction& F_p):
-    dolfin::Form(1, 2), F_u(*this, 0), F_p(*this, 1)
+  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& u, const dolfin::GenericFunction& U, const dolfin::GenericFunction& p, const dolfin::GenericFunction& P):
+    dolfin::Form(1, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
-    this->F_u = F_u;
-    this->F_p = F_p;
+    this->u = u;
+    this->U = U;
+    this->p = p;
+    this->P = P;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new adjoint_form_1());
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, boost::shared_ptr<const dolfin::GenericFunction> F_u, boost::shared_ptr<const dolfin::GenericFunction> F_p):
-    dolfin::Form(1, 2), F_u(*this, 0), F_p(*this, 1)
+  Form_L(const dolfin::FunctionSpace& V0, boost::shared_ptr<const dolfin::GenericFunction> u, boost::shared_ptr<const dolfin::GenericFunction> U, boost::shared_ptr<const dolfin::GenericFunction> p, boost::shared_ptr<const dolfin::GenericFunction> P):
+    dolfin::Form(1, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
-    this->F_u = *F_u;
-    this->F_p = *F_p;
+    this->u = *u;
+    this->U = *U;
+    this->p = *p;
+    this->P = *P;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new adjoint_form_1());
   }
 
   // Constructor
   Form_L(boost::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 2), F_u(*this, 0), F_p(*this, 1)
+    dolfin::Form(1, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
   {
     _function_spaces[0] = V0;
 
@@ -15633,25 +15810,29 @@ public:
   }
 
   // Constructor
-  Form_L(boost::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& F_u, const dolfin::GenericFunction& F_p):
-    dolfin::Form(1, 2), F_u(*this, 0), F_p(*this, 1)
+  Form_L(boost::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& u, const dolfin::GenericFunction& U, const dolfin::GenericFunction& p, const dolfin::GenericFunction& P):
+    dolfin::Form(1, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
   {
     _function_spaces[0] = V0;
 
-    this->F_u = F_u;
-    this->F_p = F_p;
+    this->u = u;
+    this->U = U;
+    this->p = p;
+    this->P = P;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new adjoint_form_1());
   }
 
   // Constructor
-  Form_L(boost::shared_ptr<const dolfin::FunctionSpace> V0, boost::shared_ptr<const dolfin::GenericFunction> F_u, boost::shared_ptr<const dolfin::GenericFunction> F_p):
-    dolfin::Form(1, 2), F_u(*this, 0), F_p(*this, 1)
+  Form_L(boost::shared_ptr<const dolfin::FunctionSpace> V0, boost::shared_ptr<const dolfin::GenericFunction> u, boost::shared_ptr<const dolfin::GenericFunction> U, boost::shared_ptr<const dolfin::GenericFunction> p, boost::shared_ptr<const dolfin::GenericFunction> P):
+    dolfin::Form(1, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
   {
     _function_spaces[0] = V0;
 
-    this->F_u = *F_u;
-    this->F_p = *F_p;
+    this->u = *u;
+    this->U = *U;
+    this->p = *p;
+    this->P = *P;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new adjoint_form_1());
   }
@@ -15663,10 +15844,14 @@ public:
   /// Return the number of the coefficient with this name
   virtual std::size_t coefficient_number(const std::string& name) const
   {
-    if (name == "F_u")
+    if (name == "u")
       return 0;
-    else if (name == "F_p")
+    else if (name == "U")
       return 1;
+    else if (name == "p")
+      return 2;
+    else if (name == "P")
+      return 3;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -15680,9 +15865,13 @@ public:
     switch (i)
     {
     case 0:
-      return "F_u";
+      return "u";
     case 1:
-      return "F_p";
+      return "U";
+    case 2:
+      return "p";
+    case 3:
+      return "P";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -15693,12 +15882,16 @@ public:
 
   // Typedefs
   typedef Form_L_FunctionSpace_0 TestSpace;
-  typedef Form_L_FunctionSpace_1 CoefficientSpace_F_u;
-  typedef Form_L_FunctionSpace_2 CoefficientSpace_F_p;
+  typedef Form_L_FunctionSpace_1 CoefficientSpace_u;
+  typedef Form_L_FunctionSpace_2 CoefficientSpace_U;
+  typedef Form_L_FunctionSpace_3 CoefficientSpace_p;
+  typedef Form_L_FunctionSpace_4 CoefficientSpace_P;
 
   // Coefficients
-  dolfin::CoefficientAssigner F_u;
-  dolfin::CoefficientAssigner F_p;
+  dolfin::CoefficientAssigner u;
+  dolfin::CoefficientAssigner U;
+  dolfin::CoefficientAssigner p;
+  dolfin::CoefficientAssigner P;
 };
 
 // Class typedefs

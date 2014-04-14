@@ -101,8 +101,10 @@ namespace controlproblem
              */
             void reorderProblems (const std::vector<std::string>& solveOrder);
             
-            //! Links problems' coefficient and solution [1]
+            //! Adds link between problems' coefficient and solution []
             /*!
+             *  This function will add to the stored map \c problemsLinks_ a \c std::pair created on the input arguments
+             *  and perform the actual linking calling \c linkProblems
              *  \param linkFrom identifies the problem whose parameter (passed as second argument to the function) 
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
@@ -116,14 +118,16 @@ namespace controlproblem
              *  member variable \c problemsLinks_, it will be relinked using the \c std::pair passed as first argument if 
              *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
              */
-            void linkProblems (const std::string& linkFrom, 
-                               const std::string& linkedCoefficientName,
-                               const std::string& linkedCoefficientType, 
-                               const std::string& linkTo,
-                               const bool& forceRelinking = false);
-            
-            //! Links problems' coefficient and solution [2]
+            void addLink (const std::string& linkFrom, 
+                          const std::string& linkedCoefficientName,
+                          const std::string& linkedCoefficientType, 
+                          const std::string& linkTo,
+                          const bool& forceRelinking = false);
+
+            //! Adds link between problems' coefficient and solution [2]
             /*!
+             *  This function will add to the stored map \c problemsLinks_ a \c std::pair created on the input arguments
+             *  and perform the actual linking calling \c linkProblems
              *  \param linkFrom identifies the problem whose parameter (passed as second argument to the function) 
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
@@ -139,12 +143,12 @@ namespace controlproblem
              *  member variable \c problemsLinks_, it will be relinked using the \c std::pair passed as first argument if 
              *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
              */
-            void linkProblems (const std::string& linkFrom, 
-                               const std::string& linkedCoefficientName,
-                               const std::string& linkedCoefficientType, 
-                               const std::string& linkTo,
-                               const int& linkToComponent,
-                               const bool& forceRelinking = false);
+            void addLink (const std::string& linkFrom, 
+                          const std::string& linkedCoefficientName,
+                          const std::string& linkedCoefficientType, 
+                          const std::string& linkTo,
+                          const int& linkToComponent,
+                          const bool& forceRelinking = false);
             
             //! Access problem with given name [1] (read only)
             /*!
@@ -185,14 +189,32 @@ namespace controlproblem
             void print ();
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_
-            void solve ();
+            /*!
+             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
+             *  member variable needsLinksScanning_. Default value is \c false
+             */
+            void solve (const bool& forceRelinking = false);
             
             //! Solve the problem corresponding to the name given [1]
             /*!
              *  \param problemName a string identifying the problem to be solved. If no problem with that name
              *  is found, a warning is issued
+             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
+             *  member variable needsLinksScanning_. Default value is \c false
              */
-            void solve (const std::string& problemName);
+            void solve (const std::string& problemName, const bool& forceRelinking = false);
+            
+            //! Solve the problem corresponding to the name given [2]
+            /*!
+             *  This method is provided only to allow calls like
+             *  \code
+             *  solve ("foo_problem");
+             *  \endcode
+             *  In this case, the compiler would in fact otherwise call \c solve \c (const \c bool&) which is the 
+             *  best-matching implicit conversion for a parameter of type \c const \c char*. Using this method,
+             *  the version of \c solve that takes a \c std::string is called as expected.
+             */
+            void solve (const char* problemName, const bool& forceRelinking = false);
             
             //! Access solution of the problem identified by given name
             /*!
@@ -205,6 +227,16 @@ namespace controlproblem
         // ---------------------------------------------------------------------------------------------//  
 
         protected:
+            //! Performs the actual linking between problems
+            /*!
+             *  Being a protected member, this method is just called from library functions. 
+             *  \param link a \c std::pair of the type contained by the protected member \c problemsLinks_
+             */
+            void linkProblems (const std::pair <
+                                                std::tuple <std::string, std::string, std::string>, 
+                                                std::pair  <std::string, int>
+                                               >& link);
+            
             //! The stored problems
             std::map <std::string, std::unique_ptr <controlproblem::AbstractDifferentialProblem>> storedProblems_;
 

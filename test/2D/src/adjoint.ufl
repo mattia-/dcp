@@ -17,9 +17,12 @@ eta, phi = split (test)
 
 # define coefficients
 nu = Constant (cell)
-u = Coefficient (Eta)
-F_u = Coefficient (Eta)
-F_p = Coefficient (Phi)
+u  = Coefficient (Eta)
+U  = Coefficient (Eta)
+p  = Coefficient (Phi)
+P  = Coefficient (Phi)
+F_u = u - U
+F_p = P - p
 
 # bilinear form
 a = nu * inner (grad (xi), grad (eta)) * dx \
@@ -30,4 +33,4 @@ a = nu * inner (grad (xi), grad (eta)) * dx \
      + dot (u, cell.n) * dot (xi, eta) * ds (0)
 
 # linear form
-L = inner (F_u, eta) * dx + inner (F_p, phi) * dx
+L = inner (F_u, eta) * dx (0) + inner (F_p, phi) * dx (0)

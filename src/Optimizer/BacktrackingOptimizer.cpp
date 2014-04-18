@@ -78,6 +78,7 @@ namespace controlproblem
         // define loop variables
         double alpha;
         double gradientNorm;
+        double gradientDotSearchDirection;
         double incrementNorm;
         double functionalValueOld;
         double functionalValue;
@@ -172,6 +173,7 @@ namespace controlproblem
         normComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
         
         dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
+        dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (searchDirection));
         
 
         // function to check convergence
@@ -196,10 +198,10 @@ namespace controlproblem
         }
         
         // function to check if sufficient-decrease condition is satisfied
-        auto sufficientDecreaseConditionIsSatisfied = [&c_1, &gradientNorm] 
+        auto sufficientDecreaseConditionIsSatisfied = [&c_1, &gradientDotSearchDirection] 
             (const double& oldValue, const double& newValue, const double& alpha) 
         {
-            return newValue < oldValue - c_1 * alpha * gradientNorm;
+            return newValue < oldValue - c_1 * alpha * gradientDotSearchDirection;
         };
 
         
@@ -251,6 +253,7 @@ namespace controlproblem
             int backtrackingIteration = 0;
             functionalValueOld = functionalValue;
             functionalGradient = objectiveFunctional.gradient ();
+            gradientDotSearchDirection = dolfin::assemble (*dotProductComputer);
             
             // solution of problem with alpha_0
             dolfin::log (dolfin::INFO, "Alpha = %f", alpha);

@@ -3,7 +3,9 @@ SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractOptimizer.hpp
              ${CMAKE_CURRENT_SOURCE_DIR}/BacktrackingOptimizer.hpp
              ${CMAKE_CURRENT_SOURCE_DIR}/DirichletControlValueUpdater.hpp
              ${CMAKE_CURRENT_SOURCE_DIR}/DistributedControlValueUpdater.hpp
-             ${CMAKE_CURRENT_SOURCE_DIR}/NeumannControlValueUpdater.hpp)
+             ${CMAKE_CURRENT_SOURCE_DIR}/NeumannControlValueUpdater.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/Optimizer.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/dotproduct.h)
 
 # collect source files
 SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/AbstractOptimizer.cpp

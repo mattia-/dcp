@@ -1,4 +1,4 @@
-# UFL file for Navier-Stokes simulation
+# UFL file for Navier-Stokes adjoint
 #
 # define mesh dimension
 cell = triangle
@@ -30,7 +30,7 @@ a = nu * inner (grad (xi), grad (eta)) * dx \
      - inner (dot (grad (xi), u), eta) * dx \
      - inner (theta, div (eta)) * dx \
      + inner (div (xi), phi) * dx \
-     + dot (u, cell.n) * dot (xi, eta) * ds (0)
+     + dot (u, cell.n) * dot (xi, eta) * ds (1)
 
 # linear form
-L = inner (F_u, eta) * dx (0) + inner (F_p, phi) * dx (0)
+L = inner (F_u, eta) * dx (1) + inner (F_p, phi) * dx (1)

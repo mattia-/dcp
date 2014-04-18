@@ -74,6 +74,8 @@ int main (int argc, char* argv[])
     // create mesh and finite element space
     dolfin::Mesh mesh (parameters ["mesh_file_name"]);
     primal::FunctionSpace V (mesh);
+    
+    dolfin::plot (mesh);
 
     // define constant
     dolfin::Constant nu (1e-5);

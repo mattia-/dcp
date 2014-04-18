@@ -1,5 +1,5 @@
-#ifndef SRC_FUNCTIONAL_OBJECTIVEFUNCTIONAL_HPP_INCLUDE_GUARD
-#define SRC_FUNCTIONAL_OBJECTIVEFUNCTIONAL_HPP_INCLUDE_GUARD
+#ifndef SRC_OBJECTIVEFUNCTIONAL_OBJECTIVEFUNCTIONAL_HPP_INCLUDE_GUARD
+#define SRC_OBJECTIVEFUNCTIONAL_OBJECTIVEFUNCTIONAL_HPP_INCLUDE_GUARD
 
 #include <dolfin/mesh/Mesh.h>
 #include <dolfin/mesh/MeshFunction.h>
@@ -161,7 +161,8 @@ namespace controlproblem
              */
             virtual double evaluateFunctional () const;
 
-            //! Evaluate at given point in given cell
+            //! Evaluate at given point in given cell at given point. Overrides method in 
+            //! \c AbstractObjectiveFunctional
             /*!
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */

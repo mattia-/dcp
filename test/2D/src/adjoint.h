@@ -14131,18 +14131,18 @@ public:
 /// exterior facet tensor corresponding to the local contribution to
 /// a form from the integral over an exterior facet.
 
-class adjoint_exterior_facet_integral_0_0: public ufc::exterior_facet_integral
+class adjoint_exterior_facet_integral_0_1: public ufc::exterior_facet_integral
 {
 public:
 
   /// Constructor
-  adjoint_exterior_facet_integral_0_0() : ufc::exterior_facet_integral()
+  adjoint_exterior_facet_integral_0_1() : ufc::exterior_facet_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~adjoint_exterior_facet_integral_0_0()
+  virtual ~adjoint_exterior_facet_integral_0_1()
   {
     // Do nothing
   }
@@ -14378,18 +14378,18 @@ public:
 /// tensor corresponding to the local contribution to a form from
 /// the integral over a cell.
 
-class adjoint_cell_integral_1_0: public ufc::cell_integral
+class adjoint_cell_integral_1_1: public ufc::cell_integral
 {
 public:
 
   /// Constructor
-  adjoint_cell_integral_1_0() : ufc::cell_integral()
+  adjoint_cell_integral_1_1() : ufc::cell_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~adjoint_cell_integral_1_0()
+  virtual ~adjoint_cell_integral_1_1()
   {
     // Do nothing
   }
@@ -14605,7 +14605,7 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "970bbd6aa9db928c699c7c04c9c6653e2fa4107852065f8fa902fda0f3e7418fab1820fa751d81be892f7f7b3e8de28c7dd101a728aaaf9a588bb632770f6967";
+    return "0db0b3a82c4c8ce37cc899464a36a0530d019408d40f1111f23feab98595a0916f3fbe87954621203d8c67f083a448f23d4f96ff28dc3df8ffc095b087f3237e";
   }
 
   /// Return the rank of the global tensor (r)
@@ -14629,7 +14629,7 @@ public:
   /// Return the number of exterior facet domains
   virtual std::size_t num_exterior_facet_domains() const
   {
-    return 1;
+    return 2;
   }
 
   /// Return the number of interior facet domains
@@ -14739,9 +14739,9 @@ public:
   {
     switch (i)
     {
-    case 0:
+    case 1:
       {
-        return new adjoint_exterior_facet_integral_0_0();
+        return new adjoint_exterior_facet_integral_0_1();
         break;
       }
     }
@@ -14821,7 +14821,7 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "ccc14f3856fd285314f63882fb896c2ec71c449a1b0fd0a26c786c76bc385f079b46ea73f0d2f073c24a4902787116a7bc6eb7a13bc768cae17a8fdc142b8951";
+    return "b10c7f0177d390c118656f04a164872364ed6b611d287f6f8b34ce532921a1039eabce25c42d8c5f07f2daeb68716081de6724a8b5b4b383c3892ae6208ba646";
   }
 
   /// Return the rank of the global tensor (r)
@@ -14839,7 +14839,7 @@ public:
   /// Return the number of cell domains
   virtual std::size_t num_cell_domains() const
   {
-    return 1;
+    return 2;
   }
 
   /// Return the number of exterior facet domains
@@ -14959,9 +14959,9 @@ public:
   {
     switch (i)
     {
-    case 0:
+    case 1:
       {
-        return new adjoint_cell_integral_1_0();
+        return new adjoint_cell_integral_1_1();
         break;
       }
     }

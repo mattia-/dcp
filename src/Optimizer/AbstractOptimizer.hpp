@@ -44,17 +44,22 @@ namespace controlproblem
              *  Input arguments are:
              *  \param problem the composite differential problem that represents the primal/adjoint system
              *  \param objectiveFunctional the objective functional to be minimized
-             *  \param point the starting point for the minimization algorithm
+             *  \param initialGuess the starting point for the minimization algorithm. At the end of the function, it
+             *  will containt the final value of the control variable
              *  \param updater callable object to update the control parameter value. It can be either be a function 
              *  pointer, a function object or a lambda expression
              */
-            virtual void apply (const controlproblem::CompositeDifferentialProblem& problem,
+            virtual void apply (controlproblem::CompositeDifferentialProblem& problem,
                                 const controlproblem::AbstractObjectiveFunctional& objectiveFunctional, 
-                                dolfin::Function& point,
+                                dolfin::Function& initialGuess,
                                 const std::function 
                                 <
                                     void (controlproblem::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
-                                >& updater) = 0;
+                                >& updater,
+                                const std::function
+                                <
+                                    void (dolfin::Function&, const dolfin::Function&)
+                                >& searchDirectionComputer) = 0;
             
 
             /********************** VARIABLES ***********************/

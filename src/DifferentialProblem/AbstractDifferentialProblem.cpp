@@ -146,7 +146,7 @@ namespace controlproblem
         
         if (nErasedElements == 0)
         {
-            dolfin::warning ("Dirichlet boundary condition not found in map");
+            dolfin::warning ("Dirichlet boundary condition \"%s\" not found in map", bcName.c_str ());
         }
         
         return nErasedElements == 1? true : false;

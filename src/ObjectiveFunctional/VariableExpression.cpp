@@ -127,8 +127,6 @@ namespace controlproblem
                                                dolfin::Array<double>& values,
                                                const dolfin::Array<double>& x) const
     {
-        dolfin::log (dolfin::DBG, "Looking for variable \"%s\" in map...", variableName.c_str ());
-
         auto variable = variables_.find (variableName);
 
         if (variable == variables_.end ())

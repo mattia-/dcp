@@ -87,14 +87,38 @@ namespace controlproblem
             
             
             /********************** METHODS ***********************/
+            //! Sets the form used to compute dot products and norms. 
+            /*!
+             *  \param dotProductComputer the form to be stored in the protected member \c dotProductComputer_
+             */
+            virtual void setDotProductComputer (const boost::shared_ptr<dolfin::Form> dotProductComputer);
+            
+            //! Reset the value of the protected membet \c dotProductComputer_ so that the default form will be used
+            virtual void resetDotProductComputer ();
+                
             //! Perform optimization on the input problem using the gradient method with backtracking
             /*! 
              *  Input arguments are:
              *  \param problem the composite differential problem that represents the primal/adjoint system
              *  \param objectiveFunctional the objective functional to be minimized
-             *  \param initialGuess the starting point for the minimization algorithm
+             *  \param initialGuess the starting point for the minimization algorithm. At the end of the function, it
+             *  will containt the final value of the control variable
              *  \param updater callable object to update the control parameter value. It can be either be a function 
-             *  pointer, a function object or a lambda expression
+             *  pointer, a function object or a lambda expression. Its input argument are:
+             *  \li the composite differential problem to update
+             *  \li the new value of the control function
+             *  
+             *  \param searchDirectionComputer callable object to compute the search direction. It can either be a 
+             *  function pointer, a function object or a lambda expression. In general the search direction is computed
+             *  as: 
+             *  \f[
+             *      \mathbf{d}_k = -B_k\,\nabla J_k
+             *  \f]
+             *  The default value is the member function \c gradientSearchDirection(), that basically uses the above 
+             *  formula with \f$ B_k = I \f$.
+             *  The input arguments for \c searchDirectionComputer are:
+             *  \li the function that will contain the search direction after the function is ended
+             *  \li the function containing the gradient
              */
             virtual void apply (controlproblem::CompositeDifferentialProblem& problem,
                                 const controlproblem::AbstractObjectiveFunctional& objectiveFunctional, 
@@ -102,11 +126,26 @@ namespace controlproblem
                                 const std::function 
                                 <
                                     void (controlproblem::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
-                                >& updater);
+                                >& updater,
+                                const std::function
+                                <
+                                    void (dolfin::Function&, const dolfin::Function&)
+                                >& searchDirectionComputer = BacktrackingOptimizer::gradientSearchDirection);
             
             // ---------------------------------------------------------------------------------------------//
 
         protected:
+            //! Function to compute the search direction. See documentation of method \c apply() for more information
+            static void gradientSearchDirection (dolfin::Function& searchDirection, const dolfin::Function& gradient);
+
+            //! The form that will be used to compute the dot product between the gradient and the search direction. 
+            /*! 
+             *  The default value is \c nullptr, in which case the function will use one
+             *  of the forms in \c DotProduct.h, trying to determine the right one by checking the geometrical dimensions
+             *  of the input objects. However, sometimes it may be useful to pass a user-defined object to perform
+             *  the task. To do so, use the function \c setDotProductComputer
+             */
+            boost::shared_ptr<dolfin::Form> dotProductComputer_;
 
             // ---------------------------------------------------------------------------------------------//
 

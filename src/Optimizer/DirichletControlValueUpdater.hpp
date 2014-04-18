@@ -3,8 +3,10 @@
 
 #include <DifferentialProblem/CompositeDifferentialProblem.hpp>
 #include <dolfin/function/GenericFunction.h>
+#include <dolfin/function/FunctionSpace.h>
 #include <dolfin/mesh/SubDomain.h>
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 namespace controlproblem
 {
@@ -33,12 +35,14 @@ namespace controlproblem
              *  \param dirichletBCName the name under which the control Dirichlet boundary condition is stored in the 
              *  protected member \c map in the problem
              *  \param dirichletBoundary the boundary over which the control Dirichlet condition should be enforced
+             *  \param functionSpace the function space (possibly a subspace) on which the dirichlet condition should be enforced.
              */
             DirichletControlValueUpdater (const std::string& problemName, 
                                           const std::string& dirichletBCName,
-                                          const dolfin::SubDomain& dirichletBoundary);
-            
-            
+                                          const dolfin::SubDomain& dirichletBoundary,
+                                          boost::shared_ptr<const dolfin::FunctionSpace> functionSpace);
+
+
             /************************* OPERATORS ********************/
             //! Call operator. This will actually perform the updating of the control parameter
             /*! 
@@ -48,20 +52,23 @@ namespace controlproblem
              */
             void operator() (controlproblem::CompositeDifferentialProblem& compositeProblem, 
                              const dolfin::GenericFunction& dirichletBCValue) const;
-            
-        // ---------------------------------------------------------------------------------------------//
-        
+
+            // ---------------------------------------------------------------------------------------------//
+
         protected:
             //! The name identifying the problem inside the \c CompositeDifferentialProblem which contains the
             //! control parameter
             std::string problemName_;
-           
+
             //! The name under which the control Dirichlet boundary condition is stored in the 
             //! protected member \c map in the problem
             std::string dirichletBCName_;
-            
+
             //! The boundary over which the control Dirichlet condition should be enforced
             const dolfin::SubDomain& dirichletBoundary_;
+
+            //! The function space (possibly a subspace) on which the dirichlet condition should be enforced.
+            boost::shared_ptr<const dolfin::FunctionSpace> functionSpace_;
     };
 }
 

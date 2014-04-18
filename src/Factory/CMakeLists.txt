@@ -1,7 +1,8 @@
 # create libraries
 SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericFactory.hpp 
              ${CMAKE_CURRENT_SOURCE_DIR}/LinearSolverFactory.hpp 
-             ${CMAKE_CURRENT_SOURCE_DIR}/Proxy.hpp)
+             ${CMAKE_CURRENT_SOURCE_DIR}/Proxy.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/Factory.hpp)
 
 # add files to shared library dependancies
 SET (CONTROL_PROBLEM_LIBRARY_SOURCES ${CONTROL_PROBLEM_LIBRARY_SOURCES} ${SOURCES} PARENT_SCOPE)

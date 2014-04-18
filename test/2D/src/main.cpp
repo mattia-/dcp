@@ -1,11 +1,14 @@
 #include <iostream>
+#include <string>
 #include <dolfin.h>
 #include "primal.h"
 #include "adjoint.h"
-#include <DifferentialProblem/NonlinearDifferentialProblem.hpp>
-#include <DifferentialProblem/LinearDifferentialProblem.hpp>
-#include <DifferentialProblem/CompositeDifferentialProblem.hpp>
+#include "objective_functional.h"
+#include <DifferentialProblem/DifferentialProblem.hpp>
+#include <ObjectiveFunctional/Functional.hpp>
+#include <Optimizer/Optimizer.hpp>
 
+// ---------------------------------------------------------------------------- //
 namespace primal
 {
     class InflowBoundary : public dolfin::SubDomain
@@ -50,6 +53,7 @@ namespace primal
     }; 
 }
 
+// ---------------------------------------------------------------------------- //
 namespace adjoint
 {
     class DirichletBoundary : public dolfin::SubDomain
@@ -99,11 +103,56 @@ namespace adjoint
     };
 }
 
+// ---------------------------------------------------------------------------- //
+namespace objective_functional
+{
+    double sigma_1 = 0.1;
+    double sigma_2 = 1.0;
+    
+    class ControlDomain : public dolfin::SubDomain
+    {
+        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+        {
+            return x[0] < (0 + DOLFIN_EPS) && on_boundary;
+        }
+    };
+    
+    class Gradient : public controlproblem::VariableExpression
+    {
+        public:
+        void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+        {
+            dolfin::Array<double> theta (1);
+            evaluateVariable ("theta", theta, x);
 
+            dolfin::Array<double> g (2);
+            evaluateVariable ("g", g, x);
+
+            values[0] = sigma_1 * g[0] - theta[0];
+            values[1] = sigma_1 * g[1];
+        }
+        
+        std::size_t value_rank () const
+        {
+            return 1;
+        }
+        
+        std::size_t value_dimension (std::size_t i) const
+        {
+            return 2;
+        }
+    };
+}
+
+// ---------------------------------------------------------------------------- //
 int main (int argc, char* argv[])
 {
+    // ============================================================================ //
+    // =========================== PROBLEM PARAMETERS ============================= //
+    // ============================================================================ //
     // log level
 //    dolfin::set_log_level (dolfin::DBG);
+//    dolfin::set_log_level (dolfin::PROGRESS);
 
     // define parameters and their default values
     dolfin::Parameters parameters ("main_parameters");
@@ -121,6 +170,9 @@ int main (int argc, char* argv[])
     // read parameters from command line and overwrite default values
     parameters.parse (argc, argv);
     
+    // ============================================================================ //
+    // =========================== TARGET SOLUTION ================================ //
+    // ============================================================================ //
     // create mesh and finite element space to read target solution
     dolfin::Mesh completeMesh (parameters ["complete_mesh_file_name"]);
     primal::FunctionSpace completeV (completeMesh);
@@ -139,7 +191,7 @@ int main (int argc, char* argv[])
     dolfin::Mesh mesh (parameters ["partial_mesh_file_name"]);
     primal::FunctionSpace V (mesh);
     
-    dolfin::plot (mesh);
+//    dolfin::plot (mesh);
     
     
     // interpolate target functions from completeMesh to actual mesh
@@ -150,6 +202,9 @@ int main (int argc, char* argv[])
     interpolatedTargetP.interpolate (targetP);
 
     
+    // ============================================================================ //
+    // =========================== COMPOSITE PROBLEM ============================== //
+    // ============================================================================ //
     // define problems
     controlproblem::NonlinearDifferentialProblem <primal::ResidualForm, primal::JacobianForm> 
         primalProblem2 (dolfin::reference_to_no_delete_pointer (mesh), 
@@ -160,6 +215,7 @@ int main (int argc, char* argv[])
         adjointProblem2 (dolfin::reference_to_no_delete_pointer (mesh),
                          dolfin::reference_to_no_delete_pointer (V));
 
+    
     // create composite differential problem
     controlproblem::CompositeDifferentialProblem problems;
     problems.addProblem ("primal", primalProblem2);
@@ -181,19 +237,20 @@ int main (int argc, char* argv[])
     adjoint::ExternalLoadDomain adjoint_externalLoadDomain;
     
     // define intergration subdomains
-    dolfin::FacetFunction<std::size_t> adjoint_meshFacets (mesh);
-    adjoint_meshFacets.set_all (1);
-    adjoint_robinBoundary.mark (adjoint_meshFacets, 0);
+    dolfin::FacetFunction<std::size_t> meshFacets (mesh);
+    meshFacets.set_all (0);
+    adjoint_robinBoundary.mark (meshFacets, 1);
     
-    dolfin::CellFunction<std::size_t> adjoint_meshCells (mesh);
-    adjoint_meshCells.set_all (1);
-    adjoint_externalLoadDomain.mark (adjoint_meshCells, 0);
+    dolfin::CellFunction<std::size_t> meshCells (mesh);
+    meshCells.set_all (0);
+    adjoint_externalLoadDomain.mark (meshCells, 1);
 
+    
     // primal problem settings
     problems["primal"].setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
     problems["primal"].setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
 
-    problems["primal"].addDirichletBC (dolfin::DirichletBC (*V[0], primal_inflowDirichletBC, primal_inflowBoundary));
+    problems["primal"].addDirichletBC (dolfin::DirichletBC (*V[0], primal_inflowDirichletBC, primal_inflowBoundary), "inflow_BC");
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*V[0], primal_noSlipCondition, primal_noSlipBoundary));
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], primal_symmetryDirichletBC, primal_gammaSD));
 
@@ -206,30 +263,86 @@ int main (int argc, char* argv[])
     problems["adjoint"].addDirichletBC (dolfin::DirichletBC (*V[0], adjoint_dirichletBC, adjoint_dirichletBoundary));
 
     problems["adjoint"].setIntegrationSubdomains ("bilinear_form", 
-                                                  dolfin::reference_to_no_delete_pointer (adjoint_meshFacets),
+                                                  dolfin::reference_to_no_delete_pointer (meshFacets),
                                                   controlproblem::SubdomainType::BOUNDARY_FACETS);
-    
     problems["adjoint"].setIntegrationSubdomains ("linear_form", 
-                                                  dolfin::reference_to_no_delete_pointer (adjoint_meshCells),
+                                                  dolfin::reference_to_no_delete_pointer (meshCells),
                                                   controlproblem::SubdomainType::INTERNAL_CELLS);
 
     problems.addLink ("adjoint", "u", "bilinear_form", "primal", 0);
     problems.addLink ("adjoint", "u", "linear_form", "primal", 0);
     problems.addLink ("adjoint", "p", "linear_form", "primal", 1);
     
-    problems.print ();
-    
     
     // solve problems
-    problems.solve ();
+//    problems.solve ();
 
     // plots
-    dolfin::plot (problems.solution ("primal")[0]);
-    dolfin::plot (problems.solution ("primal")[1]);
-    dolfin::plot (problems.solution ("adjoint")[0]);
-    dolfin::plot (problems.solution ("adjoint")[1]);
+//    dolfin::plot (problems.solution ("primal")[0]);
+//    dolfin::plot (problems.solution ("primal")[1]);
+//    dolfin::plot (problems.solution ("adjoint")[0]);
+//    dolfin::plot (problems.solution ("adjoint")[1]);
+//
+//    dolfin::interactive ();
 
-    dolfin::interactive ();
+    
+    // ============================================================================== //
+    // =========================== OBJECTIVE FUNCTIONAL ============================= //
+    // ============================================================================== //
+    // define functional
+    controlproblem::ObjectiveFunctional <objective_functional::Functional, objective_functional::Gradient>
+        objectiveFunctional (mesh);
+    
+    // define functional coefficients
+    dolfin::Constant sigma_1 (objective_functional::sigma_1);
+    dolfin::Constant sigma_2 (objective_functional::sigma_2);
+    dolfin::Function g (V[0] -> collapse ());
+    g = dolfin::Constant (1.0, 0.0);
+    
+    // define subdomains for objective functional
+    objective_functional::ControlDomain objective_functional_controlDomain;
+    objective_functional_controlDomain.mark (meshFacets, 2); 
+    
+    // functional settings
+    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (sigma_1), "sigma_1");
+//    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (sigma_2), "sigma_2");
+    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (g), "g");
+    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (interpolatedTargetU), "U");
+    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (interpolatedTargetP), "P");
+    objectiveFunctional.setCoefficient ("functional", 
+                                        dolfin::reference_to_no_delete_pointer (problems["primal"].solution()[0]), 
+                                        "u");
+    objectiveFunctional.setCoefficient ("functional", 
+                                        dolfin::reference_to_no_delete_pointer (problems["primal"].solution()[1]), 
+                                        "p");
+    
+    objectiveFunctional.setIntegrationSubdomains (dolfin::reference_to_no_delete_pointer (meshFacets), 
+                                                  controlproblem::SubdomainType::BOUNDARY_FACETS);
+    
+    objectiveFunctional.setCoefficient ("gradient",
+                                        dolfin::reference_to_no_delete_pointer (problems["adjoint"].solution()[1]),
+                                        "theta");
+    objectiveFunctional.setCoefficient ("gradient",
+                                        dolfin::reference_to_no_delete_pointer (g),
+                                        "g");
+    
+    // evaluate functional
+    dolfin::cout << "Functional value: " << objectiveFunctional.evaluateFunctional () << dolfin::endl;
+    
+    
+    // ============================================================================== //
+    // =============================== OPTIMIZATION  ================================ //
+    // ============================================================================== //
+    // define optimizer
+    controlproblem::BacktrackingOptimizer backtrackingOptimizer;
+        
+    backtrackingOptimizer.apply (problems, 
+                                 objectiveFunctional, 
+                                 g, 
+                                 controlproblem::DirichletControlValueUpdater ("primal", 
+                                                                               "inflow_BC", 
+                                                                               primal::InflowBoundary (), 
+                                                                               V[0]));
 
     return 0;
 }

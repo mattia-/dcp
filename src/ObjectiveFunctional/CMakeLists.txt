@@ -1,7 +1,8 @@
 # collect header files
 SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/VariableExpression.hpp
              ${CMAKE_CURRENT_SOURCE_DIR}/AbstractObjectiveFunctional.hpp
-             ${CMAKE_CURRENT_SOURCE_DIR}/ObjectiveFunctional.hpp)
+             ${CMAKE_CURRENT_SOURCE_DIR}/ObjectiveFunctional.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/Functional.hpp)
 
 # collect source files
 SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/VariableExpression.cpp

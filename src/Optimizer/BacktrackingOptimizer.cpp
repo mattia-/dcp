@@ -87,8 +87,6 @@ namespace controlproblem
         dolfin::Function searchDirection (controlVariable.function_space ());
         dolfin::Function controlVariableIncrement (controlVariable.function_space ());
         boost::shared_ptr<dolfin::Form> dotProductComputer;
-        boost::shared_ptr<dolfin::Form> gradientNormComputer;
-        boost::shared_ptr<dolfin::Form> incrementNormComputer;
         
 
         // ------------------------------------------------------------------------------------------------------- //
@@ -97,8 +95,6 @@ namespace controlproblem
         {
             dolfin::log (dolfin::DBG, "Using protected member variable to compute dot products and norms");
             dotProductComputer = dotProductComputer_;
-            gradientNormComputer = dotProductComputer_;
-            incrementNormComputer = dotProductComputer_;
         }
         else
         {
@@ -116,8 +112,6 @@ namespace controlproblem
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 1D form to compute dot products and norms");
                     dotProductComputer.reset (new dotproduct::Form_scalar1D_dotProduct (objectiveFunctional.mesh ()));
-                    gradientNormComputer.reset (new dotproduct::Form_scalar1D_dotProduct (objectiveFunctional.mesh ()));
-                    incrementNormComputer.reset (new dotproduct::Form_scalar1D_dotProduct (objectiveFunctional.mesh ()));
                 }
                 else
                 {
@@ -133,15 +127,11 @@ namespace controlproblem
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 2D form to compute dot products and norms");
                     dotProductComputer.reset (new dotproduct::Form_scalar2D_dotProduct (objectiveFunctional.mesh ()));
-                    gradientNormComputer.reset (new dotproduct::Form_scalar2D_dotProduct (objectiveFunctional.mesh ()));
-                    incrementNormComputer.reset (new dotproduct::Form_scalar2D_dotProduct (objectiveFunctional.mesh ()));
                 }
                 if (controlVariableRank == 1)
                 {
                     dolfin::log (dolfin::DBG, "Selected vectorial 2D form to compute dot products and norms");
                     dotProductComputer.reset (new dotproduct::Form_vectorial2D_dotProduct (objectiveFunctional.mesh ()));
-                    gradientNormComputer.reset (new dotproduct::Form_vectorial2D_dotProduct (objectiveFunctional.mesh ()));
-                    incrementNormComputer.reset (new dotproduct::Form_vectorial2D_dotProduct (objectiveFunctional.mesh ()));
                 }
                 else
                 {
@@ -157,15 +147,11 @@ namespace controlproblem
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 3D form to compute dot products and norms");
                     dotProductComputer.reset (new dotproduct::Form_scalar3D_dotProduct (objectiveFunctional.mesh ()));
-                    gradientNormComputer.reset (new dotproduct::Form_scalar3D_dotProduct (objectiveFunctional.mesh ()));
-                    incrementNormComputer.reset (new dotproduct::Form_scalar3D_dotProduct (objectiveFunctional.mesh ()));
                 }
                 if (controlVariableRank == 1)
                 {
                     dolfin::log (dolfin::DBG, "Selected vectorial 3D form to compute dot products and norms");
                     dotProductComputer.reset (new dotproduct::Form_vectorial3D_dotProduct (objectiveFunctional.mesh ()));
-                    gradientNormComputer.reset (new dotproduct::Form_vectorial3D_dotProduct (objectiveFunctional.mesh ()));
-                    incrementNormComputer.reset (new dotproduct::Form_vectorial3D_dotProduct (objectiveFunctional.mesh ()));
                 }
                 else
                 {
@@ -180,14 +166,7 @@ namespace controlproblem
         
         
         // set coefficients for dot product and norm computers
-        gradientNormComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-        gradientNormComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
         
-        incrementNormComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
-        incrementNormComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
-        
-        dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-        dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (searchDirection));
         
 
         // ------------------------------------------------------------------------------------------------------- //
@@ -234,7 +213,10 @@ namespace controlproblem
         
         
         // initialize loop variables
-        gradientNorm = dolfin::assemble (*gradientNormComputer);
+        dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
+        dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
+        gradientNorm = dolfin::assemble (*dotProductComputer);
+        
         incrementNorm = incrementNormTolerance + 1; // just an initialization to be sure that the first iteration 
                                                     // of the minimization loop is performed
         currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
@@ -275,6 +257,10 @@ namespace controlproblem
             previousFunctionalValue = currentFunctionalValue;
             functionalGradient = objectiveFunctional.gradient ();
             searchDirectionComputer (searchDirection, functionalGradient);
+            
+            // compute dot product between gradient and search direction
+            dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
+            dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (searchDirection));
             gradientDotSearchDirection = dolfin::assemble (*dotProductComputer);
             
             // solution of problem with alpha_0
@@ -351,11 +337,15 @@ namespace controlproblem
                 
             
             // update gradient nom
-            gradientNorm = dolfin::assemble (*gradientNormComputer);
+            dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
+            dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
+            gradientNorm = dolfin::assemble (*dotProductComputer);
 
             // update increment norm 
             controlVariableIncrement = controlVariable - previousControlVariable;
-            incrementNorm = dolfin::assemble (*incrementNormComputer);
+            dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
+            dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
+            incrementNorm = dolfin::assemble (*dotProductComputer);
             
             dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
             dolfin::log (dolfin::INFO, "Increment norm = %f", incrementNorm);
@@ -366,10 +356,16 @@ namespace controlproblem
         {
             dolfin::log (dolfin::INFO, "");
             dolfin::warning ("Minimization loop ended because maximum number of iterations was reached");
+            dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
+            dolfin::log (dolfin::INFO, "Increment norm = %f", incrementNorm);
+            dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
         }
         else
         {
             dolfin::log (dolfin::INFO, "Minimization loop ended. Iterations performed: %d\n", minimizationIteration);
+            dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
+            dolfin::log (dolfin::INFO, "Increment norm = %f", incrementNorm);
+            dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
         }
         
         dolfin::end ();

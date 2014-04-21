@@ -132,12 +132,12 @@ namespace controlproblem
                                     void (dolfin::Function&, const dolfin::Function&)
                                 >& searchDirectionComputer = BacktrackingOptimizer::gradientSearchDirection);
             
-            // ---------------------------------------------------------------------------------------------//
-
-        protected:
             //! Function to compute the search direction. See documentation of method \c apply() for more information
             static void gradientSearchDirection (dolfin::Function& searchDirection, const dolfin::Function& gradient);
 
+            // ---------------------------------------------------------------------------------------------//
+
+        protected:
             //! The form that will be used to compute the dot product between the gradient and the search direction. 
             /*! 
              *  The default value is \c nullptr, in which case the function will use one

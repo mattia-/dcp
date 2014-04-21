@@ -7,144 +7,8 @@
 #include <DifferentialProblem/DifferentialProblem.hpp>
 #include <ObjectiveFunctional/Functional.hpp>
 #include <Optimizer/Optimizer.hpp>
+#include "main_settings.h"
 
-// ---------------------------------------------------------------------------- //
-namespace primal
-{
-    class InflowBoundary : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return x[0] < (0 + DOLFIN_EPS) && on_boundary;
-        }
-    };
-
-    class GammaSD : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return (x[1] < (0 + DOLFIN_EPS) || x[1] > (2 - DOLFIN_EPS)) && on_boundary;
-        }
-    };
-    
-    class NoSlipBoundary : public dolfin::SubDomain
-    {
-        public:
-            NoSlipBoundary () : 
-                center (2),
-                radius (0.5)
-            {
-                center[0] = 2.5;
-                center[1] = 1;
-            }
-            
-            bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-            {
-                double dx = x[0] - center[0];
-                double dy = x[1] - center[1];
-                double r = sqrt (dx * dx + dy * dy);
-                
-                return r < (radius + 1e-3) && on_boundary;
-            }
-
-        private:
-            dolfin::Array<double> center;
-            double radius;
-    }; 
-}
-
-// ---------------------------------------------------------------------------- //
-namespace adjoint
-{
-    class DirichletBoundary : public dolfin::SubDomain
-    {
-        public:
-            DirichletBoundary () : 
-                center (2),
-                radius (0.5)
-            {
-                center[0] = 2.5;
-                center[1] = 1;
-            }
-
-            bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-            {
-                bool onLeftSide  = (x[0] < (0 + DOLFIN_EPS)) && on_boundary;   
-                bool onUpperSide = (x[1] > (2 - DOLFIN_EPS)) && on_boundary;   
-                bool onLowerSide = (x[1] < (0 + DOLFIN_EPS)) && on_boundary;   
-
-                double dx = x[0] - center[0];
-                double dy = x[1] - center[1];
-                double r = sqrt (dx * dx + dy * dy);
-                bool onCircleBoundary = r < (radius + 1e-3) && on_boundary;
-
-                return onLeftSide || onUpperSide || onLowerSide || onCircleBoundary;
-            }
-        
-        private:
-            dolfin::Array<double> center;
-            double radius;
-    };
-
-    class RobinBoundary : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return x[0] > (5 - DOLFIN_EPS) && on_boundary;
-        }
-    };
-    
-    class ExternalLoadDomain : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return x[0] >= 1.75 && x[0] <= 3.25 && x[1] >= 0 && x[1] <= 1.75; 
-        }
-    };
-}
-
-// ---------------------------------------------------------------------------- //
-namespace objective_functional
-{
-    double sigma_1 = 0.1;
-    double sigma_2 = 1.0;
-    
-    class ControlDomain : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return x[0] < (0 + DOLFIN_EPS) && on_boundary;
-        }
-    };
-    
-    class Gradient : public controlproblem::VariableExpression
-    {
-        public:
-        void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
-        {
-            dolfin::Array<double> theta (1);
-            evaluateVariable ("theta", theta, x);
-
-            dolfin::Array<double> g (2);
-            evaluateVariable ("g", g, x);
-
-            values[0] = sigma_1 * g[0] - theta[0];
-            values[1] = sigma_1 * g[1];
-        }
-        
-        std::size_t value_rank () const
-        {
-            return 1;
-        }
-        
-        std::size_t value_dimension (std::size_t i) const
-        {
-            return 2;
-        }
-    };
-}
-
-// ---------------------------------------------------------------------------- //
 int main (int argc, char* argv[])
 {
     // ============================================================================ //
@@ -153,6 +17,7 @@ int main (int argc, char* argv[])
     // log level
 //    dolfin::set_log_level (dolfin::DBG);
 //    dolfin::set_log_level (dolfin::PROGRESS);
+//    dolfin::set_log_level (dolfin::WARNING);
 
     // define parameters and their default values
     dolfin::Parameters parameters ("main_parameters");
@@ -161,7 +26,7 @@ int main (int argc, char* argv[])
     parameters.add ("target_u_file_name", "../src/u_target");
     parameters.add ("target_p_file_name", "../src/p_target");
     
-    // define parameter to allow projection of solution from complete mesh to partial mesh.
+    // the next parameter is set to allow projection of solution from complete mesh to partial mesh.
     // In any case, the values that will be extrapolated are not important because the functional will
     // integrate the difference of the two only on a subdomain, which does not include the points whre
     // extrapolation takes place
@@ -191,15 +56,15 @@ int main (int argc, char* argv[])
     dolfin::Mesh mesh (parameters ["partial_mesh_file_name"]);
     primal::FunctionSpace V (mesh);
     
-//    dolfin::plot (mesh);
-    
-    
     // interpolate target functions from completeMesh to actual mesh
     dolfin::Function interpolatedTargetU (V[0] -> collapse ());
     dolfin::Function interpolatedTargetP (V[1] -> collapse ());
     
     interpolatedTargetU.interpolate (targetU);
     interpolatedTargetP.interpolate (targetP);
+    
+    dolfin::plot (interpolatedTargetU);
+    dolfin::plot (interpolatedTargetP);
 
     
     // ============================================================================ //
@@ -273,19 +138,7 @@ int main (int argc, char* argv[])
     problems.addLink ("adjoint", "u", "linear_form", "primal", 0);
     problems.addLink ("adjoint", "p", "linear_form", "primal", 1);
     
-    
-    // solve problems
-//    problems.solve ();
 
-    // plots
-//    dolfin::plot (problems.solution ("primal")[0]);
-//    dolfin::plot (problems.solution ("primal")[1]);
-//    dolfin::plot (problems.solution ("adjoint")[0]);
-//    dolfin::plot (problems.solution ("adjoint")[1]);
-//
-//    dolfin::interactive ();
-
-    
     // ============================================================================== //
     // =========================== OBJECTIVE FUNCTIONAL ============================= //
     // ============================================================================== //
@@ -326,9 +179,6 @@ int main (int argc, char* argv[])
                                         dolfin::reference_to_no_delete_pointer (g),
                                         "g");
     
-    // evaluate functional
-    dolfin::cout << "Functional value: " << objectiveFunctional.evaluateFunctional () << dolfin::endl;
-    
     
     // ============================================================================== //
     // =============================== OPTIMIZATION  ================================ //
@@ -336,13 +186,18 @@ int main (int argc, char* argv[])
     // define optimizer
     controlproblem::BacktrackingOptimizer backtrackingOptimizer;
         
-    backtrackingOptimizer.apply (problems, 
-                                 objectiveFunctional, 
-                                 g, 
-                                 controlproblem::DirichletControlValueUpdater ("primal", 
-                                                                               "inflow_BC", 
-                                                                               primal::InflowBoundary (), 
-                                                                               V[0]));
+    // define control value updater
+    controlproblem::DirichletControlValueUpdater updater ("primal", "inflow_BC", primal_inflowBoundary, V[0]);
 
+    backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater);
+    
+    updater (problems, g);
+    
+    problems.solve ();
+    
+    dolfin::plot (problems.solution ("primal")[0]);
+    dolfin::plot (problems.solution ("primal")[1]);
+    dolfin::interactive ();
+    
     return 0;
 }

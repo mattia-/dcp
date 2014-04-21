@@ -30,7 +30,7 @@ namespace controlproblem
         parameters.add ("alpha_0", 0.5);
         parameters.add ("rho", 0.5);
         parameters.add ("max_minimization_iterations", 100);
-        parameters.add ("max_backtracking_iteration", 100);
+        parameters.add ("max_backtracking_iteration", 10);
         
         dolfin::log (dolfin::DBG, "BacktrackingOptimizer object created");
         
@@ -80,21 +80,25 @@ namespace controlproblem
         double gradientNorm;
         double gradientDotSearchDirection;
         double incrementNorm;
-        double functionalValueOld;
-        double functionalValue;
+        double previousFunctionalValue;
+        double currentFunctionalValue;
         dolfin::Function& controlVariable = initialGuess;
         dolfin::Function functionalGradient (controlVariable.function_space ());
         dolfin::Function searchDirection (controlVariable.function_space ());
+        dolfin::Function controlVariableIncrement (controlVariable.function_space ());
         boost::shared_ptr<dolfin::Form> dotProductComputer;
-        boost::shared_ptr<dolfin::Form> normComputer;
+        boost::shared_ptr<dolfin::Form> gradientNormComputer;
+        boost::shared_ptr<dolfin::Form> incrementNormComputer;
         
 
-        // create correct objects for dotProductComputer and normComputer
-        if (dotProductComputer != nullptr)
+        // ------------------------------------------------------------------------------------------------------- //
+        // create correct objects for dotProductComputer, gradientNormComputer and incrementNormComputer
+        if (dotProductComputer_ != nullptr)
         {
-            dolfin::log (dolfin::DBG, "Using input argument form to compute dot products and norms");
+            dolfin::log (dolfin::DBG, "Using protected member variable to compute dot products and norms");
             dotProductComputer = dotProductComputer_;
-            normComputer = dotProductComputer_;
+            gradientNormComputer = dotProductComputer_;
+            incrementNormComputer = dotProductComputer_;
         }
         else
         {
@@ -112,7 +116,8 @@ namespace controlproblem
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 1D form to compute dot products and norms");
                     dotProductComputer.reset (new dotproduct::Form_scalar1D_dotProduct (objectiveFunctional.mesh ()));
-                    normComputer.reset (new dotproduct::Form_scalar1D_dotProduct (objectiveFunctional.mesh ()));
+                    gradientNormComputer.reset (new dotproduct::Form_scalar1D_dotProduct (objectiveFunctional.mesh ()));
+                    incrementNormComputer.reset (new dotproduct::Form_scalar1D_dotProduct (objectiveFunctional.mesh ()));
                 }
                 else
                 {
@@ -128,13 +133,15 @@ namespace controlproblem
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 2D form to compute dot products and norms");
                     dotProductComputer.reset (new dotproduct::Form_scalar2D_dotProduct (objectiveFunctional.mesh ()));
-                    normComputer.reset (new dotproduct::Form_scalar2D_dotProduct (objectiveFunctional.mesh ()));
+                    gradientNormComputer.reset (new dotproduct::Form_scalar2D_dotProduct (objectiveFunctional.mesh ()));
+                    incrementNormComputer.reset (new dotproduct::Form_scalar2D_dotProduct (objectiveFunctional.mesh ()));
                 }
                 if (controlVariableRank == 1)
                 {
                     dolfin::log (dolfin::DBG, "Selected vectorial 2D form to compute dot products and norms");
                     dotProductComputer.reset (new dotproduct::Form_vectorial2D_dotProduct (objectiveFunctional.mesh ()));
-                    normComputer.reset (new dotproduct::Form_vectorial2D_dotProduct (objectiveFunctional.mesh ()));
+                    gradientNormComputer.reset (new dotproduct::Form_vectorial2D_dotProduct (objectiveFunctional.mesh ()));
+                    incrementNormComputer.reset (new dotproduct::Form_vectorial2D_dotProduct (objectiveFunctional.mesh ()));
                 }
                 else
                 {
@@ -150,13 +157,15 @@ namespace controlproblem
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 3D form to compute dot products and norms");
                     dotProductComputer.reset (new dotproduct::Form_scalar3D_dotProduct (objectiveFunctional.mesh ()));
-                    normComputer.reset (new dotproduct::Form_scalar3D_dotProduct (objectiveFunctional.mesh ()));
+                    gradientNormComputer.reset (new dotproduct::Form_scalar3D_dotProduct (objectiveFunctional.mesh ()));
+                    incrementNormComputer.reset (new dotproduct::Form_scalar3D_dotProduct (objectiveFunctional.mesh ()));
                 }
                 if (controlVariableRank == 1)
                 {
                     dolfin::log (dolfin::DBG, "Selected vectorial 3D form to compute dot products and norms");
                     dotProductComputer.reset (new dotproduct::Form_vectorial3D_dotProduct (objectiveFunctional.mesh ()));
-                    normComputer.reset (new dotproduct::Form_vectorial3D_dotProduct (objectiveFunctional.mesh ()));
+                    gradientNormComputer.reset (new dotproduct::Form_vectorial3D_dotProduct (objectiveFunctional.mesh ()));
+                    incrementNormComputer.reset (new dotproduct::Form_vectorial3D_dotProduct (objectiveFunctional.mesh ()));
                 }
                 else
                 {
@@ -166,16 +175,22 @@ namespace controlproblem
                 }
             }
         }
+        // end of if statement to correctly set dotProductComputer, gradientNormComputer and incrementNormComputer
+        // ------------------------------------------------------------------------------------------------------- //
         
         
         // set coefficients for dot product and norm computers
-        normComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-        normComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
+        gradientNormComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
+        gradientNormComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
+        
+        incrementNormComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
+        incrementNormComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
         
         dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
         dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (searchDirection));
         
 
+        // ------------------------------------------------------------------------------------------------------- //
         // function to check convergence
         std::function <bool ()> isConverged;
         
@@ -197,12 +212,15 @@ namespace controlproblem
             dolfin::error ("Unknown convergence criterion \"%s\"", convergenceCriterion.c_str ());
         }
         
+        
         // function to check if sufficient-decrease condition is satisfied
         auto sufficientDecreaseConditionIsSatisfied = [&c_1, &gradientDotSearchDirection] 
-            (const double& oldValue, const double& newValue, const double& alpha) 
+            (const double& previousValue, const double& currentValue, const double& alpha) 
         {
-            return newValue < oldValue - c_1 * alpha * gradientDotSearchDirection;
+            return currentValue < previousValue + c_1 * alpha * gradientDotSearchDirection;
         };
+        // end of minimization loop functions setting
+        // ------------------------------------------------------------------------------------------------------- //
 
         
         // update and solve the problem for the first time
@@ -216,11 +234,10 @@ namespace controlproblem
         
         
         // initialize loop variables
-        alpha = alpha_0;
-        gradientNorm = dolfin::assemble (*normComputer);
+        gradientNorm = dolfin::assemble (*gradientNormComputer);
         incrementNorm = incrementNormTolerance + 1; // just an initialization to be sure that the first iteration 
                                                     // of the minimization loop is performed
-        functionalValue = objectiveFunctional.evaluateFunctional ();
+        currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
 
 
         dolfin::log (dolfin::DBG, "======== MINIMIZATION LOOP ========");
@@ -233,13 +250,17 @@ namespace controlproblem
         dolfin::log (dolfin::DBG, "convergence criterion = %s", convergenceCriterion.c_str ());
         dolfin::log (dolfin::DBG, "maximum minimization iterations = %d", maxMinimizationIterations);
         dolfin::log (dolfin::DBG, "maximum backtracking iterations = %d", maxBacktrackingIterations);
-        dolfin::log (dolfin::DBG, "gradient norm = %f", gradientNorm);
-        dolfin::log (dolfin::DBG, "increment norm = %f", incrementNorm);
-        dolfin::log (dolfin::DBG, "functional value = %f", functionalValue);
+        
+
+        dolfin::log (dolfin::INFO, "");
+        dolfin::log (dolfin::INFO, "======== LOOP VARIABLES INITIAL VALUE ========");
+        dolfin::log (dolfin::INFO, "gradient norm = %f", gradientNorm);
+        dolfin::log (dolfin::INFO, "functional value = %f\n", currentFunctionalValue);
             
         
         dolfin::begin ("Starting minimization loop...");
         int minimizationIteration = 0;
+        
         while (isConverged () == false && minimizationIteration < maxMinimizationIterations)
         {
             minimizationIteration++;
@@ -251,8 +272,9 @@ namespace controlproblem
             // iteration-specific variable initialization
             alpha = alpha_0;
             int backtrackingIteration = 0;
-            functionalValueOld = functionalValue;
+            previousFunctionalValue = currentFunctionalValue;
             functionalGradient = objectiveFunctional.gradient ();
+            searchDirectionComputer (searchDirection, functionalGradient);
             gradientDotSearchDirection = dolfin::assemble (*dotProductComputer);
             
             // solution of problem with alpha_0
@@ -260,9 +282,8 @@ namespace controlproblem
 
             // update control variable value
             dolfin::log (dolfin::PROGRESS, "Updating control variable...");
-            dolfin::Function aux (controlVariable);
-            searchDirectionComputer (searchDirection, functionalGradient);
-            controlVariable = aux + (searchDirection * alpha);
+            dolfin::Function previousControlVariable (controlVariable);
+            controlVariable = previousControlVariable + (searchDirection * alpha);
 
             // update problem 
             dolfin::log (dolfin::PROGRESS, "Updating differential problem...");
@@ -274,16 +295,15 @@ namespace controlproblem
 
             // update value of the functional
             dolfin::log (dolfin::PROGRESS, "Evaluating functional...");
-            functionalValue = objectiveFunctional.evaluateFunctional ();
+            currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
             
-            dolfin::log (dolfin::INFO, "Functional value = %f", functionalValue);
+            dolfin::log (dolfin::INFO, "Functional value = %f\n", currentFunctionalValue);
             
             
             dolfin::begin (dolfin::INFO, "Starting backtracking loop...");
             
-            // note that any call to sufficientDecreaseConditionIsSatisfied () at this point will use the gradient norm
-            // at the previous iteration, i.e. the gradient norm at alpha = 0
-            while (sufficientDecreaseConditionIsSatisfied (functionalValueOld, functionalValue, alpha) == false 
+            // backtacking loop
+            while (sufficientDecreaseConditionIsSatisfied (previousFunctionalValue, currentFunctionalValue, alpha) == false 
                    && backtrackingIteration < maxBacktrackingIterations) 
             {
                 // iteration-specific variable initialization
@@ -295,8 +315,7 @@ namespace controlproblem
                 
                 // update control variable value
                 dolfin::log (dolfin::PROGRESS, "Updating control variable...");
-                searchDirectionComputer (searchDirection, functionalGradient);
-                controlVariable = aux + (searchDirection * alpha);
+                controlVariable = previousControlVariable + (searchDirection * alpha);
                 
                 // update problem 
                 dolfin::log (dolfin::PROGRESS, "Updating differential problem...");
@@ -308,17 +327,16 @@ namespace controlproblem
                 
                 // update value of the functional
                 dolfin::log (dolfin::PROGRESS, "Evaluating functional...");
-                functionalValue = objectiveFunctional.evaluateFunctional ();
+                currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
                 
-                dolfin::log (dolfin::INFO, "Functional value = %f", functionalValue);
+                dolfin::log (dolfin::INFO, "Functional value = %f", currentFunctionalValue);
                 
                 dolfin::log (dolfin::INFO, "");
             }
             
             dolfin::end ();
              
-            if (sufficientDecreaseConditionIsSatisfied (functionalValueOld, functionalValue, alpha) == false 
-                && backtrackingIteration == maxBacktrackingIterations) 
+            if (sufficientDecreaseConditionIsSatisfied (previousFunctionalValue, currentFunctionalValue, alpha) == false) 
             {
                 dolfin::log (dolfin::INFO, "");
                 dolfin::warning ("Backtracking loop ended because maximum number of iterations was reached");
@@ -333,15 +351,25 @@ namespace controlproblem
                 
             
             // update gradient nom
-            gradientNorm = dolfin::assemble (*normComputer);
+            gradientNorm = dolfin::assemble (*gradientNormComputer);
 
-            // update increment norm if it is used for the convergence check
-            incrementNorm = fabs (functionalValue - functionalValueOld); 
+            // update increment norm 
+            controlVariableIncrement = controlVariable - previousControlVariable;
+            incrementNorm = dolfin::assemble (*incrementNormComputer);
             
             dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
             dolfin::log (dolfin::INFO, "Increment norm = %f", incrementNorm);
-            dolfin::log (dolfin::INFO, "Functional value = %f\n\n", 
-                         backtrackingIteration > 0 ? functionalValue : objectiveFunctional.evaluateFunctional ());
+            dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
+        }
+        
+        if (isConverged () == false) 
+        {
+            dolfin::log (dolfin::INFO, "");
+            dolfin::warning ("Minimization loop ended because maximum number of iterations was reached");
+        }
+        else
+        {
+            dolfin::log (dolfin::INFO, "Minimization loop ended. Iterations performed: %d\n", minimizationIteration);
         }
         
         dolfin::end ();

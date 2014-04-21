@@ -47,7 +47,21 @@ namespace controlproblem
              *  \param initialGuess the starting point for the minimization algorithm. At the end of the function, it
              *  will containt the final value of the control variable
              *  \param updater callable object to update the control parameter value. It can be either be a function 
-             *  pointer, a function object or a lambda expression
+             *  pointer, a function object or a lambda expression. Its input argument are:
+             *  \li the composite differential problem to update
+             *  \li the new value of the control function
+             *  
+             *  \param searchDirectionComputer callable object to compute the search direction. It can either be a 
+             *  function pointer, a function object or a lambda expression. In general the search direction is computed
+             *  as: 
+             *  \f[
+             *      \mathbf{d}_k = -B_k\,\nabla J_k
+             *  \f]
+             *  The default value is the member function \c gradientSearchDirection(), that basically uses the above 
+             *  formula with \f$ B_k = I \f$.
+             *  The input arguments for \c searchDirectionComputer are:
+             *  \li the function that will contain the search direction after the function is ended
+             *  \li the function containing the gradient
              */
             virtual void apply (controlproblem::CompositeDifferentialProblem& problem,
                                 const controlproblem::AbstractObjectiveFunctional& objectiveFunctional, 

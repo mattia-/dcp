@@ -14,7 +14,7 @@
 namespace controlproblem
 {
     BacktrackingOptimizer::BacktrackingOptimizer (const double& gradientNormTolerance,
-                                                  const double& incrementNormTolerance,
+                                                  const double& relativeIncrementTolerance,
                                                   const std::string& convergenceCriterion) :
         AbstractOptimizer (),
         dotProductComputer_ ()
@@ -24,13 +24,13 @@ namespace controlproblem
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("descent_method", "backtracking_gradient_method");
         parameters.add ("gradient_norm_tolerance", gradientNormTolerance);
-        parameters.add ("increment_norm_tolerance", incrementNormTolerance);
+        parameters.add ("relative_increment_tolerance", relativeIncrementTolerance);
         parameters.add ("convergence_criterion", convergenceCriterion);
         parameters.add ("c_1", 1e-3);
         parameters.add ("alpha_0", 0.5);
         parameters.add ("rho", 0.5);
         parameters.add ("max_minimization_iterations", 100);
-        parameters.add ("max_backtracking_iteration", 10);
+        parameters.add ("max_backtracking_iteration", 20);
         
         dolfin::log (dolfin::DBG, "BacktrackingOptimizer object created");
         
@@ -66,20 +66,22 @@ namespace controlproblem
                                        >& searchDirectionComputer)
     {
         // get parameters values
-        double c_1                       = this->parameters ["c_1"];
-        double alpha_0                   = this->parameters ["alpha_0"];
-        double rho                       = this->parameters ["rho"];
-        double gradientNormTolerance     = this->parameters ["gradient_norm_tolerance"];
-        double incrementNormTolerance    = this->parameters ["increment_norm_tolerance"];
-        std::string convergenceCriterion = this->parameters ["convergence_criterion"];
-        int maxMinimizationIterations    = this->parameters ["max_minimization_iterations"];
-        int maxBacktrackingIterations    = this->parameters ["max_backtracking_iteration"];
+        double c_1                        = this->parameters ["c_1"];
+        double alpha_0                    = this->parameters ["alpha_0"];
+        double rho                        = this->parameters ["rho"];
+        double gradientNormTolerance      = this->parameters ["gradient_norm_tolerance"];
+        double relativeIncrementTolerance = this->parameters ["relative_increment_tolerance"];
+        std::string convergenceCriterion  = this->parameters ["convergence_criterion"];
+        int maxMinimizationIterations     = this->parameters ["max_minimization_iterations"];
+        int maxBacktrackingIterations     = this->parameters ["max_backtracking_iteration"];
 
         // define loop variables
         double alpha;
         double gradientNorm;
         double gradientDotSearchDirection;
         double incrementNorm;
+        double previousControlVariableNorm;
+        double relativeIncrement;
         double previousFunctionalValue;
         double currentFunctionalValue;
         dolfin::Function& controlVariable = initialGuess;
@@ -90,7 +92,7 @@ namespace controlproblem
         
 
         // ------------------------------------------------------------------------------------------------------- //
-        // create correct objects for dotProductComputer, gradientNormComputer and incrementNormComputer
+        // create correct object-type for dotProductComputer
         if (dotProductComputer_ != nullptr)
         {
             dolfin::log (dolfin::DBG, "Using protected member variable to compute dot products and norms");
@@ -161,7 +163,7 @@ namespace controlproblem
                 }
             }
         }
-        // end of if statement to correctly set dotProductComputer, gradientNormComputer and incrementNormComputer
+        // end of if statement to correctly set dotProductComputer
         // ------------------------------------------------------------------------------------------------------- //
         
         
@@ -174,17 +176,17 @@ namespace controlproblem
         std::function <bool ()> isConverged;
         
         // set value of isConverged () according to convergence criterion
-        if (convergenceCriterion == "gradient_norm")
+        if (convergenceCriterion == "gradient")
         {
             isConverged = [&] () {return gradientNorm < gradientNormTolerance;};
         }
-        else if (convergenceCriterion == "increment_norm")
+        else if (convergenceCriterion == "increment")
         {
-            isConverged = [&] () {return incrementNorm < incrementNormTolerance;};
+            isConverged = [&] () {return relativeIncrement < relativeIncrementTolerance;};
         }
         else if (convergenceCriterion == "both")
         {
-            isConverged = [&] () {return (incrementNorm < incrementNormTolerance) || (gradientNorm < gradientNormTolerance);};
+            isConverged = [&] () {return (relativeIncrement < relativeIncrementTolerance) || (gradientNorm < gradientNormTolerance);};
         }
         else
         {
@@ -217,8 +219,8 @@ namespace controlproblem
         dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
         gradientNorm = dolfin::assemble (*dotProductComputer);
         
-        incrementNorm = incrementNormTolerance + 1; // just an initialization to be sure that the first iteration 
-                                                    // of the minimization loop is performed
+        relativeIncrement = relativeIncrementTolerance + 1; // just an initialization to be sure that the first iteration 
+                                                            // of the minimization loop is performed
         currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
 
 
@@ -228,7 +230,7 @@ namespace controlproblem
         dolfin::log (dolfin::DBG, "alpha_0 = %f", alpha_0);
         dolfin::log (dolfin::DBG, "rho = %f", rho);
         dolfin::log (dolfin::DBG, "gradient norm tolerance = %f", gradientNormTolerance);
-        dolfin::log (dolfin::DBG, "increment norm tolerance = %f", incrementNormTolerance);
+        dolfin::log (dolfin::DBG, "relative increment tolerance = %f", relativeIncrementTolerance);
         dolfin::log (dolfin::DBG, "convergence criterion = %s", convergenceCriterion.c_str ());
         dolfin::log (dolfin::DBG, "maximum minimization iterations = %d", maxMinimizationIterations);
         dolfin::log (dolfin::DBG, "maximum backtracking iterations = %d", maxBacktrackingIterations);
@@ -336,35 +338,53 @@ namespace controlproblem
             }
                 
             
-            // update gradient nom
-            dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-            dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-            gradientNorm = dolfin::assemble (*dotProductComputer);
-
-            // update increment norm 
-            controlVariableIncrement = controlVariable - previousControlVariable;
-            dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
-            dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
-            incrementNorm = dolfin::assemble (*dotProductComputer);
+            // update gradient norm if necessary for convergence check
+            if (convergenceCriterion == "gradient" || convergenceCriterion == "both")
+            {
+                dolfin::log (dolfin::DBG, "Computing gradient norm...");
+                dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
+                dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
+                gradientNorm = dolfin::assemble (*dotProductComputer);
+                dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
+            }
             
-            dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
-            dolfin::log (dolfin::INFO, "Increment norm = %f", incrementNorm);
+
+            // update relative increment if necessary for convergence check
+            if (convergenceCriterion == "increment" || convergenceCriterion == "both")
+            {
+                dolfin::log (dolfin::DBG, "Computing relative increment...");
+                dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (previousControlVariable));
+                dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (previousControlVariable));
+                previousControlVariableNorm = dolfin::assemble (*dotProductComputer);
+
+                controlVariableIncrement = controlVariable - previousControlVariable;
+                dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
+                dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
+                incrementNorm = dolfin::assemble (*dotProductComputer);
+
+                // compute relative increment. We add DOLFIN_EPS at the denominator in case previousControlVariableNorm 
+                // is zero (like at the first iteration)
+                relativeIncrement = incrementNorm / (previousControlVariableNorm + DOLFIN_EPS); 
+                dolfin::log (dolfin::INFO, "Relative increment = %f", relativeIncrement);
+            }
+                
             dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
         }
+        
         
         if (isConverged () == false) 
         {
             dolfin::log (dolfin::INFO, "");
             dolfin::warning ("Minimization loop ended because maximum number of iterations was reached");
             dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
-            dolfin::log (dolfin::INFO, "Increment norm = %f", incrementNorm);
+            dolfin::log (dolfin::INFO, "Relative increment = %f", relativeIncrement);
             dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
         }
         else
         {
             dolfin::log (dolfin::INFO, "Minimization loop ended. Iterations performed: %d\n", minimizationIteration);
             dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
-            dolfin::log (dolfin::INFO, "Increment norm = %f", incrementNorm);
+            dolfin::log (dolfin::INFO, "Relative increment = %f", relativeIncrement);
             dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
         }
         

@@ -58,24 +58,26 @@ namespace controlproblem
              *  Input argument:
              *  \param gradientNormTolerance the tolerance for convergence check on gradient (see third input parameter).
              *  Default value: \c 1e-6
-             *  \param incrementNormTolerance the tolerance for convergence check on increment (see third input parameter)
+             *  \param relativeIncrementTolerance the tolerance for convergence check on increment (see third input parameter)
              *  Default value: \c 1e-6
              *  \param convergenceCriterion 
              *  sets the convergence criterion to stop the minimization algorithm.
              *  Possible values are:
-             *  \li \c gradient_norm: the minimization loop permanence condition is
+             *  \li \c gradient: the minimization loop permanence condition is
              *  \f$ \left| \left| \nabla J \right| \right| > \varepsilon_g \f$
              *  where \f$ \varepsilon_g \f$ is set by the input variable \c gradientNormTolerance
-             *  \li \c increment_norm: the minimization loop permanence condition is
-             *  \f$ \left| \left| \mathbf{u}_{k+1} - \mathbf{u}_k \right| \right| > \varepsilon_i \f$
-             *  where \f$ \varepsilon_i \f$ is set by the input variable \c incrementNormTolerance
+             *  \li \c increment: the minimization loop permanence condition is
+             *  \f$ \frac{\left| \left| \mathbf{u}_{k+1} - \mathbf{u}_k \right| \right|}
+             *           {\left| \left| \mathbf{u}_{k} \right| \right|}} 
+             *           > \varepsilon_i \f$
+             *  where \f$ \varepsilon_i \f$ is set by the input variable \c relativeIncrementTolerance
              *  \li \c both: both the above conditions are checked for the permanence in the minimization loop. That means
              *  that the minimization algorithm will end when one of the two conditions is false
              *  
              *  Default value: \c both
              */
             BacktrackingOptimizer (const double& gradientNormTolerance = 1e-6,
-                                   const double& incrementNormTolerance = 1e-6,
+                                   const double& relativeIncrementTolerance = 1e-6,
                                    const std::string& convergenceCriterion = "both");
             
             /************************* DESTRUCTOR ********************/

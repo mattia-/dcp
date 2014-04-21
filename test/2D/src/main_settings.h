@@ -92,8 +92,8 @@ namespace adjoint
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-//            return x[0] >= 1.75 && x[0] <= 3.25 && x[1] >= 0 && x[1] <= 1.75; 
-            return x[0] >= 1.75 && x[0] <= 5 && x[1] >= 0 && x[1] <= 2.5; 
+            return x[0] >= 1.75 && x[0] <= 3.25 && x[1] >= 0 && x[1] <= 1.75; 
+//            return x[0] >= 1.75 && x[0] <= 5 && x[1] >= 0 && x[1] <= 2.5; 
         }
     };
 }

@@ -191,8 +191,6 @@ int main (int argc, char* argv[])
     // define control value updater
     controlproblem::DirichletControlValueUpdater updater ("primal", "inflow_BC", primal_inflowBoundary, V[0]);
     
-//    backtrackingOptimizer.parameters ["increment_norm_tolerance"] = 1e-4;
-
     backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater);
     
     updater (problems, g);

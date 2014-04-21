@@ -63,8 +63,8 @@ int main (int argc, char* argv[])
     interpolatedTargetU.interpolate (targetU);
     interpolatedTargetP.interpolate (targetP);
     
-    dolfin::plot (interpolatedTargetU);
-    dolfin::plot (interpolatedTargetP);
+//    dolfin::plot (interpolatedTargetU);
+//    dolfin::plot (interpolatedTargetP);
 
     
     // ============================================================================ //
@@ -150,7 +150,7 @@ int main (int argc, char* argv[])
     dolfin::Constant sigma_1 (objective_functional::sigma_1);
     dolfin::Constant sigma_2 (objective_functional::sigma_2);
     dolfin::Function g (V[0] -> collapse ());
-    g = dolfin::Constant (1.0, 0.0);
+//    g = dolfin::Constant (1.0, 0.0);
     
     // define subdomains for objective functional
     objective_functional::ControlDomain objective_functional_controlDomain;
@@ -171,6 +171,8 @@ int main (int argc, char* argv[])
     
     objectiveFunctional.setIntegrationSubdomains (dolfin::reference_to_no_delete_pointer (meshFacets), 
                                                   controlproblem::SubdomainType::BOUNDARY_FACETS);
+    objectiveFunctional.setIntegrationSubdomains (dolfin::reference_to_no_delete_pointer (meshCells),
+                                                  controlproblem::SubdomainType::INTERNAL_CELLS);
     
     objectiveFunctional.setCoefficient ("gradient",
                                         dolfin::reference_to_no_delete_pointer (problems["adjoint"].solution()[1]),
@@ -195,8 +197,22 @@ int main (int argc, char* argv[])
     
     problems.solve ();
     
-    dolfin::plot (problems.solution ("primal")[0]);
-    dolfin::plot (problems.solution ("primal")[1]);
+//    dolfin::plot (problems.solution ("primal")[0]);
+//    dolfin::plot (problems.solution ("primal")[1]);
+    dolfin::plot (g);
+    
+    dolfin::Function differenceU (interpolatedTargetU);
+    dolfin::Function differenceU1 (interpolatedTargetU);
+    differenceU1.interpolate (problems.solution ("primal")[0]);
+    differenceU = differenceU1 - interpolatedTargetU; 
+    dolfin::Function differenceP (interpolatedTargetP);
+    dolfin::Function differenceP1 (interpolatedTargetP);
+    differenceP1.interpolate (problems.solution ("primal")[1]);
+    differenceP = differenceP1 - interpolatedTargetP;
+    dolfin::plot (meshCells);
+    
+    dolfin::plot (differenceU);
+    dolfin::plot (differenceP);
     dolfin::interactive ();
     
     return 0;

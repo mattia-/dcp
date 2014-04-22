@@ -68,7 +68,7 @@ namespace controlproblem
              *  where \f$ \varepsilon_g \f$ is set by the input variable \c gradientNormTolerance
              *  \li \c increment: the minimization loop permanence condition is
              *  \f$ \frac{\left| \left| \mathbf{u}_{k+1} - \mathbf{u}_k \right| \right|}
-             *           {\left| \left| \mathbf{u}_{k} \right| \right|}} 
+             *           {\left| \left| \mathbf{u}_{k} \right| \right|} 
              *           > \varepsilon_i \f$
              *  where \f$ \varepsilon_i \f$ is set by the input variable \c relativeIncrementTolerance
              *  \li \c both: both the above conditions are checked for the permanence in the minimization loop. That means

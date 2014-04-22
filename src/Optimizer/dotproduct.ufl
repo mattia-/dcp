@@ -30,17 +30,17 @@ scalar2D_g = Coefficient (scalar2DElement)
 scalar2D_dotProduct = inner (scalar2D_f, scalar2D_g) * dx
 
 # ------------------------------------------------------------------- #
-# define form to compute the dot product of two 2D vectorial functions
+# define form to compute the dot product of two 2D vector functions
 # ------------------------------------------------------------------- #
 # function space
-vectorial2DElement = VectorElement ("Lagrange", triangle, 1)                                       
+vector2DElement = VectorElement ("Lagrange", triangle, 1)                                       
 
 # the function whose norm we wish to compute
-vectorial2D_f = Coefficient (vectorial2DElement)
-vectorial2D_g = Coefficient (vectorial2DElement)
+vector2D_f = Coefficient (vector2DElement)
+vector2D_g = Coefficient (vector2DElement)
 
 # the form itself
-vectorial2D_dotProduct = inner (vectorial2D_f, vectorial2D_g) * dx
+vector2D_dotProduct = inner (vector2D_f, vector2D_g) * dx
 
 # ---------------------------------------------------------------- #
 # define form to compute the dot product of two 3D scalar functions
@@ -56,20 +56,20 @@ scalar3D_g = Coefficient (scalar3DElement)
 scalar3D_dotProduct = inner (scalar3D_f, scalar3D_g) * dx
 
 # ------------------------------------------------------------------- #
-# define form to compute the dot product of two 3D vectorial functions
+# define form to compute the dot product of two 3D vector functions
 # ------------------------------------------------------------------- #
 # function space
-vectorial3DElement = VectorElement ("Lagrange", tetrahedron, 1)                                       
+vector3DElement = VectorElement ("Lagrange", tetrahedron, 1)                                       
 
 # the function whose norm we wish to compute
-vectorial3D_f = Coefficient (vectorial3DElement)
-vectorial3D_g = Coefficient (vectorial3DElement)
+vector3D_f = Coefficient (vector3DElement)
+vector3D_g = Coefficient (vector3DElement)
 
 # the form itself
-vectorial3D_dotProduct = inner (vectorial3D_f, vectorial3D_g) * dx
+vector3D_dotProduct = inner (vector3D_f, vector3D_g) * dx
 
 # ------------------------------------------------------------------- #
 # ------------------------------------------------------------------- #
 
 # get all the forms
-forms = [scalar1D_dotProduct, scalar2D_dotProduct, vectorial2D_dotProduct, scalar3D_dotProduct, vectorial3D_dotProduct]
+forms = [scalar1D_dotProduct, scalar2D_dotProduct, vector2D_dotProduct, scalar3D_dotProduct, vector3D_dotProduct]

@@ -14,8 +14,7 @@ u = Coefficient (V)
 U = Coefficient (V)
 p = Coefficient (Q)
 P = Coefficient (Q)
-#g = Coefficient (Q)
-g = Coefficient (V)
+g = Coefficient (Q)
 
 # define expression of functional
 J = 0.5 * inner (u - U, u - U) * dx (1) \

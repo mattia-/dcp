@@ -92,8 +92,8 @@ namespace adjoint
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return x[0] >= 1.75 && x[0] <= 3.25 && x[1] >= 0 && x[1] <= 1.75; 
-//            return x[0] >= 1.75 && x[0] <= 5 && x[1] >= 0 && x[1] <= 2.5; 
+//            return x[0] >= 1.75 && x[0] <= 3.25 && x[1] >= 0 && x[1] <= 1.75; 
+            return x[0] >= 1.75 && x[0] <= 5 && x[1] >= 0 && x[1] <= 2.5; 
         }
     };
 }
@@ -101,7 +101,7 @@ namespace adjoint
 // ---------------------------------------------------------------------------- //
 namespace objective_functional
 {
-    double sigma_1 = 0.1;
+    double sigma_1 = 0.01;
     double sigma_2 = 1.0;
     
     class ControlDomain : public dolfin::SubDomain
@@ -114,28 +114,18 @@ namespace objective_functional
     
     class Gradient : public controlproblem::VariableExpression
     {
-        public:
         void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
         {
             dolfin::Array<double> theta (1);
             evaluateVariable ("theta", theta, x);
 
-            dolfin::Array<double> g (2);
+            dolfin::Array<double> g (1);
             evaluateVariable ("g", g, x);
 
             values[0] = sigma_1 * g[0] - theta[0];
-            values[1] = sigma_1 * g[1];
         }
         
-        std::size_t value_rank () const
-        {
-            return 1;
-        }
-        
-        std::size_t value_dimension (std::size_t i) const
-        {
-            return 2;
-        }
+        objective_functional::ControlDomain controlDomain;
     };
 }
 

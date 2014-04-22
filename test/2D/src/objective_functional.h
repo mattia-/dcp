@@ -6790,9 +6790,9 @@ public:
                                std::size_t facet) const
   {
     // Number of operations (multiply-add pairs) for Jacobian data:      10
-    // Number of operations (multiply-add pairs) for geometry tensor:    96
-    // Number of operations (multiply-add pairs) for tensor contraction: 52
-    // Total number of operations (multiply-add pairs):                  158
+    // Number of operations (multiply-add pairs) for geometry tensor:    18
+    // Number of operations (multiply-add pairs) for tensor contraction: 10
+    // Total number of operations (multiply-add pairs):                  38
     
     // Compute Jacobian
     double J[4];
@@ -6818,68 +6818,29 @@ public:
     const double G0_0_0_0 = det*w[5][0]*w[5][0]*w[0][0]*(1.0);
     const double G0_0_1_0 = det*w[5][0]*w[5][1]*w[0][0]*(1.0);
     const double G0_0_2_0 = det*w[5][0]*w[5][2]*w[0][0]*(1.0);
-    const double G0_0_4_0 = det*w[5][0]*w[5][4]*w[0][0]*(1.0);
-    const double G0_0_5_0 = det*w[5][0]*w[5][5]*w[0][0]*(1.0);
     const double G0_1_0_0 = det*w[5][1]*w[5][0]*w[0][0]*(1.0);
     const double G0_1_1_0 = det*w[5][1]*w[5][1]*w[0][0]*(1.0);
     const double G0_1_2_0 = det*w[5][1]*w[5][2]*w[0][0]*(1.0);
-    const double G0_1_3_0 = det*w[5][1]*w[5][3]*w[0][0]*(1.0);
-    const double G0_1_5_0 = det*w[5][1]*w[5][5]*w[0][0]*(1.0);
     const double G0_2_0_0 = det*w[5][2]*w[5][0]*w[0][0]*(1.0);
     const double G0_2_1_0 = det*w[5][2]*w[5][1]*w[0][0]*(1.0);
     const double G0_2_2_0 = det*w[5][2]*w[5][2]*w[0][0]*(1.0);
-    const double G0_2_3_0 = det*w[5][2]*w[5][3]*w[0][0]*(1.0);
-    const double G0_2_4_0 = det*w[5][2]*w[5][4]*w[0][0]*(1.0);
-    const double G0_3_1_0 = det*w[5][3]*w[5][1]*w[0][0]*(1.0);
-    const double G0_3_2_0 = det*w[5][3]*w[5][2]*w[0][0]*(1.0);
-    const double G0_3_3_0 = det*w[5][3]*w[5][3]*w[0][0]*(1.0);
-    const double G0_4_0_0 = det*w[5][4]*w[5][0]*w[0][0]*(1.0);
-    const double G0_4_2_0 = det*w[5][4]*w[5][2]*w[0][0]*(1.0);
-    const double G0_4_4_0 = det*w[5][4]*w[5][4]*w[0][0]*(1.0);
-    const double G0_5_0_0 = det*w[5][5]*w[5][0]*w[0][0]*(1.0);
-    const double G0_5_1_0 = det*w[5][5]*w[5][1]*w[0][0]*(1.0);
-    const double G0_5_5_0 = det*w[5][5]*w[5][5]*w[0][0]*(1.0);
-    const double G0_6_6_0 = det*w[5][6]*w[5][6]*w[0][0]*(1.0);
-    const double G0_6_7_0 = det*w[5][6]*w[5][7]*w[0][0]*(1.0);
-    const double G0_6_8_0 = det*w[5][6]*w[5][8]*w[0][0]*(1.0);
-    const double G0_6_10_0 = det*w[5][6]*w[5][10]*w[0][0]*(1.0);
-    const double G0_6_11_0 = det*w[5][6]*w[5][11]*w[0][0]*(1.0);
-    const double G0_7_6_0 = det*w[5][7]*w[5][6]*w[0][0]*(1.0);
-    const double G0_7_7_0 = det*w[5][7]*w[5][7]*w[0][0]*(1.0);
-    const double G0_7_8_0 = det*w[5][7]*w[5][8]*w[0][0]*(1.0);
-    const double G0_7_9_0 = det*w[5][7]*w[5][9]*w[0][0]*(1.0);
-    const double G0_7_11_0 = det*w[5][7]*w[5][11]*w[0][0]*(1.0);
-    const double G0_8_6_0 = det*w[5][8]*w[5][6]*w[0][0]*(1.0);
-    const double G0_8_7_0 = det*w[5][8]*w[5][7]*w[0][0]*(1.0);
-    const double G0_8_8_0 = det*w[5][8]*w[5][8]*w[0][0]*(1.0);
-    const double G0_8_9_0 = det*w[5][8]*w[5][9]*w[0][0]*(1.0);
-    const double G0_8_10_0 = det*w[5][8]*w[5][10]*w[0][0]*(1.0);
-    const double G0_9_7_0 = det*w[5][9]*w[5][7]*w[0][0]*(1.0);
-    const double G0_9_8_0 = det*w[5][9]*w[5][8]*w[0][0]*(1.0);
-    const double G0_9_9_0 = det*w[5][9]*w[5][9]*w[0][0]*(1.0);
-    const double G0_10_6_0 = det*w[5][10]*w[5][6]*w[0][0]*(1.0);
-    const double G0_10_8_0 = det*w[5][10]*w[5][8]*w[0][0]*(1.0);
-    const double G0_10_10_0 = det*w[5][10]*w[5][10]*w[0][0]*(1.0);
-    const double G0_11_6_0 = det*w[5][11]*w[5][6]*w[0][0]*(1.0);
-    const double G0_11_7_0 = det*w[5][11]*w[5][7]*w[0][0]*(1.0);
-    const double G0_11_11_0 = det*w[5][11]*w[5][11]*w[0][0]*(1.0);
     
     // Compute element tensor
     switch (facet)
     {
     case 0:
       {
-        A[0] = 0.0666666666666667*G0_1_1_0 - 0.0166666666666666*G0_1_2_0 + 0.0333333333333333*G0_1_3_0 - 0.0166666666666666*G0_2_1_0 + 0.0666666666666667*G0_2_2_0 + 0.0333333333333333*G0_2_3_0 + 0.0333333333333333*G0_3_1_0 + 0.0333333333333333*G0_3_2_0 + 0.266666666666666*G0_3_3_0 + 0.0666666666666667*G0_7_7_0 - 0.0166666666666666*G0_7_8_0 + 0.0333333333333333*G0_7_9_0 - 0.0166666666666666*G0_8_7_0 + 0.0666666666666667*G0_8_8_0 + 0.0333333333333333*G0_8_9_0 + 0.0333333333333333*G0_9_7_0 + 0.0333333333333333*G0_9_8_0 + 0.266666666666666*G0_9_9_0;
+        A[0] = 0.166666666666667*G0_1_1_0 + 0.0833333333333333*G0_1_2_0 + 0.0833333333333333*G0_2_1_0 + 0.166666666666667*G0_2_2_0;
         break;
       }
     case 1:
       {
-        A[0] = 0.0666666666666666*G0_0_0_0 - 0.0166666666666666*G0_0_2_0 + 0.0333333333333333*G0_0_4_0 - 0.0166666666666666*G0_2_0_0 + 0.0666666666666667*G0_2_2_0 + 0.0333333333333333*G0_2_4_0 + 0.0333333333333333*G0_4_0_0 + 0.0333333333333333*G0_4_2_0 + 0.266666666666666*G0_4_4_0 + 0.0666666666666666*G0_6_6_0 - 0.0166666666666666*G0_6_8_0 + 0.0333333333333333*G0_6_10_0 - 0.0166666666666666*G0_8_6_0 + 0.0666666666666667*G0_8_8_0 + 0.0333333333333333*G0_8_10_0 + 0.0333333333333333*G0_10_6_0 + 0.0333333333333333*G0_10_8_0 + 0.266666666666666*G0_10_10_0;
+        A[0] = 0.166666666666667*G0_0_0_0 + 0.0833333333333333*G0_0_2_0 + 0.0833333333333333*G0_2_0_0 + 0.166666666666667*G0_2_2_0;
         break;
       }
     case 2:
       {
-        A[0] = 0.0666666666666666*G0_0_0_0 - 0.0166666666666666*G0_0_1_0 + 0.0333333333333333*G0_0_5_0 - 0.0166666666666666*G0_1_0_0 + 0.0666666666666666*G0_1_1_0 + 0.0333333333333333*G0_1_5_0 + 0.0333333333333333*G0_5_0_0 + 0.0333333333333333*G0_5_1_0 + 0.266666666666667*G0_5_5_0 + 0.0666666666666666*G0_6_6_0 - 0.0166666666666666*G0_6_7_0 + 0.0333333333333333*G0_6_11_0 - 0.0166666666666666*G0_7_6_0 + 0.0666666666666666*G0_7_7_0 + 0.0333333333333333*G0_7_11_0 + 0.0333333333333333*G0_11_6_0 + 0.0333333333333333*G0_11_7_0 + 0.266666666666667*G0_11_11_0;
+        A[0] = 0.166666666666667*G0_0_0_0 + 0.0833333333333333*G0_0_1_0 + 0.0833333333333333*G0_1_0_0 + 0.166666666666667*G0_1_1_0;
         break;
       }
     }
@@ -6922,7 +6883,7 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "e26c12a1f520c294785049060b41dfe3b3f371a23842d20bf50b81ce3209069e8bbaabf8871d11f90ed9d3d7d0c95c2024feddff172e7380c1c7b3de5ebdcca9";
+    return "8f94b461cfd968915eecc09a528c909c0c275908203a2cae6716fffc27c00ee41baa194b4e19755f8c54d12674de5a55ca127944b9678033d227211f4fec1676";
   }
 
   /// Return the rank of the global tensor (r)
@@ -7017,7 +6978,7 @@ public:
       }
     case 5:
       {
-        return new objective_functional_finite_element_2();
+        return new objective_functional_finite_element_0();
         break;
       }
     }
@@ -7057,7 +7018,7 @@ public:
       }
     case 5:
       {
-        return new objective_functional_dofmap_2();
+        return new objective_functional_dofmap_0();
         break;
       }
     }
@@ -7310,8 +7271,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_g(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_2()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_2()), mesh)))
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_0()), mesh)))
   {
     // Do nothing
   }
@@ -7319,8 +7280,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_g(boost::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_2()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_2()), *mesh)))
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_0()), *mesh)))
   {
     // Do nothing
   }
@@ -7330,8 +7291,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_g(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_2()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_2()), mesh,
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_0()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -7340,8 +7301,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_g(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_2()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_2()), *mesh, constrained_domain)))
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_0()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -7351,8 +7312,8 @@ public:
   // Create restricted function space (reference version)
   CoefficientSpace_g(const dolfin::Restriction& restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_2()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_2()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_0()),
                                                                                      reference_to_no_delete_pointer(restriction))))
   {
     // Do nothing
@@ -7361,8 +7322,8 @@ public:
   // Create restricted function space (shared pointer version)
   CoefficientSpace_g(boost::shared_ptr<const dolfin::Restriction> restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_2()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_2()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_0()),
                                                                                      restriction)))
   {
     // Do nothing

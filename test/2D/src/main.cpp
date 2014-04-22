@@ -1,12 +1,13 @@
 #include <iostream>
 #include <string>
 #include <dolfin.h>
-#include "primal.h"
-#include "adjoint.h"
-#include "objective_functional.h"
 #include <DifferentialProblem/DifferentialProblem.hpp>
 #include <ObjectiveFunctional/Functional.hpp>
 #include <Optimizer/Optimizer.hpp>
+#include "primal.h"
+#include "adjoint.h"
+#include "objective_functional.h"
+#include "control_variable_function_space.h"
 #include "main_settings.h"
 
 int main (int argc, char* argv[])
@@ -62,9 +63,6 @@ int main (int argc, char* argv[])
     
     interpolatedTargetU.interpolate (targetU);
     interpolatedTargetP.interpolate (targetP);
-    
-//    dolfin::plot (interpolatedTargetU);
-//    dolfin::plot (interpolatedTargetP);
 
     
     // ============================================================================ //
@@ -88,7 +86,7 @@ int main (int argc, char* argv[])
     
     // define constants
     dolfin::Constant nu (1e-5);
-    dolfin::Constant primal_inflowDirichletBC (1.0, 0.0);
+    dolfin::Constant primal_yInflowDirichletBC (0.0);
     dolfin::Constant primal_symmetryDirichletBC (0.0);
     dolfin::Constant primal_noSlipCondition (0.0, 0.0);
     dolfin::Constant adjoint_dirichletBC (0.0, 0.0);
@@ -115,7 +113,7 @@ int main (int argc, char* argv[])
     problems["primal"].setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
     problems["primal"].setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
 
-    problems["primal"].addDirichletBC (dolfin::DirichletBC (*V[0], primal_inflowDirichletBC, primal_inflowBoundary), "inflow_BC");
+    problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], primal_yInflowDirichletBC, primal_inflowBoundary), "y_inflow_BC");
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*V[0], primal_noSlipCondition, primal_noSlipBoundary));
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], primal_symmetryDirichletBC, primal_gammaSD));
 
@@ -149,8 +147,15 @@ int main (int argc, char* argv[])
     // define functional coefficients
     dolfin::Constant sigma_1 (objective_functional::sigma_1);
     dolfin::Constant sigma_2 (objective_functional::sigma_2);
-    dolfin::Function g (V[0] -> collapse ());
-//    g = dolfin::Constant (1.0, 0.0);
+    
+    // define control variable
+    // mesh:
+    dolfin::IntervalMesh controlMesh (25, 0, 2.5);
+    // function space:
+    control_variable_function_space::FunctionSpace controlFunctionSpace (controlMesh);
+    // control variable itself
+    dolfin::Function g (controlFunctionSpace);
+//    g = dolfin::Constant (1.0);
     
     // define subdomains for objective functional
     objective_functional::ControlDomain objective_functional_controlDomain;
@@ -180,16 +185,18 @@ int main (int argc, char* argv[])
     objectiveFunctional.setCoefficient ("gradient",
                                         dolfin::reference_to_no_delete_pointer (g),
                                         "g");
-    
+
     
     // ============================================================================== //
     // =============================== OPTIMIZATION  ================================ //
     // ============================================================================== //
     // define optimizer
     controlproblem::BacktrackingOptimizer backtrackingOptimizer;
+    
+    backtrackingOptimizer.parameters ["relative_increment_tolerance"] = 1e-2;
         
     // define control value updater
-    controlproblem::DirichletControlValueUpdater updater ("primal", "inflow_BC", primal_inflowBoundary, V[0]);
+    controlproblem::DirichletControlValueUpdater updater ("primal", "x_inflow_BC", primal_inflowBoundary, (*V[0])[0]);
 
     backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater);
     
@@ -197,9 +204,9 @@ int main (int argc, char* argv[])
     
     problems.solve ();
     
-//    dolfin::plot (problems.solution ("primal")[0]);
-//    dolfin::plot (problems.solution ("primal")[1]);
-    dolfin::plot (g);
+    dolfin::plot (problems.solution ("primal")[0], "solution of the problem with computed control. Velocity");
+    dolfin::plot (problems.solution ("primal")[1], "solution of the problem with computed control. Pressure");
+    dolfin::plot (g, "Control");
     
     dolfin::Function differenceU (interpolatedTargetU);
     dolfin::Function differenceU1 (interpolatedTargetU);
@@ -209,10 +216,10 @@ int main (int argc, char* argv[])
     dolfin::Function differenceP1 (interpolatedTargetP);
     differenceP1.interpolate (problems.solution ("primal")[1]);
     differenceP = differenceP1 - interpolatedTargetP;
-    dolfin::plot (meshCells);
     
-    dolfin::plot (differenceU);
-    dolfin::plot (differenceP);
+    dolfin::plot (meshCells, "Control region");
+    dolfin::plot (differenceU, "Difference between target and controlled velocity");
+    dolfin::plot (differenceP, "Difference between target and controlled pressure");
     dolfin::interactive ();
     
     return 0;

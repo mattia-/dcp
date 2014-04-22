@@ -10016,14 +10016,14 @@ public:
 
 };
 
-class CoefficientSpace_vectorial2D_f: public dolfin::FunctionSpace
+class CoefficientSpace_vector2D_f: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_vectorial2D_f(const dolfin::Mesh& mesh):
+  CoefficientSpace_vector2D_f(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()), mesh)))
@@ -10032,7 +10032,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_vectorial2D_f(boost::shared_ptr<const dolfin::Mesh> mesh):
+  CoefficientSpace_vector2D_f(boost::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()), *mesh)))
@@ -10043,7 +10043,7 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_vectorial2D_f(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  CoefficientSpace_vector2D_f(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()), mesh,
@@ -10053,7 +10053,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_vectorial2D_f(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  CoefficientSpace_vector2D_f(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()), *mesh, constrained_domain)))
@@ -10064,7 +10064,7 @@ public:
   //--- Constructors for restricted function space, 2 different versions ---
 
   // Create restricted function space (reference version)
-  CoefficientSpace_vectorial2D_f(const dolfin::Restriction& restriction):
+  CoefficientSpace_vector2D_f(const dolfin::Restriction& restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()),
@@ -10074,7 +10074,7 @@ public:
   }
 
   // Create restricted function space (shared pointer version)
-  CoefficientSpace_vectorial2D_f(boost::shared_ptr<const dolfin::Restriction> restriction):
+  CoefficientSpace_vector2D_f(boost::shared_ptr<const dolfin::Restriction> restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()),
@@ -10084,20 +10084,20 @@ public:
   }
 
   // Copy constructor
-  ~CoefficientSpace_vectorial2D_f()
+  ~CoefficientSpace_vector2D_f()
   {
   }
 
 };
 
-class CoefficientSpace_vectorial2D_g: public dolfin::FunctionSpace
+class CoefficientSpace_vector2D_g: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_vectorial2D_g(const dolfin::Mesh& mesh):
+  CoefficientSpace_vector2D_g(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()), mesh)))
@@ -10106,7 +10106,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_vectorial2D_g(boost::shared_ptr<const dolfin::Mesh> mesh):
+  CoefficientSpace_vector2D_g(boost::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()), *mesh)))
@@ -10117,7 +10117,7 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_vectorial2D_g(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  CoefficientSpace_vector2D_g(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()), mesh,
@@ -10127,7 +10127,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_vectorial2D_g(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  CoefficientSpace_vector2D_g(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()), *mesh, constrained_domain)))
@@ -10138,7 +10138,7 @@ public:
   //--- Constructors for restricted function space, 2 different versions ---
 
   // Create restricted function space (reference version)
-  CoefficientSpace_vectorial2D_g(const dolfin::Restriction& restriction):
+  CoefficientSpace_vector2D_g(const dolfin::Restriction& restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()),
@@ -10148,7 +10148,7 @@ public:
   }
 
   // Create restricted function space (shared pointer version)
-  CoefficientSpace_vectorial2D_g(boost::shared_ptr<const dolfin::Restriction> restriction):
+  CoefficientSpace_vector2D_g(boost::shared_ptr<const dolfin::Restriction> restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_3()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_3()),
@@ -10158,20 +10158,20 @@ public:
   }
 
   // Copy constructor
-  ~CoefficientSpace_vectorial2D_g()
+  ~CoefficientSpace_vector2D_g()
   {
   }
 
 };
 
-class CoefficientSpace_vectorial3D_f: public dolfin::FunctionSpace
+class CoefficientSpace_vector3D_f: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_vectorial3D_f(const dolfin::Mesh& mesh):
+  CoefficientSpace_vector3D_f(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()), mesh)))
@@ -10180,7 +10180,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_vectorial3D_f(boost::shared_ptr<const dolfin::Mesh> mesh):
+  CoefficientSpace_vector3D_f(boost::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()), *mesh)))
@@ -10191,7 +10191,7 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_vectorial3D_f(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  CoefficientSpace_vector3D_f(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()), mesh,
@@ -10201,7 +10201,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_vectorial3D_f(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  CoefficientSpace_vector3D_f(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()), *mesh, constrained_domain)))
@@ -10212,7 +10212,7 @@ public:
   //--- Constructors for restricted function space, 2 different versions ---
 
   // Create restricted function space (reference version)
-  CoefficientSpace_vectorial3D_f(const dolfin::Restriction& restriction):
+  CoefficientSpace_vector3D_f(const dolfin::Restriction& restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()),
@@ -10222,7 +10222,7 @@ public:
   }
 
   // Create restricted function space (shared pointer version)
-  CoefficientSpace_vectorial3D_f(boost::shared_ptr<const dolfin::Restriction> restriction):
+  CoefficientSpace_vector3D_f(boost::shared_ptr<const dolfin::Restriction> restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()),
@@ -10232,20 +10232,20 @@ public:
   }
 
   // Copy constructor
-  ~CoefficientSpace_vectorial3D_f()
+  ~CoefficientSpace_vector3D_f()
   {
   }
 
 };
 
-class CoefficientSpace_vectorial3D_g: public dolfin::FunctionSpace
+class CoefficientSpace_vector3D_g: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_vectorial3D_g(const dolfin::Mesh& mesh):
+  CoefficientSpace_vector3D_g(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()), mesh)))
@@ -10254,7 +10254,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_vectorial3D_g(boost::shared_ptr<const dolfin::Mesh> mesh):
+  CoefficientSpace_vector3D_g(boost::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()), *mesh)))
@@ -10265,7 +10265,7 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_vectorial3D_g(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  CoefficientSpace_vector3D_g(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()), mesh,
@@ -10275,7 +10275,7 @@ public:
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_vectorial3D_g(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  CoefficientSpace_vector3D_g(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()), *mesh, constrained_domain)))
@@ -10286,7 +10286,7 @@ public:
   //--- Constructors for restricted function space, 2 different versions ---
 
   // Create restricted function space (reference version)
-  CoefficientSpace_vectorial3D_g(const dolfin::Restriction& restriction):
+  CoefficientSpace_vector3D_g(const dolfin::Restriction& restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()),
@@ -10296,7 +10296,7 @@ public:
   }
 
   // Create restricted function space (shared pointer version)
-  CoefficientSpace_vectorial3D_g(boost::shared_ptr<const dolfin::Restriction> restriction):
+  CoefficientSpace_vector3D_g(boost::shared_ptr<const dolfin::Restriction> restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
                           boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new dotproduct_finite_element_1()))),
                           boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new dotproduct_dofmap_1()),
@@ -10306,7 +10306,7 @@ public:
   }
 
   // Copy constructor
-  ~CoefficientSpace_vectorial3D_g()
+  ~CoefficientSpace_vector3D_g()
   {
   }
 
@@ -10536,84 +10536,84 @@ public:
   dolfin::CoefficientAssigner scalar2D_g;
 };
 
-typedef CoefficientSpace_vectorial2D_f Form_vectorial2D_dotProduct_FunctionSpace_0;
+typedef CoefficientSpace_vector2D_f Form_vector2D_dotProduct_FunctionSpace_0;
 
-typedef CoefficientSpace_vectorial2D_g Form_vectorial2D_dotProduct_FunctionSpace_1;
+typedef CoefficientSpace_vector2D_g Form_vector2D_dotProduct_FunctionSpace_1;
 
-class Form_vectorial2D_dotProduct: public dolfin::Form
+class Form_vector2D_dotProduct: public dolfin::Form
 {
 public:
 
   // Constructor
-  Form_vectorial2D_dotProduct(const dolfin::Mesh& mesh):
-    dolfin::Form(0, 2), vectorial2D_f(*this, 0), vectorial2D_g(*this, 1)
+  Form_vector2D_dotProduct(const dolfin::Mesh& mesh):
+    dolfin::Form(0, 2), vector2D_f(*this, 0), vector2D_g(*this, 1)
   {
     _mesh = reference_to_no_delete_pointer(mesh);
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_2());
   }
 
   // Constructor
-  Form_vectorial2D_dotProduct(const dolfin::Mesh& mesh, const dolfin::GenericFunction& vectorial2D_f, const dolfin::GenericFunction& vectorial2D_g):
-    dolfin::Form(0, 2), vectorial2D_f(*this, 0), vectorial2D_g(*this, 1)
+  Form_vector2D_dotProduct(const dolfin::Mesh& mesh, const dolfin::GenericFunction& vector2D_f, const dolfin::GenericFunction& vector2D_g):
+    dolfin::Form(0, 2), vector2D_f(*this, 0), vector2D_g(*this, 1)
   {
     _mesh = reference_to_no_delete_pointer(mesh);
-    this->vectorial2D_f = vectorial2D_f;
-    this->vectorial2D_g = vectorial2D_g;
+    this->vector2D_f = vector2D_f;
+    this->vector2D_g = vector2D_g;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_2());
   }
 
   // Constructor
-  Form_vectorial2D_dotProduct(const dolfin::Mesh& mesh, boost::shared_ptr<const dolfin::GenericFunction> vectorial2D_f, boost::shared_ptr<const dolfin::GenericFunction> vectorial2D_g):
-    dolfin::Form(0, 2), vectorial2D_f(*this, 0), vectorial2D_g(*this, 1)
+  Form_vector2D_dotProduct(const dolfin::Mesh& mesh, boost::shared_ptr<const dolfin::GenericFunction> vector2D_f, boost::shared_ptr<const dolfin::GenericFunction> vector2D_g):
+    dolfin::Form(0, 2), vector2D_f(*this, 0), vector2D_g(*this, 1)
   {
     _mesh = reference_to_no_delete_pointer(mesh);
-    this->vectorial2D_f = *vectorial2D_f;
-    this->vectorial2D_g = *vectorial2D_g;
+    this->vector2D_f = *vector2D_f;
+    this->vector2D_g = *vector2D_g;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_2());
   }
 
   // Constructor
-  Form_vectorial2D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::Form(0, 2), vectorial2D_f(*this, 0), vectorial2D_g(*this, 1)
+  Form_vector2D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::Form(0, 2), vector2D_f(*this, 0), vector2D_g(*this, 1)
   {
     _mesh = mesh;
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_2());
   }
 
   // Constructor
-  Form_vectorial2D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh, const dolfin::GenericFunction& vectorial2D_f, const dolfin::GenericFunction& vectorial2D_g):
-    dolfin::Form(0, 2), vectorial2D_f(*this, 0), vectorial2D_g(*this, 1)
+  Form_vector2D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh, const dolfin::GenericFunction& vector2D_f, const dolfin::GenericFunction& vector2D_g):
+    dolfin::Form(0, 2), vector2D_f(*this, 0), vector2D_g(*this, 1)
   {
     _mesh = mesh;
-    this->vectorial2D_f = vectorial2D_f;
-    this->vectorial2D_g = vectorial2D_g;
+    this->vector2D_f = vector2D_f;
+    this->vector2D_g = vector2D_g;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_2());
   }
 
   // Constructor
-  Form_vectorial2D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::GenericFunction> vectorial2D_f, boost::shared_ptr<const dolfin::GenericFunction> vectorial2D_g):
-    dolfin::Form(0, 2), vectorial2D_f(*this, 0), vectorial2D_g(*this, 1)
+  Form_vector2D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::GenericFunction> vector2D_f, boost::shared_ptr<const dolfin::GenericFunction> vector2D_g):
+    dolfin::Form(0, 2), vector2D_f(*this, 0), vector2D_g(*this, 1)
   {
     _mesh = mesh;
-    this->vectorial2D_f = *vectorial2D_f;
-    this->vectorial2D_g = *vectorial2D_g;
+    this->vector2D_f = *vector2D_f;
+    this->vector2D_g = *vector2D_g;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_2());
   }
 
   // Destructor
-  ~Form_vectorial2D_dotProduct()
+  ~Form_vector2D_dotProduct()
   {}
 
   /// Return the number of the coefficient with this name
   virtual std::size_t coefficient_number(const std::string& name) const
   {
-    if (name == "vectorial2D_f")
+    if (name == "vector2D_f")
       return 0;
-    else if (name == "vectorial2D_g")
+    else if (name == "vector2D_g")
       return 1;
 
     dolfin::dolfin_error("generated code for class Form",
@@ -10628,9 +10628,9 @@ public:
     switch (i)
     {
     case 0:
-      return "vectorial2D_f";
+      return "vector2D_f";
     case 1:
-      return "vectorial2D_g";
+      return "vector2D_g";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -10640,12 +10640,12 @@ public:
   }
 
   // Typedefs
-  typedef Form_vectorial2D_dotProduct_FunctionSpace_0 CoefficientSpace_vectorial2D_f;
-  typedef Form_vectorial2D_dotProduct_FunctionSpace_1 CoefficientSpace_vectorial2D_g;
+  typedef Form_vector2D_dotProduct_FunctionSpace_0 CoefficientSpace_vector2D_f;
+  typedef Form_vector2D_dotProduct_FunctionSpace_1 CoefficientSpace_vector2D_g;
 
   // Coefficients
-  dolfin::CoefficientAssigner vectorial2D_f;
-  dolfin::CoefficientAssigner vectorial2D_g;
+  dolfin::CoefficientAssigner vector2D_f;
+  dolfin::CoefficientAssigner vector2D_g;
 };
 
 typedef CoefficientSpace_scalar3D_f Form_scalar3D_dotProduct_FunctionSpace_0;
@@ -10760,84 +10760,84 @@ public:
   dolfin::CoefficientAssigner scalar3D_g;
 };
 
-typedef CoefficientSpace_vectorial3D_f Form_vectorial3D_dotProduct_FunctionSpace_0;
+typedef CoefficientSpace_vector3D_f Form_vector3D_dotProduct_FunctionSpace_0;
 
-typedef CoefficientSpace_vectorial3D_g Form_vectorial3D_dotProduct_FunctionSpace_1;
+typedef CoefficientSpace_vector3D_g Form_vector3D_dotProduct_FunctionSpace_1;
 
-class Form_vectorial3D_dotProduct: public dolfin::Form
+class Form_vector3D_dotProduct: public dolfin::Form
 {
 public:
 
   // Constructor
-  Form_vectorial3D_dotProduct(const dolfin::Mesh& mesh):
-    dolfin::Form(0, 2), vectorial3D_f(*this, 0), vectorial3D_g(*this, 1)
+  Form_vector3D_dotProduct(const dolfin::Mesh& mesh):
+    dolfin::Form(0, 2), vector3D_f(*this, 0), vector3D_g(*this, 1)
   {
     _mesh = reference_to_no_delete_pointer(mesh);
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_4());
   }
 
   // Constructor
-  Form_vectorial3D_dotProduct(const dolfin::Mesh& mesh, const dolfin::GenericFunction& vectorial3D_f, const dolfin::GenericFunction& vectorial3D_g):
-    dolfin::Form(0, 2), vectorial3D_f(*this, 0), vectorial3D_g(*this, 1)
+  Form_vector3D_dotProduct(const dolfin::Mesh& mesh, const dolfin::GenericFunction& vector3D_f, const dolfin::GenericFunction& vector3D_g):
+    dolfin::Form(0, 2), vector3D_f(*this, 0), vector3D_g(*this, 1)
   {
     _mesh = reference_to_no_delete_pointer(mesh);
-    this->vectorial3D_f = vectorial3D_f;
-    this->vectorial3D_g = vectorial3D_g;
+    this->vector3D_f = vector3D_f;
+    this->vector3D_g = vector3D_g;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_4());
   }
 
   // Constructor
-  Form_vectorial3D_dotProduct(const dolfin::Mesh& mesh, boost::shared_ptr<const dolfin::GenericFunction> vectorial3D_f, boost::shared_ptr<const dolfin::GenericFunction> vectorial3D_g):
-    dolfin::Form(0, 2), vectorial3D_f(*this, 0), vectorial3D_g(*this, 1)
+  Form_vector3D_dotProduct(const dolfin::Mesh& mesh, boost::shared_ptr<const dolfin::GenericFunction> vector3D_f, boost::shared_ptr<const dolfin::GenericFunction> vector3D_g):
+    dolfin::Form(0, 2), vector3D_f(*this, 0), vector3D_g(*this, 1)
   {
     _mesh = reference_to_no_delete_pointer(mesh);
-    this->vectorial3D_f = *vectorial3D_f;
-    this->vectorial3D_g = *vectorial3D_g;
+    this->vector3D_f = *vector3D_f;
+    this->vector3D_g = *vector3D_g;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_4());
   }
 
   // Constructor
-  Form_vectorial3D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::Form(0, 2), vectorial3D_f(*this, 0), vectorial3D_g(*this, 1)
+  Form_vector3D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::Form(0, 2), vector3D_f(*this, 0), vector3D_g(*this, 1)
   {
     _mesh = mesh;
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_4());
   }
 
   // Constructor
-  Form_vectorial3D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh, const dolfin::GenericFunction& vectorial3D_f, const dolfin::GenericFunction& vectorial3D_g):
-    dolfin::Form(0, 2), vectorial3D_f(*this, 0), vectorial3D_g(*this, 1)
+  Form_vector3D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh, const dolfin::GenericFunction& vector3D_f, const dolfin::GenericFunction& vector3D_g):
+    dolfin::Form(0, 2), vector3D_f(*this, 0), vector3D_g(*this, 1)
   {
     _mesh = mesh;
-    this->vectorial3D_f = vectorial3D_f;
-    this->vectorial3D_g = vectorial3D_g;
+    this->vector3D_f = vector3D_f;
+    this->vector3D_g = vector3D_g;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_4());
   }
 
   // Constructor
-  Form_vectorial3D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::GenericFunction> vectorial3D_f, boost::shared_ptr<const dolfin::GenericFunction> vectorial3D_g):
-    dolfin::Form(0, 2), vectorial3D_f(*this, 0), vectorial3D_g(*this, 1)
+  Form_vector3D_dotProduct(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::GenericFunction> vector3D_f, boost::shared_ptr<const dolfin::GenericFunction> vector3D_g):
+    dolfin::Form(0, 2), vector3D_f(*this, 0), vector3D_g(*this, 1)
   {
     _mesh = mesh;
-    this->vectorial3D_f = *vectorial3D_f;
-    this->vectorial3D_g = *vectorial3D_g;
+    this->vector3D_f = *vector3D_f;
+    this->vector3D_g = *vector3D_g;
 
     _ufc_form = boost::shared_ptr<const ufc::form>(new dotproduct_form_4());
   }
 
   // Destructor
-  ~Form_vectorial3D_dotProduct()
+  ~Form_vector3D_dotProduct()
   {}
 
   /// Return the number of the coefficient with this name
   virtual std::size_t coefficient_number(const std::string& name) const
   {
-    if (name == "vectorial3D_f")
+    if (name == "vector3D_f")
       return 0;
-    else if (name == "vectorial3D_g")
+    else if (name == "vector3D_g")
       return 1;
 
     dolfin::dolfin_error("generated code for class Form",
@@ -10852,9 +10852,9 @@ public:
     switch (i)
     {
     case 0:
-      return "vectorial3D_f";
+      return "vector3D_f";
     case 1:
-      return "vectorial3D_g";
+      return "vector3D_g";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -10864,12 +10864,12 @@ public:
   }
 
   // Typedefs
-  typedef Form_vectorial3D_dotProduct_FunctionSpace_0 CoefficientSpace_vectorial3D_f;
-  typedef Form_vectorial3D_dotProduct_FunctionSpace_1 CoefficientSpace_vectorial3D_g;
+  typedef Form_vector3D_dotProduct_FunctionSpace_0 CoefficientSpace_vector3D_f;
+  typedef Form_vector3D_dotProduct_FunctionSpace_1 CoefficientSpace_vector3D_g;
 
   // Coefficients
-  dolfin::CoefficientAssigner vectorial3D_f;
-  dolfin::CoefficientAssigner vectorial3D_g;
+  dolfin::CoefficientAssigner vector3D_f;
+  dolfin::CoefficientAssigner vector3D_g;
 };
 
 

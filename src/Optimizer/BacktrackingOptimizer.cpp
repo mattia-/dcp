@@ -107,13 +107,16 @@ namespace controlproblem
             // get rank of control function
             int controlVariableRank = controlVariable.value_rank ();
             dolfin::log (dolfin::DBG, "Control function rank is: %d", controlVariableRank);
-
+            
+            // get control variable mesh
+            boost::shared_ptr<const dolfin::Mesh> controlVariableMesh = controlVariable.function_space () -> mesh ();
+ 
             if (meshCellType == "interval")
             {
                 if (controlVariableRank == 0)
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 1D form to compute dot products and norms");
-                    dotProductComputer.reset (new dotproduct::Form_scalar1D_dotProduct (objectiveFunctional.mesh ()));
+                    dotProductComputer.reset (new dotproduct::Form_scalar1D_dotProduct (controlVariableMesh));
                 }
                 else
                 {
@@ -128,12 +131,12 @@ namespace controlproblem
                 if (controlVariableRank == 0)
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 2D form to compute dot products and norms");
-                    dotProductComputer.reset (new dotproduct::Form_scalar2D_dotProduct (objectiveFunctional.mesh ()));
+                    dotProductComputer.reset (new dotproduct::Form_scalar2D_dotProduct (controlVariableMesh));
                 }
-                if (controlVariableRank == 1)
+                else if (controlVariableRank == 1)
                 {
-                    dolfin::log (dolfin::DBG, "Selected vectorial 2D form to compute dot products and norms");
-                    dotProductComputer.reset (new dotproduct::Form_vectorial2D_dotProduct (objectiveFunctional.mesh ()));
+                    dolfin::log (dolfin::DBG, "Selected vector 2D form to compute dot products and norms");
+                    dotProductComputer.reset (new dotproduct::Form_vector2D_dotProduct (controlVariableMesh));
                 }
                 else
                 {
@@ -148,12 +151,12 @@ namespace controlproblem
                 if (controlVariableRank == 0)
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 3D form to compute dot products and norms");
-                    dotProductComputer.reset (new dotproduct::Form_scalar3D_dotProduct (objectiveFunctional.mesh ()));
+                    dotProductComputer.reset (new dotproduct::Form_scalar3D_dotProduct (controlVariableMesh));
                 }
-                if (controlVariableRank == 1)
+                else if (controlVariableRank == 1)
                 {
-                    dolfin::log (dolfin::DBG, "Selected vectorial 3D form to compute dot products and norms");
-                    dotProductComputer.reset (new dotproduct::Form_vectorial3D_dotProduct (objectiveFunctional.mesh ()));
+                    dolfin::log (dolfin::DBG, "Selected vector 3D form to compute dot products and norms");
+                    dotProductComputer.reset (new dotproduct::Form_vector3D_dotProduct (controlVariableMesh));
                 }
                 else
                 {
@@ -165,10 +168,6 @@ namespace controlproblem
         }
         // end of if statement to correctly set dotProductComputer
         // ------------------------------------------------------------------------------------------------------- //
-        
-        
-        // set coefficients for dot product and norm computers
-        
         
 
         // ------------------------------------------------------------------------------------------------------- //
@@ -217,7 +216,7 @@ namespace controlproblem
         // initialize loop variables
         dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
         dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-        gradientNorm = dolfin::assemble (*dotProductComputer);
+        gradientNorm = sqrt (dolfin::assemble (*dotProductComputer));
         
         relativeIncrement = relativeIncrementTolerance + 1; // just an initialization to be sure that the first iteration 
                                                             // of the minimization loop is performed
@@ -344,7 +343,7 @@ namespace controlproblem
                 dolfin::log (dolfin::DBG, "Computing gradient norm...");
                 dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
                 dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-                gradientNorm = dolfin::assemble (*dotProductComputer);
+                gradientNorm = sqrt (dolfin::assemble (*dotProductComputer));
                 dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
             }
             
@@ -355,12 +354,12 @@ namespace controlproblem
                 dolfin::log (dolfin::DBG, "Computing relative increment...");
                 dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (previousControlVariable));
                 dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (previousControlVariable));
-                previousControlVariableNorm = dolfin::assemble (*dotProductComputer);
+                previousControlVariableNorm = sqrt (dolfin::assemble (*dotProductComputer));
 
                 controlVariableIncrement = controlVariable - previousControlVariable;
                 dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
                 dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
-                incrementNorm = dolfin::assemble (*dotProductComputer);
+                incrementNorm = sqrt (dolfin::assemble (*dotProductComputer));
 
                 // compute relative increment. We add DOLFIN_EPS at the denominator in case previousControlVariableNorm 
                 // is zero (like at the first iteration)

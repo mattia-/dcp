@@ -964,7 +964,7 @@ namespace controlproblem
             dolfin::log (dolfin::DBG, "Creating new object of type LinearDifferentialProblem...");
             
             // create new object
-            controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory>* clonedProblem;
+            controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory>* clonedProblem = nullptr;
             if (cloneMethod == "shallow_clone")
             {
                 clonedProblem = 

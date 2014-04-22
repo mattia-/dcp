@@ -838,7 +838,7 @@ namespace controlproblem
             dolfin::log (dolfin::DBG, "Creating new object of type NonlinearDifferentialProblem...");
             
             // create new object
-            controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>* clonedProblem;
+            controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>* clonedProblem = nullptr;
             if (cloneMethod == "shallow_clone")
             {
                 clonedProblem = 

@@ -70,19 +70,19 @@ int main (int argc, char* argv[])
     // ============================================================================ //
     // define problems
     controlproblem::NonlinearDifferentialProblem <primal::ResidualForm, primal::JacobianForm> 
-        primalProblem2 (dolfin::reference_to_no_delete_pointer (mesh), 
+        primalProblem (dolfin::reference_to_no_delete_pointer (mesh), 
                         dolfin::reference_to_no_delete_pointer (V),
                         "trial");
 
     controlproblem::LinearDifferentialProblem <adjoint::BilinearForm, adjoint::LinearForm> 
-        adjointProblem2 (dolfin::reference_to_no_delete_pointer (mesh),
+        adjointProblem (dolfin::reference_to_no_delete_pointer (mesh),
                          dolfin::reference_to_no_delete_pointer (V));
 
     
     // create composite differential problem
     controlproblem::CompositeDifferentialProblem problems;
-    problems.addProblem ("primal", primalProblem2);
-    problems.addProblem ("adjoint", adjointProblem2);
+    problems.addProblem ("primal", primalProblem);
+    problems.addProblem ("adjoint", adjointProblem);
     
     // define constants
     dolfin::Constant nu (1e-5);
@@ -153,10 +153,9 @@ int main (int argc, char* argv[])
     dolfin::IntervalMesh controlMesh (25, 0, 2.5);
     // function space:
     control_variable_function_space::FunctionSpace controlFunctionSpace (controlMesh);
-    // control variable itself
+    // control variable itself:
     dolfin::Function g (controlFunctionSpace);
-//    g = dolfin::Constant (1.0);
-    
+
     // define subdomains for objective functional
     objective_functional::ControlDomain objective_functional_controlDomain;
     objective_functional_controlDomain.mark (meshFacets, 2); 
@@ -190,13 +189,15 @@ int main (int argc, char* argv[])
     // ============================================================================== //
     // =============================== OPTIMIZATION  ================================ //
     // ============================================================================== //
+    ControlDirichletBC controlDirichletBC (g);
+    problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[0], controlDirichletBC, primal_inflowBoundary), "x_inflow_BC");
+    
     // define optimizer
     controlproblem::BacktrackingOptimizer backtrackingOptimizer;
+    backtrackingOptimizer.parameters ["relative_increment_tolerance"] = 1e-3;
     
-    backtrackingOptimizer.parameters ["relative_increment_tolerance"] = 1e-2;
-        
     // define control value updater
-    controlproblem::DirichletControlValueUpdater updater ("primal", "x_inflow_BC", primal_inflowBoundary, (*V[0])[0]);
+    ValueUpdater updater;
 
     backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater);
     
@@ -205,6 +206,8 @@ int main (int argc, char* argv[])
     problems.solve ();
     
     dolfin::plot (problems.solution ("primal")[0], "solution of the problem with computed control. Velocity");
+    dolfin::plot (problems.solution ("primal")[0][0], "solution of the problem with computed control. x velocity");
+    dolfin::plot (problems.solution ("primal")[0][1], "solution of the problem with computed control. y velocity");
     dolfin::plot (problems.solution ("primal")[1], "solution of the problem with computed control. Pressure");
     dolfin::plot (g, "Control");
     
@@ -220,6 +223,7 @@ int main (int argc, char* argv[])
     dolfin::plot (meshCells, "Control region");
     dolfin::plot (differenceU, "Difference between target and controlled velocity");
     dolfin::plot (differenceP, "Difference between target and controlled pressure");
+    
     dolfin::interactive ();
     
     return 0;

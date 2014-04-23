@@ -1,6 +1,35 @@
 // ============================================================================= //
 // ========================= SETTINGS FILE FOR main.cpp ======================== //
 // ============================================================================= //
+// 
+class ControlDirichletBC : public dolfin::Expression
+{
+    public:
+        ControlDirichletBC (const dolfin::Function& g) : 
+            g_ (g)
+        {  }
+        
+        void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+        {
+            dolfin::Array <double> x_ (1);
+            x_ [0] = x[1];
+            g_.eval (values, x_);
+        }
+        
+    private:
+        const dolfin::Function& g_;
+};
+
+class ValueUpdater
+{
+    public:
+        void operator() (controlproblem::CompositeDifferentialProblem& compositeProblem, 
+                         const dolfin::GenericFunction& dirichletBCValue) const
+        {
+
+        }
+};
+
 
 // ---------------------------------------------------------------------------- //
 namespace primal
@@ -101,7 +130,7 @@ namespace adjoint
 // ---------------------------------------------------------------------------- //
 namespace objective_functional
 {
-    double sigma_1 = 0.01;
+    double sigma_1 = 1;
     double sigma_2 = 1.0;
     
     class ControlDomain : public dolfin::SubDomain
@@ -124,8 +153,6 @@ namespace objective_functional
 
             values[0] = sigma_1 * g[0] - theta[0];
         }
-        
-        objective_functional::ControlDomain controlDomain;
     };
 }
 

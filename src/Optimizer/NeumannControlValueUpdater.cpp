@@ -17,7 +17,7 @@ namespace controlproblem
     /************************* OPERATORS ********************/
     void NeumannControlValueUpdater::operator() (controlproblem::CompositeDifferentialProblem& compositeProblem, 
                                                  const boost::shared_ptr <const dolfin::GenericFunction> coefficientValue) const
-{
+    {
         controlproblem::AbstractDifferentialProblem& problem = compositeProblem [problemName_];
 
         problem.setCoefficient (coefficientType_, coefficientValue, coefficientName_);

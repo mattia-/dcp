@@ -150,7 +150,7 @@ int main (int argc, char* argv[])
     
     // define control variable
     // mesh:
-    dolfin::IntervalMesh controlMesh (25, 0, 2.5);
+    dolfin::IntervalMesh controlMesh (50, 0, 2.5);
     // function space:
     control_variable_function_space::FunctionSpace controlFunctionSpace (controlMesh);
     // control variable itself:

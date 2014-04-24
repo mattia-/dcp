@@ -4,7 +4,7 @@
 cell = interval
 
 # define function spaces
-V = FiniteElement ("Lagrange", cell, 1)
+V = FiniteElement ("Lagrange", cell, 2)
 
 # define test and trial functions
 trial = TrialFunction (V)

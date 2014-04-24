@@ -861,6 +861,10 @@ namespace controlproblem
             {
                 dolfin::warning ("Dirichlet boundary condition \"%s\" not found in map", bcName.c_str ());
             }
+            else
+            {
+                parameters ["system_is_assembled"] = false;
+            }
 
             return nErasedElements == 1? true : false;
         }

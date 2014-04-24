@@ -25,8 +25,8 @@
 //   restrict_keyword:               ''
 //   split:                          False
 
-#ifndef __CONTROL_VARIABLE_FUNCTION_SPACE_H
-#define __CONTROL_VARIABLE_FUNCTION_SPACE_H
+#ifndef __FUNCTION_DERIVATIVE_H
+#define __FUNCTION_DERIVATIVE_H
 
 #include <cmath>
 #include <stdexcept>
@@ -35,18 +35,18 @@
 
 /// This class defines the interface for a finite element.
 
-class control_variable_function_space_finite_element_0: public ufc::finite_element
+class function_derivative_finite_element_0: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  control_variable_function_space_finite_element_0() : ufc::finite_element()
+  function_derivative_finite_element_0() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~control_variable_function_space_finite_element_0()
+  virtual ~function_derivative_finite_element_0()
   {
     // Do nothing
   }
@@ -819,7 +819,7 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new control_variable_function_space_finite_element_0();
+    return new function_derivative_finite_element_0();
   }
 
 };
@@ -827,18 +827,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class control_variable_function_space_dofmap_0: public ufc::dofmap
+class function_derivative_dofmap_0: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  control_variable_function_space_dofmap_0() : ufc::dofmap()
+  function_derivative_dofmap_0() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~control_variable_function_space_dofmap_0()
+  virtual ~function_derivative_dofmap_0()
   {
     // Do nothing
   }
@@ -1025,7 +1025,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new control_variable_function_space_dofmap_0();
+    return new function_derivative_dofmap_0();
   }
 
 };
@@ -1034,18 +1034,18 @@ public:
 /// tensor corresponding to the local contribution to a form from
 /// the integral over a cell.
 
-class control_variable_function_space_cell_integral_0_otherwise: public ufc::cell_integral
+class function_derivative_cell_integral_0_otherwise: public ufc::cell_integral
 {
 public:
 
   /// Constructor
-  control_variable_function_space_cell_integral_0_otherwise() : ufc::cell_integral()
+  function_derivative_cell_integral_0_otherwise() : ufc::cell_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~control_variable_function_space_cell_integral_0_otherwise()
+  virtual ~function_derivative_cell_integral_0_otherwise()
   {
     // Do nothing
   }
@@ -1090,6 +1090,62 @@ public:
 
 };
 
+/// This class defines the interface for the tabulation of the cell
+/// tensor corresponding to the local contribution to a form from
+/// the integral over a cell.
+
+class function_derivative_cell_integral_1_otherwise: public ufc::cell_integral
+{
+public:
+
+  /// Constructor
+  function_derivative_cell_integral_1_otherwise() : ufc::cell_integral()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~function_derivative_cell_integral_1_otherwise()
+  {
+    // Do nothing
+  }
+
+  /// Tabulate the tensor for the contribution from a local cell
+  virtual void tabulate_tensor(double*  A,
+                               const double * const *  w,
+                               const double*  vertex_coordinates,
+                               int cell_orientation) const
+  {
+    // Number of operations (multiply-add pairs) for Jacobian data:      3
+    // Number of operations (multiply-add pairs) for geometry tensor:    4
+    // Number of operations (multiply-add pairs) for tensor contraction: 6
+    // Total number of operations (multiply-add pairs):                  13
+    
+    // Compute Jacobian
+    double J[1];
+    compute_jacobian_interval_1d(J, vertex_coordinates);
+    
+    // Compute Jacobian inverse and determinant
+    double K[1];
+    double detJ;
+    compute_jacobian_inverse_interval_1d(K, detJ, J);
+    
+    // Set scale factor
+    const double det = std::abs(detJ);
+    
+    // Compute geometry tensor
+    const double G0_0_0 = det*w[0][0]*K[0]*(1.0);
+    const double G0_1_0 = det*w[0][1]*K[0]*(1.0);
+    const double G0_2_0 = det*w[0][2]*K[0]*(1.0);
+    
+    // Compute element tensor
+    A[2] = -0.666666666666666*G0_0_0 + 0.666666666666666*G0_1_0;
+    A[0] = -0.5*G0_0_0 - 0.166666666666667*G0_1_0 + 0.666666666666666*G0_2_0;
+    A[1] = -A[0] - 0.333333333333333*G0_0_0 + 0.333333333333333*G0_1_0;
+  }
+
+};
+
 /// This class defines the interface for the assembly of the global
 /// tensor corresponding to a form with r + n arguments, that is, a
 /// mapping
@@ -1105,18 +1161,18 @@ public:
 /// sequence of basis functions of Vj and w1, w2, ..., wn are given
 /// fixed functions (coefficients).
 
-class control_variable_function_space_form_0: public ufc::form
+class function_derivative_form_0: public ufc::form
 {
 public:
 
   /// Constructor
-  control_variable_function_space_form_0() : ufc::form()
+  function_derivative_form_0() : ufc::form()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~control_variable_function_space_form_0()
+  virtual ~function_derivative_form_0()
   {
     // Do nothing
   }
@@ -1194,12 +1250,12 @@ public:
     {
     case 0:
       {
-        return new control_variable_function_space_finite_element_0();
+        return new function_derivative_finite_element_0();
         break;
       }
     case 1:
       {
-        return new control_variable_function_space_finite_element_0();
+        return new function_derivative_finite_element_0();
         break;
       }
     }
@@ -1214,12 +1270,12 @@ public:
     {
     case 0:
       {
-        return new control_variable_function_space_dofmap_0();
+        return new function_derivative_dofmap_0();
         break;
       }
     case 1:
       {
-        return new control_variable_function_space_dofmap_0();
+        return new function_derivative_dofmap_0();
         break;
       }
     }
@@ -1254,7 +1310,194 @@ public:
   /// Create a new cell integral on everywhere else
   virtual ufc::cell_integral* create_default_cell_integral() const
   {
-    return new control_variable_function_space_cell_integral_0_otherwise();
+    return new function_derivative_cell_integral_0_otherwise();
+  }
+
+  /// Create a new exterior facet integral on everywhere else
+  virtual ufc::exterior_facet_integral* create_default_exterior_facet_integral() const
+  {
+    return 0;
+  }
+
+  /// Create a new interior facet integral on everywhere else
+  virtual ufc::interior_facet_integral* create_default_interior_facet_integral() const
+  {
+    return 0;
+  }
+
+  /// Create a new point integral on everywhere else
+  virtual ufc::point_integral* create_default_point_integral() const
+  {
+    return 0;
+  }
+
+};
+
+/// This class defines the interface for the assembly of the global
+/// tensor corresponding to a form with r + n arguments, that is, a
+/// mapping
+///
+///     a : V1 x V2 x ... Vr x W1 x W2 x ... x Wn -> R
+///
+/// with arguments v1, v2, ..., vr, w1, w2, ..., wn. The rank r
+/// global tensor A is defined by
+///
+///     A = a(V1, V2, ..., Vr, w1, w2, ..., wn),
+///
+/// where each argument Vj represents the application to the
+/// sequence of basis functions of Vj and w1, w2, ..., wn are given
+/// fixed functions (coefficients).
+
+class function_derivative_form_1: public ufc::form
+{
+public:
+
+  /// Constructor
+  function_derivative_form_1() : ufc::form()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~function_derivative_form_1()
+  {
+    // Do nothing
+  }
+
+  /// Return a string identifying the form
+  virtual const char* signature() const
+  {
+    return "95750fd879e44753df6d643ffe30ff85a050e2c0ee26b128abda3b3857ac6a581de731a28fc1e6679376bb83a28dcf60ac1f35f104da35f978cb7fb3f80474fb";
+  }
+
+  /// Return the rank of the global tensor (r)
+  virtual std::size_t rank() const
+  {
+    return 1;
+  }
+
+  /// Return the number of coefficients (n)
+  virtual std::size_t num_coefficients() const
+  {
+    return 1;
+  }
+
+  /// Return the number of cell domains
+  virtual std::size_t num_cell_domains() const
+  {
+    return 0;
+  }
+
+  /// Return the number of exterior facet domains
+  virtual std::size_t num_exterior_facet_domains() const
+  {
+    return 0;
+  }
+
+  /// Return the number of interior facet domains
+  virtual std::size_t num_interior_facet_domains() const
+  {
+    return 0;
+  }
+
+  /// Return the number of point domains
+  virtual std::size_t num_point_domains() const
+  {
+    return 0;
+  }
+
+  /// Return whether the form has any cell integrals
+  virtual bool has_cell_integrals() const
+  {
+    return true;
+  }
+
+  /// Return whether the form has any exterior facet integrals
+  virtual bool has_exterior_facet_integrals() const
+  {
+    return false;
+  }
+
+  /// Return whether the form has any interior facet integrals
+  virtual bool has_interior_facet_integrals() const
+  {
+    return false;
+  }
+
+  /// Return whether the form has any point integrals
+  virtual bool has_point_integrals() const
+  {
+    return false;
+  }
+
+  /// Create a new finite element for argument function i
+  virtual ufc::finite_element* create_finite_element(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      {
+        return new function_derivative_finite_element_0();
+        break;
+      }
+    case 1:
+      {
+        return new function_derivative_finite_element_0();
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Create a new dofmap for argument function i
+  virtual ufc::dofmap* create_dofmap(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      {
+        return new function_derivative_dofmap_0();
+        break;
+      }
+    case 1:
+      {
+        return new function_derivative_dofmap_0();
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Create a new cell integral on sub domain i
+  virtual ufc::cell_integral* create_cell_integral(std::size_t i) const
+  {
+    return 0;
+  }
+
+  /// Create a new exterior facet integral on sub domain i
+  virtual ufc::exterior_facet_integral* create_exterior_facet_integral(std::size_t i) const
+  {
+    return 0;
+  }
+
+  /// Create a new interior facet integral on sub domain i
+  virtual ufc::interior_facet_integral* create_interior_facet_integral(std::size_t i) const
+  {
+    return 0;
+  }
+
+  /// Create a new point integral on sub domain i
+  virtual ufc::point_integral* create_point_integral(std::size_t i) const
+  {
+    return 0;
+  }
+
+  /// Create a new cell integral on everywhere else
+  virtual ufc::cell_integral* create_default_cell_integral() const
+  {
+    return new function_derivative_cell_integral_1_otherwise();
   }
 
   /// Create a new exterior facet integral on everywhere else
@@ -1294,8 +1537,82 @@ public:
 #include <dolfin/adaptivity/ErrorControl.h>
 #include <dolfin/adaptivity/GoalFunctional.h>
 
-namespace control_variable_function_space
+namespace function_derivative
 {
+
+class CoefficientSpace_f: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_f(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_f(boost::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_f(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_f(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for restricted function space, 2 different versions ---
+
+  // Create restricted function space (reference version)
+  CoefficientSpace_f(const dolfin::Restriction& restriction):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()),
+                                                                                     reference_to_no_delete_pointer(restriction))))
+  {
+    // Do nothing
+  }
+
+  // Create restricted function space (shared pointer version)
+  CoefficientSpace_f(boost::shared_ptr<const dolfin::Restriction> restriction):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()),
+                                                                                     restriction)))
+  {
+    // Do nothing
+  }
+
+  // Copy constructor
+  ~CoefficientSpace_f()
+  {
+  }
+
+};
 
 class Form_a_FunctionSpace_0: public dolfin::FunctionSpace
 {
@@ -1306,8 +1623,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_0(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()), mesh)))
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), mesh)))
   {
     // Do nothing
   }
@@ -1315,8 +1632,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_0(boost::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()), *mesh)))
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), *mesh)))
   {
     // Do nothing
   }
@@ -1326,8 +1643,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()), mesh,
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -1336,8 +1653,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_0(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()), *mesh, constrained_domain)))
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -1347,8 +1664,8 @@ public:
   // Create restricted function space (reference version)
   Form_a_FunctionSpace_0(const dolfin::Restriction& restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()),
                                                                                      reference_to_no_delete_pointer(restriction))))
   {
     // Do nothing
@@ -1357,8 +1674,8 @@ public:
   // Create restricted function space (shared pointer version)
   Form_a_FunctionSpace_0(boost::shared_ptr<const dolfin::Restriction> restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()),
                                                                                      restriction)))
   {
     // Do nothing
@@ -1380,8 +1697,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_1(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()), mesh)))
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), mesh)))
   {
     // Do nothing
   }
@@ -1389,8 +1706,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_1(boost::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()), *mesh)))
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), *mesh)))
   {
     // Do nothing
   }
@@ -1400,8 +1717,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_1(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()), mesh,
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -1410,8 +1727,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_1(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()), *mesh, constrained_domain)))
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -1421,8 +1738,8 @@ public:
   // Create restricted function space (reference version)
   Form_a_FunctionSpace_1(const dolfin::Restriction& restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()),
                                                                                      reference_to_no_delete_pointer(restriction))))
   {
     // Do nothing
@@ -1431,8 +1748,8 @@ public:
   // Create restricted function space (shared pointer version)
   Form_a_FunctionSpace_1(boost::shared_ptr<const dolfin::Restriction> restriction):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
-                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new control_variable_function_space_finite_element_0()))),
-                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new control_variable_function_space_dofmap_0()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()),
                                                                                      restriction)))
   {
     // Do nothing
@@ -1456,7 +1773,7 @@ public:
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
     _function_spaces[1] = reference_to_no_delete_pointer(V1);
 
-    _ufc_form = boost::shared_ptr<const ufc::form>(new control_variable_function_space_form_0());
+    _ufc_form = boost::shared_ptr<const ufc::form>(new function_derivative_form_0());
   }
 
   // Constructor
@@ -1466,7 +1783,7 @@ public:
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
 
-    _ufc_form = boost::shared_ptr<const ufc::form>(new control_variable_function_space_form_0());
+    _ufc_form = boost::shared_ptr<const ufc::form>(new function_derivative_form_0());
   }
 
   // Destructor
@@ -1500,9 +1817,192 @@ public:
   // Coefficients
 };
 
+class Form_L_FunctionSpace_0: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  Form_L_FunctionSpace_0(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  Form_L_FunctionSpace_0(boost::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  Form_L_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  Form_L_FunctionSpace_0(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for restricted function space, 2 different versions ---
+
+  // Create restricted function space (reference version)
+  Form_L_FunctionSpace_0(const dolfin::Restriction& restriction):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()),
+                                                                                     reference_to_no_delete_pointer(restriction))))
+  {
+    // Do nothing
+  }
+
+  // Create restricted function space (shared pointer version)
+  Form_L_FunctionSpace_0(boost::shared_ptr<const dolfin::Restriction> restriction):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new function_derivative_finite_element_0()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new function_derivative_dofmap_0()),
+                                                                                     restriction)))
+  {
+    // Do nothing
+  }
+
+  // Copy constructor
+  ~Form_L_FunctionSpace_0()
+  {
+  }
+
+};
+
+typedef CoefficientSpace_f Form_L_FunctionSpace_1;
+
+class Form_L: public dolfin::Form
+{
+public:
+
+  // Constructor
+  Form_L(const dolfin::FunctionSpace& V0):
+    dolfin::Form(1, 1), f(*this, 0)
+  {
+    _function_spaces[0] = reference_to_no_delete_pointer(V0);
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new function_derivative_form_1());
+  }
+
+  // Constructor
+  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& f):
+    dolfin::Form(1, 1), f(*this, 0)
+  {
+    _function_spaces[0] = reference_to_no_delete_pointer(V0);
+
+    this->f = f;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new function_derivative_form_1());
+  }
+
+  // Constructor
+  Form_L(const dolfin::FunctionSpace& V0, boost::shared_ptr<const dolfin::GenericFunction> f):
+    dolfin::Form(1, 1), f(*this, 0)
+  {
+    _function_spaces[0] = reference_to_no_delete_pointer(V0);
+
+    this->f = *f;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new function_derivative_form_1());
+  }
+
+  // Constructor
+  Form_L(boost::shared_ptr<const dolfin::FunctionSpace> V0):
+    dolfin::Form(1, 1), f(*this, 0)
+  {
+    _function_spaces[0] = V0;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new function_derivative_form_1());
+  }
+
+  // Constructor
+  Form_L(boost::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& f):
+    dolfin::Form(1, 1), f(*this, 0)
+  {
+    _function_spaces[0] = V0;
+
+    this->f = f;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new function_derivative_form_1());
+  }
+
+  // Constructor
+  Form_L(boost::shared_ptr<const dolfin::FunctionSpace> V0, boost::shared_ptr<const dolfin::GenericFunction> f):
+    dolfin::Form(1, 1), f(*this, 0)
+  {
+    _function_spaces[0] = V0;
+
+    this->f = *f;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new function_derivative_form_1());
+  }
+
+  // Destructor
+  ~Form_L()
+  {}
+
+  /// Return the number of the coefficient with this name
+  virtual std::size_t coefficient_number(const std::string& name) const
+  {
+    if (name == "f")
+      return 0;
+
+    dolfin::dolfin_error("generated code for class Form",
+                         "access coefficient data",
+                         "Invalid coefficient");
+    return 0;
+  }
+
+  /// Return the name of the coefficient with this number
+  virtual std::string coefficient_name(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      return "f";
+    }
+
+    dolfin::dolfin_error("generated code for class Form",
+                         "access coefficient data",
+                         "Invalid coefficient");
+    return "unnamed";
+  }
+
+  // Typedefs
+  typedef Form_L_FunctionSpace_0 TestSpace;
+  typedef Form_L_FunctionSpace_1 CoefficientSpace_f;
+
+  // Coefficients
+  dolfin::CoefficientAssigner f;
+};
+
 // Class typedefs
 typedef Form_a BilinearForm;
 typedef Form_a JacobianForm;
+typedef Form_L LinearForm;
+typedef Form_L ResidualForm;
 typedef Form_a::TestSpace FunctionSpace;
 
 }

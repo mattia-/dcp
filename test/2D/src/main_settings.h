@@ -2,6 +2,9 @@
 // ========================= SETTINGS FILE FOR main.cpp ======================== //
 // ============================================================================= //
 // 
+#include "function_derivative.h"
+#include "diffusion_reaction.h"
+
 class ControlDirichletBC : public dolfin::Expression
 {
     public:
@@ -131,7 +134,7 @@ namespace adjoint
 namespace objective_functional
 {
     double sigma_1 = 1;
-    double sigma_2 = 1.0;
+    double sigma_2 = 1;
     
     class ControlDomain : public dolfin::SubDomain
     {
@@ -145,14 +148,63 @@ namespace objective_functional
     {
         void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
         {
-            dolfin::Array<double> theta (1);
-            evaluateVariable ("theta", theta, x);
+            dolfin::Array<double> thetaValues (1);
+            evaluateVariable ("theta", thetaValues, x);
 
-            dolfin::Array<double> g (1);
-            evaluateVariable ("g", g, x);
+            dolfin::Array<double> gValues (1);
+            evaluateVariable ("g", gValues, x);
 
-            values[0] = sigma_1 * g[0] - theta[0];
+            // compute laplacian of the control g
+            dolfin::IntervalMesh mesh (50, 0, 2.5);
+            function_derivative::FunctionSpace V (mesh);
+            boost::shared_ptr <dolfin::GenericFunction> g = boost::const_pointer_cast <dolfin::GenericFunction> (variables_.find ("g") -> second);
+            function_derivative::BilinearForm a (V, V);
+            function_derivative::LinearForm L (V);
+            dolfin::Function gradient (V);
+            dolfin::Function laplacian (V);
+
+            int logLevelBackup = dolfin::get_log_level ();
+            dolfin::set_log_level (dolfin::WARNING);
+            L.set_coefficient ("f", g);
+
+            dolfin::solve (a == L, gradient);
+
+            L.set_coefficient ("f", dolfin::reference_to_no_delete_pointer (gradient));
+
+            dolfin::solve (a == L, laplacian);
+            dolfin::set_log_level (logLevelBackup);
+
+            dolfin::Array<double> laplacianValues (1);
+            laplacian.eval (laplacianValues, x);
+
+            values[0] = sigma_1 * gValues [0] - sigma_2 * laplacianValues [0] - thetaValues [0];
         }
+    };
+    
+    class SearchDirectionComputer
+    {
+        public:
+            SearchDirectionComputer (const dolfin::Mesh& mesh) :
+                mesh_ (mesh),
+                functionSpace_ (mesh_),
+                a_ (functionSpace_, functionSpace_),
+                L_ (functionSpace_)
+            { }
+            
+            void operator() (dolfin::Function& searchDirection, const dolfin::Function& gradient)
+            {
+                dolfin::Function solution (functionSpace_);
+                dolfin::log (dolfin::DBG, "Computing search direction via diffusion reaction problem...");
+                L_.set_coefficient ("f", dolfin::reference_to_no_delete_pointer (gradient));
+                dolfin::solve (a_ == L_, solution);
+                searchDirection.interpolate (solution);
+            }
+            
+        private:
+            const dolfin::Mesh& mesh_;
+            diffusion_reaction::FunctionSpace functionSpace_;
+            diffusion_reaction::BilinearForm a_;
+            diffusion_reaction::LinearForm L_;
     };
 }
 

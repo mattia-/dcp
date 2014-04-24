@@ -6528,234 +6528,234 @@ public:
     const double det = std::abs(detJ);
     
     // Compute geometry tensor
-    const double G0_0_0 = det*w[1][0]*w[1][0]*(1.0);
-    const double G0_0_1 = det*w[1][0]*w[1][1]*(1.0);
-    const double G0_0_2 = det*w[1][0]*w[1][2]*(1.0);
-    const double G0_0_3 = det*w[1][0]*w[1][3]*(1.0);
-    const double G0_1_0 = det*w[1][1]*w[1][0]*(1.0);
-    const double G0_1_1 = det*w[1][1]*w[1][1]*(1.0);
-    const double G0_1_2 = det*w[1][1]*w[1][2]*(1.0);
-    const double G0_1_4 = det*w[1][1]*w[1][4]*(1.0);
-    const double G0_2_0 = det*w[1][2]*w[1][0]*(1.0);
-    const double G0_2_1 = det*w[1][2]*w[1][1]*(1.0);
-    const double G0_2_2 = det*w[1][2]*w[1][2]*(1.0);
-    const double G0_2_5 = det*w[1][2]*w[1][5]*(1.0);
-    const double G0_3_0 = det*w[1][3]*w[1][0]*(1.0);
-    const double G0_3_3 = det*w[1][3]*w[1][3]*(1.0);
-    const double G0_3_4 = det*w[1][3]*w[1][4]*(1.0);
-    const double G0_3_5 = det*w[1][3]*w[1][5]*(1.0);
-    const double G0_4_1 = det*w[1][4]*w[1][1]*(1.0);
-    const double G0_4_3 = det*w[1][4]*w[1][3]*(1.0);
-    const double G0_4_4 = det*w[1][4]*w[1][4]*(1.0);
-    const double G0_4_5 = det*w[1][4]*w[1][5]*(1.0);
-    const double G0_5_2 = det*w[1][5]*w[1][2]*(1.0);
-    const double G0_5_3 = det*w[1][5]*w[1][3]*(1.0);
-    const double G0_5_4 = det*w[1][5]*w[1][4]*(1.0);
-    const double G0_5_5 = det*w[1][5]*w[1][5]*(1.0);
-    const double G0_6_6 = det*w[1][6]*w[1][6]*(1.0);
-    const double G0_6_7 = det*w[1][6]*w[1][7]*(1.0);
-    const double G0_6_8 = det*w[1][6]*w[1][8]*(1.0);
-    const double G0_6_9 = det*w[1][6]*w[1][9]*(1.0);
-    const double G0_7_6 = det*w[1][7]*w[1][6]*(1.0);
-    const double G0_7_7 = det*w[1][7]*w[1][7]*(1.0);
-    const double G0_7_8 = det*w[1][7]*w[1][8]*(1.0);
-    const double G0_7_10 = det*w[1][7]*w[1][10]*(1.0);
-    const double G0_8_6 = det*w[1][8]*w[1][6]*(1.0);
-    const double G0_8_7 = det*w[1][8]*w[1][7]*(1.0);
-    const double G0_8_8 = det*w[1][8]*w[1][8]*(1.0);
-    const double G0_8_11 = det*w[1][8]*w[1][11]*(1.0);
-    const double G0_9_6 = det*w[1][9]*w[1][6]*(1.0);
-    const double G0_9_9 = det*w[1][9]*w[1][9]*(1.0);
-    const double G0_9_10 = det*w[1][9]*w[1][10]*(1.0);
-    const double G0_9_11 = det*w[1][9]*w[1][11]*(1.0);
-    const double G0_10_7 = det*w[1][10]*w[1][7]*(1.0);
-    const double G0_10_9 = det*w[1][10]*w[1][9]*(1.0);
-    const double G0_10_10 = det*w[1][10]*w[1][10]*(1.0);
-    const double G0_10_11 = det*w[1][10]*w[1][11]*(1.0);
-    const double G0_11_8 = det*w[1][11]*w[1][8]*(1.0);
-    const double G0_11_9 = det*w[1][11]*w[1][9]*(1.0);
-    const double G0_11_10 = det*w[1][11]*w[1][10]*(1.0);
-    const double G0_11_11 = det*w[1][11]*w[1][11]*(1.0);
-    const double G1_0_0 = det*w[1][0]*w[2][0]*(1.0);
-    const double G1_0_1 = det*w[1][0]*w[2][1]*(1.0);
-    const double G1_0_2 = det*w[1][0]*w[2][2]*(1.0);
-    const double G1_0_3 = det*w[1][0]*w[2][3]*(1.0);
-    const double G1_1_0 = det*w[1][1]*w[2][0]*(1.0);
-    const double G1_1_1 = det*w[1][1]*w[2][1]*(1.0);
-    const double G1_1_2 = det*w[1][1]*w[2][2]*(1.0);
-    const double G1_1_4 = det*w[1][1]*w[2][4]*(1.0);
-    const double G1_2_0 = det*w[1][2]*w[2][0]*(1.0);
-    const double G1_2_1 = det*w[1][2]*w[2][1]*(1.0);
-    const double G1_2_2 = det*w[1][2]*w[2][2]*(1.0);
-    const double G1_2_5 = det*w[1][2]*w[2][5]*(1.0);
-    const double G1_3_0 = det*w[1][3]*w[2][0]*(1.0);
-    const double G1_3_3 = det*w[1][3]*w[2][3]*(1.0);
-    const double G1_3_4 = det*w[1][3]*w[2][4]*(1.0);
-    const double G1_3_5 = det*w[1][3]*w[2][5]*(1.0);
-    const double G1_4_1 = det*w[1][4]*w[2][1]*(1.0);
-    const double G1_4_3 = det*w[1][4]*w[2][3]*(1.0);
-    const double G1_4_4 = det*w[1][4]*w[2][4]*(1.0);
-    const double G1_4_5 = det*w[1][4]*w[2][5]*(1.0);
-    const double G1_5_2 = det*w[1][5]*w[2][2]*(1.0);
-    const double G1_5_3 = det*w[1][5]*w[2][3]*(1.0);
-    const double G1_5_4 = det*w[1][5]*w[2][4]*(1.0);
-    const double G1_5_5 = det*w[1][5]*w[2][5]*(1.0);
-    const double G1_6_6 = det*w[1][6]*w[2][6]*(1.0);
-    const double G1_6_7 = det*w[1][6]*w[2][7]*(1.0);
-    const double G1_6_8 = det*w[1][6]*w[2][8]*(1.0);
-    const double G1_6_9 = det*w[1][6]*w[2][9]*(1.0);
-    const double G1_7_6 = det*w[1][7]*w[2][6]*(1.0);
-    const double G1_7_7 = det*w[1][7]*w[2][7]*(1.0);
-    const double G1_7_8 = det*w[1][7]*w[2][8]*(1.0);
-    const double G1_7_10 = det*w[1][7]*w[2][10]*(1.0);
-    const double G1_8_6 = det*w[1][8]*w[2][6]*(1.0);
-    const double G1_8_7 = det*w[1][8]*w[2][7]*(1.0);
-    const double G1_8_8 = det*w[1][8]*w[2][8]*(1.0);
-    const double G1_8_11 = det*w[1][8]*w[2][11]*(1.0);
-    const double G1_9_6 = det*w[1][9]*w[2][6]*(1.0);
-    const double G1_9_9 = det*w[1][9]*w[2][9]*(1.0);
-    const double G1_9_10 = det*w[1][9]*w[2][10]*(1.0);
-    const double G1_9_11 = det*w[1][9]*w[2][11]*(1.0);
-    const double G1_10_7 = det*w[1][10]*w[2][7]*(1.0);
-    const double G1_10_9 = det*w[1][10]*w[2][9]*(1.0);
-    const double G1_10_10 = det*w[1][10]*w[2][10]*(1.0);
-    const double G1_10_11 = det*w[1][10]*w[2][11]*(1.0);
-    const double G1_11_8 = det*w[1][11]*w[2][8]*(1.0);
-    const double G1_11_9 = det*w[1][11]*w[2][9]*(1.0);
-    const double G1_11_10 = det*w[1][11]*w[2][10]*(1.0);
-    const double G1_11_11 = det*w[1][11]*w[2][11]*(1.0);
-    const double G2_0_0 = det*w[2][0]*w[1][0]*(1.0);
-    const double G2_0_1 = det*w[2][0]*w[1][1]*(1.0);
-    const double G2_0_2 = det*w[2][0]*w[1][2]*(1.0);
-    const double G2_0_3 = det*w[2][0]*w[1][3]*(1.0);
-    const double G2_1_0 = det*w[2][1]*w[1][0]*(1.0);
-    const double G2_1_1 = det*w[2][1]*w[1][1]*(1.0);
-    const double G2_1_2 = det*w[2][1]*w[1][2]*(1.0);
-    const double G2_1_4 = det*w[2][1]*w[1][4]*(1.0);
-    const double G2_2_0 = det*w[2][2]*w[1][0]*(1.0);
-    const double G2_2_1 = det*w[2][2]*w[1][1]*(1.0);
-    const double G2_2_2 = det*w[2][2]*w[1][2]*(1.0);
-    const double G2_2_5 = det*w[2][2]*w[1][5]*(1.0);
-    const double G2_3_0 = det*w[2][3]*w[1][0]*(1.0);
-    const double G2_3_3 = det*w[2][3]*w[1][3]*(1.0);
-    const double G2_3_4 = det*w[2][3]*w[1][4]*(1.0);
-    const double G2_3_5 = det*w[2][3]*w[1][5]*(1.0);
-    const double G2_4_1 = det*w[2][4]*w[1][1]*(1.0);
-    const double G2_4_3 = det*w[2][4]*w[1][3]*(1.0);
-    const double G2_4_4 = det*w[2][4]*w[1][4]*(1.0);
-    const double G2_4_5 = det*w[2][4]*w[1][5]*(1.0);
-    const double G2_5_2 = det*w[2][5]*w[1][2]*(1.0);
-    const double G2_5_3 = det*w[2][5]*w[1][3]*(1.0);
-    const double G2_5_4 = det*w[2][5]*w[1][4]*(1.0);
-    const double G2_5_5 = det*w[2][5]*w[1][5]*(1.0);
-    const double G2_6_6 = det*w[2][6]*w[1][6]*(1.0);
-    const double G2_6_7 = det*w[2][6]*w[1][7]*(1.0);
-    const double G2_6_8 = det*w[2][6]*w[1][8]*(1.0);
-    const double G2_6_9 = det*w[2][6]*w[1][9]*(1.0);
-    const double G2_7_6 = det*w[2][7]*w[1][6]*(1.0);
-    const double G2_7_7 = det*w[2][7]*w[1][7]*(1.0);
-    const double G2_7_8 = det*w[2][7]*w[1][8]*(1.0);
-    const double G2_7_10 = det*w[2][7]*w[1][10]*(1.0);
-    const double G2_8_6 = det*w[2][8]*w[1][6]*(1.0);
-    const double G2_8_7 = det*w[2][8]*w[1][7]*(1.0);
-    const double G2_8_8 = det*w[2][8]*w[1][8]*(1.0);
-    const double G2_8_11 = det*w[2][8]*w[1][11]*(1.0);
-    const double G2_9_6 = det*w[2][9]*w[1][6]*(1.0);
-    const double G2_9_9 = det*w[2][9]*w[1][9]*(1.0);
-    const double G2_9_10 = det*w[2][9]*w[1][10]*(1.0);
-    const double G2_9_11 = det*w[2][9]*w[1][11]*(1.0);
-    const double G2_10_7 = det*w[2][10]*w[1][7]*(1.0);
-    const double G2_10_9 = det*w[2][10]*w[1][9]*(1.0);
-    const double G2_10_10 = det*w[2][10]*w[1][10]*(1.0);
-    const double G2_10_11 = det*w[2][10]*w[1][11]*(1.0);
-    const double G2_11_8 = det*w[2][11]*w[1][8]*(1.0);
-    const double G2_11_9 = det*w[2][11]*w[1][9]*(1.0);
-    const double G2_11_10 = det*w[2][11]*w[1][10]*(1.0);
-    const double G2_11_11 = det*w[2][11]*w[1][11]*(1.0);
-    const double G3_0_0 = det*w[2][0]*w[2][0]*(1.0);
-    const double G3_0_1 = det*w[2][0]*w[2][1]*(1.0);
-    const double G3_0_2 = det*w[2][0]*w[2][2]*(1.0);
-    const double G3_0_3 = det*w[2][0]*w[2][3]*(1.0);
-    const double G3_1_0 = det*w[2][1]*w[2][0]*(1.0);
-    const double G3_1_1 = det*w[2][1]*w[2][1]*(1.0);
-    const double G3_1_2 = det*w[2][1]*w[2][2]*(1.0);
-    const double G3_1_4 = det*w[2][1]*w[2][4]*(1.0);
-    const double G3_2_0 = det*w[2][2]*w[2][0]*(1.0);
-    const double G3_2_1 = det*w[2][2]*w[2][1]*(1.0);
-    const double G3_2_2 = det*w[2][2]*w[2][2]*(1.0);
-    const double G3_2_5 = det*w[2][2]*w[2][5]*(1.0);
-    const double G3_3_0 = det*w[2][3]*w[2][0]*(1.0);
-    const double G3_3_3 = det*w[2][3]*w[2][3]*(1.0);
-    const double G3_3_4 = det*w[2][3]*w[2][4]*(1.0);
-    const double G3_3_5 = det*w[2][3]*w[2][5]*(1.0);
-    const double G3_4_1 = det*w[2][4]*w[2][1]*(1.0);
-    const double G3_4_3 = det*w[2][4]*w[2][3]*(1.0);
-    const double G3_4_4 = det*w[2][4]*w[2][4]*(1.0);
-    const double G3_4_5 = det*w[2][4]*w[2][5]*(1.0);
-    const double G3_5_2 = det*w[2][5]*w[2][2]*(1.0);
-    const double G3_5_3 = det*w[2][5]*w[2][3]*(1.0);
-    const double G3_5_4 = det*w[2][5]*w[2][4]*(1.0);
-    const double G3_5_5 = det*w[2][5]*w[2][5]*(1.0);
-    const double G3_6_6 = det*w[2][6]*w[2][6]*(1.0);
-    const double G3_6_7 = det*w[2][6]*w[2][7]*(1.0);
-    const double G3_6_8 = det*w[2][6]*w[2][8]*(1.0);
-    const double G3_6_9 = det*w[2][6]*w[2][9]*(1.0);
-    const double G3_7_6 = det*w[2][7]*w[2][6]*(1.0);
-    const double G3_7_7 = det*w[2][7]*w[2][7]*(1.0);
-    const double G3_7_8 = det*w[2][7]*w[2][8]*(1.0);
-    const double G3_7_10 = det*w[2][7]*w[2][10]*(1.0);
-    const double G3_8_6 = det*w[2][8]*w[2][6]*(1.0);
-    const double G3_8_7 = det*w[2][8]*w[2][7]*(1.0);
-    const double G3_8_8 = det*w[2][8]*w[2][8]*(1.0);
-    const double G3_8_11 = det*w[2][8]*w[2][11]*(1.0);
-    const double G3_9_6 = det*w[2][9]*w[2][6]*(1.0);
-    const double G3_9_9 = det*w[2][9]*w[2][9]*(1.0);
-    const double G3_9_10 = det*w[2][9]*w[2][10]*(1.0);
-    const double G3_9_11 = det*w[2][9]*w[2][11]*(1.0);
-    const double G3_10_7 = det*w[2][10]*w[2][7]*(1.0);
-    const double G3_10_9 = det*w[2][10]*w[2][9]*(1.0);
-    const double G3_10_10 = det*w[2][10]*w[2][10]*(1.0);
-    const double G3_10_11 = det*w[2][10]*w[2][11]*(1.0);
-    const double G3_11_8 = det*w[2][11]*w[2][8]*(1.0);
-    const double G3_11_9 = det*w[2][11]*w[2][9]*(1.0);
-    const double G3_11_10 = det*w[2][11]*w[2][10]*(1.0);
-    const double G3_11_11 = det*w[2][11]*w[2][11]*(1.0);
-    const double G4_0_0 = det*w[3][0]*w[3][0]*(1.0);
-    const double G4_0_1 = det*w[3][0]*w[3][1]*(1.0);
-    const double G4_0_2 = det*w[3][0]*w[3][2]*(1.0);
-    const double G4_1_0 = det*w[3][1]*w[3][0]*(1.0);
-    const double G4_1_1 = det*w[3][1]*w[3][1]*(1.0);
-    const double G4_1_2 = det*w[3][1]*w[3][2]*(1.0);
-    const double G4_2_0 = det*w[3][2]*w[3][0]*(1.0);
-    const double G4_2_1 = det*w[3][2]*w[3][1]*(1.0);
-    const double G4_2_2 = det*w[3][2]*w[3][2]*(1.0);
-    const double G5_0_0 = det*w[3][0]*w[4][0]*(1.0);
-    const double G5_0_1 = det*w[3][0]*w[4][1]*(1.0);
-    const double G5_0_2 = det*w[3][0]*w[4][2]*(1.0);
-    const double G5_1_0 = det*w[3][1]*w[4][0]*(1.0);
-    const double G5_1_1 = det*w[3][1]*w[4][1]*(1.0);
-    const double G5_1_2 = det*w[3][1]*w[4][2]*(1.0);
-    const double G5_2_0 = det*w[3][2]*w[4][0]*(1.0);
-    const double G5_2_1 = det*w[3][2]*w[4][1]*(1.0);
-    const double G5_2_2 = det*w[3][2]*w[4][2]*(1.0);
-    const double G6_0_0 = det*w[4][0]*w[3][0]*(1.0);
-    const double G6_0_1 = det*w[4][0]*w[3][1]*(1.0);
-    const double G6_0_2 = det*w[4][0]*w[3][2]*(1.0);
-    const double G6_1_0 = det*w[4][1]*w[3][0]*(1.0);
-    const double G6_1_1 = det*w[4][1]*w[3][1]*(1.0);
-    const double G6_1_2 = det*w[4][1]*w[3][2]*(1.0);
-    const double G6_2_0 = det*w[4][2]*w[3][0]*(1.0);
-    const double G6_2_1 = det*w[4][2]*w[3][1]*(1.0);
-    const double G6_2_2 = det*w[4][2]*w[3][2]*(1.0);
-    const double G7_0_0 = det*w[4][0]*w[4][0]*(1.0);
-    const double G7_0_1 = det*w[4][0]*w[4][1]*(1.0);
-    const double G7_0_2 = det*w[4][0]*w[4][2]*(1.0);
-    const double G7_1_0 = det*w[4][1]*w[4][0]*(1.0);
-    const double G7_1_1 = det*w[4][1]*w[4][1]*(1.0);
-    const double G7_1_2 = det*w[4][1]*w[4][2]*(1.0);
-    const double G7_2_0 = det*w[4][2]*w[4][0]*(1.0);
-    const double G7_2_1 = det*w[4][2]*w[4][1]*(1.0);
-    const double G7_2_2 = det*w[4][2]*w[4][2]*(1.0);
+    const double G0_0_0 = det*w[2][0]*w[2][0]*(1.0);
+    const double G0_0_1 = det*w[2][0]*w[2][1]*(1.0);
+    const double G0_0_2 = det*w[2][0]*w[2][2]*(1.0);
+    const double G0_0_3 = det*w[2][0]*w[2][3]*(1.0);
+    const double G0_1_0 = det*w[2][1]*w[2][0]*(1.0);
+    const double G0_1_1 = det*w[2][1]*w[2][1]*(1.0);
+    const double G0_1_2 = det*w[2][1]*w[2][2]*(1.0);
+    const double G0_1_4 = det*w[2][1]*w[2][4]*(1.0);
+    const double G0_2_0 = det*w[2][2]*w[2][0]*(1.0);
+    const double G0_2_1 = det*w[2][2]*w[2][1]*(1.0);
+    const double G0_2_2 = det*w[2][2]*w[2][2]*(1.0);
+    const double G0_2_5 = det*w[2][2]*w[2][5]*(1.0);
+    const double G0_3_0 = det*w[2][3]*w[2][0]*(1.0);
+    const double G0_3_3 = det*w[2][3]*w[2][3]*(1.0);
+    const double G0_3_4 = det*w[2][3]*w[2][4]*(1.0);
+    const double G0_3_5 = det*w[2][3]*w[2][5]*(1.0);
+    const double G0_4_1 = det*w[2][4]*w[2][1]*(1.0);
+    const double G0_4_3 = det*w[2][4]*w[2][3]*(1.0);
+    const double G0_4_4 = det*w[2][4]*w[2][4]*(1.0);
+    const double G0_4_5 = det*w[2][4]*w[2][5]*(1.0);
+    const double G0_5_2 = det*w[2][5]*w[2][2]*(1.0);
+    const double G0_5_3 = det*w[2][5]*w[2][3]*(1.0);
+    const double G0_5_4 = det*w[2][5]*w[2][4]*(1.0);
+    const double G0_5_5 = det*w[2][5]*w[2][5]*(1.0);
+    const double G0_6_6 = det*w[2][6]*w[2][6]*(1.0);
+    const double G0_6_7 = det*w[2][6]*w[2][7]*(1.0);
+    const double G0_6_8 = det*w[2][6]*w[2][8]*(1.0);
+    const double G0_6_9 = det*w[2][6]*w[2][9]*(1.0);
+    const double G0_7_6 = det*w[2][7]*w[2][6]*(1.0);
+    const double G0_7_7 = det*w[2][7]*w[2][7]*(1.0);
+    const double G0_7_8 = det*w[2][7]*w[2][8]*(1.0);
+    const double G0_7_10 = det*w[2][7]*w[2][10]*(1.0);
+    const double G0_8_6 = det*w[2][8]*w[2][6]*(1.0);
+    const double G0_8_7 = det*w[2][8]*w[2][7]*(1.0);
+    const double G0_8_8 = det*w[2][8]*w[2][8]*(1.0);
+    const double G0_8_11 = det*w[2][8]*w[2][11]*(1.0);
+    const double G0_9_6 = det*w[2][9]*w[2][6]*(1.0);
+    const double G0_9_9 = det*w[2][9]*w[2][9]*(1.0);
+    const double G0_9_10 = det*w[2][9]*w[2][10]*(1.0);
+    const double G0_9_11 = det*w[2][9]*w[2][11]*(1.0);
+    const double G0_10_7 = det*w[2][10]*w[2][7]*(1.0);
+    const double G0_10_9 = det*w[2][10]*w[2][9]*(1.0);
+    const double G0_10_10 = det*w[2][10]*w[2][10]*(1.0);
+    const double G0_10_11 = det*w[2][10]*w[2][11]*(1.0);
+    const double G0_11_8 = det*w[2][11]*w[2][8]*(1.0);
+    const double G0_11_9 = det*w[2][11]*w[2][9]*(1.0);
+    const double G0_11_10 = det*w[2][11]*w[2][10]*(1.0);
+    const double G0_11_11 = det*w[2][11]*w[2][11]*(1.0);
+    const double G1_0_0 = det*w[2][0]*w[3][0]*(1.0);
+    const double G1_0_1 = det*w[2][0]*w[3][1]*(1.0);
+    const double G1_0_2 = det*w[2][0]*w[3][2]*(1.0);
+    const double G1_0_3 = det*w[2][0]*w[3][3]*(1.0);
+    const double G1_1_0 = det*w[2][1]*w[3][0]*(1.0);
+    const double G1_1_1 = det*w[2][1]*w[3][1]*(1.0);
+    const double G1_1_2 = det*w[2][1]*w[3][2]*(1.0);
+    const double G1_1_4 = det*w[2][1]*w[3][4]*(1.0);
+    const double G1_2_0 = det*w[2][2]*w[3][0]*(1.0);
+    const double G1_2_1 = det*w[2][2]*w[3][1]*(1.0);
+    const double G1_2_2 = det*w[2][2]*w[3][2]*(1.0);
+    const double G1_2_5 = det*w[2][2]*w[3][5]*(1.0);
+    const double G1_3_0 = det*w[2][3]*w[3][0]*(1.0);
+    const double G1_3_3 = det*w[2][3]*w[3][3]*(1.0);
+    const double G1_3_4 = det*w[2][3]*w[3][4]*(1.0);
+    const double G1_3_5 = det*w[2][3]*w[3][5]*(1.0);
+    const double G1_4_1 = det*w[2][4]*w[3][1]*(1.0);
+    const double G1_4_3 = det*w[2][4]*w[3][3]*(1.0);
+    const double G1_4_4 = det*w[2][4]*w[3][4]*(1.0);
+    const double G1_4_5 = det*w[2][4]*w[3][5]*(1.0);
+    const double G1_5_2 = det*w[2][5]*w[3][2]*(1.0);
+    const double G1_5_3 = det*w[2][5]*w[3][3]*(1.0);
+    const double G1_5_4 = det*w[2][5]*w[3][4]*(1.0);
+    const double G1_5_5 = det*w[2][5]*w[3][5]*(1.0);
+    const double G1_6_6 = det*w[2][6]*w[3][6]*(1.0);
+    const double G1_6_7 = det*w[2][6]*w[3][7]*(1.0);
+    const double G1_6_8 = det*w[2][6]*w[3][8]*(1.0);
+    const double G1_6_9 = det*w[2][6]*w[3][9]*(1.0);
+    const double G1_7_6 = det*w[2][7]*w[3][6]*(1.0);
+    const double G1_7_7 = det*w[2][7]*w[3][7]*(1.0);
+    const double G1_7_8 = det*w[2][7]*w[3][8]*(1.0);
+    const double G1_7_10 = det*w[2][7]*w[3][10]*(1.0);
+    const double G1_8_6 = det*w[2][8]*w[3][6]*(1.0);
+    const double G1_8_7 = det*w[2][8]*w[3][7]*(1.0);
+    const double G1_8_8 = det*w[2][8]*w[3][8]*(1.0);
+    const double G1_8_11 = det*w[2][8]*w[3][11]*(1.0);
+    const double G1_9_6 = det*w[2][9]*w[3][6]*(1.0);
+    const double G1_9_9 = det*w[2][9]*w[3][9]*(1.0);
+    const double G1_9_10 = det*w[2][9]*w[3][10]*(1.0);
+    const double G1_9_11 = det*w[2][9]*w[3][11]*(1.0);
+    const double G1_10_7 = det*w[2][10]*w[3][7]*(1.0);
+    const double G1_10_9 = det*w[2][10]*w[3][9]*(1.0);
+    const double G1_10_10 = det*w[2][10]*w[3][10]*(1.0);
+    const double G1_10_11 = det*w[2][10]*w[3][11]*(1.0);
+    const double G1_11_8 = det*w[2][11]*w[3][8]*(1.0);
+    const double G1_11_9 = det*w[2][11]*w[3][9]*(1.0);
+    const double G1_11_10 = det*w[2][11]*w[3][10]*(1.0);
+    const double G1_11_11 = det*w[2][11]*w[3][11]*(1.0);
+    const double G2_0_0 = det*w[3][0]*w[2][0]*(1.0);
+    const double G2_0_1 = det*w[3][0]*w[2][1]*(1.0);
+    const double G2_0_2 = det*w[3][0]*w[2][2]*(1.0);
+    const double G2_0_3 = det*w[3][0]*w[2][3]*(1.0);
+    const double G2_1_0 = det*w[3][1]*w[2][0]*(1.0);
+    const double G2_1_1 = det*w[3][1]*w[2][1]*(1.0);
+    const double G2_1_2 = det*w[3][1]*w[2][2]*(1.0);
+    const double G2_1_4 = det*w[3][1]*w[2][4]*(1.0);
+    const double G2_2_0 = det*w[3][2]*w[2][0]*(1.0);
+    const double G2_2_1 = det*w[3][2]*w[2][1]*(1.0);
+    const double G2_2_2 = det*w[3][2]*w[2][2]*(1.0);
+    const double G2_2_5 = det*w[3][2]*w[2][5]*(1.0);
+    const double G2_3_0 = det*w[3][3]*w[2][0]*(1.0);
+    const double G2_3_3 = det*w[3][3]*w[2][3]*(1.0);
+    const double G2_3_4 = det*w[3][3]*w[2][4]*(1.0);
+    const double G2_3_5 = det*w[3][3]*w[2][5]*(1.0);
+    const double G2_4_1 = det*w[3][4]*w[2][1]*(1.0);
+    const double G2_4_3 = det*w[3][4]*w[2][3]*(1.0);
+    const double G2_4_4 = det*w[3][4]*w[2][4]*(1.0);
+    const double G2_4_5 = det*w[3][4]*w[2][5]*(1.0);
+    const double G2_5_2 = det*w[3][5]*w[2][2]*(1.0);
+    const double G2_5_3 = det*w[3][5]*w[2][3]*(1.0);
+    const double G2_5_4 = det*w[3][5]*w[2][4]*(1.0);
+    const double G2_5_5 = det*w[3][5]*w[2][5]*(1.0);
+    const double G2_6_6 = det*w[3][6]*w[2][6]*(1.0);
+    const double G2_6_7 = det*w[3][6]*w[2][7]*(1.0);
+    const double G2_6_8 = det*w[3][6]*w[2][8]*(1.0);
+    const double G2_6_9 = det*w[3][6]*w[2][9]*(1.0);
+    const double G2_7_6 = det*w[3][7]*w[2][6]*(1.0);
+    const double G2_7_7 = det*w[3][7]*w[2][7]*(1.0);
+    const double G2_7_8 = det*w[3][7]*w[2][8]*(1.0);
+    const double G2_7_10 = det*w[3][7]*w[2][10]*(1.0);
+    const double G2_8_6 = det*w[3][8]*w[2][6]*(1.0);
+    const double G2_8_7 = det*w[3][8]*w[2][7]*(1.0);
+    const double G2_8_8 = det*w[3][8]*w[2][8]*(1.0);
+    const double G2_8_11 = det*w[3][8]*w[2][11]*(1.0);
+    const double G2_9_6 = det*w[3][9]*w[2][6]*(1.0);
+    const double G2_9_9 = det*w[3][9]*w[2][9]*(1.0);
+    const double G2_9_10 = det*w[3][9]*w[2][10]*(1.0);
+    const double G2_9_11 = det*w[3][9]*w[2][11]*(1.0);
+    const double G2_10_7 = det*w[3][10]*w[2][7]*(1.0);
+    const double G2_10_9 = det*w[3][10]*w[2][9]*(1.0);
+    const double G2_10_10 = det*w[3][10]*w[2][10]*(1.0);
+    const double G2_10_11 = det*w[3][10]*w[2][11]*(1.0);
+    const double G2_11_8 = det*w[3][11]*w[2][8]*(1.0);
+    const double G2_11_9 = det*w[3][11]*w[2][9]*(1.0);
+    const double G2_11_10 = det*w[3][11]*w[2][10]*(1.0);
+    const double G2_11_11 = det*w[3][11]*w[2][11]*(1.0);
+    const double G3_0_0 = det*w[3][0]*w[3][0]*(1.0);
+    const double G3_0_1 = det*w[3][0]*w[3][1]*(1.0);
+    const double G3_0_2 = det*w[3][0]*w[3][2]*(1.0);
+    const double G3_0_3 = det*w[3][0]*w[3][3]*(1.0);
+    const double G3_1_0 = det*w[3][1]*w[3][0]*(1.0);
+    const double G3_1_1 = det*w[3][1]*w[3][1]*(1.0);
+    const double G3_1_2 = det*w[3][1]*w[3][2]*(1.0);
+    const double G3_1_4 = det*w[3][1]*w[3][4]*(1.0);
+    const double G3_2_0 = det*w[3][2]*w[3][0]*(1.0);
+    const double G3_2_1 = det*w[3][2]*w[3][1]*(1.0);
+    const double G3_2_2 = det*w[3][2]*w[3][2]*(1.0);
+    const double G3_2_5 = det*w[3][2]*w[3][5]*(1.0);
+    const double G3_3_0 = det*w[3][3]*w[3][0]*(1.0);
+    const double G3_3_3 = det*w[3][3]*w[3][3]*(1.0);
+    const double G3_3_4 = det*w[3][3]*w[3][4]*(1.0);
+    const double G3_3_5 = det*w[3][3]*w[3][5]*(1.0);
+    const double G3_4_1 = det*w[3][4]*w[3][1]*(1.0);
+    const double G3_4_3 = det*w[3][4]*w[3][3]*(1.0);
+    const double G3_4_4 = det*w[3][4]*w[3][4]*(1.0);
+    const double G3_4_5 = det*w[3][4]*w[3][5]*(1.0);
+    const double G3_5_2 = det*w[3][5]*w[3][2]*(1.0);
+    const double G3_5_3 = det*w[3][5]*w[3][3]*(1.0);
+    const double G3_5_4 = det*w[3][5]*w[3][4]*(1.0);
+    const double G3_5_5 = det*w[3][5]*w[3][5]*(1.0);
+    const double G3_6_6 = det*w[3][6]*w[3][6]*(1.0);
+    const double G3_6_7 = det*w[3][6]*w[3][7]*(1.0);
+    const double G3_6_8 = det*w[3][6]*w[3][8]*(1.0);
+    const double G3_6_9 = det*w[3][6]*w[3][9]*(1.0);
+    const double G3_7_6 = det*w[3][7]*w[3][6]*(1.0);
+    const double G3_7_7 = det*w[3][7]*w[3][7]*(1.0);
+    const double G3_7_8 = det*w[3][7]*w[3][8]*(1.0);
+    const double G3_7_10 = det*w[3][7]*w[3][10]*(1.0);
+    const double G3_8_6 = det*w[3][8]*w[3][6]*(1.0);
+    const double G3_8_7 = det*w[3][8]*w[3][7]*(1.0);
+    const double G3_8_8 = det*w[3][8]*w[3][8]*(1.0);
+    const double G3_8_11 = det*w[3][8]*w[3][11]*(1.0);
+    const double G3_9_6 = det*w[3][9]*w[3][6]*(1.0);
+    const double G3_9_9 = det*w[3][9]*w[3][9]*(1.0);
+    const double G3_9_10 = det*w[3][9]*w[3][10]*(1.0);
+    const double G3_9_11 = det*w[3][9]*w[3][11]*(1.0);
+    const double G3_10_7 = det*w[3][10]*w[3][7]*(1.0);
+    const double G3_10_9 = det*w[3][10]*w[3][9]*(1.0);
+    const double G3_10_10 = det*w[3][10]*w[3][10]*(1.0);
+    const double G3_10_11 = det*w[3][10]*w[3][11]*(1.0);
+    const double G3_11_8 = det*w[3][11]*w[3][8]*(1.0);
+    const double G3_11_9 = det*w[3][11]*w[3][9]*(1.0);
+    const double G3_11_10 = det*w[3][11]*w[3][10]*(1.0);
+    const double G3_11_11 = det*w[3][11]*w[3][11]*(1.0);
+    const double G4_0_0 = det*w[4][0]*w[4][0]*(1.0);
+    const double G4_0_1 = det*w[4][0]*w[4][1]*(1.0);
+    const double G4_0_2 = det*w[4][0]*w[4][2]*(1.0);
+    const double G4_1_0 = det*w[4][1]*w[4][0]*(1.0);
+    const double G4_1_1 = det*w[4][1]*w[4][1]*(1.0);
+    const double G4_1_2 = det*w[4][1]*w[4][2]*(1.0);
+    const double G4_2_0 = det*w[4][2]*w[4][0]*(1.0);
+    const double G4_2_1 = det*w[4][2]*w[4][1]*(1.0);
+    const double G4_2_2 = det*w[4][2]*w[4][2]*(1.0);
+    const double G5_0_0 = det*w[4][0]*w[5][0]*(1.0);
+    const double G5_0_1 = det*w[4][0]*w[5][1]*(1.0);
+    const double G5_0_2 = det*w[4][0]*w[5][2]*(1.0);
+    const double G5_1_0 = det*w[4][1]*w[5][0]*(1.0);
+    const double G5_1_1 = det*w[4][1]*w[5][1]*(1.0);
+    const double G5_1_2 = det*w[4][1]*w[5][2]*(1.0);
+    const double G5_2_0 = det*w[4][2]*w[5][0]*(1.0);
+    const double G5_2_1 = det*w[4][2]*w[5][1]*(1.0);
+    const double G5_2_2 = det*w[4][2]*w[5][2]*(1.0);
+    const double G6_0_0 = det*w[5][0]*w[4][0]*(1.0);
+    const double G6_0_1 = det*w[5][0]*w[4][1]*(1.0);
+    const double G6_0_2 = det*w[5][0]*w[4][2]*(1.0);
+    const double G6_1_0 = det*w[5][1]*w[4][0]*(1.0);
+    const double G6_1_1 = det*w[5][1]*w[4][1]*(1.0);
+    const double G6_1_2 = det*w[5][1]*w[4][2]*(1.0);
+    const double G6_2_0 = det*w[5][2]*w[4][0]*(1.0);
+    const double G6_2_1 = det*w[5][2]*w[4][1]*(1.0);
+    const double G6_2_2 = det*w[5][2]*w[4][2]*(1.0);
+    const double G7_0_0 = det*w[5][0]*w[5][0]*(1.0);
+    const double G7_0_1 = det*w[5][0]*w[5][1]*(1.0);
+    const double G7_0_2 = det*w[5][0]*w[5][2]*(1.0);
+    const double G7_1_0 = det*w[5][1]*w[5][0]*(1.0);
+    const double G7_1_1 = det*w[5][1]*w[5][1]*(1.0);
+    const double G7_1_2 = det*w[5][1]*w[5][2]*(1.0);
+    const double G7_2_0 = det*w[5][2]*w[5][0]*(1.0);
+    const double G7_2_1 = det*w[5][2]*w[5][1]*(1.0);
+    const double G7_2_2 = det*w[5][2]*w[5][2]*(1.0);
     
     // Compute element tensor
     A[0] = 0.0083333333333333*G0_0_0 - 0.00138888888888889*G0_0_1 - 0.00138888888888889*G0_0_2 - 0.00555555555555553*G0_0_3 - 0.00138888888888889*G0_1_0 + 0.00833333333333337*G0_1_1 - 0.0013888888888889*G0_1_2 - 0.00555555555555554*G0_1_4 - 0.00138888888888889*G0_2_0 - 0.0013888888888889*G0_2_1 + 0.00833333333333337*G0_2_2 - 0.00555555555555554*G0_2_5 - 0.00555555555555553*G0_3_0 + 0.0444444444444444*G0_3_3 + 0.0222222222222221*G0_3_4 + 0.0222222222222221*G0_3_5 - 0.00555555555555554*G0_4_1 + 0.0222222222222221*G0_4_3 + 0.0444444444444443*G0_4_4 + 0.0222222222222222*G0_4_5 - 0.00555555555555554*G0_5_2 + 0.0222222222222221*G0_5_3 + 0.0222222222222222*G0_5_4 + 0.0444444444444444*G0_5_5 + 0.0083333333333333*G0_6_6 - 0.00138888888888889*G0_6_7 - 0.00138888888888889*G0_6_8 - 0.00555555555555553*G0_6_9 - 0.00138888888888889*G0_7_6 + 0.00833333333333337*G0_7_7 - 0.0013888888888889*G0_7_8 - 0.00555555555555554*G0_7_10 - 0.00138888888888889*G0_8_6 - 0.0013888888888889*G0_8_7 + 0.00833333333333337*G0_8_8 - 0.00555555555555554*G0_8_11 - 0.00555555555555553*G0_9_6 + 0.0444444444444444*G0_9_9 + 0.0222222222222221*G0_9_10 + 0.0222222222222221*G0_9_11 - 0.00555555555555554*G0_10_7 + 0.0222222222222221*G0_10_9 + 0.0444444444444443*G0_10_10 + 0.0222222222222222*G0_10_11 - 0.00555555555555554*G0_11_8 + 0.0222222222222221*G0_11_9 + 0.0222222222222222*G0_11_10 + 0.0444444444444444*G0_11_11 - 0.0083333333333333*G1_0_0 + 0.00138888888888889*G1_0_1 + 0.00138888888888889*G1_0_2 + 0.00555555555555553*G1_0_3 + 0.00138888888888889*G1_1_0 - 0.00833333333333337*G1_1_1 + 0.0013888888888889*G1_1_2 + 0.00555555555555554*G1_1_4 + 0.00138888888888889*G1_2_0 + 0.0013888888888889*G1_2_1 - 0.00833333333333337*G1_2_2 + 0.00555555555555554*G1_2_5 + 0.00555555555555553*G1_3_0 - 0.0444444444444444*G1_3_3 - 0.0222222222222221*G1_3_4 - 0.0222222222222221*G1_3_5 + 0.00555555555555554*G1_4_1 - 0.0222222222222221*G1_4_3 - 0.0444444444444443*G1_4_4 - 0.0222222222222222*G1_4_5 + 0.00555555555555554*G1_5_2 - 0.0222222222222221*G1_5_3 - 0.0222222222222222*G1_5_4 - 0.0444444444444444*G1_5_5 - 0.0083333333333333*G1_6_6 + 0.00138888888888889*G1_6_7 + 0.00138888888888889*G1_6_8 + 0.00555555555555553*G1_6_9 + 0.00138888888888889*G1_7_6 - 0.00833333333333337*G1_7_7 + 0.0013888888888889*G1_7_8 + 0.00555555555555554*G1_7_10 + 0.00138888888888889*G1_8_6 + 0.0013888888888889*G1_8_7 - 0.00833333333333337*G1_8_8 + 0.00555555555555554*G1_8_11 + 0.00555555555555553*G1_9_6 - 0.0444444444444444*G1_9_9 - 0.0222222222222221*G1_9_10 - 0.0222222222222221*G1_9_11 + 0.00555555555555554*G1_10_7 - 0.0222222222222221*G1_10_9 - 0.0444444444444443*G1_10_10 - 0.0222222222222222*G1_10_11 + 0.00555555555555554*G1_11_8 - 0.0222222222222221*G1_11_9 - 0.0222222222222222*G1_11_10 - 0.0444444444444444*G1_11_11 - 0.0083333333333333*G2_0_0 + 0.00138888888888889*G2_0_1 + 0.00138888888888889*G2_0_2 + 0.00555555555555553*G2_0_3 + 0.00138888888888889*G2_1_0 - 0.00833333333333337*G2_1_1 + 0.0013888888888889*G2_1_2 + 0.00555555555555554*G2_1_4 + 0.00138888888888889*G2_2_0 + 0.0013888888888889*G2_2_1 - 0.00833333333333337*G2_2_2 + 0.00555555555555554*G2_2_5 + 0.00555555555555553*G2_3_0 - 0.0444444444444444*G2_3_3 - 0.0222222222222221*G2_3_4 - 0.0222222222222221*G2_3_5 + 0.00555555555555554*G2_4_1 - 0.0222222222222221*G2_4_3 - 0.0444444444444443*G2_4_4 - 0.0222222222222222*G2_4_5 + 0.00555555555555554*G2_5_2 - 0.0222222222222221*G2_5_3 - 0.0222222222222222*G2_5_4 - 0.0444444444444444*G2_5_5 - 0.0083333333333333*G2_6_6 + 0.00138888888888889*G2_6_7 + 0.00138888888888889*G2_6_8 + 0.00555555555555553*G2_6_9 + 0.00138888888888889*G2_7_6 - 0.00833333333333337*G2_7_7 + 0.0013888888888889*G2_7_8 + 0.00555555555555554*G2_7_10 + 0.00138888888888889*G2_8_6 + 0.0013888888888889*G2_8_7 - 0.00833333333333337*G2_8_8 + 0.00555555555555554*G2_8_11 + 0.00555555555555553*G2_9_6 - 0.0444444444444444*G2_9_9 - 0.0222222222222221*G2_9_10 - 0.0222222222222221*G2_9_11 + 0.00555555555555554*G2_10_7 - 0.0222222222222221*G2_10_9 - 0.0444444444444443*G2_10_10 - 0.0222222222222222*G2_10_11 + 0.00555555555555554*G2_11_8 - 0.0222222222222221*G2_11_9 - 0.0222222222222222*G2_11_10 - 0.0444444444444444*G2_11_11 + 0.0083333333333333*G3_0_0 - 0.00138888888888889*G3_0_1 - 0.00138888888888889*G3_0_2 - 0.00555555555555553*G3_0_3 - 0.00138888888888889*G3_1_0 + 0.00833333333333337*G3_1_1 - 0.0013888888888889*G3_1_2 - 0.00555555555555554*G3_1_4 - 0.00138888888888889*G3_2_0 - 0.0013888888888889*G3_2_1 + 0.00833333333333337*G3_2_2 - 0.00555555555555554*G3_2_5 - 0.00555555555555553*G3_3_0 + 0.0444444444444444*G3_3_3 + 0.0222222222222221*G3_3_4 + 0.0222222222222221*G3_3_5 - 0.00555555555555554*G3_4_1 + 0.0222222222222221*G3_4_3 + 0.0444444444444443*G3_4_4 + 0.0222222222222222*G3_4_5 - 0.00555555555555554*G3_5_2 + 0.0222222222222221*G3_5_3 + 0.0222222222222222*G3_5_4 + 0.0444444444444444*G3_5_5 + 0.0083333333333333*G3_6_6 - 0.00138888888888889*G3_6_7 - 0.00138888888888889*G3_6_8 - 0.00555555555555553*G3_6_9 - 0.00138888888888889*G3_7_6 + 0.00833333333333337*G3_7_7 - 0.0013888888888889*G3_7_8 - 0.00555555555555554*G3_7_10 - 0.00138888888888889*G3_8_6 - 0.0013888888888889*G3_8_7 + 0.00833333333333337*G3_8_8 - 0.00555555555555554*G3_8_11 - 0.00555555555555553*G3_9_6 + 0.0444444444444444*G3_9_9 + 0.0222222222222221*G3_9_10 + 0.0222222222222221*G3_9_11 - 0.00555555555555554*G3_10_7 + 0.0222222222222221*G3_10_9 + 0.0444444444444443*G3_10_10 + 0.0222222222222222*G3_10_11 - 0.00555555555555554*G3_11_8 + 0.0222222222222221*G3_11_9 + 0.0222222222222222*G3_11_10 + 0.0444444444444444*G3_11_11 + 0.0416666666666666*G4_0_0 + 0.0208333333333333*G4_0_1 + 0.0208333333333333*G4_0_2 + 0.0208333333333333*G4_1_0 + 0.0416666666666667*G4_1_1 + 0.0208333333333333*G4_1_2 + 0.0208333333333333*G4_2_0 + 0.0208333333333333*G4_2_1 + 0.0416666666666667*G4_2_2 - 0.0416666666666666*G5_0_0 - 0.0208333333333333*G5_0_1 - 0.0208333333333333*G5_0_2 - 0.0208333333333333*G5_1_0 - 0.0416666666666667*G5_1_1 - 0.0208333333333333*G5_1_2 - 0.0208333333333333*G5_2_0 - 0.0208333333333333*G5_2_1 - 0.0416666666666667*G5_2_2 - 0.0416666666666666*G6_0_0 - 0.0208333333333333*G6_0_1 - 0.0208333333333333*G6_0_2 - 0.0208333333333333*G6_1_0 - 0.0416666666666667*G6_1_1 - 0.0208333333333333*G6_1_2 - 0.0208333333333333*G6_2_0 - 0.0208333333333333*G6_2_1 - 0.0416666666666667*G6_2_2 + 0.0416666666666666*G7_0_0 + 0.0208333333333333*G7_0_1 + 0.0208333333333333*G7_0_2 + 0.0208333333333333*G7_1_0 + 0.0416666666666667*G7_1_1 + 0.0208333333333333*G7_1_2 + 0.0208333333333333*G7_2_0 + 0.0208333333333333*G7_2_1 + 0.0416666666666667*G7_2_2;
@@ -6789,11 +6789,6 @@ public:
                                const double*  vertex_coordinates,
                                std::size_t facet) const
   {
-    // Number of operations (multiply-add pairs) for Jacobian data:      10
-    // Number of operations (multiply-add pairs) for geometry tensor:    18
-    // Number of operations (multiply-add pairs) for tensor contraction: 10
-    // Total number of operations (multiply-add pairs):                  38
-    
     // Compute Jacobian
     double J[4];
     compute_jacobian_triangle_2d(J, vertex_coordinates);
@@ -6802,6 +6797,8 @@ public:
     double K[4];
     double detJ;
     compute_jacobian_inverse_triangle_2d(K, detJ, J);
+    
+    
     
     // Get vertices on edge
     static unsigned int edge_vertices[3][2] = {{1, 2}, {0, 2}, {0, 1}};
@@ -6814,33 +6811,156 @@ public:
     const double det = std::sqrt(dx0*dx0 + dx1*dx1);
     
     
-    // Compute geometry tensor
-    const double G0_0_0_0 = det*w[5][0]*w[5][0]*w[0][0]*(1.0);
-    const double G0_0_1_0 = det*w[5][0]*w[5][1]*w[0][0]*(1.0);
-    const double G0_0_2_0 = det*w[5][0]*w[5][2]*w[0][0]*(1.0);
-    const double G0_1_0_0 = det*w[5][1]*w[5][0]*w[0][0]*(1.0);
-    const double G0_1_1_0 = det*w[5][1]*w[5][1]*w[0][0]*(1.0);
-    const double G0_1_2_0 = det*w[5][1]*w[5][2]*w[0][0]*(1.0);
-    const double G0_2_0_0 = det*w[5][2]*w[5][0]*w[0][0]*(1.0);
-    const double G0_2_1_0 = det*w[5][2]*w[5][1]*w[0][0]*(1.0);
-    const double G0_2_2_0 = det*w[5][2]*w[5][2]*w[0][0]*(1.0);
+    // Compute facet normals from the facet scale factor constants
     
-    // Compute element tensor
+    // Facet area
+    
+    // Cell volume
+    
+    // Compute circumradius of triangle in 2D
+    
+    
+    // Array of quadrature weights.
+    static const double W2[2] = {0.5, 0.5};
+    // Quadrature points on the UFC reference element: (0.211324865405187), (0.788675134594813)
+    
+    // Value of basis functions at quadrature points.
+    static const double FE0_f0[2][2] = \
+    {{0.788675134594813, 0.211324865405187},
+    {0.211324865405187, 0.788675134594813}};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc0[2] = {1, 2};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc3[2] = {0, 2};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc4[2] = {0, 1};
+    
+    static const double FE0_f0_D01[2][2] = \
+    {{-1.0, 1.0},
+    {-1.0, 1.0}};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc1[2] = {0, 2};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc2[2] = {0, 1};
+    
+    // Reset values in the element tensor.
+    A[0] = 0.0;
+    // Number of operations to compute geometry constants: 19.
+    double G[4];
+    G[0] = 0.5*det*w[1][0]*(K[0]*K[0] + K[1]*K[1]);
+    G[1] = det*w[1][0]*(K[0]*K[2] + K[1]*K[3]);
+    G[2] = 0.5*det*w[1][0]*(K[2]*K[2] + K[3]*K[3]);
+    G[3] = 0.5*det*w[0][0];
+    
+    // Compute element tensor using UFL quadrature representation
+    // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
     switch (facet)
     {
     case 0:
       {
-        A[0] = 0.166666666666667*G0_1_1_0 + 0.0833333333333333*G0_1_2_0 + 0.0833333333333333*G0_2_1_0 + 0.166666666666667*G0_2_2_0;
+        // Total number of operations to compute element tensor (from this point): 48
+      
+      // Loop quadrature points for integral.
+      // Number of operations to compute element tensor for following IP loop = 48
+      for (unsigned int ip = 0; ip < 2; ip++)
+      {
+        
+        // Coefficient declarations.
+        double F0 = 0.0;
+        double F1 = 0.0;
+        double F2 = 0.0;
+        
+        // Total number of operations to compute function values = 12
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0_D01[ip][r]*w[6][nzc2[r]];
+          F1 += FE0_f0_D01[ip][r]*w[6][nzc1[r]];
+          F2 += FE0_f0[ip][r]*w[6][nzc0[r]];
+        }// end loop over 'r'
+        
+        // Number of operations to compute ip constants: 11
+        double I[1];
+        // Number of operations: 11
+        I[0] = W2[ip]*(F0*F0*G[0] + F1*(F0*G[1] + F1*G[2]) + F2*F2*G[3]);
+        
+        
+        // Number of operations for primary indices: 1
+        // Number of operations to compute entry: 1
+        A[0] += I[0];
+      }// end loop over 'ip'
         break;
       }
     case 1:
       {
-        A[0] = 0.166666666666667*G0_0_0_0 + 0.0833333333333333*G0_0_2_0 + 0.0833333333333333*G0_2_0_0 + 0.166666666666667*G0_2_2_0;
+        // Total number of operations to compute element tensor (from this point): 48
+      
+      // Loop quadrature points for integral.
+      // Number of operations to compute element tensor for following IP loop = 48
+      for (unsigned int ip = 0; ip < 2; ip++)
+      {
+        
+        // Coefficient declarations.
+        double F0 = 0.0;
+        double F1 = 0.0;
+        double F2 = 0.0;
+        
+        // Total number of operations to compute function values = 12
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0_D01[ip][r]*w[6][nzc2[r]];
+          F1 += FE0_f0_D01[ip][r]*w[6][nzc1[r]];
+          F2 += FE0_f0[ip][r]*w[6][nzc3[r]];
+        }// end loop over 'r'
+        
+        // Number of operations to compute ip constants: 11
+        double I[1];
+        // Number of operations: 11
+        I[0] = W2[ip]*(F0*F0*G[0] + F1*(F0*G[1] + F1*G[2]) + F2*F2*G[3]);
+        
+        
+        // Number of operations for primary indices: 1
+        // Number of operations to compute entry: 1
+        A[0] += I[0];
+      }// end loop over 'ip'
         break;
       }
     case 2:
       {
-        A[0] = 0.166666666666667*G0_0_0_0 + 0.0833333333333333*G0_0_1_0 + 0.0833333333333333*G0_1_0_0 + 0.166666666666667*G0_1_1_0;
+        // Total number of operations to compute element tensor (from this point): 48
+      
+      // Loop quadrature points for integral.
+      // Number of operations to compute element tensor for following IP loop = 48
+      for (unsigned int ip = 0; ip < 2; ip++)
+      {
+        
+        // Coefficient declarations.
+        double F0 = 0.0;
+        double F1 = 0.0;
+        double F2 = 0.0;
+        
+        // Total number of operations to compute function values = 12
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0_D01[ip][r]*w[6][nzc2[r]];
+          F1 += FE0_f0_D01[ip][r]*w[6][nzc1[r]];
+          F2 += FE0_f0[ip][r]*w[6][nzc4[r]];
+        }// end loop over 'r'
+        
+        // Number of operations to compute ip constants: 11
+        double I[1];
+        // Number of operations: 11
+        I[0] = W2[ip]*(F0*F0*G[0] + F1*(F0*G[1] + F1*G[2]) + F2*F2*G[3]);
+        
+        
+        // Number of operations for primary indices: 1
+        // Number of operations to compute entry: 1
+        A[0] += I[0];
+      }// end loop over 'ip'
         break;
       }
     }
@@ -6883,7 +7003,7 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "8f94b461cfd968915eecc09a528c909c0c275908203a2cae6716fffc27c00ee41baa194b4e19755f8c54d12674de5a55ca127944b9678033d227211f4fec1676";
+    return "4627fc17141edcdf80352dae1b69c1358e116226b0230ad5f23c92cf91638447f2663b6439cbe7ec9f268d9f8abfebafad1b7dae10821c661bfe4b281c482400";
   }
 
   /// Return the rank of the global tensor (r)
@@ -6895,7 +7015,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 6;
+    return 7;
   }
 
   /// Return the number of cell domains
@@ -6958,7 +7078,7 @@ public:
       }
     case 1:
       {
-        return new objective_functional_finite_element_2();
+        return new objective_functional_finite_element_3();
         break;
       }
     case 2:
@@ -6968,7 +7088,7 @@ public:
       }
     case 3:
       {
-        return new objective_functional_finite_element_0();
+        return new objective_functional_finite_element_2();
         break;
       }
     case 4:
@@ -6977,6 +7097,11 @@ public:
         break;
       }
     case 5:
+      {
+        return new objective_functional_finite_element_0();
+        break;
+      }
+    case 6:
       {
         return new objective_functional_finite_element_0();
         break;
@@ -6998,7 +7123,7 @@ public:
       }
     case 1:
       {
-        return new objective_functional_dofmap_2();
+        return new objective_functional_dofmap_3();
         break;
       }
     case 2:
@@ -7008,7 +7133,7 @@ public:
       }
     case 3:
       {
-        return new objective_functional_dofmap_0();
+        return new objective_functional_dofmap_2();
         break;
       }
     case 4:
@@ -7017,6 +7142,11 @@ public:
         break;
       }
     case 5:
+      {
+        return new objective_functional_dofmap_0();
+        break;
+      }
+    case 6:
       {
         return new objective_functional_dofmap_0();
         break;
@@ -7484,6 +7614,80 @@ public:
 
 };
 
+class CoefficientSpace_sigma_2: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_sigma_2(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_3()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_sigma_2(boost::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_3()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_sigma_2(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_3()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_sigma_2(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_3()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for restricted function space, 2 different versions ---
+
+  // Create restricted function space (reference version)
+  CoefficientSpace_sigma_2(const dolfin::Restriction& restriction):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction.mesh()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_3()),
+                                                                                     reference_to_no_delete_pointer(restriction))))
+  {
+    // Do nothing
+  }
+
+  // Create restricted function space (shared pointer version)
+  CoefficientSpace_sigma_2(boost::shared_ptr<const dolfin::Restriction> restriction):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(restriction->mesh()),
+                          boost::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(boost::shared_ptr<ufc::finite_element>(new objective_functional_finite_element_3()))),
+                          boost::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(boost::shared_ptr<ufc::dofmap>(new objective_functional_dofmap_3()),
+                                                                                     restriction)))
+  {
+    // Do nothing
+  }
+
+  // Copy constructor
+  ~CoefficientSpace_sigma_2()
+  {
+  }
+
+};
+
 class CoefficientSpace_u: public dolfin::FunctionSpace
 {
 public:
@@ -7560,15 +7764,17 @@ public:
 
 typedef CoefficientSpace_sigma_1 Form_J_FunctionSpace_0;
 
-typedef CoefficientSpace_u Form_J_FunctionSpace_1;
+typedef CoefficientSpace_sigma_2 Form_J_FunctionSpace_1;
 
-typedef CoefficientSpace_U Form_J_FunctionSpace_2;
+typedef CoefficientSpace_u Form_J_FunctionSpace_2;
 
-typedef CoefficientSpace_p Form_J_FunctionSpace_3;
+typedef CoefficientSpace_U Form_J_FunctionSpace_3;
 
-typedef CoefficientSpace_P Form_J_FunctionSpace_4;
+typedef CoefficientSpace_p Form_J_FunctionSpace_4;
 
-typedef CoefficientSpace_g Form_J_FunctionSpace_5;
+typedef CoefficientSpace_P Form_J_FunctionSpace_5;
+
+typedef CoefficientSpace_g Form_J_FunctionSpace_6;
 
 class Form_J: public dolfin::Form
 {
@@ -7576,18 +7782,19 @@ public:
 
   // Constructor
   Form_J(const dolfin::Mesh& mesh):
-    dolfin::Form(0, 6), sigma_1(*this, 0), u(*this, 1), U(*this, 2), p(*this, 3), P(*this, 4), g(*this, 5)
+    dolfin::Form(0, 7), sigma_1(*this, 0), sigma_2(*this, 1), u(*this, 2), U(*this, 3), p(*this, 4), P(*this, 5), g(*this, 6)
   {
     _mesh = reference_to_no_delete_pointer(mesh);
     _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_0());
   }
 
   // Constructor
-  Form_J(const dolfin::Mesh& mesh, const dolfin::GenericFunction& sigma_1, const dolfin::GenericFunction& u, const dolfin::GenericFunction& U, const dolfin::GenericFunction& p, const dolfin::GenericFunction& P, const dolfin::GenericFunction& g):
-    dolfin::Form(0, 6), sigma_1(*this, 0), u(*this, 1), U(*this, 2), p(*this, 3), P(*this, 4), g(*this, 5)
+  Form_J(const dolfin::Mesh& mesh, const dolfin::GenericFunction& sigma_1, const dolfin::GenericFunction& sigma_2, const dolfin::GenericFunction& u, const dolfin::GenericFunction& U, const dolfin::GenericFunction& p, const dolfin::GenericFunction& P, const dolfin::GenericFunction& g):
+    dolfin::Form(0, 7), sigma_1(*this, 0), sigma_2(*this, 1), u(*this, 2), U(*this, 3), p(*this, 4), P(*this, 5), g(*this, 6)
   {
     _mesh = reference_to_no_delete_pointer(mesh);
     this->sigma_1 = sigma_1;
+    this->sigma_2 = sigma_2;
     this->u = u;
     this->U = U;
     this->p = p;
@@ -7598,11 +7805,12 @@ public:
   }
 
   // Constructor
-  Form_J(const dolfin::Mesh& mesh, boost::shared_ptr<const dolfin::GenericFunction> sigma_1, boost::shared_ptr<const dolfin::GenericFunction> u, boost::shared_ptr<const dolfin::GenericFunction> U, boost::shared_ptr<const dolfin::GenericFunction> p, boost::shared_ptr<const dolfin::GenericFunction> P, boost::shared_ptr<const dolfin::GenericFunction> g):
-    dolfin::Form(0, 6), sigma_1(*this, 0), u(*this, 1), U(*this, 2), p(*this, 3), P(*this, 4), g(*this, 5)
+  Form_J(const dolfin::Mesh& mesh, boost::shared_ptr<const dolfin::GenericFunction> sigma_1, boost::shared_ptr<const dolfin::GenericFunction> sigma_2, boost::shared_ptr<const dolfin::GenericFunction> u, boost::shared_ptr<const dolfin::GenericFunction> U, boost::shared_ptr<const dolfin::GenericFunction> p, boost::shared_ptr<const dolfin::GenericFunction> P, boost::shared_ptr<const dolfin::GenericFunction> g):
+    dolfin::Form(0, 7), sigma_1(*this, 0), sigma_2(*this, 1), u(*this, 2), U(*this, 3), p(*this, 4), P(*this, 5), g(*this, 6)
   {
     _mesh = reference_to_no_delete_pointer(mesh);
     this->sigma_1 = *sigma_1;
+    this->sigma_2 = *sigma_2;
     this->u = *u;
     this->U = *U;
     this->p = *p;
@@ -7614,18 +7822,19 @@ public:
 
   // Constructor
   Form_J(boost::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::Form(0, 6), sigma_1(*this, 0), u(*this, 1), U(*this, 2), p(*this, 3), P(*this, 4), g(*this, 5)
+    dolfin::Form(0, 7), sigma_1(*this, 0), sigma_2(*this, 1), u(*this, 2), U(*this, 3), p(*this, 4), P(*this, 5), g(*this, 6)
   {
     _mesh = mesh;
     _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_0());
   }
 
   // Constructor
-  Form_J(boost::shared_ptr<const dolfin::Mesh> mesh, const dolfin::GenericFunction& sigma_1, const dolfin::GenericFunction& u, const dolfin::GenericFunction& U, const dolfin::GenericFunction& p, const dolfin::GenericFunction& P, const dolfin::GenericFunction& g):
-    dolfin::Form(0, 6), sigma_1(*this, 0), u(*this, 1), U(*this, 2), p(*this, 3), P(*this, 4), g(*this, 5)
+  Form_J(boost::shared_ptr<const dolfin::Mesh> mesh, const dolfin::GenericFunction& sigma_1, const dolfin::GenericFunction& sigma_2, const dolfin::GenericFunction& u, const dolfin::GenericFunction& U, const dolfin::GenericFunction& p, const dolfin::GenericFunction& P, const dolfin::GenericFunction& g):
+    dolfin::Form(0, 7), sigma_1(*this, 0), sigma_2(*this, 1), u(*this, 2), U(*this, 3), p(*this, 4), P(*this, 5), g(*this, 6)
   {
     _mesh = mesh;
     this->sigma_1 = sigma_1;
+    this->sigma_2 = sigma_2;
     this->u = u;
     this->U = U;
     this->p = p;
@@ -7636,11 +7845,12 @@ public:
   }
 
   // Constructor
-  Form_J(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::GenericFunction> sigma_1, boost::shared_ptr<const dolfin::GenericFunction> u, boost::shared_ptr<const dolfin::GenericFunction> U, boost::shared_ptr<const dolfin::GenericFunction> p, boost::shared_ptr<const dolfin::GenericFunction> P, boost::shared_ptr<const dolfin::GenericFunction> g):
-    dolfin::Form(0, 6), sigma_1(*this, 0), u(*this, 1), U(*this, 2), p(*this, 3), P(*this, 4), g(*this, 5)
+  Form_J(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::GenericFunction> sigma_1, boost::shared_ptr<const dolfin::GenericFunction> sigma_2, boost::shared_ptr<const dolfin::GenericFunction> u, boost::shared_ptr<const dolfin::GenericFunction> U, boost::shared_ptr<const dolfin::GenericFunction> p, boost::shared_ptr<const dolfin::GenericFunction> P, boost::shared_ptr<const dolfin::GenericFunction> g):
+    dolfin::Form(0, 7), sigma_1(*this, 0), sigma_2(*this, 1), u(*this, 2), U(*this, 3), p(*this, 4), P(*this, 5), g(*this, 6)
   {
     _mesh = mesh;
     this->sigma_1 = *sigma_1;
+    this->sigma_2 = *sigma_2;
     this->u = *u;
     this->U = *U;
     this->p = *p;
@@ -7659,16 +7869,18 @@ public:
   {
     if (name == "sigma_1")
       return 0;
-    else if (name == "u")
+    else if (name == "sigma_2")
       return 1;
-    else if (name == "U")
+    else if (name == "u")
       return 2;
-    else if (name == "p")
+    else if (name == "U")
       return 3;
-    else if (name == "P")
+    else if (name == "p")
       return 4;
-    else if (name == "g")
+    else if (name == "P")
       return 5;
+    else if (name == "g")
+      return 6;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -7684,14 +7896,16 @@ public:
     case 0:
       return "sigma_1";
     case 1:
-      return "u";
+      return "sigma_2";
     case 2:
-      return "U";
+      return "u";
     case 3:
-      return "p";
+      return "U";
     case 4:
-      return "P";
+      return "p";
     case 5:
+      return "P";
+    case 6:
       return "g";
     }
 
@@ -7703,14 +7917,16 @@ public:
 
   // Typedefs
   typedef Form_J_FunctionSpace_0 CoefficientSpace_sigma_1;
-  typedef Form_J_FunctionSpace_1 CoefficientSpace_u;
-  typedef Form_J_FunctionSpace_2 CoefficientSpace_U;
-  typedef Form_J_FunctionSpace_3 CoefficientSpace_p;
-  typedef Form_J_FunctionSpace_4 CoefficientSpace_P;
-  typedef Form_J_FunctionSpace_5 CoefficientSpace_g;
+  typedef Form_J_FunctionSpace_1 CoefficientSpace_sigma_2;
+  typedef Form_J_FunctionSpace_2 CoefficientSpace_u;
+  typedef Form_J_FunctionSpace_3 CoefficientSpace_U;
+  typedef Form_J_FunctionSpace_4 CoefficientSpace_p;
+  typedef Form_J_FunctionSpace_5 CoefficientSpace_P;
+  typedef Form_J_FunctionSpace_6 CoefficientSpace_g;
 
   // Coefficients
   dolfin::CoefficientAssigner sigma_1;
+  dolfin::CoefficientAssigner sigma_2;
   dolfin::CoefficientAssigner u;
   dolfin::CoefficientAssigner U;
   dolfin::CoefficientAssigner p;

@@ -19,7 +19,9 @@ g = Coefficient (Q)
 # define expression of functional
 J = 0.5 * inner (u - U, u - U) * dx (1) \
     + 0.5 * inner (p - P, p - P) * dx (1) \
-    + 0.5 * sigma_1 * inner (g, g) * ds (2)
+    + 0.5 * sigma_1 * inner (g, g) * ds (2) \
+    + 0.5 * sigma_2 * inner (grad (g), grad (g)) * ds (2)
+
 
 # add functional to list of forms
 forms = [J]

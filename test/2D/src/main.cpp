@@ -162,7 +162,7 @@ int main (int argc, char* argv[])
     
     // functional settings
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (sigma_1), "sigma_1");
-//    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (sigma_2), "sigma_2");
+    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (sigma_2), "sigma_2");
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (g), "g");
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (interpolatedTargetU), "U");
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (interpolatedTargetP), "P");
@@ -185,22 +185,33 @@ int main (int argc, char* argv[])
                                         dolfin::reference_to_no_delete_pointer (g),
                                         "g");
 
-    
     // ============================================================================== //
     // =============================== OPTIMIZATION  ================================ //
     // ============================================================================== //
     ControlDirichletBC controlDirichletBC (g);
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[0], controlDirichletBC, primal_inflowBoundary), "x_inflow_BC");
     
-    // define optimizer
-    controlproblem::BacktrackingOptimizer backtrackingOptimizer;
-    backtrackingOptimizer.parameters ["relative_increment_tolerance"] = 1e-3;
-    
+                        //    dolfin::Function d (V[1]->collapse ());
+                        //    dolfin::Function e (g);
+                        //    d = dolfin::Constant (10.0);
+                        //    e.interpolate (d);
+                        //    dolfin::plot (e);
+                        //    dolfin::interactive ();
+
     // define control value updater
     ValueUpdater updater;
-
-    backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater);
     
+    // define search direction computer
+    objective_functional::SearchDirectionComputer searchDirectionComputer (controlMesh);
+    
+    // define optimizer
+    controlproblem::BacktrackingOptimizer backtrackingOptimizer;
+    backtrackingOptimizer.parameters ["relative_increment_tolerance"] = 1e-5;
+    
+    backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater, searchDirectionComputer);
+            
+
+    // solve problem with computed control value
     updater (problems, g);
     
     problems.solve ();
@@ -209,6 +220,7 @@ int main (int argc, char* argv[])
     dolfin::plot (problems.solution ("primal")[0][0], "solution of the problem with computed control. x velocity");
     dolfin::plot (problems.solution ("primal")[0][1], "solution of the problem with computed control. y velocity");
     dolfin::plot (problems.solution ("primal")[1], "solution of the problem with computed control. Pressure");
+    dolfin::plot (problems.solution ("adjoint")[1], "solution of the adjoint problem with computed control. Pressure");
     dolfin::plot (g, "Control");
     
     dolfin::Function differenceU (interpolatedTargetU);

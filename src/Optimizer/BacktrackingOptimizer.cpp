@@ -90,6 +90,19 @@ namespace controlproblem
         dolfin::Function controlVariableIncrement (controlVariable.function_space ());
         boost::shared_ptr<dolfin::Form> dotProductComputer;
         
+        // all linear problems in the CompositeDifferentialProblem "problem" should be reassembled every time. So we
+        // set the parameter "force_reassemble_system" to true for every one of them
+        dolfin::begin (dolfin::DBG, "Scanning composite differential problem...");
+        for (std::size_t i = 0; i < problem.size (); ++i)
+        {
+            if (static_cast<std::string> (problem[i].parameters["problem_type"]) == "linear")
+            {
+                dolfin::log (dolfin::DBG, "Set parameter \"force_reassemble_system\" to true for problem number %d", i);
+                problem[i].parameters["force_reassemble_system"] = true;
+            }
+        }
+        dolfin::end ();
+        
 
         // ------------------------------------------------------------------------------------------------------- //
         // create correct object-type for dotProductComputer
@@ -212,6 +225,12 @@ namespace controlproblem
         dolfin::log (dolfin::PROGRESS, "Solving differential problem...");
         problem.solve ();
         
+//dolfin::plot (problem.solution ("adjoint")[1], "adjoint pressure");
+//dolfin::plot (controlVariable, "control var");
+//functionalGradient = objectiveFunctional.gradient ();
+//dolfin::plot (functionalGradient, "grad");
+//dolfin::interactive ();
+        
         
         // initialize loop variables
         dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
@@ -258,6 +277,12 @@ namespace controlproblem
             previousFunctionalValue = currentFunctionalValue;
             functionalGradient = objectiveFunctional.gradient ();
             searchDirectionComputer (searchDirection, functionalGradient);
+//dolfin::plot (problem.solution ("adjoint")[1], "adjoint pressure");
+//dolfin::plot (controlVariable, "control var");
+//functionalGradient = objectiveFunctional.gradient ();
+//dolfin::plot (functionalGradient, "grad");
+//dolfin::plot (searchDirection, "search direction");
+//dolfin::interactive ();
             
             // compute dot product between gradient and search direction
             dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
@@ -279,6 +304,12 @@ namespace controlproblem
             // solve problem
             dolfin::log (dolfin::PROGRESS, "Solving differential problem...");
             problem.solve ();
+//dolfin::plot (problem.solution ("adjoint")[1], "adjoint pressure");
+//dolfin::plot (controlVariable, "control var");
+//functionalGradient = objectiveFunctional.gradient ();
+//dolfin::plot (functionalGradient, "grad");
+//dolfin::plot (searchDirection, "search direction");
+//dolfin::interactive ();
 
             // update value of the functional
             dolfin::log (dolfin::PROGRESS, "Evaluating functional...");
@@ -368,6 +399,12 @@ namespace controlproblem
             }
                 
             dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
+//dolfin::plot (problem.solution ("adjoint")[1], "adjoint pressure");
+//dolfin::plot (controlVariable, "control var");
+//functionalGradient = objectiveFunctional.gradient ();
+//dolfin::plot (functionalGradient, "grad");
+//dolfin::plot (searchDirection, "search direction");
+//dolfin::interactive ();
         }
         
         

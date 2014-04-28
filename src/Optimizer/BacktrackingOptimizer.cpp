@@ -1,15 +1,16 @@
 #include <Optimizer/BacktrackingOptimizer.hpp>
+#include <Optimizer/dotproduct.h>
 #include <dolfin/parameter/Parameters.h>
 #include <dolfin/log/dolfin_log.h>
 #include <dolfin/function/Function.h>
 #include <dolfin/common/NoDeleter.h>
 #include <dolfin/fem/assemble.h>
 #include <dolfin/fem/Form.h>
+#include <boost/shared_ptr.hpp>
 #include <string>
 #include <functional>
 #include <cmath>
-#include <Optimizer/dotproduct.h>
-#include <boost/shared_ptr.hpp>
+#include <iomanip>
 
 namespace controlproblem
 {
@@ -31,6 +32,7 @@ namespace controlproblem
         parameters.add ("rho", 0.5);
         parameters.add ("max_minimization_iterations", 100);
         parameters.add ("max_backtracking_iteration", 20);
+        parameters.add ("output_file_name", "");
         
         dolfin::log (dolfin::DBG, "BacktrackingOptimizer object created");
         
@@ -74,6 +76,7 @@ namespace controlproblem
         std::string convergenceCriterion  = this->parameters ["convergence_criterion"];
         int maxMinimizationIterations     = this->parameters ["max_minimization_iterations"];
         int maxBacktrackingIterations     = this->parameters ["max_backtracking_iteration"];
+        std::string outputFileName        = this->parameters ["output_file_name"];
 
         // define loop variables
         double alpha;
@@ -89,6 +92,65 @@ namespace controlproblem
         dolfin::Function searchDirection (controlVariable.function_space ());
         dolfin::Function controlVariableIncrement (controlVariable.function_space ());
         boost::shared_ptr<dolfin::Form> dotProductComputer;
+        
+        // define output file and print header if necessary
+        bool hasOutputFile = false;
+        std::ofstream OUTFILE;
+        if (!outputFileName.empty ())
+        {
+            OUTFILE.open (outputFileName);
+            if (OUTFILE.fail ())
+            {
+                dolfin::error ("Cannot open output file \"%s\"", outputFileName.c_str ());
+            }
+            
+            hasOutputFile = true;
+            if (convergenceCriterion == "both")
+            {
+                OUTFILE << "# Iteration"
+                        << "     "
+                        << "Functional_value" 
+                        << "     "
+                        << "Alpha" 
+                        << "          "
+                        << "Backtracking_iterations"
+                        << "     "
+                        << "Gradient_norm" 
+                        << "     "
+                        << "Relative_increment" 
+                        << std::endl;
+            }
+            else if (convergenceCriterion == "increment")
+            {
+                OUTFILE << "# Iteration"
+                        << "     "
+                        << "Functional_value" 
+                        << "     "
+                        << "Alpha" 
+                        << "          "
+                        << "Backtracking_iterations"
+                        << "     "
+                        << "Relative_increment" 
+                        << std::endl;
+            }
+            else if (convergenceCriterion == "gradient")
+            {
+                OUTFILE << "# Iteration"
+                        << "     "
+                        << "Functional_value" 
+                        << "Alpha" 
+                        << "          "
+                        << "Backtracking_iterations"
+                        << "     "
+                        << "Gradient_norm" 
+                        << std::endl;
+            }
+            else
+            {
+                dolfin::error ("Unknown convergence criterion \"%s\"", convergenceCriterion.c_str ());
+            }
+        }
+        
         
         // all linear problems in the CompositeDifferentialProblem "problem" should be reassembled every time. So we
         // set the parameter "force_reassemble_system" to true for every one of them
@@ -225,12 +287,6 @@ namespace controlproblem
         dolfin::log (dolfin::PROGRESS, "Solving differential problem...");
         problem.solve ();
         
-//dolfin::plot (problem.solution ("adjoint")[1], "adjoint pressure");
-//dolfin::plot (controlVariable, "control var");
-//functionalGradient = objectiveFunctional.gradient ();
-//dolfin::plot (functionalGradient, "grad");
-//dolfin::interactive ();
-        
         
         // initialize loop variables
         dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
@@ -263,6 +319,11 @@ namespace controlproblem
         dolfin::begin ("Starting minimization loop...");
         int minimizationIteration = 0;
         
+        if (hasOutputFile)
+        {
+            print (OUTFILE, minimizationIteration, currentFunctionalValue, 0, 0, gradientNorm, relativeIncrement);
+        }
+        
         while (isConverged () == false && minimizationIteration < maxMinimizationIterations)
         {
             minimizationIteration++;
@@ -277,12 +338,6 @@ namespace controlproblem
             previousFunctionalValue = currentFunctionalValue;
             functionalGradient = objectiveFunctional.gradient ();
             searchDirectionComputer (searchDirection, functionalGradient);
-//dolfin::plot (problem.solution ("adjoint")[1], "adjoint pressure");
-//dolfin::plot (controlVariable, "control var");
-//functionalGradient = objectiveFunctional.gradient ();
-//dolfin::plot (functionalGradient, "grad");
-//dolfin::plot (searchDirection, "search direction");
-//dolfin::interactive ();
             
             // compute dot product between gradient and search direction
             dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
@@ -304,12 +359,6 @@ namespace controlproblem
             // solve problem
             dolfin::log (dolfin::PROGRESS, "Solving differential problem...");
             problem.solve ();
-//dolfin::plot (problem.solution ("adjoint")[1], "adjoint pressure");
-//dolfin::plot (controlVariable, "control var");
-//functionalGradient = objectiveFunctional.gradient ();
-//dolfin::plot (functionalGradient, "grad");
-//dolfin::plot (searchDirection, "search direction");
-//dolfin::interactive ();
 
             // update value of the functional
             dolfin::log (dolfin::PROGRESS, "Evaluating functional...");
@@ -399,12 +448,17 @@ namespace controlproblem
             }
                 
             dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
-//dolfin::plot (problem.solution ("adjoint")[1], "adjoint pressure");
-//dolfin::plot (controlVariable, "control var");
-//functionalGradient = objectiveFunctional.gradient ();
-//dolfin::plot (functionalGradient, "grad");
-//dolfin::plot (searchDirection, "search direction");
-//dolfin::interactive ();
+            
+            if (hasOutputFile)
+            {
+                print (OUTFILE, 
+                       minimizationIteration, 
+                       currentFunctionalValue, 
+                       alpha, 
+                       backtrackingIteration, 
+                       gradientNorm, 
+                       relativeIncrement);
+            }
         }
         
         
@@ -425,6 +479,11 @@ namespace controlproblem
         }
         
         dolfin::end ();
+        
+        if (hasOutputFile)
+        {
+            OUTFILE.close ();
+        }
     }
     
 
@@ -432,5 +491,74 @@ namespace controlproblem
     void BacktrackingOptimizer::gradientSearchDirection (dolfin::Function& searchDirection, const dolfin::Function& gradient)
     {
         searchDirection = gradient * (-1);
+    }
+    
+
+    
+    void BacktrackingOptimizer::print (std::ostream& OUTSTREAM, 
+                                       const int& iteration,
+                                       const double& functionalValue,
+                                       const double& alpha,
+                                       const int& backtrackingIterations,
+                                       const double& gradientNorm,
+                                       const double& relativeIncrement)
+    {
+        dolfin::log (dolfin::DBG, "Printing results to file...");
+        std::string convergenceCriterion = this->parameters ["convergence_criterion"];
+
+        if (convergenceCriterion == "both")
+        {
+            OUTSTREAM << "  "
+                << std::left
+                << std::setw (14)
+                << iteration 
+                << std::setw (21)
+                << functionalValue 
+                << std::setw (15)
+                << alpha
+                << std::setw (28)
+                << backtrackingIterations
+                << std::setw (18)
+                << gradientNorm 
+                << std::setw (23)
+                << relativeIncrement
+                << std::endl;
+        }
+        else if (convergenceCriterion == "increment")
+        {
+            OUTSTREAM << "  "
+                << std::left
+                << std::setw (14)
+                << iteration 
+                << std::setw (21)
+                << functionalValue 
+                << std::setw (15)
+                << alpha
+                << std::setw (28)
+                << backtrackingIterations
+                << std::setw (23)
+                << relativeIncrement
+                << std::endl;
+        }
+        else if (convergenceCriterion == "gradient")
+        {
+            OUTSTREAM << "  "
+                << std::left
+                << std::setw (14)
+                << iteration 
+                << std::setw (21)
+                << functionalValue 
+                << std::setw (15)
+                << alpha
+                << std::setw (28)
+                << backtrackingIterations
+                << std::setw (18)
+                << gradientNorm 
+                << std::endl;
+        }
+        else
+        {
+            dolfin::error ("Unknown convergence criterion \"%s\"", convergenceCriterion.c_str ());
+        }
     }
 }

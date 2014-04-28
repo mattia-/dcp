@@ -78,7 +78,7 @@ int main (int argc, char* argv[])
     dolfin::plot (mesh);
 
     // define constant
-    dolfin::Constant nu (1e-5);
+    dolfin::Constant nu (1e-2);
     dolfin::Constant inflowDirichletBC (1.0, 0.0);
     dolfin::Constant symmetryDirichletBC (0.0);
     dolfin::Constant noSlipDirichletBC (0.0, 0.0);

@@ -335,16 +335,15 @@ namespace controlproblem
             parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
-            boost::shared_ptr <dolfin::Function> tmpSolution (new dolfin::Function (solution_));
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (residualFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             
             dolfin::end ();
@@ -382,16 +381,15 @@ namespace controlproblem
             parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
-            boost::shared_ptr <dolfin::Function> tmpSolution (new dolfin::Function (solution_));
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (residualFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             
             dolfin::end ();
@@ -429,16 +427,15 @@ namespace controlproblem
             parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
-            boost::shared_ptr <dolfin::Function> tmpSolution (new dolfin::Function (solution_));
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (residualFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             
             dolfin::end ();
@@ -478,16 +475,15 @@ namespace controlproblem
             parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
-            boost::shared_ptr <dolfin::Function> tmpSolution (new dolfin::Function (solution_));
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (residualFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             
             dolfin::end ();
@@ -527,16 +523,15 @@ namespace controlproblem
             parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
-            boost::shared_ptr <dolfin::Function> tmpSolution (new dolfin::Function (solution_));
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (residualFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             
             dolfin::end ();
@@ -577,16 +572,15 @@ namespace controlproblem
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             
-            boost::shared_ptr <dolfin::Function> tmpSolution (new dolfin::Function (solution_));
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (residualFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, tmpSolution);
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, tmpSolution);
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
             }
             
             dolfin::end ();

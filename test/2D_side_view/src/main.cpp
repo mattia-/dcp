@@ -85,7 +85,7 @@ int main (int argc, char* argv[])
     problems.addProblem ("adjoint", adjointProblem);
     
     // define constants
-    dolfin::Constant nu (1e-5);
+    dolfin::Constant nu (1e-2);
     dolfin::Constant primal_yInflowDirichletBC (0.0);
     dolfin::Constant primal_symmetryDirichletBC (0.0);
     dolfin::Constant primal_noSlipCondition (0.0, 0.0);
@@ -113,7 +113,7 @@ int main (int argc, char* argv[])
     problems["primal"].setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
     problems["primal"].setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
 
-    problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], primal_yInflowDirichletBC, primal_inflowBoundary), "y_inflow_BC");
+    problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[1],primal_yInflowDirichletBC,primal_inflowBoundary), "y_inflow_BC");
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*V[0], primal_noSlipCondition, primal_noSlipBoundary));
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], primal_symmetryDirichletBC, primal_gammaSD));
 
@@ -207,6 +207,7 @@ int main (int argc, char* argv[])
     // define optimizer
     controlproblem::BacktrackingOptimizer backtrackingOptimizer;
     backtrackingOptimizer.parameters ["relative_increment_tolerance"] = 1e-5;
+    backtrackingOptimizer.parameters ["output_file_name"] = "results.txt";
     
     backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater, searchDirectionComputer);
             

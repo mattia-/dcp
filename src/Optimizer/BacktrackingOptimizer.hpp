@@ -140,6 +140,15 @@ namespace controlproblem
             // ---------------------------------------------------------------------------------------------//
 
         protected:
+            //! Function to print to file some values. It is mostly useful to avid code repetition inside this class
+            void print (std::ostream& OUTSTREAM, 
+                        const int& iteration,
+                        const double& functionalValue,
+                        const double& alpha,
+                        const int& backtrackingIterations,
+                        const double& gradientNorm,
+                        const double& relativeIncrement);
+                
             //! The form that will be used to compute the dot product between the gradient and the search direction. 
             /*! 
              *  The default value is \c nullptr, in which case the function will use one

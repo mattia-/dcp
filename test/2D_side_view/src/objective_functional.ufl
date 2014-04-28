@@ -1,4 +1,4 @@
-# UFL file for definition of the objective functional
+# UFL file for definition of objective functional
 #
 # define mesh dimension
 cell = triangle
@@ -22,6 +22,11 @@ J = 0.5 * inner (u - U, u - U) * dx (1) \
     + 0.5 * sigma_1 * inner (g, g) * ds (2) \
     + 0.5 * sigma_2 * inner (grad (g), grad (g)) * ds (2)
 
+J_control_component = 0.5 * sigma_1 * inner (g, g) * ds (2) \
+                      + 0.5 * sigma_2 * inner (grad (g), grad (g)) * ds (2)
+
+J_target_component = 0.5 * inner (u - U, u - U) * dx (1) \
+                     + 0.5 * inner (p - P, p - P) * dx (1)
 
 # add functional to list of forms
-forms = [J]
+forms = [J, J_control_component, J_target_component]

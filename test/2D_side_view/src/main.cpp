@@ -8,6 +8,7 @@
 #include "adjoint.h"
 #include "objective_functional.h"
 #include "control_variable_function_space.h"
+#include "lift_drag.h"
 #include "main_settings.h"
 
 int main (int argc, char* argv[])
@@ -141,7 +142,7 @@ int main (int argc, char* argv[])
     // =========================== OBJECTIVE FUNCTIONAL ============================= //
     // ============================================================================== //
     // define functional
-    controlproblem::ObjectiveFunctional <objective_functional::Functional, objective_functional::Gradient>
+    controlproblem::ObjectiveFunctional <objective_functional::Form_J, objective_functional::Gradient>
         objectiveFunctional (mesh);
     
     // define functional coefficients
@@ -184,6 +185,63 @@ int main (int argc, char* argv[])
     objectiveFunctional.setCoefficient ("gradient",
                                         dolfin::reference_to_no_delete_pointer (g),
                                         "g");
+
+    
+    
+    // ============================================================================== //
+    // ===================== OBJECTIVE FUNCTIONAL COMPONENTS ======================== //
+    // ============================================================================== //
+    // ----------------------
+    // component: only target
+    // ----------------------
+    objective_functional::Form_J_control_component functionalControlComponent (mesh);
+        
+    // functional settings
+    functionalControlComponent.set_coefficient ("sigma_1", dolfin::reference_to_no_delete_pointer (sigma_1));
+    functionalControlComponent.set_coefficient ("sigma_2", dolfin::reference_to_no_delete_pointer (sigma_2));
+    functionalControlComponent.set_coefficient ("g", dolfin::reference_to_no_delete_pointer (g));
+    
+    functionalControlComponent.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer (meshFacets));
+    
+    
+    // -----------------------
+    // component: only control
+    // -----------------------
+    objective_functional::Form_J_target_component functionalTargetComponent (mesh);
+        
+    // functional settings
+    functionalTargetComponent.set_coefficient ("U", dolfin::reference_to_no_delete_pointer (interpolatedTargetU));
+    functionalTargetComponent.set_coefficient ("P", dolfin::reference_to_no_delete_pointer (interpolatedTargetP));
+    functionalTargetComponent.set_coefficient ("u", dolfin::reference_to_no_delete_pointer (problems["primal"].solution()[0]));
+    functionalTargetComponent.set_coefficient ("p", dolfin::reference_to_no_delete_pointer (problems["primal"].solution()[1]));
+    
+    functionalTargetComponent.set_cell_domains (dolfin::reference_to_no_delete_pointer (meshCells));
+    
+    
+
+    // ============================================================================== //
+    // =============================== LIFT AND DRAG ================================ //
+    // ============================================================================== //
+    primal_noSlipBoundary.mark (meshFacets, 3);
+    
+    // ------
+    // lift
+    // ------
+    lift_drag::Form_Lift liftComputer (mesh);
+        
+    // functional settings
+    liftComputer.set_coefficient ("p", dolfin::reference_to_no_delete_pointer (problems["primal"].solution()[1]));
+    
+    
+    // ------
+    // drag
+    // ------
+    lift_drag::Form_Lift dragComputer (mesh);
+        
+    // functional settings
+    dragComputer.set_coefficient ("p", dolfin::reference_to_no_delete_pointer (problems["primal"].solution()[1]));
+    
+    
 
     // ============================================================================== //
     // =============================== OPTIMIZATION  ================================ //
@@ -239,5 +297,18 @@ int main (int argc, char* argv[])
     
     dolfin::interactive ();
     
+    
+    // compute functional components
+    std::ofstream componentsOutputStream ("functional_components.txt");
+    componentsOutputStream << "Control_component_of_the_functional = " << dolfin::assemble (functionalControlComponent) << std::endl;
+    componentsOutputStream << "Target_component_of_the_functional = " << dolfin::assemble (functionalTargetComponent) << std::endl;
+    componentsOutputStream.close ();
+    
+
+    // compute lift and drag
+    std::ofstream liftDragOutputStream ("reconstructed_lift_drag.txt");
+    liftDragOutputStream << "Lift = " << dolfin::assemble (liftComputer) << std::endl;
+    liftDragOutputStream << "Drag = " << dolfin::assemble (dragComputer) << std::endl;
+    liftDragOutputStream.close ();
     return 0;
 }

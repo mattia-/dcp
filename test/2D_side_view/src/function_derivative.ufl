@@ -2,7 +2,7 @@
 # 
 # This ufl files describes the problem:
 #       u = \nabla f                  in \Omega
-#       \nabla u \cdot n = 0    su \partial \Omega
+#       \nabla u \cdot n = 0          su \partial \Omega
 #
 #
 # define mesh dimension

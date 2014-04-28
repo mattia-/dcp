@@ -2,6 +2,7 @@
 #include <string>
 #include <dolfin.h>
 #include "primal.h"
+#include "lift_drag.h"
 #include <DifferentialProblem/NonlinearDifferentialProblem.hpp>
 
 namespace navierstokes
@@ -51,6 +52,31 @@ namespace navierstokes
                 bool onCircleBoundary = r < (radius + 1e-3) && on_boundary;
 
                 return onWall1 || onWall2 || onWall3 || onCircleBoundary;
+            }
+
+        private:
+            dolfin::Array<double> center;
+            double radius;
+    }; 
+    
+    class Circle : public dolfin::SubDomain
+    {
+        public:
+            Circle () : 
+                center (2),
+                radius (0.5)
+            {
+                center[0] = 2.5;
+                center[1] = 1;
+            }
+            
+            bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+            {
+                double dx = x[0] - center[0];
+                double dy = x[1] - center[1];
+                double r = sqrt (dx * dx + dy * dy);
+                
+                return r < (radius + 1e-3) && on_boundary;
             }
 
         private:
@@ -132,6 +158,40 @@ int main (int argc, char* argv[])
         dolfin::Function p (navierStokesProblem.solution ()[1]);
         pPlotFile << p;
     }
+    
+    // ============================================================================== //
+    // =============================== LIFT AND DRAG ================================ //
+    // ============================================================================== //
+    dolfin::FacetFunction<std::size_t> meshFacets (mesh);
+    meshFacets.set_all (0);
+    
+    navierstokes::Circle circle;
+    circle.mark (meshFacets, 3);
+    
+    // ------
+    // lift
+    // ------
+    lift_drag::Form_Lift liftComputer (mesh);
+    
+    // functional settings
+    liftComputer.set_coefficient ("p", dolfin::reference_to_no_delete_pointer (navierStokesProblem.solution ()[1]));
+    
+    
+    // ------
+    // drag
+    // ------
+    lift_drag::Form_Lift dragComputer (mesh);
+        
+    // functional settings
+    dragComputer.set_coefficient ("p", dolfin::reference_to_no_delete_pointer (navierStokesProblem.solution ()[1]));
+    
+   
+    // compute lift and drag
+    std::ofstream liftDragOutputStream ("target_lift_drag.txt");
+    liftDragOutputStream << "Lift = " << dolfin::assemble (liftComputer) << std::endl;
+    liftDragOutputStream << "Drag = " << dolfin::assemble (dragComputer) << std::endl;
+    liftDragOutputStream.close ();
+    
     
     return 0;
 }

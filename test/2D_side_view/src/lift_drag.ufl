@@ -1,0 +1,13 @@
+# This form defines the functional for computing the
+# lift and drag on a body.
+#
+
+cell = triangle
+V = FiniteElement("Lagrange", cell, 1)
+
+n = cell.n
+p = Coefficient (V)
+Drag = -p * n[0] * ds (3)
+Lift = p * n[1] * ds(3)
+
+forms = [Drag, Lift]

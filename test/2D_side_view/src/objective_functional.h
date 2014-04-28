@@ -6969,6 +6969,491 @@ public:
 
 };
 
+/// This class defines the interface for the tabulation of the
+/// exterior facet tensor corresponding to the local contribution to
+/// a form from the integral over an exterior facet.
+
+class objective_functional_exterior_facet_integral_1_2: public ufc::exterior_facet_integral
+{
+public:
+
+  /// Constructor
+  objective_functional_exterior_facet_integral_1_2() : ufc::exterior_facet_integral()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~objective_functional_exterior_facet_integral_1_2()
+  {
+    // Do nothing
+  }
+
+  /// Tabulate the tensor for the contribution from a local exterior facet
+  virtual void tabulate_tensor(double*  A,
+                               const double * const *  w,
+                               const double*  vertex_coordinates,
+                               std::size_t facet) const
+  {
+    // Compute Jacobian
+    double J[4];
+    compute_jacobian_triangle_2d(J, vertex_coordinates);
+    
+    // Compute Jacobian inverse and determinant
+    double K[4];
+    double detJ;
+    compute_jacobian_inverse_triangle_2d(K, detJ, J);
+    
+    
+    
+    // Get vertices on edge
+    static unsigned int edge_vertices[3][2] = {{1, 2}, {0, 2}, {0, 1}};
+    const unsigned int v0 = edge_vertices[facet][0];
+    const unsigned int v1 = edge_vertices[facet][1];
+    
+    // Compute scale factor (length of edge scaled by length of reference interval)
+    const double dx0 = vertex_coordinates[2*v1 + 0] - vertex_coordinates[2*v0 + 0];
+    const double dx1 = vertex_coordinates[2*v1 + 1] - vertex_coordinates[2*v0 + 1];
+    const double det = std::sqrt(dx0*dx0 + dx1*dx1);
+    
+    
+    // Compute facet normals from the facet scale factor constants
+    
+    // Facet area
+    
+    // Cell volume
+    
+    // Compute circumradius of triangle in 2D
+    
+    
+    // Array of quadrature weights.
+    static const double W2[2] = {0.5, 0.5};
+    // Quadrature points on the UFC reference element: (0.211324865405187), (0.788675134594813)
+    
+    // Value of basis functions at quadrature points.
+    static const double FE0_f0[2][2] = \
+    {{0.788675134594813, 0.211324865405187},
+    {0.211324865405187, 0.788675134594813}};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc0[2] = {1, 2};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc3[2] = {0, 2};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc4[2] = {0, 1};
+    
+    static const double FE0_f0_D01[2][2] = \
+    {{-1.0, 1.0},
+    {-1.0, 1.0}};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc1[2] = {0, 2};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc2[2] = {0, 1};
+    
+    // Reset values in the element tensor.
+    A[0] = 0.0;
+    // Number of operations to compute geometry constants: 19.
+    double G[4];
+    G[0] = 0.5*det*w[1][0]*(K[0]*K[0] + K[1]*K[1]);
+    G[1] = det*w[1][0]*(K[0]*K[2] + K[1]*K[3]);
+    G[2] = 0.5*det*w[1][0]*(K[2]*K[2] + K[3]*K[3]);
+    G[3] = 0.5*det*w[0][0];
+    
+    // Compute element tensor using UFL quadrature representation
+    // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
+    switch (facet)
+    {
+    case 0:
+      {
+        // Total number of operations to compute element tensor (from this point): 48
+      
+      // Loop quadrature points for integral.
+      // Number of operations to compute element tensor for following IP loop = 48
+      for (unsigned int ip = 0; ip < 2; ip++)
+      {
+        
+        // Coefficient declarations.
+        double F0 = 0.0;
+        double F1 = 0.0;
+        double F2 = 0.0;
+        
+        // Total number of operations to compute function values = 12
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0_D01[ip][r]*w[2][nzc2[r]];
+          F1 += FE0_f0_D01[ip][r]*w[2][nzc1[r]];
+          F2 += FE0_f0[ip][r]*w[2][nzc0[r]];
+        }// end loop over 'r'
+        
+        // Number of operations to compute ip constants: 11
+        double I[1];
+        // Number of operations: 11
+        I[0] = W2[ip]*(F0*F0*G[0] + F1*(F0*G[1] + F1*G[2]) + F2*F2*G[3]);
+        
+        
+        // Number of operations for primary indices: 1
+        // Number of operations to compute entry: 1
+        A[0] += I[0];
+      }// end loop over 'ip'
+        break;
+      }
+    case 1:
+      {
+        // Total number of operations to compute element tensor (from this point): 48
+      
+      // Loop quadrature points for integral.
+      // Number of operations to compute element tensor for following IP loop = 48
+      for (unsigned int ip = 0; ip < 2; ip++)
+      {
+        
+        // Coefficient declarations.
+        double F0 = 0.0;
+        double F1 = 0.0;
+        double F2 = 0.0;
+        
+        // Total number of operations to compute function values = 12
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0_D01[ip][r]*w[2][nzc2[r]];
+          F1 += FE0_f0_D01[ip][r]*w[2][nzc1[r]];
+          F2 += FE0_f0[ip][r]*w[2][nzc3[r]];
+        }// end loop over 'r'
+        
+        // Number of operations to compute ip constants: 11
+        double I[1];
+        // Number of operations: 11
+        I[0] = W2[ip]*(F0*F0*G[0] + F1*(F0*G[1] + F1*G[2]) + F2*F2*G[3]);
+        
+        
+        // Number of operations for primary indices: 1
+        // Number of operations to compute entry: 1
+        A[0] += I[0];
+      }// end loop over 'ip'
+        break;
+      }
+    case 2:
+      {
+        // Total number of operations to compute element tensor (from this point): 48
+      
+      // Loop quadrature points for integral.
+      // Number of operations to compute element tensor for following IP loop = 48
+      for (unsigned int ip = 0; ip < 2; ip++)
+      {
+        
+        // Coefficient declarations.
+        double F0 = 0.0;
+        double F1 = 0.0;
+        double F2 = 0.0;
+        
+        // Total number of operations to compute function values = 12
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0_D01[ip][r]*w[2][nzc2[r]];
+          F1 += FE0_f0_D01[ip][r]*w[2][nzc1[r]];
+          F2 += FE0_f0[ip][r]*w[2][nzc4[r]];
+        }// end loop over 'r'
+        
+        // Number of operations to compute ip constants: 11
+        double I[1];
+        // Number of operations: 11
+        I[0] = W2[ip]*(F0*F0*G[0] + F1*(F0*G[1] + F1*G[2]) + F2*F2*G[3]);
+        
+        
+        // Number of operations for primary indices: 1
+        // Number of operations to compute entry: 1
+        A[0] += I[0];
+      }// end loop over 'ip'
+        break;
+      }
+    }
+    
+  }
+
+};
+
+/// This class defines the interface for the tabulation of the cell
+/// tensor corresponding to the local contribution to a form from
+/// the integral over a cell.
+
+class objective_functional_cell_integral_2_1: public ufc::cell_integral
+{
+public:
+
+  /// Constructor
+  objective_functional_cell_integral_2_1() : ufc::cell_integral()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~objective_functional_cell_integral_2_1()
+  {
+    // Do nothing
+  }
+
+  /// Tabulate the tensor for the contribution from a local cell
+  virtual void tabulate_tensor(double*  A,
+                               const double * const *  w,
+                               const double*  vertex_coordinates,
+                               int cell_orientation) const
+  {
+    // Number of operations (multiply-add pairs) for Jacobian data:      3
+    // Number of operations (multiply-add pairs) for geometry tensor:    342
+    // Number of operations (multiply-add pairs) for tensor contraction: 227
+    // Total number of operations (multiply-add pairs):                  572
+    
+    // Compute Jacobian
+    double J[4];
+    compute_jacobian_triangle_2d(J, vertex_coordinates);
+    
+    // Compute Jacobian inverse and determinant
+    double K[4];
+    double detJ;
+    compute_jacobian_inverse_triangle_2d(K, detJ, J);
+    
+    // Set scale factor
+    const double det = std::abs(detJ);
+    
+    // Compute geometry tensor
+    const double G0_0_0 = det*w[0][0]*w[0][0]*(1.0);
+    const double G0_0_1 = det*w[0][0]*w[0][1]*(1.0);
+    const double G0_0_2 = det*w[0][0]*w[0][2]*(1.0);
+    const double G0_0_3 = det*w[0][0]*w[0][3]*(1.0);
+    const double G0_1_0 = det*w[0][1]*w[0][0]*(1.0);
+    const double G0_1_1 = det*w[0][1]*w[0][1]*(1.0);
+    const double G0_1_2 = det*w[0][1]*w[0][2]*(1.0);
+    const double G0_1_4 = det*w[0][1]*w[0][4]*(1.0);
+    const double G0_2_0 = det*w[0][2]*w[0][0]*(1.0);
+    const double G0_2_1 = det*w[0][2]*w[0][1]*(1.0);
+    const double G0_2_2 = det*w[0][2]*w[0][2]*(1.0);
+    const double G0_2_5 = det*w[0][2]*w[0][5]*(1.0);
+    const double G0_3_0 = det*w[0][3]*w[0][0]*(1.0);
+    const double G0_3_3 = det*w[0][3]*w[0][3]*(1.0);
+    const double G0_3_4 = det*w[0][3]*w[0][4]*(1.0);
+    const double G0_3_5 = det*w[0][3]*w[0][5]*(1.0);
+    const double G0_4_1 = det*w[0][4]*w[0][1]*(1.0);
+    const double G0_4_3 = det*w[0][4]*w[0][3]*(1.0);
+    const double G0_4_4 = det*w[0][4]*w[0][4]*(1.0);
+    const double G0_4_5 = det*w[0][4]*w[0][5]*(1.0);
+    const double G0_5_2 = det*w[0][5]*w[0][2]*(1.0);
+    const double G0_5_3 = det*w[0][5]*w[0][3]*(1.0);
+    const double G0_5_4 = det*w[0][5]*w[0][4]*(1.0);
+    const double G0_5_5 = det*w[0][5]*w[0][5]*(1.0);
+    const double G0_6_6 = det*w[0][6]*w[0][6]*(1.0);
+    const double G0_6_7 = det*w[0][6]*w[0][7]*(1.0);
+    const double G0_6_8 = det*w[0][6]*w[0][8]*(1.0);
+    const double G0_6_9 = det*w[0][6]*w[0][9]*(1.0);
+    const double G0_7_6 = det*w[0][7]*w[0][6]*(1.0);
+    const double G0_7_7 = det*w[0][7]*w[0][7]*(1.0);
+    const double G0_7_8 = det*w[0][7]*w[0][8]*(1.0);
+    const double G0_7_10 = det*w[0][7]*w[0][10]*(1.0);
+    const double G0_8_6 = det*w[0][8]*w[0][6]*(1.0);
+    const double G0_8_7 = det*w[0][8]*w[0][7]*(1.0);
+    const double G0_8_8 = det*w[0][8]*w[0][8]*(1.0);
+    const double G0_8_11 = det*w[0][8]*w[0][11]*(1.0);
+    const double G0_9_6 = det*w[0][9]*w[0][6]*(1.0);
+    const double G0_9_9 = det*w[0][9]*w[0][9]*(1.0);
+    const double G0_9_10 = det*w[0][9]*w[0][10]*(1.0);
+    const double G0_9_11 = det*w[0][9]*w[0][11]*(1.0);
+    const double G0_10_7 = det*w[0][10]*w[0][7]*(1.0);
+    const double G0_10_9 = det*w[0][10]*w[0][9]*(1.0);
+    const double G0_10_10 = det*w[0][10]*w[0][10]*(1.0);
+    const double G0_10_11 = det*w[0][10]*w[0][11]*(1.0);
+    const double G0_11_8 = det*w[0][11]*w[0][8]*(1.0);
+    const double G0_11_9 = det*w[0][11]*w[0][9]*(1.0);
+    const double G0_11_10 = det*w[0][11]*w[0][10]*(1.0);
+    const double G0_11_11 = det*w[0][11]*w[0][11]*(1.0);
+    const double G1_0_0 = det*w[0][0]*w[1][0]*(1.0);
+    const double G1_0_1 = det*w[0][0]*w[1][1]*(1.0);
+    const double G1_0_2 = det*w[0][0]*w[1][2]*(1.0);
+    const double G1_0_3 = det*w[0][0]*w[1][3]*(1.0);
+    const double G1_1_0 = det*w[0][1]*w[1][0]*(1.0);
+    const double G1_1_1 = det*w[0][1]*w[1][1]*(1.0);
+    const double G1_1_2 = det*w[0][1]*w[1][2]*(1.0);
+    const double G1_1_4 = det*w[0][1]*w[1][4]*(1.0);
+    const double G1_2_0 = det*w[0][2]*w[1][0]*(1.0);
+    const double G1_2_1 = det*w[0][2]*w[1][1]*(1.0);
+    const double G1_2_2 = det*w[0][2]*w[1][2]*(1.0);
+    const double G1_2_5 = det*w[0][2]*w[1][5]*(1.0);
+    const double G1_3_0 = det*w[0][3]*w[1][0]*(1.0);
+    const double G1_3_3 = det*w[0][3]*w[1][3]*(1.0);
+    const double G1_3_4 = det*w[0][3]*w[1][4]*(1.0);
+    const double G1_3_5 = det*w[0][3]*w[1][5]*(1.0);
+    const double G1_4_1 = det*w[0][4]*w[1][1]*(1.0);
+    const double G1_4_3 = det*w[0][4]*w[1][3]*(1.0);
+    const double G1_4_4 = det*w[0][4]*w[1][4]*(1.0);
+    const double G1_4_5 = det*w[0][4]*w[1][5]*(1.0);
+    const double G1_5_2 = det*w[0][5]*w[1][2]*(1.0);
+    const double G1_5_3 = det*w[0][5]*w[1][3]*(1.0);
+    const double G1_5_4 = det*w[0][5]*w[1][4]*(1.0);
+    const double G1_5_5 = det*w[0][5]*w[1][5]*(1.0);
+    const double G1_6_6 = det*w[0][6]*w[1][6]*(1.0);
+    const double G1_6_7 = det*w[0][6]*w[1][7]*(1.0);
+    const double G1_6_8 = det*w[0][6]*w[1][8]*(1.0);
+    const double G1_6_9 = det*w[0][6]*w[1][9]*(1.0);
+    const double G1_7_6 = det*w[0][7]*w[1][6]*(1.0);
+    const double G1_7_7 = det*w[0][7]*w[1][7]*(1.0);
+    const double G1_7_8 = det*w[0][7]*w[1][8]*(1.0);
+    const double G1_7_10 = det*w[0][7]*w[1][10]*(1.0);
+    const double G1_8_6 = det*w[0][8]*w[1][6]*(1.0);
+    const double G1_8_7 = det*w[0][8]*w[1][7]*(1.0);
+    const double G1_8_8 = det*w[0][8]*w[1][8]*(1.0);
+    const double G1_8_11 = det*w[0][8]*w[1][11]*(1.0);
+    const double G1_9_6 = det*w[0][9]*w[1][6]*(1.0);
+    const double G1_9_9 = det*w[0][9]*w[1][9]*(1.0);
+    const double G1_9_10 = det*w[0][9]*w[1][10]*(1.0);
+    const double G1_9_11 = det*w[0][9]*w[1][11]*(1.0);
+    const double G1_10_7 = det*w[0][10]*w[1][7]*(1.0);
+    const double G1_10_9 = det*w[0][10]*w[1][9]*(1.0);
+    const double G1_10_10 = det*w[0][10]*w[1][10]*(1.0);
+    const double G1_10_11 = det*w[0][10]*w[1][11]*(1.0);
+    const double G1_11_8 = det*w[0][11]*w[1][8]*(1.0);
+    const double G1_11_9 = det*w[0][11]*w[1][9]*(1.0);
+    const double G1_11_10 = det*w[0][11]*w[1][10]*(1.0);
+    const double G1_11_11 = det*w[0][11]*w[1][11]*(1.0);
+    const double G2_0_0 = det*w[1][0]*w[0][0]*(1.0);
+    const double G2_0_1 = det*w[1][0]*w[0][1]*(1.0);
+    const double G2_0_2 = det*w[1][0]*w[0][2]*(1.0);
+    const double G2_0_3 = det*w[1][0]*w[0][3]*(1.0);
+    const double G2_1_0 = det*w[1][1]*w[0][0]*(1.0);
+    const double G2_1_1 = det*w[1][1]*w[0][1]*(1.0);
+    const double G2_1_2 = det*w[1][1]*w[0][2]*(1.0);
+    const double G2_1_4 = det*w[1][1]*w[0][4]*(1.0);
+    const double G2_2_0 = det*w[1][2]*w[0][0]*(1.0);
+    const double G2_2_1 = det*w[1][2]*w[0][1]*(1.0);
+    const double G2_2_2 = det*w[1][2]*w[0][2]*(1.0);
+    const double G2_2_5 = det*w[1][2]*w[0][5]*(1.0);
+    const double G2_3_0 = det*w[1][3]*w[0][0]*(1.0);
+    const double G2_3_3 = det*w[1][3]*w[0][3]*(1.0);
+    const double G2_3_4 = det*w[1][3]*w[0][4]*(1.0);
+    const double G2_3_5 = det*w[1][3]*w[0][5]*(1.0);
+    const double G2_4_1 = det*w[1][4]*w[0][1]*(1.0);
+    const double G2_4_3 = det*w[1][4]*w[0][3]*(1.0);
+    const double G2_4_4 = det*w[1][4]*w[0][4]*(1.0);
+    const double G2_4_5 = det*w[1][4]*w[0][5]*(1.0);
+    const double G2_5_2 = det*w[1][5]*w[0][2]*(1.0);
+    const double G2_5_3 = det*w[1][5]*w[0][3]*(1.0);
+    const double G2_5_4 = det*w[1][5]*w[0][4]*(1.0);
+    const double G2_5_5 = det*w[1][5]*w[0][5]*(1.0);
+    const double G2_6_6 = det*w[1][6]*w[0][6]*(1.0);
+    const double G2_6_7 = det*w[1][6]*w[0][7]*(1.0);
+    const double G2_6_8 = det*w[1][6]*w[0][8]*(1.0);
+    const double G2_6_9 = det*w[1][6]*w[0][9]*(1.0);
+    const double G2_7_6 = det*w[1][7]*w[0][6]*(1.0);
+    const double G2_7_7 = det*w[1][7]*w[0][7]*(1.0);
+    const double G2_7_8 = det*w[1][7]*w[0][8]*(1.0);
+    const double G2_7_10 = det*w[1][7]*w[0][10]*(1.0);
+    const double G2_8_6 = det*w[1][8]*w[0][6]*(1.0);
+    const double G2_8_7 = det*w[1][8]*w[0][7]*(1.0);
+    const double G2_8_8 = det*w[1][8]*w[0][8]*(1.0);
+    const double G2_8_11 = det*w[1][8]*w[0][11]*(1.0);
+    const double G2_9_6 = det*w[1][9]*w[0][6]*(1.0);
+    const double G2_9_9 = det*w[1][9]*w[0][9]*(1.0);
+    const double G2_9_10 = det*w[1][9]*w[0][10]*(1.0);
+    const double G2_9_11 = det*w[1][9]*w[0][11]*(1.0);
+    const double G2_10_7 = det*w[1][10]*w[0][7]*(1.0);
+    const double G2_10_9 = det*w[1][10]*w[0][9]*(1.0);
+    const double G2_10_10 = det*w[1][10]*w[0][10]*(1.0);
+    const double G2_10_11 = det*w[1][10]*w[0][11]*(1.0);
+    const double G2_11_8 = det*w[1][11]*w[0][8]*(1.0);
+    const double G2_11_9 = det*w[1][11]*w[0][9]*(1.0);
+    const double G2_11_10 = det*w[1][11]*w[0][10]*(1.0);
+    const double G2_11_11 = det*w[1][11]*w[0][11]*(1.0);
+    const double G3_0_0 = det*w[1][0]*w[1][0]*(1.0);
+    const double G3_0_1 = det*w[1][0]*w[1][1]*(1.0);
+    const double G3_0_2 = det*w[1][0]*w[1][2]*(1.0);
+    const double G3_0_3 = det*w[1][0]*w[1][3]*(1.0);
+    const double G3_1_0 = det*w[1][1]*w[1][0]*(1.0);
+    const double G3_1_1 = det*w[1][1]*w[1][1]*(1.0);
+    const double G3_1_2 = det*w[1][1]*w[1][2]*(1.0);
+    const double G3_1_4 = det*w[1][1]*w[1][4]*(1.0);
+    const double G3_2_0 = det*w[1][2]*w[1][0]*(1.0);
+    const double G3_2_1 = det*w[1][2]*w[1][1]*(1.0);
+    const double G3_2_2 = det*w[1][2]*w[1][2]*(1.0);
+    const double G3_2_5 = det*w[1][2]*w[1][5]*(1.0);
+    const double G3_3_0 = det*w[1][3]*w[1][0]*(1.0);
+    const double G3_3_3 = det*w[1][3]*w[1][3]*(1.0);
+    const double G3_3_4 = det*w[1][3]*w[1][4]*(1.0);
+    const double G3_3_5 = det*w[1][3]*w[1][5]*(1.0);
+    const double G3_4_1 = det*w[1][4]*w[1][1]*(1.0);
+    const double G3_4_3 = det*w[1][4]*w[1][3]*(1.0);
+    const double G3_4_4 = det*w[1][4]*w[1][4]*(1.0);
+    const double G3_4_5 = det*w[1][4]*w[1][5]*(1.0);
+    const double G3_5_2 = det*w[1][5]*w[1][2]*(1.0);
+    const double G3_5_3 = det*w[1][5]*w[1][3]*(1.0);
+    const double G3_5_4 = det*w[1][5]*w[1][4]*(1.0);
+    const double G3_5_5 = det*w[1][5]*w[1][5]*(1.0);
+    const double G3_6_6 = det*w[1][6]*w[1][6]*(1.0);
+    const double G3_6_7 = det*w[1][6]*w[1][7]*(1.0);
+    const double G3_6_8 = det*w[1][6]*w[1][8]*(1.0);
+    const double G3_6_9 = det*w[1][6]*w[1][9]*(1.0);
+    const double G3_7_6 = det*w[1][7]*w[1][6]*(1.0);
+    const double G3_7_7 = det*w[1][7]*w[1][7]*(1.0);
+    const double G3_7_8 = det*w[1][7]*w[1][8]*(1.0);
+    const double G3_7_10 = det*w[1][7]*w[1][10]*(1.0);
+    const double G3_8_6 = det*w[1][8]*w[1][6]*(1.0);
+    const double G3_8_7 = det*w[1][8]*w[1][7]*(1.0);
+    const double G3_8_8 = det*w[1][8]*w[1][8]*(1.0);
+    const double G3_8_11 = det*w[1][8]*w[1][11]*(1.0);
+    const double G3_9_6 = det*w[1][9]*w[1][6]*(1.0);
+    const double G3_9_9 = det*w[1][9]*w[1][9]*(1.0);
+    const double G3_9_10 = det*w[1][9]*w[1][10]*(1.0);
+    const double G3_9_11 = det*w[1][9]*w[1][11]*(1.0);
+    const double G3_10_7 = det*w[1][10]*w[1][7]*(1.0);
+    const double G3_10_9 = det*w[1][10]*w[1][9]*(1.0);
+    const double G3_10_10 = det*w[1][10]*w[1][10]*(1.0);
+    const double G3_10_11 = det*w[1][10]*w[1][11]*(1.0);
+    const double G3_11_8 = det*w[1][11]*w[1][8]*(1.0);
+    const double G3_11_9 = det*w[1][11]*w[1][9]*(1.0);
+    const double G3_11_10 = det*w[1][11]*w[1][10]*(1.0);
+    const double G3_11_11 = det*w[1][11]*w[1][11]*(1.0);
+    const double G4_0_0 = det*w[2][0]*w[2][0]*(1.0);
+    const double G4_0_1 = det*w[2][0]*w[2][1]*(1.0);
+    const double G4_0_2 = det*w[2][0]*w[2][2]*(1.0);
+    const double G4_1_0 = det*w[2][1]*w[2][0]*(1.0);
+    const double G4_1_1 = det*w[2][1]*w[2][1]*(1.0);
+    const double G4_1_2 = det*w[2][1]*w[2][2]*(1.0);
+    const double G4_2_0 = det*w[2][2]*w[2][0]*(1.0);
+    const double G4_2_1 = det*w[2][2]*w[2][1]*(1.0);
+    const double G4_2_2 = det*w[2][2]*w[2][2]*(1.0);
+    const double G5_0_0 = det*w[2][0]*w[3][0]*(1.0);
+    const double G5_0_1 = det*w[2][0]*w[3][1]*(1.0);
+    const double G5_0_2 = det*w[2][0]*w[3][2]*(1.0);
+    const double G5_1_0 = det*w[2][1]*w[3][0]*(1.0);
+    const double G5_1_1 = det*w[2][1]*w[3][1]*(1.0);
+    const double G5_1_2 = det*w[2][1]*w[3][2]*(1.0);
+    const double G5_2_0 = det*w[2][2]*w[3][0]*(1.0);
+    const double G5_2_1 = det*w[2][2]*w[3][1]*(1.0);
+    const double G5_2_2 = det*w[2][2]*w[3][2]*(1.0);
+    const double G6_0_0 = det*w[3][0]*w[2][0]*(1.0);
+    const double G6_0_1 = det*w[3][0]*w[2][1]*(1.0);
+    const double G6_0_2 = det*w[3][0]*w[2][2]*(1.0);
+    const double G6_1_0 = det*w[3][1]*w[2][0]*(1.0);
+    const double G6_1_1 = det*w[3][1]*w[2][1]*(1.0);
+    const double G6_1_2 = det*w[3][1]*w[2][2]*(1.0);
+    const double G6_2_0 = det*w[3][2]*w[2][0]*(1.0);
+    const double G6_2_1 = det*w[3][2]*w[2][1]*(1.0);
+    const double G6_2_2 = det*w[3][2]*w[2][2]*(1.0);
+    const double G7_0_0 = det*w[3][0]*w[3][0]*(1.0);
+    const double G7_0_1 = det*w[3][0]*w[3][1]*(1.0);
+    const double G7_0_2 = det*w[3][0]*w[3][2]*(1.0);
+    const double G7_1_0 = det*w[3][1]*w[3][0]*(1.0);
+    const double G7_1_1 = det*w[3][1]*w[3][1]*(1.0);
+    const double G7_1_2 = det*w[3][1]*w[3][2]*(1.0);
+    const double G7_2_0 = det*w[3][2]*w[3][0]*(1.0);
+    const double G7_2_1 = det*w[3][2]*w[3][1]*(1.0);
+    const double G7_2_2 = det*w[3][2]*w[3][2]*(1.0);
+    
+    // Compute element tensor
+    A[0] = 0.0083333333333333*G0_0_0 - 0.00138888888888889*G0_0_1 - 0.00138888888888889*G0_0_2 - 0.00555555555555553*G0_0_3 - 0.00138888888888889*G0_1_0 + 0.00833333333333337*G0_1_1 - 0.0013888888888889*G0_1_2 - 0.00555555555555554*G0_1_4 - 0.00138888888888889*G0_2_0 - 0.0013888888888889*G0_2_1 + 0.00833333333333337*G0_2_2 - 0.00555555555555554*G0_2_5 - 0.00555555555555553*G0_3_0 + 0.0444444444444444*G0_3_3 + 0.0222222222222221*G0_3_4 + 0.0222222222222221*G0_3_5 - 0.00555555555555554*G0_4_1 + 0.0222222222222221*G0_4_3 + 0.0444444444444443*G0_4_4 + 0.0222222222222222*G0_4_5 - 0.00555555555555554*G0_5_2 + 0.0222222222222221*G0_5_3 + 0.0222222222222222*G0_5_4 + 0.0444444444444444*G0_5_5 + 0.0083333333333333*G0_6_6 - 0.00138888888888889*G0_6_7 - 0.00138888888888889*G0_6_8 - 0.00555555555555553*G0_6_9 - 0.00138888888888889*G0_7_6 + 0.00833333333333337*G0_7_7 - 0.0013888888888889*G0_7_8 - 0.00555555555555554*G0_7_10 - 0.00138888888888889*G0_8_6 - 0.0013888888888889*G0_8_7 + 0.00833333333333337*G0_8_8 - 0.00555555555555554*G0_8_11 - 0.00555555555555553*G0_9_6 + 0.0444444444444444*G0_9_9 + 0.0222222222222221*G0_9_10 + 0.0222222222222221*G0_9_11 - 0.00555555555555554*G0_10_7 + 0.0222222222222221*G0_10_9 + 0.0444444444444443*G0_10_10 + 0.0222222222222222*G0_10_11 - 0.00555555555555554*G0_11_8 + 0.0222222222222221*G0_11_9 + 0.0222222222222222*G0_11_10 + 0.0444444444444444*G0_11_11 - 0.0083333333333333*G1_0_0 + 0.00138888888888889*G1_0_1 + 0.00138888888888889*G1_0_2 + 0.00555555555555553*G1_0_3 + 0.00138888888888889*G1_1_0 - 0.00833333333333337*G1_1_1 + 0.0013888888888889*G1_1_2 + 0.00555555555555554*G1_1_4 + 0.00138888888888889*G1_2_0 + 0.0013888888888889*G1_2_1 - 0.00833333333333337*G1_2_2 + 0.00555555555555554*G1_2_5 + 0.00555555555555553*G1_3_0 - 0.0444444444444444*G1_3_3 - 0.0222222222222221*G1_3_4 - 0.0222222222222221*G1_3_5 + 0.00555555555555554*G1_4_1 - 0.0222222222222221*G1_4_3 - 0.0444444444444443*G1_4_4 - 0.0222222222222222*G1_4_5 + 0.00555555555555554*G1_5_2 - 0.0222222222222221*G1_5_3 - 0.0222222222222222*G1_5_4 - 0.0444444444444444*G1_5_5 - 0.0083333333333333*G1_6_6 + 0.00138888888888889*G1_6_7 + 0.00138888888888889*G1_6_8 + 0.00555555555555553*G1_6_9 + 0.00138888888888889*G1_7_6 - 0.00833333333333337*G1_7_7 + 0.0013888888888889*G1_7_8 + 0.00555555555555554*G1_7_10 + 0.00138888888888889*G1_8_6 + 0.0013888888888889*G1_8_7 - 0.00833333333333337*G1_8_8 + 0.00555555555555554*G1_8_11 + 0.00555555555555553*G1_9_6 - 0.0444444444444444*G1_9_9 - 0.0222222222222221*G1_9_10 - 0.0222222222222221*G1_9_11 + 0.00555555555555554*G1_10_7 - 0.0222222222222221*G1_10_9 - 0.0444444444444443*G1_10_10 - 0.0222222222222222*G1_10_11 + 0.00555555555555554*G1_11_8 - 0.0222222222222221*G1_11_9 - 0.0222222222222222*G1_11_10 - 0.0444444444444444*G1_11_11 - 0.0083333333333333*G2_0_0 + 0.00138888888888889*G2_0_1 + 0.00138888888888889*G2_0_2 + 0.00555555555555553*G2_0_3 + 0.00138888888888889*G2_1_0 - 0.00833333333333337*G2_1_1 + 0.0013888888888889*G2_1_2 + 0.00555555555555554*G2_1_4 + 0.00138888888888889*G2_2_0 + 0.0013888888888889*G2_2_1 - 0.00833333333333337*G2_2_2 + 0.00555555555555554*G2_2_5 + 0.00555555555555553*G2_3_0 - 0.0444444444444444*G2_3_3 - 0.0222222222222221*G2_3_4 - 0.0222222222222221*G2_3_5 + 0.00555555555555554*G2_4_1 - 0.0222222222222221*G2_4_3 - 0.0444444444444443*G2_4_4 - 0.0222222222222222*G2_4_5 + 0.00555555555555554*G2_5_2 - 0.0222222222222221*G2_5_3 - 0.0222222222222222*G2_5_4 - 0.0444444444444444*G2_5_5 - 0.0083333333333333*G2_6_6 + 0.00138888888888889*G2_6_7 + 0.00138888888888889*G2_6_8 + 0.00555555555555553*G2_6_9 + 0.00138888888888889*G2_7_6 - 0.00833333333333337*G2_7_7 + 0.0013888888888889*G2_7_8 + 0.00555555555555554*G2_7_10 + 0.00138888888888889*G2_8_6 + 0.0013888888888889*G2_8_7 - 0.00833333333333337*G2_8_8 + 0.00555555555555554*G2_8_11 + 0.00555555555555553*G2_9_6 - 0.0444444444444444*G2_9_9 - 0.0222222222222221*G2_9_10 - 0.0222222222222221*G2_9_11 + 0.00555555555555554*G2_10_7 - 0.0222222222222221*G2_10_9 - 0.0444444444444443*G2_10_10 - 0.0222222222222222*G2_10_11 + 0.00555555555555554*G2_11_8 - 0.0222222222222221*G2_11_9 - 0.0222222222222222*G2_11_10 - 0.0444444444444444*G2_11_11 + 0.0083333333333333*G3_0_0 - 0.00138888888888889*G3_0_1 - 0.00138888888888889*G3_0_2 - 0.00555555555555553*G3_0_3 - 0.00138888888888889*G3_1_0 + 0.00833333333333337*G3_1_1 - 0.0013888888888889*G3_1_2 - 0.00555555555555554*G3_1_4 - 0.00138888888888889*G3_2_0 - 0.0013888888888889*G3_2_1 + 0.00833333333333337*G3_2_2 - 0.00555555555555554*G3_2_5 - 0.00555555555555553*G3_3_0 + 0.0444444444444444*G3_3_3 + 0.0222222222222221*G3_3_4 + 0.0222222222222221*G3_3_5 - 0.00555555555555554*G3_4_1 + 0.0222222222222221*G3_4_3 + 0.0444444444444443*G3_4_4 + 0.0222222222222222*G3_4_5 - 0.00555555555555554*G3_5_2 + 0.0222222222222221*G3_5_3 + 0.0222222222222222*G3_5_4 + 0.0444444444444444*G3_5_5 + 0.0083333333333333*G3_6_6 - 0.00138888888888889*G3_6_7 - 0.00138888888888889*G3_6_8 - 0.00555555555555553*G3_6_9 - 0.00138888888888889*G3_7_6 + 0.00833333333333337*G3_7_7 - 0.0013888888888889*G3_7_8 - 0.00555555555555554*G3_7_10 - 0.00138888888888889*G3_8_6 - 0.0013888888888889*G3_8_7 + 0.00833333333333337*G3_8_8 - 0.00555555555555554*G3_8_11 - 0.00555555555555553*G3_9_6 + 0.0444444444444444*G3_9_9 + 0.0222222222222221*G3_9_10 + 0.0222222222222221*G3_9_11 - 0.00555555555555554*G3_10_7 + 0.0222222222222221*G3_10_9 + 0.0444444444444443*G3_10_10 + 0.0222222222222222*G3_10_11 - 0.00555555555555554*G3_11_8 + 0.0222222222222221*G3_11_9 + 0.0222222222222222*G3_11_10 + 0.0444444444444444*G3_11_11 + 0.0416666666666666*G4_0_0 + 0.0208333333333333*G4_0_1 + 0.0208333333333333*G4_0_2 + 0.0208333333333333*G4_1_0 + 0.0416666666666667*G4_1_1 + 0.0208333333333333*G4_1_2 + 0.0208333333333333*G4_2_0 + 0.0208333333333333*G4_2_1 + 0.0416666666666667*G4_2_2 - 0.0416666666666666*G5_0_0 - 0.0208333333333333*G5_0_1 - 0.0208333333333333*G5_0_2 - 0.0208333333333333*G5_1_0 - 0.0416666666666667*G5_1_1 - 0.0208333333333333*G5_1_2 - 0.0208333333333333*G5_2_0 - 0.0208333333333333*G5_2_1 - 0.0416666666666667*G5_2_2 - 0.0416666666666666*G6_0_0 - 0.0208333333333333*G6_0_1 - 0.0208333333333333*G6_0_2 - 0.0208333333333333*G6_1_0 - 0.0416666666666667*G6_1_1 - 0.0208333333333333*G6_1_2 - 0.0208333333333333*G6_2_0 - 0.0208333333333333*G6_2_1 - 0.0416666666666667*G6_2_2 + 0.0416666666666666*G7_0_0 + 0.0208333333333333*G7_0_1 + 0.0208333333333333*G7_0_2 + 0.0208333333333333*G7_1_0 + 0.0416666666666667*G7_1_1 + 0.0208333333333333*G7_1_2 + 0.0208333333333333*G7_2_0 + 0.0208333333333333*G7_2_1 + 0.0416666666666667*G7_2_2;
+  }
+
+};
+
 /// This class defines the interface for the assembly of the global
 /// tensor corresponding to a form with r + n arguments, that is, a
 /// mapping
@@ -7183,6 +7668,428 @@ public:
       }
     }
     
+    return 0;
+  }
+
+  /// Create a new interior facet integral on sub domain i
+  virtual ufc::interior_facet_integral* create_interior_facet_integral(std::size_t i) const
+  {
+    return 0;
+  }
+
+  /// Create a new point integral on sub domain i
+  virtual ufc::point_integral* create_point_integral(std::size_t i) const
+  {
+    return 0;
+  }
+
+  /// Create a new cell integral on everywhere else
+  virtual ufc::cell_integral* create_default_cell_integral() const
+  {
+    return 0;
+  }
+
+  /// Create a new exterior facet integral on everywhere else
+  virtual ufc::exterior_facet_integral* create_default_exterior_facet_integral() const
+  {
+    return 0;
+  }
+
+  /// Create a new interior facet integral on everywhere else
+  virtual ufc::interior_facet_integral* create_default_interior_facet_integral() const
+  {
+    return 0;
+  }
+
+  /// Create a new point integral on everywhere else
+  virtual ufc::point_integral* create_default_point_integral() const
+  {
+    return 0;
+  }
+
+};
+
+/// This class defines the interface for the assembly of the global
+/// tensor corresponding to a form with r + n arguments, that is, a
+/// mapping
+///
+///     a : V1 x V2 x ... Vr x W1 x W2 x ... x Wn -> R
+///
+/// with arguments v1, v2, ..., vr, w1, w2, ..., wn. The rank r
+/// global tensor A is defined by
+///
+///     A = a(V1, V2, ..., Vr, w1, w2, ..., wn),
+///
+/// where each argument Vj represents the application to the
+/// sequence of basis functions of Vj and w1, w2, ..., wn are given
+/// fixed functions (coefficients).
+
+class objective_functional_form_1: public ufc::form
+{
+public:
+
+  /// Constructor
+  objective_functional_form_1() : ufc::form()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~objective_functional_form_1()
+  {
+    // Do nothing
+  }
+
+  /// Return a string identifying the form
+  virtual const char* signature() const
+  {
+    return "dcfb11cf2e3c9536163a806cf133d7d62d3d83c527ca491c27c82e05c7d3281a31aab7b643b15e451e8b3dc65fc00ea0417c1cb3809743e07cdf786282e1d3f6";
+  }
+
+  /// Return the rank of the global tensor (r)
+  virtual std::size_t rank() const
+  {
+    return 0;
+  }
+
+  /// Return the number of coefficients (n)
+  virtual std::size_t num_coefficients() const
+  {
+    return 3;
+  }
+
+  /// Return the number of cell domains
+  virtual std::size_t num_cell_domains() const
+  {
+    return 0;
+  }
+
+  /// Return the number of exterior facet domains
+  virtual std::size_t num_exterior_facet_domains() const
+  {
+    return 3;
+  }
+
+  /// Return the number of interior facet domains
+  virtual std::size_t num_interior_facet_domains() const
+  {
+    return 0;
+  }
+
+  /// Return the number of point domains
+  virtual std::size_t num_point_domains() const
+  {
+    return 0;
+  }
+
+  /// Return whether the form has any cell integrals
+  virtual bool has_cell_integrals() const
+  {
+    return false;
+  }
+
+  /// Return whether the form has any exterior facet integrals
+  virtual bool has_exterior_facet_integrals() const
+  {
+    return true;
+  }
+
+  /// Return whether the form has any interior facet integrals
+  virtual bool has_interior_facet_integrals() const
+  {
+    return false;
+  }
+
+  /// Return whether the form has any point integrals
+  virtual bool has_point_integrals() const
+  {
+    return false;
+  }
+
+  /// Create a new finite element for argument function i
+  virtual ufc::finite_element* create_finite_element(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      {
+        return new objective_functional_finite_element_3();
+        break;
+      }
+    case 1:
+      {
+        return new objective_functional_finite_element_3();
+        break;
+      }
+    case 2:
+      {
+        return new objective_functional_finite_element_0();
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Create a new dofmap for argument function i
+  virtual ufc::dofmap* create_dofmap(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      {
+        return new objective_functional_dofmap_3();
+        break;
+      }
+    case 1:
+      {
+        return new objective_functional_dofmap_3();
+        break;
+      }
+    case 2:
+      {
+        return new objective_functional_dofmap_0();
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Create a new cell integral on sub domain i
+  virtual ufc::cell_integral* create_cell_integral(std::size_t i) const
+  {
+    return 0;
+  }
+
+  /// Create a new exterior facet integral on sub domain i
+  virtual ufc::exterior_facet_integral* create_exterior_facet_integral(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 2:
+      {
+        return new objective_functional_exterior_facet_integral_1_2();
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Create a new interior facet integral on sub domain i
+  virtual ufc::interior_facet_integral* create_interior_facet_integral(std::size_t i) const
+  {
+    return 0;
+  }
+
+  /// Create a new point integral on sub domain i
+  virtual ufc::point_integral* create_point_integral(std::size_t i) const
+  {
+    return 0;
+  }
+
+  /// Create a new cell integral on everywhere else
+  virtual ufc::cell_integral* create_default_cell_integral() const
+  {
+    return 0;
+  }
+
+  /// Create a new exterior facet integral on everywhere else
+  virtual ufc::exterior_facet_integral* create_default_exterior_facet_integral() const
+  {
+    return 0;
+  }
+
+  /// Create a new interior facet integral on everywhere else
+  virtual ufc::interior_facet_integral* create_default_interior_facet_integral() const
+  {
+    return 0;
+  }
+
+  /// Create a new point integral on everywhere else
+  virtual ufc::point_integral* create_default_point_integral() const
+  {
+    return 0;
+  }
+
+};
+
+/// This class defines the interface for the assembly of the global
+/// tensor corresponding to a form with r + n arguments, that is, a
+/// mapping
+///
+///     a : V1 x V2 x ... Vr x W1 x W2 x ... x Wn -> R
+///
+/// with arguments v1, v2, ..., vr, w1, w2, ..., wn. The rank r
+/// global tensor A is defined by
+///
+///     A = a(V1, V2, ..., Vr, w1, w2, ..., wn),
+///
+/// where each argument Vj represents the application to the
+/// sequence of basis functions of Vj and w1, w2, ..., wn are given
+/// fixed functions (coefficients).
+
+class objective_functional_form_2: public ufc::form
+{
+public:
+
+  /// Constructor
+  objective_functional_form_2() : ufc::form()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~objective_functional_form_2()
+  {
+    // Do nothing
+  }
+
+  /// Return a string identifying the form
+  virtual const char* signature() const
+  {
+    return "444f2d275c33e6d163df262fa58ab5ff84c48fbd319b48a1f47e3e4100f31e2617c77eb0f62871a48eb27249fdb06770f1d59e9662d3c8b57a92745932d5304e";
+  }
+
+  /// Return the rank of the global tensor (r)
+  virtual std::size_t rank() const
+  {
+    return 0;
+  }
+
+  /// Return the number of coefficients (n)
+  virtual std::size_t num_coefficients() const
+  {
+    return 4;
+  }
+
+  /// Return the number of cell domains
+  virtual std::size_t num_cell_domains() const
+  {
+    return 2;
+  }
+
+  /// Return the number of exterior facet domains
+  virtual std::size_t num_exterior_facet_domains() const
+  {
+    return 0;
+  }
+
+  /// Return the number of interior facet domains
+  virtual std::size_t num_interior_facet_domains() const
+  {
+    return 0;
+  }
+
+  /// Return the number of point domains
+  virtual std::size_t num_point_domains() const
+  {
+    return 0;
+  }
+
+  /// Return whether the form has any cell integrals
+  virtual bool has_cell_integrals() const
+  {
+    return true;
+  }
+
+  /// Return whether the form has any exterior facet integrals
+  virtual bool has_exterior_facet_integrals() const
+  {
+    return false;
+  }
+
+  /// Return whether the form has any interior facet integrals
+  virtual bool has_interior_facet_integrals() const
+  {
+    return false;
+  }
+
+  /// Return whether the form has any point integrals
+  virtual bool has_point_integrals() const
+  {
+    return false;
+  }
+
+  /// Create a new finite element for argument function i
+  virtual ufc::finite_element* create_finite_element(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      {
+        return new objective_functional_finite_element_2();
+        break;
+      }
+    case 1:
+      {
+        return new objective_functional_finite_element_2();
+        break;
+      }
+    case 2:
+      {
+        return new objective_functional_finite_element_0();
+        break;
+      }
+    case 3:
+      {
+        return new objective_functional_finite_element_0();
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Create a new dofmap for argument function i
+  virtual ufc::dofmap* create_dofmap(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      {
+        return new objective_functional_dofmap_2();
+        break;
+      }
+    case 1:
+      {
+        return new objective_functional_dofmap_2();
+        break;
+      }
+    case 2:
+      {
+        return new objective_functional_dofmap_0();
+        break;
+      }
+    case 3:
+      {
+        return new objective_functional_dofmap_0();
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Create a new cell integral on sub domain i
+  virtual ufc::cell_integral* create_cell_integral(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 1:
+      {
+        return new objective_functional_cell_integral_2_1();
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Create a new exterior facet integral on sub domain i
+  virtual ufc::exterior_facet_integral* create_exterior_facet_integral(std::size_t i) const
+  {
     return 0;
   }
 
@@ -7934,8 +8841,266 @@ public:
   dolfin::CoefficientAssigner g;
 };
 
-// Class typedefs
-typedef Form_J Functional;
+typedef CoefficientSpace_sigma_1 Form_J_control_component_FunctionSpace_0;
+
+typedef CoefficientSpace_sigma_2 Form_J_control_component_FunctionSpace_1;
+
+typedef CoefficientSpace_g Form_J_control_component_FunctionSpace_2;
+
+class Form_J_control_component: public dolfin::Form
+{
+public:
+
+  // Constructor
+  Form_J_control_component(const dolfin::Mesh& mesh):
+    dolfin::Form(0, 3), sigma_1(*this, 0), sigma_2(*this, 1), g(*this, 2)
+  {
+    _mesh = reference_to_no_delete_pointer(mesh);
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_1());
+  }
+
+  // Constructor
+  Form_J_control_component(const dolfin::Mesh& mesh, const dolfin::GenericFunction& sigma_1, const dolfin::GenericFunction& sigma_2, const dolfin::GenericFunction& g):
+    dolfin::Form(0, 3), sigma_1(*this, 0), sigma_2(*this, 1), g(*this, 2)
+  {
+    _mesh = reference_to_no_delete_pointer(mesh);
+    this->sigma_1 = sigma_1;
+    this->sigma_2 = sigma_2;
+    this->g = g;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_1());
+  }
+
+  // Constructor
+  Form_J_control_component(const dolfin::Mesh& mesh, boost::shared_ptr<const dolfin::GenericFunction> sigma_1, boost::shared_ptr<const dolfin::GenericFunction> sigma_2, boost::shared_ptr<const dolfin::GenericFunction> g):
+    dolfin::Form(0, 3), sigma_1(*this, 0), sigma_2(*this, 1), g(*this, 2)
+  {
+    _mesh = reference_to_no_delete_pointer(mesh);
+    this->sigma_1 = *sigma_1;
+    this->sigma_2 = *sigma_2;
+    this->g = *g;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_1());
+  }
+
+  // Constructor
+  Form_J_control_component(boost::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::Form(0, 3), sigma_1(*this, 0), sigma_2(*this, 1), g(*this, 2)
+  {
+    _mesh = mesh;
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_1());
+  }
+
+  // Constructor
+  Form_J_control_component(boost::shared_ptr<const dolfin::Mesh> mesh, const dolfin::GenericFunction& sigma_1, const dolfin::GenericFunction& sigma_2, const dolfin::GenericFunction& g):
+    dolfin::Form(0, 3), sigma_1(*this, 0), sigma_2(*this, 1), g(*this, 2)
+  {
+    _mesh = mesh;
+    this->sigma_1 = sigma_1;
+    this->sigma_2 = sigma_2;
+    this->g = g;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_1());
+  }
+
+  // Constructor
+  Form_J_control_component(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::GenericFunction> sigma_1, boost::shared_ptr<const dolfin::GenericFunction> sigma_2, boost::shared_ptr<const dolfin::GenericFunction> g):
+    dolfin::Form(0, 3), sigma_1(*this, 0), sigma_2(*this, 1), g(*this, 2)
+  {
+    _mesh = mesh;
+    this->sigma_1 = *sigma_1;
+    this->sigma_2 = *sigma_2;
+    this->g = *g;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_1());
+  }
+
+  // Destructor
+  ~Form_J_control_component()
+  {}
+
+  /// Return the number of the coefficient with this name
+  virtual std::size_t coefficient_number(const std::string& name) const
+  {
+    if (name == "sigma_1")
+      return 0;
+    else if (name == "sigma_2")
+      return 1;
+    else if (name == "g")
+      return 2;
+
+    dolfin::dolfin_error("generated code for class Form",
+                         "access coefficient data",
+                         "Invalid coefficient");
+    return 0;
+  }
+
+  /// Return the name of the coefficient with this number
+  virtual std::string coefficient_name(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      return "sigma_1";
+    case 1:
+      return "sigma_2";
+    case 2:
+      return "g";
+    }
+
+    dolfin::dolfin_error("generated code for class Form",
+                         "access coefficient data",
+                         "Invalid coefficient");
+    return "unnamed";
+  }
+
+  // Typedefs
+  typedef Form_J_control_component_FunctionSpace_0 CoefficientSpace_sigma_1;
+  typedef Form_J_control_component_FunctionSpace_1 CoefficientSpace_sigma_2;
+  typedef Form_J_control_component_FunctionSpace_2 CoefficientSpace_g;
+
+  // Coefficients
+  dolfin::CoefficientAssigner sigma_1;
+  dolfin::CoefficientAssigner sigma_2;
+  dolfin::CoefficientAssigner g;
+};
+
+typedef CoefficientSpace_u Form_J_target_component_FunctionSpace_0;
+
+typedef CoefficientSpace_U Form_J_target_component_FunctionSpace_1;
+
+typedef CoefficientSpace_p Form_J_target_component_FunctionSpace_2;
+
+typedef CoefficientSpace_P Form_J_target_component_FunctionSpace_3;
+
+class Form_J_target_component: public dolfin::Form
+{
+public:
+
+  // Constructor
+  Form_J_target_component(const dolfin::Mesh& mesh):
+    dolfin::Form(0, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
+  {
+    _mesh = reference_to_no_delete_pointer(mesh);
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_2());
+  }
+
+  // Constructor
+  Form_J_target_component(const dolfin::Mesh& mesh, const dolfin::GenericFunction& u, const dolfin::GenericFunction& U, const dolfin::GenericFunction& p, const dolfin::GenericFunction& P):
+    dolfin::Form(0, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
+  {
+    _mesh = reference_to_no_delete_pointer(mesh);
+    this->u = u;
+    this->U = U;
+    this->p = p;
+    this->P = P;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_2());
+  }
+
+  // Constructor
+  Form_J_target_component(const dolfin::Mesh& mesh, boost::shared_ptr<const dolfin::GenericFunction> u, boost::shared_ptr<const dolfin::GenericFunction> U, boost::shared_ptr<const dolfin::GenericFunction> p, boost::shared_ptr<const dolfin::GenericFunction> P):
+    dolfin::Form(0, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
+  {
+    _mesh = reference_to_no_delete_pointer(mesh);
+    this->u = *u;
+    this->U = *U;
+    this->p = *p;
+    this->P = *P;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_2());
+  }
+
+  // Constructor
+  Form_J_target_component(boost::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::Form(0, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
+  {
+    _mesh = mesh;
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_2());
+  }
+
+  // Constructor
+  Form_J_target_component(boost::shared_ptr<const dolfin::Mesh> mesh, const dolfin::GenericFunction& u, const dolfin::GenericFunction& U, const dolfin::GenericFunction& p, const dolfin::GenericFunction& P):
+    dolfin::Form(0, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
+  {
+    _mesh = mesh;
+    this->u = u;
+    this->U = U;
+    this->p = p;
+    this->P = P;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_2());
+  }
+
+  // Constructor
+  Form_J_target_component(boost::shared_ptr<const dolfin::Mesh> mesh, boost::shared_ptr<const dolfin::GenericFunction> u, boost::shared_ptr<const dolfin::GenericFunction> U, boost::shared_ptr<const dolfin::GenericFunction> p, boost::shared_ptr<const dolfin::GenericFunction> P):
+    dolfin::Form(0, 4), u(*this, 0), U(*this, 1), p(*this, 2), P(*this, 3)
+  {
+    _mesh = mesh;
+    this->u = *u;
+    this->U = *U;
+    this->p = *p;
+    this->P = *P;
+
+    _ufc_form = boost::shared_ptr<const ufc::form>(new objective_functional_form_2());
+  }
+
+  // Destructor
+  ~Form_J_target_component()
+  {}
+
+  /// Return the number of the coefficient with this name
+  virtual std::size_t coefficient_number(const std::string& name) const
+  {
+    if (name == "u")
+      return 0;
+    else if (name == "U")
+      return 1;
+    else if (name == "p")
+      return 2;
+    else if (name == "P")
+      return 3;
+
+    dolfin::dolfin_error("generated code for class Form",
+                         "access coefficient data",
+                         "Invalid coefficient");
+    return 0;
+  }
+
+  /// Return the name of the coefficient with this number
+  virtual std::string coefficient_name(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      return "u";
+    case 1:
+      return "U";
+    case 2:
+      return "p";
+    case 3:
+      return "P";
+    }
+
+    dolfin::dolfin_error("generated code for class Form",
+                         "access coefficient data",
+                         "Invalid coefficient");
+    return "unnamed";
+  }
+
+  // Typedefs
+  typedef Form_J_target_component_FunctionSpace_0 CoefficientSpace_u;
+  typedef Form_J_target_component_FunctionSpace_1 CoefficientSpace_U;
+  typedef Form_J_target_component_FunctionSpace_2 CoefficientSpace_p;
+  typedef Form_J_target_component_FunctionSpace_3 CoefficientSpace_P;
+
+  // Coefficients
+  dolfin::CoefficientAssigner u;
+  dolfin::CoefficientAssigner U;
+  dolfin::CoefficientAssigner p;
+  dolfin::CoefficientAssigner P;
+};
+
 
 }
 

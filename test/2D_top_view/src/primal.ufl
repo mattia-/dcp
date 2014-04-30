@@ -1,0 +1,36 @@
+# UFL file for Navier-Stokes simulation
+#
+# define mesh dimension
+cell = triangle
+
+# define function spaces
+V = VectorElement ("Lagrange", cell, 2)
+Q = FiniteElement ("Lagrange", cell, 1)
+T = V * Q
+
+# define test and trial functions
+trial = Coefficient (T)
+test = TestFunction (T)
+
+u, p = split (trial)
+v, q = split (test)
+
+# define coefficients
+nu = Constant (cell)
+
+# define non linear equation
+F = nu * inner (grad (u), grad (v)) * dx \
+     + inner (dot (grad (u), u), v) * dx \
+     - inner (p, div (v)) * dx \
+     + inner (div (u), q) * dx
+
+# define test and trial function for jacobian
+d_trial = TrialFunction (T)
+d_u, d_p = split (d_trial)
+
+# define jacobian
+J = nu * inner (grad (d_u), grad (v)) * dx \
+     + inner (dot (grad (u), d_u), v) * dx \
+     + inner (dot (grad (d_u), u), v) * dx \
+     - inner (d_p, div (v)) * dx \
+     + inner (div (d_u), q) * dx

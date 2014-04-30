@@ -401,7 +401,7 @@ namespace controlproblem
                 dolfin::log (dolfin::INFO, "");
             }
             
-            dolfin::end ();
+            dolfin::end (); // "Starting backtracking loop"
              
             if (sufficientDecreaseConditionIsSatisfied (previousFunctionalValue, currentFunctionalValue, alpha) == false) 
             {
@@ -459,6 +459,8 @@ namespace controlproblem
                        gradientNorm, 
                        relativeIncrement);
             }
+            
+            dolfin::end (); // "Minimization iteration %d"
         }
         
         
@@ -478,7 +480,7 @@ namespace controlproblem
             dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
         }
         
-        dolfin::end ();
+        dolfin::end (); //"Starting minimization loop"
         
         if (hasOutputFile)
         {

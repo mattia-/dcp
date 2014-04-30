@@ -41,7 +41,7 @@ namespace primal
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return x[0] < (0 + DOLFIN_EPS) && on_boundary;
+            return x[0] <= (0 + DOLFIN_EPS) && on_boundary;
         }
     };
 
@@ -49,7 +49,7 @@ namespace primal
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return (x[1] < (0 + DOLFIN_EPS) || x[1] > (2 - DOLFIN_EPS)) && on_boundary;
+            return (x[1] <= (0 + DOLFIN_EPS) || x[1] >= (7 - DOLFIN_EPS)) && on_boundary;
         }
     };
     
@@ -60,8 +60,8 @@ namespace primal
                 center (2),
                 radius (0.5)
             {
-                center[0] = 2.5;
-                center[1] = 1;
+                center[0] = 3.5;
+                center[1] = 3.5;
             }
             
             bool inside (const dolfin::Array<double>& x, bool on_boundary) const
@@ -70,7 +70,7 @@ namespace primal
                 double dy = x[1] - center[1];
                 double r = sqrt (dx * dx + dy * dy);
                 
-                return r < (radius + 1e-3) && on_boundary;
+                return r <= (radius + 1e-3) && on_boundary;
             }
 
         private:
@@ -85,38 +85,26 @@ namespace adjoint
     class DirichletBoundary : public dolfin::SubDomain
     {
         public:
-            DirichletBoundary () : 
-                center (2),
-                radius (0.5)
-            {
-                center[0] = 2.5;
-                center[1] = 1;
-            }
-
             bool inside (const dolfin::Array<double>& x, bool on_boundary) const
             {
-                bool onLeftSide  = (x[0] < (0 + DOLFIN_EPS)) && on_boundary;   
-                bool onUpperSide = (x[1] > (2 - DOLFIN_EPS)) && on_boundary;   
-                bool onLowerSide = (x[1] < (0 + DOLFIN_EPS)) && on_boundary;   
+                bool onLeftSide  = (x[0] <= (0 + DOLFIN_EPS)) && on_boundary;   
+                bool onUpperSide = (x[1] >= (7 - DOLFIN_EPS)) && on_boundary;   
+                bool onLowerSide = (x[1] <= (0 + DOLFIN_EPS)) && on_boundary;   
 
-                double dx = x[0] - center[0];
-                double dy = x[1] - center[1];
-                double r = sqrt (dx * dx + dy * dy);
-                bool onCircleBoundary = r < (radius + 1e-3) && on_boundary;
+                bool onCircle = circle.inside (x, on_boundary);
 
-                return onLeftSide || onUpperSide || onLowerSide || onCircleBoundary;
+                return onLeftSide || onUpperSide || onLowerSide || onCircle;
             }
         
         private:
-            dolfin::Array<double> center;
-            double radius;
+            primal::NoSlipBoundary circle;
     };
 
     class RobinBoundary : public dolfin::SubDomain
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return x[0] > (5 - DOLFIN_EPS) && on_boundary;
+            return x[0] >= (10 - DOLFIN_EPS) && on_boundary;
         }
     };
     
@@ -124,7 +112,7 @@ namespace adjoint
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return x[0] >= 1.75 && x[0] <= 3.25 && x[1] >= 0 && x[1] <= 1.75; 
+            return x[0] >= 2.5 && x[0] <= 4.5 && x[1] >= 2.5 && x[1] <= 4.5; 
         }
     };
 }
@@ -139,7 +127,7 @@ namespace objective_functional
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return x[0] < (0 + DOLFIN_EPS) && on_boundary;
+            return x[0] <= (0 + DOLFIN_EPS) && on_boundary;
         }
     };
     
@@ -154,7 +142,7 @@ namespace objective_functional
             evaluateVariable ("g", gValues, x);
 
             // compute laplacian of the control g
-            dolfin::IntervalMesh mesh (50, 0, 2.5);
+            dolfin::IntervalMesh mesh (100, 0, 7);
             function_derivative::FunctionSpace V (mesh);
             boost::shared_ptr <dolfin::GenericFunction> g = boost::const_pointer_cast <dolfin::GenericFunction> (variables_.find ("g") -> second);
             function_derivative::BilinearForm a (V, V);
@@ -208,4 +196,3 @@ namespace objective_functional
 }
 
 // ---------------------------------------------------------------------------- //
-

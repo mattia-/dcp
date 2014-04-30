@@ -3,7 +3,8 @@
 ###
 
 # USER DEFINED PARAMETERS
-mesh_max_size = 0.1
+mesh_max_size = 0.2
+refined_mesh_max_size = 0.1
 
 
 import sys
@@ -37,14 +38,14 @@ OZ = geompy.MakeVectorDXDYDZ(0, 0, 1)
 
 # vertex are number counterclock-wise, starting from the bottom left
 domain_vertex_1 = geompy.MakeVertex (0, 0, 0);
-domain_vertex_2 = geompy.MakeVertex (1.25, 0, 0);
-domain_vertex_3 = geompy.MakeVertex (1.25, 1.5, 0);
-domain_vertex_4 = geompy.MakeVertex (1.5, 1.5, 0);
-domain_vertex_5 = geompy.MakeVertex (1.5, 0, 0);
-domain_vertex_6 = geompy.MakeVertex (5, 0, 0);
-domain_vertex_7 = geompy.MakeVertex (5, 2.5, 0);
-domain_vertex_8 = geompy.MakeVertex (0, 2.5, 0);
-circle_center   = geompy.MakeVertex (2.5, 1, 0);
+domain_vertex_2 = geompy.MakeVertex (10, 0, 0);
+domain_vertex_3 = geompy.MakeVertex (10, 7, 0);
+domain_vertex_4 = geompy.MakeVertex (0, 7, 0);
+rectangle_vertex_1 = geompy.MakeVertex (1.75, 3, 0);
+rectangle_vertex_2 = geompy.MakeVertex (1.75, 4, 0);
+rectangle_vertex_3 = geompy.MakeVertex (2, 4, 0);
+rectangle_vertex_4 = geompy.MakeVertex (2, 3, 0);
+circle_center   = geompy.MakeVertex (3.5, 3.5, 0);
 circle_radius   = 0.5;
 
 
@@ -52,16 +53,20 @@ circle_radius   = 0.5;
 domain_line_1 = geompy.MakeLineTwoPnt (domain_vertex_1, domain_vertex_2);
 domain_line_2 = geompy.MakeLineTwoPnt (domain_vertex_2, domain_vertex_3);
 domain_line_3 = geompy.MakeLineTwoPnt (domain_vertex_3, domain_vertex_4);
-domain_line_4 = geompy.MakeLineTwoPnt (domain_vertex_4, domain_vertex_5);
-domain_line_5 = geompy.MakeLineTwoPnt (domain_vertex_5, domain_vertex_6);
-domain_line_6 = geompy.MakeLineTwoPnt (domain_vertex_6, domain_vertex_7);
-domain_line_7 = geompy.MakeLineTwoPnt (domain_vertex_7, domain_vertex_8);
-domain_line_8 = geompy.MakeLineTwoPnt (domain_vertex_8, domain_vertex_1);
-circonference = geompy.MakeCircle (circle_center, None, circle_radius)
+domain_line_4 = geompy.MakeLineTwoPnt (domain_vertex_4, domain_vertex_1);
+rectangle_line_1 = geompy.MakeLineTwoPnt (rectangle_vertex_1, rectangle_vertex_2);
+rectangle_line_2 = geompy.MakeLineTwoPnt (rectangle_vertex_2, rectangle_vertex_3);
+rectangle_line_3 = geompy.MakeLineTwoPnt (rectangle_vertex_3, rectangle_vertex_4);
+rectangle_line_4 = geompy.MakeLineTwoPnt (rectangle_vertex_4, rectangle_vertex_1);
+circumference = geompy.MakeCircle (circle_center, None, circle_radius)
 
 # create faces
-domain_face = geompy.MakeFaceWires ([domain_line_1, domain_line_2, domain_line_3, domain_line_4, domain_line_5, 
-    domain_line_6, domain_line_7, domain_line_8, circonference], 1)
+domain_face = geompy.MakeFaceWires ([domain_line_1, domain_line_2, domain_line_3, domain_line_4, rectangle_line_1, 
+    rectangle_line_2, rectangle_line_3, rectangle_line_4, circumference], 1)
+
+# create groups
+refinement_group = geompy.CreateGroup (domain_face, geompy.ShapeType["EDGE"])
+geompy.UnionList (refinement_group, [rectangle_line_1, rectangle_line_2, rectangle_line_3, rectangle_line_4, circumference])
 
 
 ## add everything to what gui will show
@@ -73,21 +78,22 @@ geompy.addToStudy (domain_vertex_1, 'domain_vertex_1')
 geompy.addToStudy (domain_vertex_2, 'domain_vertex_2')
 geompy.addToStudy (domain_vertex_3, 'domain_vertex_3')
 geompy.addToStudy (domain_vertex_4, 'domain_vertex_4')
-geompy.addToStudy (domain_vertex_5, 'domain_vertex_5')
-geompy.addToStudy (domain_vertex_6, 'domain_vertex_6')
-geompy.addToStudy (domain_vertex_7, 'domain_vertex_7')
-geompy.addToStudy (domain_vertex_8, 'domain_vertex_8')
+geompy.addToStudy (rectangle_vertex_1, 'rectangle_vertex_1')
+geompy.addToStudy (rectangle_vertex_2, 'rectangle_vertex_2')
+geompy.addToStudy (rectangle_vertex_3, 'rectangle_vertex_3')
+geompy.addToStudy (rectangle_vertex_4, 'rectangle_vertex_4')
 geompy.addToStudy (circle_center, 'circle_center')
 geompy.addToStudy (domain_line_1, 'domain_line_1')
 geompy.addToStudy (domain_line_2, 'domain_line_2')
 geompy.addToStudy (domain_line_3, 'domain_line_3')
 geompy.addToStudy (domain_line_4, 'domain_line_4')
-geompy.addToStudy (domain_line_5, 'domain_line_5')
-geompy.addToStudy (domain_line_6, 'domain_line_6')
-geompy.addToStudy (domain_line_7, 'domain_line_7')
-geompy.addToStudy (domain_line_8, 'domain_line_8')
-geompy.addToStudy (circonference, 'circonference')
+geompy.addToStudy (rectangle_line_1, 'rectangle_line_1')
+geompy.addToStudy (rectangle_line_2, 'rectangle_line_2')
+geompy.addToStudy (rectangle_line_3, 'rectangle_line_3')
+geompy.addToStudy (rectangle_line_4, 'rectangle_line_4')
+geompy.addToStudy (circumference, 'circumference')
 geompy.addToStudy (domain_face, 'domain_face')
+geompy.addToStudyInFather (domain_face, refinement_group, 'refinement_group')
 
 ####
 #### MESH
@@ -109,10 +115,15 @@ mesh_parameters = NETGEN_2D.Parameters()
 mesh_parameters.SetMaxSize (mesh_max_size)
 mesh_parameters.SetSecondOrder (0)
 mesh_parameters.SetOptimize (1)
-mesh_parameters.SetFineness (3)
+mesh_parameters.SetFineness (4)
 mesh_parameters.SetMinSize (0)
 mesh_parameters.SetQuadAllowed (0)
 
+# refine mesh
+submesh_algorithm = mesh.Segment (geom=refinement_group)
+submesh_algorithm.MaxSize (refined_mesh_max_size)
+
+# compute mesh
 isDone = mesh.Compute()
 
 ### set object names

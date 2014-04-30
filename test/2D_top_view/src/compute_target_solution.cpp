@@ -11,7 +11,7 @@ namespace navierstokes
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return x[0] < (0 + DOLFIN_EPS) && on_boundary;
+            return x[0] <= (0 + DOLFIN_EPS) && on_boundary;
         }
     };
 
@@ -19,45 +19,9 @@ namespace navierstokes
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return (x[1] < (0 + DOLFIN_EPS) || x[1] > (2.5 - DOLFIN_EPS)) && on_boundary;
+            return (x[1] <= (0 + DOLFIN_EPS) || x[1] >= (7 - DOLFIN_EPS)) && on_boundary;
         }
     };
-    
-    class NoSlipBoundary : public dolfin::SubDomain
-    { 
-        public:
-            NoSlipBoundary () : 
-                center (2),
-                radius (0.5)
-            {
-                center[0] = 2.5;
-                center[1] = 1;
-            }
-            
-            bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-            {
-                bool onWall1  = (x[0] > (1.25 - DOLFIN_EPS) && x[0] < (1.25 + DOLFIN_EPS))
-                    && x[1] < (1.5 + DOLFIN_EPS)
-                    && on_boundary;
-                bool onWall2  = (x[0] > (1.25 - DOLFIN_EPS) && x[0] < (1.5 + DOLFIN_EPS))
-                    && (x[1] < (1.5 + DOLFIN_EPS) && x[1] > (1.5 - DOLFIN_EPS))
-                    && on_boundary;
-                bool onWall3  = (x[0] > (1.5 - DOLFIN_EPS) && x[0] < (1.5 + DOLFIN_EPS))
-                    && x[1] < (1.5 + DOLFIN_EPS)
-                    && on_boundary;
-                
-                double dx = x[0] - center[0];
-                double dy = x[1] - center[1];
-                double r = sqrt (dx * dx + dy * dy);
-                bool onCircleBoundary = r < (radius + 1e-3) && on_boundary;
-
-                return onWall1 || onWall2 || onWall3 || onCircleBoundary;
-            }
-
-        private:
-            dolfin::Array<double> center;
-            double radius;
-    }; 
     
     class Circle : public dolfin::SubDomain
     {
@@ -66,8 +30,8 @@ namespace navierstokes
                 center (2),
                 radius (0.5)
             {
-                center[0] = 2.5;
-                center[1] = 1;
+                center[0] = 3.5;
+                center[1] = 3.5;
             }
             
             bool inside (const dolfin::Array<double>& x, bool on_boundary) const
@@ -76,12 +40,39 @@ namespace navierstokes
                 double dy = x[1] - center[1];
                 double r = sqrt (dx * dx + dy * dy);
                 
-                return r < (radius + 1e-3) && on_boundary;
+                return r <= (radius + 1e-3) && on_boundary;
             }
 
         private:
             dolfin::Array<double> center;
             double radius;
+    }; 
+    
+    class NoSlipBoundary : public dolfin::SubDomain
+    { 
+        public:
+            bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+            {
+                bool onWall1 = (x[0] >= 1.75 - DOLFIN_EPS && x[0] <= 1.75 + DOLFIN_EPS)
+                            && (x[1] >= 3 - DOLFIN_EPS && x[1] <= 4 + DOLFIN_EPS)
+                            && on_boundary;
+                bool onWall2 = (x[0] >= (1.75 - DOLFIN_EPS) && x[0] <= (2 + DOLFIN_EPS))
+                            && (x[1] <= (4 + DOLFIN_EPS) && x[1] >= (4 - DOLFIN_EPS))
+                            && on_boundary;
+                bool onWall3 = (x[0] >= 2 - DOLFIN_EPS && x[0] <= 2 + DOLFIN_EPS)
+                            && (x[1] >= 3 - DOLFIN_EPS && x[1] <= 4 + DOLFIN_EPS)
+                            && on_boundary;
+                bool onWall4 = (x[0] >= (1.75 - DOLFIN_EPS) && x[0] <= (2 + DOLFIN_EPS))
+                            && (x[1] <= (3 + DOLFIN_EPS) && x[1] >= (3 - DOLFIN_EPS))
+                            && on_boundary;
+                
+                bool onCircle = circle.inside (x, on_boundary);
+
+                return onWall1 || onWall2 || onWall3 || onWall4 || onCircle;
+            }
+
+        private:
+            navierstokes::Circle circle;
     }; 
 }
 
@@ -104,7 +95,7 @@ int main (int argc, char* argv[])
     dolfin::plot (mesh);
 
     // define constant
-    dolfin::Constant nu (1e-2);
+    dolfin::Constant nu (1e-1);
     dolfin::Constant inflowDirichletBC (1.0, 0.0);
     dolfin::Constant symmetryDirichletBC (0.0);
     dolfin::Constant noSlipDirichletBC (0.0, 0.0);

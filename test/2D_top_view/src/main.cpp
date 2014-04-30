@@ -86,7 +86,7 @@ int main (int argc, char* argv[])
     problems.addProblem ("adjoint", adjointProblem);
     
     // define constants
-    dolfin::Constant nu (1e-2);
+    dolfin::Constant nu (1e-1);
     dolfin::Constant primal_yInflowDirichletBC (0.0);
     dolfin::Constant primal_symmetryDirichletBC (0.0);
     dolfin::Constant primal_noSlipCondition (0.0, 0.0);
@@ -151,11 +151,12 @@ int main (int argc, char* argv[])
     
     // define control variable
     // mesh:
-    dolfin::IntervalMesh controlMesh (50, 0, 2.5);
+    dolfin::IntervalMesh controlMesh (100, 0, 7);
     // function space:
     control_variable_function_space::FunctionSpace controlFunctionSpace (controlMesh);
     // control variable itself:
     dolfin::Function g (controlFunctionSpace);
+    g = dolfin::Constant (1.0);
 
     // define subdomains for objective functional
     objective_functional::ControlDomain objective_functional_controlDomain;

@@ -261,6 +261,7 @@ int main (int argc, char* argv[])
     // define optimizer
     controlproblem::BacktrackingOptimizer backtrackingOptimizer;
     backtrackingOptimizer.parameters ["relative_increment_tolerance"] = 1e-5;
+    backtrackingOptimizer.parameters ["max_minimization_iterations"] = 200;
     backtrackingOptimizer.parameters ["output_file_name"] = "results.txt";
     
     backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater, searchDirectionComputer);

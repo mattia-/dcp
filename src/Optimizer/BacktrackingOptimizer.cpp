@@ -31,7 +31,7 @@ namespace controlproblem
         parameters.add ("alpha_0", 0.5);
         parameters.add ("rho", 0.5);
         parameters.add ("max_minimization_iterations", 100);
-        parameters.add ("max_backtracking_iteration", 20);
+        parameters.add ("max_backtracking_iterations", 20);
         parameters.add ("output_file_name", "");
         
         dolfin::log (dolfin::DBG, "BacktrackingOptimizer object created");
@@ -75,7 +75,7 @@ namespace controlproblem
         double relativeIncrementTolerance = this->parameters ["relative_increment_tolerance"];
         std::string convergenceCriterion  = this->parameters ["convergence_criterion"];
         int maxMinimizationIterations     = this->parameters ["max_minimization_iterations"];
-        int maxBacktrackingIterations     = this->parameters ["max_backtracking_iteration"];
+        int maxBacktrackingIterations     = this->parameters ["max_backtracking_iterations"];
         std::string outputFileName        = this->parameters ["output_file_name"];
 
         // define loop variables

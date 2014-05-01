@@ -121,8 +121,8 @@ namespace adjoint
 // ---------------------------------------------------------------------------- //
 namespace objective_functional
 {
-    double sigma_1 = 0.01;
-    double sigma_2 = 0.01;
+    double sigma_1 = 0.1;
+    double sigma_2 = 0.1;
     
     class ControlDomain : public dolfin::SubDomain
     {

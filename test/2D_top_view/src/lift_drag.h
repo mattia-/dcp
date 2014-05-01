@@ -1207,7 +1207,7 @@ public:
     A[0] = 0.0;
     // Number of operations to compute geometry constants: 2.
     double G[1];
-    G[0] =  - W1*det*n0;
+    G[0] = W1*det*n0;
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
@@ -1513,7 +1513,7 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "ed638b7dc6867444aee26c82e0e3d5dfaa66f402585eaba17b1473702a61c2ca0594034cdb26ef1e86cac0ca9dd8eabe46eef550407af7bc08c29836b5b65bf1";
+    return "d973a02790cb3cb3533fb2014b37079f3e8f25fb69b1e3157019ab7f2f8d88f33054189655ae83c9596cee726b01ced2272b9ffbc009dde1f3323af3395d7cee";
   }
 
   /// Return the rank of the global tensor (r)

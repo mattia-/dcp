@@ -112,8 +112,8 @@ namespace adjoint
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-//            return x[0] >= 2.5 && x[0] <= 4.5 && x[1] >= 2.5 && x[1] <= 4.5; 
-            return x[0] >= 2.5 && x[0] <= 5 && x[1] >= 2 && x[1] <= 5; 
+            return x[0] >= 2.5 && x[0] <= 4.5 && x[1] >= 2.5 && x[1] <= 4.5; 
+//            return x[0] >= 2.5 && x[0] <= 5 && x[1] >= 2 && x[1] <= 5; 
         }
     };
 }
@@ -136,8 +136,11 @@ namespace objective_functional
     {
         void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
         {
+            dolfin::Array<double> xFlipped (2);
+            xFlipped [0] = x [1];
+            xFlipped [1] = x [0];
             dolfin::Array<double> thetaValues (1);
-            evaluateVariable ("theta", thetaValues, x);
+            evaluateVariable ("theta", thetaValues, xFlipped);
 
             dolfin::Array<double> gValues (1);
             evaluateVariable ("g", gValues, x);
@@ -145,7 +148,8 @@ namespace objective_functional
             // compute laplacian of the control g
             dolfin::IntervalMesh mesh (100, 0, 7);
             function_derivative::FunctionSpace V (mesh);
-            boost::shared_ptr <dolfin::GenericFunction> g = boost::const_pointer_cast <dolfin::GenericFunction> (variables_.find ("g") -> second);
+            boost::shared_ptr <dolfin::GenericFunction> g = 
+                boost::const_pointer_cast <dolfin::GenericFunction> (variables_.find ("g") -> second);
             function_derivative::BilinearForm a (V, V);
             function_derivative::LinearForm L (V);
             dolfin::Function gradient (V);
@@ -182,7 +186,7 @@ namespace objective_functional
             void operator() (dolfin::Function& searchDirection, const dolfin::Function& gradient)
             {
                 dolfin::Function solution (functionSpace_);
-                dolfin::log (dolfin::DBG, "Computing search direction via diffusion reaction problem...");
+                dolfin::log (dolfin::DBG, "Computing search direction via diffusion-reaction problem...");
                 L_.set_coefficient ("f", dolfin::reference_to_no_delete_pointer (gradient));
                 dolfin::solve (a_ == L_, solution);
                 searchDirection.interpolate (solution);

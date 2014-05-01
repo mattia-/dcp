@@ -147,8 +147,11 @@ namespace objective_functional
     {
         void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
         {
+            dolfin::Array<double> xFlipped (2);
+            xFlipped [0] = x [1];
+            xFlipped [1] = x [0];
             dolfin::Array<double> thetaValues (1);
-            evaluateVariable ("theta", thetaValues, x);
+            evaluateVariable ("theta", thetaValues, xFlipped);
 
             dolfin::Array<double> gValues (1);
             evaluateVariable ("g", gValues, x);
@@ -156,7 +159,8 @@ namespace objective_functional
             // compute laplacian of the control g
             dolfin::IntervalMesh mesh (50, 0, 2.5);
             function_derivative::FunctionSpace V (mesh);
-            boost::shared_ptr <dolfin::GenericFunction> g = boost::const_pointer_cast <dolfin::GenericFunction> (variables_.find ("g") -> second);
+            boost::shared_ptr <dolfin::GenericFunction> g = 
+                boost::const_pointer_cast <dolfin::GenericFunction> (variables_.find ("g") -> second);
             function_derivative::BilinearForm a (V, V);
             function_derivative::LinearForm L (V);
             dolfin::Function gradient (V);

@@ -328,9 +328,9 @@ namespace controlproblem
         {
             minimizationIteration++;
             
-            dolfin::log (dolfin::INFO, "=========================");
+            dolfin::log (dolfin::INFO, "==========================");
             dolfin::log (dolfin::INFO, "Minimization iteration %d", minimizationIteration);
-            dolfin::begin ("=========================");
+            dolfin::begin ("==========================");
             
             // iteration-specific variable initialization
             alpha = alpha_0;

@@ -54,7 +54,7 @@ int main (int argc, char* argv[])
     targetPFile.read (targetP, "p");
     
     
-    // create mesh and finite element space
+    // create mesh and finite element space on partial geometry
     dolfin::Mesh mesh (parameters ["partial_mesh_file_name"]);
     primal::FunctionSpace V (mesh);
     
@@ -114,15 +114,15 @@ int main (int argc, char* argv[])
     problems["primal"].setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
     problems["primal"].setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
 
-    problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[1],primal_yInflowDirichletBC,primal_inflowBoundary), "y_inflow_BC");
+    problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], primal_yInflowDirichletBC, primal_inflowBoundary));
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*V[0], primal_noSlipCondition, primal_noSlipBoundary));
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], primal_symmetryDirichletBC, primal_gammaSD));
 
 
     // adjoint problem settings
     problems["adjoint"].setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
-    problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (interpolatedTargetU), "U");
-    problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (interpolatedTargetP), "P");
+    problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (targetU), "U");
+    problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (targetP), "P");
 
     problems["adjoint"].addDirichletBC (dolfin::DirichletBC (*V[0], adjoint_dirichletBC, adjoint_dirichletBoundary));
 
@@ -166,8 +166,8 @@ int main (int argc, char* argv[])
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (sigma_1), "sigma_1");
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (sigma_2), "sigma_2");
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (g), "g");
-    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (interpolatedTargetU), "U");
-    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (interpolatedTargetP), "P");
+    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (targetU), "U");
+    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (targetP), "P");
     objectiveFunctional.setCoefficient ("functional", 
                                         dolfin::reference_to_no_delete_pointer (problems["primal"].solution()[0]), 
                                         "u");
@@ -211,8 +211,8 @@ int main (int argc, char* argv[])
     objective_functional::Form_J_target_component functionalTargetComponent (mesh);
         
     // functional settings
-    functionalTargetComponent.set_coefficient ("U", dolfin::reference_to_no_delete_pointer (interpolatedTargetU));
-    functionalTargetComponent.set_coefficient ("P", dolfin::reference_to_no_delete_pointer (interpolatedTargetP));
+    functionalTargetComponent.set_coefficient ("U", dolfin::reference_to_no_delete_pointer (targetU));
+    functionalTargetComponent.set_coefficient ("P", dolfin::reference_to_no_delete_pointer (targetP));
     functionalTargetComponent.set_coefficient ("u", dolfin::reference_to_no_delete_pointer (problems["primal"].solution()[0]));
     functionalTargetComponent.set_coefficient ("p", dolfin::reference_to_no_delete_pointer (problems["primal"].solution()[1]));
     
@@ -252,13 +252,6 @@ int main (int argc, char* argv[])
     ControlDirichletBC controlDirichletBC (g);
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[0], controlDirichletBC, primal_inflowBoundary), "x_inflow_BC");
     
-                        //    dolfin::Function d (V[1]->collapse ());
-                        //    dolfin::Function e (g);
-                        //    d = dolfin::Constant (10.0);
-                        //    e.interpolate (d);
-                        //    dolfin::plot (e);
-                        //    dolfin::interactive ();
-
     // define control value updater
     ValueUpdater updater;
     
@@ -293,6 +286,7 @@ int main (int argc, char* argv[])
     dolfin::Function differenceP1 (interpolatedTargetP);
     differenceP1.interpolate (problems.solution ("primal")[1]);
     differenceP = differenceP1 - interpolatedTargetP;
+    
     
     dolfin::plot (meshCells, "Control region");
     dolfin::plot (differenceU, "Difference between target and controlled velocity");

@@ -5,7 +5,7 @@
 cell = interval
 
 # define function space
-V= FiniteElement ("Lagrange", cell, 1)
+V = FiniteElement ("Lagrange", cell, 2)
 
 # define coefficients
 f = Coefficient (V)

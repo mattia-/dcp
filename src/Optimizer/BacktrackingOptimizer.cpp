@@ -28,7 +28,7 @@ namespace controlproblem
         parameters.add ("relative_increment_tolerance", relativeIncrementTolerance);
         parameters.add ("convergence_criterion", convergenceCriterion);
         parameters.add ("c_1", 1e-3);
-        parameters.add ("alpha_0", 0.5);
+        parameters.add ("alpha_0", 1.0);
         parameters.add ("rho", 0.5);
         parameters.add ("max_minimization_iterations", 100);
         parameters.add ("max_backtracking_iterations", 20);

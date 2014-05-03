@@ -84,7 +84,7 @@ int main (int argc, char* argv[])
     parameters.add ("u_output_file_name", "../src/u_target");
     parameters.add ("p_output_file_name", "../src/p_target");
     parameters.add ("human_readable_print", false);
-    
+   
     // read parameters from command line and overwrite default values
     parameters.parse (argc, argv);
     
@@ -94,6 +94,7 @@ int main (int argc, char* argv[])
     
     dolfin::plot (mesh);
 
+    
     // define constant
     dolfin::Constant nu (1e-1);
     dolfin::Constant inflowDirichletBC (1.0, 0.0);

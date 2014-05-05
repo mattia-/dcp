@@ -1,5 +1,5 @@
 /* 
- *  Copyright (C) 2014, Mattia Tamellini, mattia.tamelllini@gmail.com
+ *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
  * 
  *  This file is part of the DCP library
  *   

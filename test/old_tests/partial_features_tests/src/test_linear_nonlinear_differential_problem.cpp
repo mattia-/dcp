@@ -138,7 +138,7 @@ int main ()
     dolfin::cout << "....................... FIRST CONSTRUCTOR ......................." << dolfin::endl;
     
     // define linear differential problem
-    controlproblem::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> differentialProblem (*mesh, *V, "lu_solver");
+    DCP::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> differentialProblem (*mesh, *V, "lu_solver");
 
     // set solver
 //    dolfin::info (differentialProblem.parameters, true);
@@ -162,10 +162,10 @@ int main ()
     
     differentialProblem.setIntegrationSubdomains ("bilinear_form",
                                                   dolfin::reference_to_no_delete_pointer (meshFacets),
-                                                  controlproblem::SubdomainType::BOUNDARY_FACETS);
+                                                  DCP::SubdomainType::BOUNDARY_FACETS);
     differentialProblem.setIntegrationSubdomains ("linear_form", 
                                                   dolfin::reference_to_no_delete_pointer (meshFacets),
-                                                  controlproblem::SubdomainType::BOUNDARY_FACETS);
+                                                  DCP::SubdomainType::BOUNDARY_FACETS);
     
     // solve
     differentialProblem.solve ();
@@ -189,7 +189,7 @@ int main ()
     dolfin::cout << dolfin::endl;
     dolfin::cout << "....................... SECOND CONSTRUCTOR ......................." << dolfin::endl;
     // define linear differential problem
-    controlproblem::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> differentialProblem2 (mesh, V);
+    DCP::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> differentialProblem2 (mesh, V);
 
 //    dolfin::info (differentialProblem2.parameters, true);
     differentialProblem2.parameters ["desired_solver_type"] = "krylov_solver";
@@ -209,10 +209,10 @@ int main ()
     
     differentialProblem2.setIntegrationSubdomains ("bilinear_form", 
                                                    dolfin::reference_to_no_delete_pointer (meshFacets),
-                                                   controlproblem::SubdomainType::BOUNDARY_FACETS);
+                                                   DCP::SubdomainType::BOUNDARY_FACETS);
     differentialProblem2.setIntegrationSubdomains ("linear_form", 
                                                    dolfin::reference_to_no_delete_pointer (meshFacets),
-                                                   controlproblem::SubdomainType::BOUNDARY_FACETS);
+                                                   DCP::SubdomainType::BOUNDARY_FACETS);
     
     // solve
     differentialProblem2.solve ();
@@ -237,7 +237,7 @@ int main ()
     dolfin::cout << dolfin::endl;
     dolfin::cout << "....................... THIRD CONSTRUCTOR ......................." << dolfin::endl;
     // define linear differential problem
-    controlproblem::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> differentialProblem3 (std::move(*mesh), std::move (*V));
+    DCP::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> differentialProblem3 (std::move(*mesh), std::move (*V));
 
 //    dolfin::info (differentialProblem3.parameters, true);
     differentialProblem3.parameters ["desired_solver_type"] = "krylov_solver";
@@ -257,10 +257,10 @@ int main ()
     
     differentialProblem3.setIntegrationSubdomains ("bilinear_form", 
                                                    dolfin::reference_to_no_delete_pointer (meshFacets),
-                                                   controlproblem::SubdomainType::BOUNDARY_FACETS);
+                                                   DCP::SubdomainType::BOUNDARY_FACETS);
     differentialProblem3.setIntegrationSubdomains ("linear_form", 
                                                    dolfin::reference_to_no_delete_pointer (meshFacets),
-                                                   controlproblem::SubdomainType::BOUNDARY_FACETS);
+                                                   DCP::SubdomainType::BOUNDARY_FACETS);
     
     // solve
     differentialProblem3.solve ();
@@ -280,7 +280,7 @@ int main ()
     dolfin::Matrix a42 (differentialProblem3.linearOperator ());
     dolfin::Vector a52 (differentialProblem3.rhs ());
     
-    std::unique_ptr <controlproblem::AbstractDifferentialProblem> ptr (differentialProblem3.clone ());
+    std::unique_ptr <DCP::AbstractDifferentialProblem> ptr (differentialProblem3.clone ());
     ptr->solve ();
     dolfin::plot (ptr->solution ());
      
@@ -353,9 +353,9 @@ int main ()
     dolfin::cout << "....................... FIRST CONSTRUCTOR ......................." << dolfin::endl;
     
     // define linear differential problem
-    controlproblem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> NLdifferentialProblem (*NLmesh, *NLV, "trial");
+    DCP::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> NLdifferentialProblem (*NLmesh, *NLV, "trial");
 
-//  controlproblem::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> differentialProblem
+//  DCP::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> differentialProblem
 //      (std::move (mesh), std::move (V));
 
 //    dolfin::info (NLdifferentialProblem.parameters, true);
@@ -400,7 +400,7 @@ int main ()
     dolfin::cout << "....................... SECOND CONSTRUCTOR ......................." << dolfin::endl;
     
     // define linear differential problem
-    controlproblem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> NLdifferentialProblem2 (NLmesh, NLV, "trial");
+    DCP::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> NLdifferentialProblem2 (NLmesh, NLV, "trial");
 
 //    dolfin::info (NLdifferentialProblem2.parameters, true);
     
@@ -442,7 +442,7 @@ int main ()
     dolfin::cout << "....................... THIRD CONSTRUCTOR ......................." << dolfin::endl;
     
     // define linear differential problem
-    controlproblem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> NLdifferentialProblem3 (std::move (*NLmesh), std::move (*NLV), "trial");
+    DCP::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> NLdifferentialProblem3 (std::move (*NLmesh), std::move (*NLV), "trial");
 
 //    dolfin::info (NLdifferentialProblem3.parameters, true);
     
@@ -480,13 +480,13 @@ int main ()
     dolfin::plot (NLdifferentialProblem3.solution ()[0][1]);
     dolfin::plot (NLdifferentialProblem3.solution ()[1]);
     
-    std::unique_ptr <controlproblem::AbstractDifferentialProblem> NLptr (NLdifferentialProblem3.clone ());
+    std::unique_ptr <DCP::AbstractDifferentialProblem> NLptr (NLdifferentialProblem3.clone ());
     NLptr -> solve ();
     dolfin::plot (NLptr->solution ()[0]);
     
-    controlproblem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> NLdifferentialProblem4 = NLdifferentialProblem2;
+    DCP::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> NLdifferentialProblem4 = NLdifferentialProblem2;
 
-    std::unique_ptr <controlproblem::AbstractDifferentialProblem> Lptr1 (differentialProblem.clone ());
+    std::unique_ptr <DCP::AbstractDifferentialProblem> Lptr1 (differentialProblem.clone ());
     
     NLdifferentialProblem3.solve ();
     dolfin::plot (NLdifferentialProblem3.solution ()[0]);

@@ -70,18 +70,18 @@ int main (int argc, char* argv[])
     // =========================== COMPOSITE PROBLEM ============================== //
     // ============================================================================ //
     // define problems
-    controlproblem::NonlinearDifferentialProblem <primal::ResidualForm, primal::JacobianForm> 
+    DCP::NonlinearDifferentialProblem <primal::ResidualForm, primal::JacobianForm> 
         primalProblem (dolfin::reference_to_no_delete_pointer (mesh), 
                         dolfin::reference_to_no_delete_pointer (V),
                         "trial");
 
-    controlproblem::LinearDifferentialProblem <adjoint::BilinearForm, adjoint::LinearForm> 
+    DCP::LinearDifferentialProblem <adjoint::BilinearForm, adjoint::LinearForm> 
         adjointProblem (dolfin::reference_to_no_delete_pointer (mesh),
                          dolfin::reference_to_no_delete_pointer (V));
 
     
     // create composite differential problem
-    controlproblem::CompositeDifferentialProblem problems;
+    DCP::CompositeDifferentialProblem problems;
     problems.addProblem ("primal", primalProblem);
     problems.addProblem ("adjoint", adjointProblem);
     
@@ -128,10 +128,10 @@ int main (int argc, char* argv[])
 
     problems["adjoint"].setIntegrationSubdomains ("bilinear_form", 
                                                   dolfin::reference_to_no_delete_pointer (meshFacets),
-                                                  controlproblem::SubdomainType::BOUNDARY_FACETS);
+                                                  DCP::SubdomainType::BOUNDARY_FACETS);
     problems["adjoint"].setIntegrationSubdomains ("linear_form", 
                                                   dolfin::reference_to_no_delete_pointer (meshCells),
-                                                  controlproblem::SubdomainType::INTERNAL_CELLS);
+                                                  DCP::SubdomainType::INTERNAL_CELLS);
 
     problems.addLink ("adjoint", "u", "bilinear_form", "primal", 0);
     problems.addLink ("adjoint", "u", "linear_form", "primal", 0);
@@ -142,7 +142,7 @@ int main (int argc, char* argv[])
     // =========================== OBJECTIVE FUNCTIONAL ============================= //
     // ============================================================================== //
     // define functional
-    controlproblem::ObjectiveFunctional <objective_functional::Form_J, objective_functional::Gradient>
+    DCP::ObjectiveFunctional <objective_functional::Form_J, objective_functional::Gradient>
         objectiveFunctional (mesh);
     
     // define functional coefficients
@@ -175,9 +175,9 @@ int main (int argc, char* argv[])
                                         "p");
     
     objectiveFunctional.setIntegrationSubdomains (dolfin::reference_to_no_delete_pointer (meshFacets), 
-                                                  controlproblem::SubdomainType::BOUNDARY_FACETS);
+                                                  DCP::SubdomainType::BOUNDARY_FACETS);
     objectiveFunctional.setIntegrationSubdomains (dolfin::reference_to_no_delete_pointer (meshCells),
-                                                  controlproblem::SubdomainType::INTERNAL_CELLS);
+                                                  DCP::SubdomainType::INTERNAL_CELLS);
     
     objectiveFunctional.setCoefficient ("gradient",
                                         dolfin::reference_to_no_delete_pointer (problems["adjoint"].solution()[1]),
@@ -265,7 +265,7 @@ int main (int argc, char* argv[])
     objective_functional::SearchDirectionComputer searchDirectionComputer (controlMesh);
     
     // define optimizer
-    controlproblem::BacktrackingOptimizer backtrackingOptimizer;
+    DCP::BacktrackingOptimizer backtrackingOptimizer;
     backtrackingOptimizer.parameters ["relative_increment_tolerance"] = 1e-5;
     backtrackingOptimizer.parameters ["output_file_name"] = "results.txt";
     

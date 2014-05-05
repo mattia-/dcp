@@ -15,7 +15,7 @@
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
 #include <DifferentialProblem/SubdomainType.hpp>
 
-namespace controlproblem
+namespace DCP
 {
     /*! \class NonlinearDifferentialProblem NonlinearDifferentialProblem.hpp
      *  \brief Class for non-linear differential problems.
@@ -249,7 +249,7 @@ namespace controlproblem
                  */
                 virtual void setIntegrationSubdomains (const std::string& formType,
                                                        boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                       const controlproblem::SubdomainType& subdomainType);
+                                                       const DCP::SubdomainType& subdomainType);
                 
                 /******************* METHODS *******************/
 
@@ -281,7 +281,7 @@ namespace controlproblem
                  *  
                  *  \return a pointer to the cloned object
                  */
-                virtual controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>*
+                virtual DCP::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>*
                     clone () const;
                 
                 // ---------------------------------------------------------------------------------------------//
@@ -684,21 +684,21 @@ namespace controlproblem
         void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
         setIntegrationSubdomains (const std::string& formType,
                                   boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                  const controlproblem::SubdomainType& subdomainType)
+                                  const DCP::SubdomainType& subdomainType)
         {
             if (formType == "residual_form")
             {
-                if (subdomainType == controlproblem::SubdomainType::INTERNAL_CELLS)
+                if (subdomainType == DCP::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on INTERNAL_CELLS...");
                     residualForm_.set_cell_domains (meshFunction);
                 }
-                else if (subdomainType == controlproblem::SubdomainType::INTERNAL_FACETS)
+                else if (subdomainType == DCP::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on INTERNAL_FACETS...");
                     residualForm_.set_interior_facet_domains (meshFunction);
                 }
-                else if (subdomainType == controlproblem::SubdomainType::BOUNDARY_FACETS)
+                else if (subdomainType == DCP::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on BOUNDARY_FACETS...");
                     residualForm_.set_exterior_facet_domains (meshFunction);
@@ -710,17 +710,17 @@ namespace controlproblem
             }
             else if (formType == "jacobian_form")
             {
-                if (subdomainType == controlproblem::SubdomainType::INTERNAL_CELLS)
+                if (subdomainType == DCP::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on INTERNAL_CELLS...");
                     jacobianForm_.set_cell_domains (meshFunction);
                 }
-                else if (subdomainType == controlproblem::SubdomainType::INTERNAL_FACETS)
+                else if (subdomainType == DCP::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on INTERNAL_FACETS...");
                     jacobianForm_.set_interior_facet_domains (meshFunction);
                 }
-                else if (subdomainType == controlproblem::SubdomainType::BOUNDARY_FACETS)
+                else if (subdomainType == DCP::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on BOUNDARY_FACETS...");
                     jacobianForm_.set_exterior_facet_domains (meshFunction);
@@ -820,7 +820,7 @@ namespace controlproblem
     
     
     template <class T_ResidualForm, class T_JacobianForm>
-        controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>*
+        DCP::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>*
         NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
         clone () const
         {
@@ -832,11 +832,11 @@ namespace controlproblem
             dolfin::log (dolfin::DBG, "Creating new object of type NonlinearDifferentialProblem...");
             
             // create new object
-            controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>* clonedProblem = nullptr;
+            DCP::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>* clonedProblem = nullptr;
             if (cloneMethod == "shallow_clone")
             {
                 clonedProblem = 
-                    new controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm> 
+                    new DCP::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm> 
                         ( this->mesh_,
                           this->functionSpace_,
                           this->residualForm_, 
@@ -848,7 +848,7 @@ namespace controlproblem
             else if (cloneMethod == "deep_clone")
             {
                 clonedProblem = 
-                    new controlproblem::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm> 
+                    new DCP::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm> 
                         (*(this->mesh_),
                          *(this->functionSpace_),
                            this->residualForm_, 

@@ -1,7 +1,7 @@
 #include <Optimizer/DistributedControlValueUpdater.hpp>
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
 
-namespace controlproblem
+namespace DCP
 {
     /************************* CONSTRUCTORS ********************/
     DistributedControlValueUpdater::DistributedControlValueUpdater (const std::string& problemName, 
@@ -15,10 +15,10 @@ namespace controlproblem
 
 
     /************************* OPERATORS ********************/
-    void DistributedControlValueUpdater::operator() (controlproblem::CompositeDifferentialProblem& compositeProblem, 
+    void DistributedControlValueUpdater::operator() (DCP::CompositeDifferentialProblem& compositeProblem, 
                                                      const boost::shared_ptr <const dolfin::GenericFunction> coefficientValue) const
     {
-        controlproblem::AbstractDifferentialProblem& problem = compositeProblem [problemName_];
+        DCP::AbstractDifferentialProblem& problem = compositeProblem [problemName_];
         
         problem.setCoefficient (coefficientType_, coefficientValue, coefficientName_);
     }

@@ -5,7 +5,7 @@
 #include <dolfin/function/GenericFunction.h>
 #include <string>
 
-namespace controlproblem
+namespace DCP
 {
     /*! \class NeumannControlValueUpdater NeumannControlValueUpdater.hpp
      *  \brief Class to update the value of the control variable in Neumann boundary control problems.
@@ -30,7 +30,7 @@ namespace controlproblem
              *  \param problemName string that identifies the problem (in the \c CompositeDifferentialProblem object 
              *  passed as input to <tt>this->operator() ()</tt> ) which contains the control parameter to be updated
              *  \param coefficientType the type of the coefficient representing the control parameter inside the problem. 
-             *  This will be used by the call to \c controlproblem::AbstractDifferentialProblem::setCoefficient()
+             *  This will be used by the call to \c DCP::AbstractDifferentialProblem::setCoefficient()
              *  \param coefficientName the name of the coefficient representing the control parameter in the problem 
              *  passed as first argument
              */
@@ -46,7 +46,7 @@ namespace controlproblem
              *  \param compositeProblem the problem on which to operate
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
-            void operator() (controlproblem::CompositeDifferentialProblem& compositeProblem, 
+            void operator() (DCP::CompositeDifferentialProblem& compositeProblem, 
                              const boost::shared_ptr <const dolfin::GenericFunction> coefficientValue) const;
  
         // ---------------------------------------------------------------------------------------------//
@@ -57,7 +57,7 @@ namespace controlproblem
             std::string problemName_;
            
             //! The type of the coefficient representing the control parameter inside the problem. This will be used
-            //! by the call to \c controlproblem::AbstractDifferentialProblem::setCoefficient()
+            //! by the call to \c DCP::AbstractDifferentialProblem::setCoefficient()
             std::string coefficientType_;
            
             //! The name of the control parameter inside the problem identified by \c problemName_

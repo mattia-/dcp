@@ -10,7 +10,7 @@ IF (DEFINED C_COMPILER)
 ENDIF (DEFINED C_COMPILER)
 
 # set project properties
-SET (PROJECT_NAME control_problem_library)
+SET (PROJECT_NAME DCP)
 PROJECT (${PROJECT_NAME})
 
 # check on compiler being used

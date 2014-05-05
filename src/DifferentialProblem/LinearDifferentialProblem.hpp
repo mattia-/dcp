@@ -18,7 +18,7 @@
 #include <Factory/LinearSolverFactory.hpp>
 #include <DifferentialProblem/SubdomainType.hpp>
 
-namespace controlproblem
+namespace DCP
 {
     /*! \class LinearDifferentialProblem LinearDifferentialProblem.hpp
      *  \brief Class for linear differential problems.
@@ -37,10 +37,10 @@ namespace controlproblem
      *  \arg T_BilinearForm the bilinear form type
      *  \arg T_LinearForm the linear form type
      *  \arg T_LinearSolverFactory the type of the factory that creates the linear solver. By default, it is set
-     *  to \c controlproblem::LinearSolverFactory
+     *  to \c DCP::LinearSolverFactory
      */
 
-    template <class T_BilinearForm_, class T_LinearForm_, class T_LinearSolverFactory_ = controlproblem::LinearSolverFactory>
+    template <class T_BilinearForm_, class T_LinearForm_, class T_LinearSolverFactory_ = DCP::LinearSolverFactory>
         class LinearDifferentialProblem : public AbstractDifferentialProblem
         {
             // ---------------------------------------------------------------------------------------------//  
@@ -268,7 +268,7 @@ namespace controlproblem
                  */
                 virtual void setIntegrationSubdomains (const std::string& formType,
                                                        boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                       const controlproblem::SubdomainType& subdomainType);
+                                                       const DCP::SubdomainType& subdomainType);
 
                 //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c AbstractDifferentialProblem
                 /*!
@@ -340,7 +340,7 @@ namespace controlproblem
                  *  
                  *  \return a pointer to the cloned object
                  */
-                virtual controlproblem::LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
+                virtual DCP::LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
                     clone () const;
 
                 // ---------------------------------------------------------------------------------------------//
@@ -732,23 +732,23 @@ namespace controlproblem
         void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         setIntegrationSubdomains (const std::string& formType,
                                   boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                  const controlproblem::SubdomainType& subdomainType)
+                                  const DCP::SubdomainType& subdomainType)
         {
             if (formType == "bilinear_form")
             {
-                if (subdomainType == controlproblem::SubdomainType::INTERNAL_CELLS)
+                if (subdomainType == DCP::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on INTERNAL_CELLS...");
                     bilinearForm_.set_cell_domains (meshFunction);
                     parameters ["system_is_assembled"] = false;
                 }
-                else if (subdomainType == controlproblem::SubdomainType::INTERNAL_FACETS)
+                else if (subdomainType == DCP::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on INTERNAL_FACETS...");
                     bilinearForm_.set_interior_facet_domains (meshFunction);
                     parameters ["system_is_assembled"] = false;
                 }
-                else if (subdomainType == controlproblem::SubdomainType::BOUNDARY_FACETS)
+                else if (subdomainType == DCP::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting bilinear form integration subdomain on BOUNDARY_FACETS...");
                     bilinearForm_.set_exterior_facet_domains (meshFunction);
@@ -761,19 +761,19 @@ namespace controlproblem
             }
             else if (formType == "linear_form")
             {
-                if (subdomainType == controlproblem::SubdomainType::INTERNAL_CELLS)
+                if (subdomainType == DCP::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on INTERNAL_CELLS...");
                     linearForm_.set_cell_domains (meshFunction);
                     parameters ["system_is_assembled"] = false;
                 }
-                else if (subdomainType == controlproblem::SubdomainType::INTERNAL_FACETS)
+                else if (subdomainType == DCP::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on INTERNAL_FACETS...");
                     linearForm_.set_interior_facet_domains (meshFunction);
                     parameters ["system_is_assembled"] = false;
                 }
-                else if (subdomainType == controlproblem::SubdomainType::BOUNDARY_FACETS)
+                else if (subdomainType == DCP::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting linear form integration subdomain on BOUNDARY_FACETS...");
                     linearForm_.set_exterior_facet_domains (meshFunction);
@@ -956,7 +956,7 @@ namespace controlproblem
     
     
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        controlproblem::LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
+        DCP::LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
         LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         clone () const
         {
@@ -968,11 +968,11 @@ namespace controlproblem
             dolfin::log (dolfin::DBG, "Creating new object of type LinearDifferentialProblem...");
             
             // create new object
-            controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory>* clonedProblem = nullptr;
+            DCP::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory>* clonedProblem = nullptr;
             if (cloneMethod == "shallow_clone")
             {
                 clonedProblem = 
-                    new controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
+                    new DCP::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
                     (this->mesh_,
                      this->functionSpace_,
                      this->bilinearForm_, 
@@ -982,7 +982,7 @@ namespace controlproblem
             else if (cloneMethod == "deep_clone")
             {
                 clonedProblem =
-                    new controlproblem::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
+                    new DCP::LinearDifferentialProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
                     (*(this->mesh_),
                      *(this->functionSpace_),
                        this->bilinearForm_, 
@@ -1110,7 +1110,7 @@ namespace controlproblem
             else
             {
                 dolfin::log (dolfin::DBG, "Creating solver of type \"%s\"...", desiredSolverType.c_str ());
-                controlproblem::LinearSolverFactory& factory = controlproblem::LinearSolverFactory::Instance ();
+                DCP::LinearSolverFactory& factory = DCP::LinearSolverFactory::Instance ();
                 auto solver = factory.create (desiredSolverType);
                 
                 dolfin::log (dolfin::DBG, "Updating parameters...");

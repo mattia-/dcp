@@ -10,7 +10,7 @@
 #include <vector>
 #include <string>
 
-namespace controlproblem
+namespace DCP
 {
     /*! class VariableExpression VariableExpression.hpp
      *  \brief Class for expressions containing variable members, such as \c dolfin::Functions and other 

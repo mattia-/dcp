@@ -12,7 +12,7 @@
 #include <ObjectiveFunctional/VariableExpression.hpp>
 #include <ObjectiveFunctional/AbstractObjectiveFunctional.hpp>
 
-namespace controlproblem
+namespace DCP
 {
     /*! \class ObjectiveFunctional ObjectiveFunctional.hpp
      *  \brief Class for objective functionals.
@@ -24,11 +24,11 @@ namespace controlproblem
      *  
      *  Template arguments are:
      *  \arg T_FunctionalForm_ the functional form type
-     *  \arg T_Gradient_ the gradient type, which must be a class derived from \c controlproblem::VariableExpression
+     *  \arg T_Gradient_ the gradient type, which must be a class derived from \c DCP::VariableExpression
      */
 
     template <class T_FunctionalForm_, class T_Gradient_>
-        class ObjectiveFunctional : public controlproblem::AbstractObjectiveFunctional
+        class ObjectiveFunctional : public DCP::AbstractObjectiveFunctional
     {
         // ---------------------------------------------------------------------------------------------//  
 
@@ -151,7 +151,7 @@ namespace controlproblem
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */
             virtual void setIntegrationSubdomains (boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                   const controlproblem::SubdomainType& subdomainType);
+                                                   const DCP::SubdomainType& subdomainType);
 
 
             /******************* METHODS *******************/
@@ -185,7 +185,7 @@ namespace controlproblem
             T_FunctionalForm functional_;
 
             //! The gradient of the functional. Stored as a shared_ptr so that polymorphism can be applied
-            boost::shared_ptr <controlproblem::VariableExpression> gradient_;
+            boost::shared_ptr <DCP::VariableExpression> gradient_;
 
             // ---------------------------------------------------------------------------------------------//
 
@@ -328,19 +328,19 @@ namespace controlproblem
     template <class T_FunctionalForm, class T_Gradient>
         void ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
         setIntegrationSubdomains (boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                  const controlproblem::SubdomainType& subdomainType)
+                                  const DCP::SubdomainType& subdomainType)
         {
-            if (subdomainType == controlproblem::SubdomainType::INTERNAL_CELLS)
+            if (subdomainType == DCP::SubdomainType::INTERNAL_CELLS)
             {
                 dolfin::log (dolfin::DBG, "Setting functional integration subdomain on INTERNAL_CELLS...");
                 functional_.set_cell_domains (meshFunction);
             }
-            else if (subdomainType == controlproblem::SubdomainType::INTERNAL_FACETS)
+            else if (subdomainType == DCP::SubdomainType::INTERNAL_FACETS)
             {
                 dolfin::log (dolfin::DBG, "Setting functional integration subdomain on INTERNAL_FACETS...");
                 functional_.set_interior_facet_domains (meshFunction);
             }
-            else if (subdomainType == controlproblem::SubdomainType::BOUNDARY_FACETS)
+            else if (subdomainType == DCP::SubdomainType::BOUNDARY_FACETS)
             {
                 dolfin::log (dolfin::DBG, "Setting functional integration subdomain on BOUNDARY_FACETS...");
                 functional_.set_exterior_facet_domains (meshFunction);

@@ -12,7 +12,7 @@
 #include <cmath>
 #include <iomanip>
 
-namespace controlproblem
+namespace DCP
 {
     BacktrackingOptimizer::BacktrackingOptimizer (const double& gradientNormTolerance,
                                                   const double& relativeIncrementTolerance,
@@ -55,12 +55,12 @@ namespace controlproblem
 
     
 
-    void BacktrackingOptimizer::apply (controlproblem::CompositeDifferentialProblem& problem,
-                                       const controlproblem::AbstractObjectiveFunctional& objectiveFunctional, 
+    void BacktrackingOptimizer::apply (DCP::CompositeDifferentialProblem& problem,
+                                       const DCP::AbstractObjectiveFunctional& objectiveFunctional, 
                                        dolfin::Function& initialGuess,
                                        const std::function 
                                        <
-                                           void (controlproblem::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                           void (DCP::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
                                        >& updater,
                                        const std::function
                                        <

@@ -1,6 +1,6 @@
 #include <ObjectiveFunctional/AbstractObjectiveFunctional.hpp>
 
-namespace controlproblem
+namespace DCP
 {
     /************************* CONSTRUCTORS ********************/
     AbstractObjectiveFunctional::AbstractObjectiveFunctional (const boost::shared_ptr <const dolfin::Mesh> mesh) : 

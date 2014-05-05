@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 
-namespace controlproblem
+namespace DCP
 {
     /************************* CONSTRUCTORS ********************/
     AbstractDifferentialProblem::AbstractDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh,

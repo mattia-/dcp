@@ -115,7 +115,7 @@ int main (int argc, char* argv[])
     navierstokes::NoSlipBoundary noSlipBoundary;
 
     // define problem
-    controlproblem::NonlinearDifferentialProblem <primal::ResidualForm, primal::JacobianForm> 
+    DCP::NonlinearDifferentialProblem <primal::ResidualForm, primal::JacobianForm> 
         navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh), 
                        dolfin::reference_to_no_delete_pointer (V),
                        "trial");

@@ -8,13 +8,13 @@
 #include <functional>
 #include <string>
 
-namespace controlproblem
+namespace DCP
 {
     /*! \class BacktrackingOptimizer BacktrackingOptimizer.hpp
      *  \brief Class that implements the gradient method with backtracking.
      *  
      *  This class provides the implementation of the gradient method as a descent method
-     *  for optimazation of funcionals. It is derived from \c controlproblem::AbstractOptimizer.
+     *  for optimazation of funcionals. It is derived from \c DCP::AbstractOptimizer.
      *  Let \f$ J \f$ be the functional to be minimized and \f$ \psi \left( \alpha \right) \f$ the function defined as:
      *  \f[
      *      \psi \left( \alpha \right) = J \left( \mathbf{u} + \alpha\,\mathbf{d} \right)
@@ -47,7 +47,7 @@ namespace controlproblem
      *  \li \f$ \alpha^{\left(0\right)} = 0.5 \f$
      *  \li \f$ \rho = 0.5 \f$
      */
-    class BacktrackingOptimizer : public controlproblem::AbstractOptimizer
+    class BacktrackingOptimizer : public DCP::AbstractOptimizer
     {
         // ---------------------------------------------------------------------------------------------//
         
@@ -122,12 +122,12 @@ namespace controlproblem
              *  \li the function that will contain the search direction after the function is ended
              *  \li the function containing the gradient
              */
-            virtual void apply (controlproblem::CompositeDifferentialProblem& problem,
-                                const controlproblem::AbstractObjectiveFunctional& objectiveFunctional, 
+            virtual void apply (DCP::CompositeDifferentialProblem& problem,
+                                const DCP::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const std::function 
                                 <
-                                    void (controlproblem::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                    void (DCP::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
                                 >& updater,
                                 const std::function
                                 <

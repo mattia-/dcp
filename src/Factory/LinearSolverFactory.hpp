@@ -5,7 +5,7 @@
 #include <string>
 #include <dolfin.h>
 
-namespace controlproblem
+namespace DCP
 {
     typedef GenericFactory <dolfin::GenericLinearSolver, std::string> LinearSolverFactory;
 }

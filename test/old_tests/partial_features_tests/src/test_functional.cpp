@@ -81,7 +81,7 @@ namespace NavierStokes
     };
 }
 
-class ProvaVE : public controlproblem::VariableExpression
+class ProvaVE : public DCP::VariableExpression
 {
     private:
         bool inside (const dolfin::Array<double>& x) const
@@ -126,7 +126,7 @@ int main ()
     dolfin::set_log_level (dolfin::DBG);
     dolfin::UnitSquareMesh mesh (10, 10);
     Poisson::FunctionSpace V (mesh);
-    controlproblem::VariableExpression* a = new ProvaVE;
+    DCP::VariableExpression* a = new ProvaVE;
     dolfin::Array<double> x (3);
     x[0] = 0.1;
     x[1] = 0.2;
@@ -162,7 +162,7 @@ int main ()
     dolfin::cout << "PRIMO OGGETTO" << dolfin::endl;
     dolfin::cout << dolfin::endl;
     
-    controlproblem::ObjectiveFunctional<Functional::Functional, ProvaVE> objF (reference_to_no_delete_pointer (mesh));
+    DCP::ObjectiveFunctional<Functional::Functional, ProvaVE> objF (reference_to_no_delete_pointer (mesh));
 
     objF.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (b), "f");
     objF.setCoefficient ("gradient", dolfin::reference_to_no_delete_pointer (b), "b");
@@ -184,7 +184,7 @@ int main ()
     dolfin::cout << "SECONDO OGGETTO (COPIA DEL PRIMO)" << dolfin::endl;
     dolfin::cout << dolfin::endl;
     
-    controlproblem::ObjectiveFunctional<Functional::Functional, ProvaVE> objF2 (objF);
+    DCP::ObjectiveFunctional<Functional::Functional, ProvaVE> objF2 (objF);
 
     dolfin::cout << objF2.evaluateFunctional () << dolfin::endl;
     

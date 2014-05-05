@@ -10,7 +10,7 @@
 #include <ObjectiveFunctional/VariableExpression.hpp>
 #include <DifferentialProblem/SubdomainType.hpp>
 
-namespace controlproblem
+namespace DCP
 {
     /*! \class AbstractObjectiveFunctional AbstractObjectiveFunctional.hpp
      *  \brief Abstract base class for objective functionals.
@@ -83,10 +83,10 @@ namespace controlproblem
              *  Input arguments are:
              *  \param meshFunction the mesh function used to set the integration subdomains
              *  \param subdomainType the type of the subdomains, chosen among those provided by the enumeration
-             *  class \c controlproblem::SubdomainType
+             *  class \c DCP::SubdomainType
              */
             virtual void setIntegrationSubdomains (boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                   const controlproblem::SubdomainType& subdomainType) = 0;
+                                                   const DCP::SubdomainType& subdomainType) = 0;
 
             /******************* METHODS *******************/
             //! Evaluate the stored functional

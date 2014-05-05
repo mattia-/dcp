@@ -8,7 +8,7 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 
-namespace controlproblem
+namespace DCP
 {
     /*! \class DirichletControlValueUpdater DirichletControlValueUpdater.hpp
      *  \brief Class to update the value of the control variable in Dirichlet boundary control problems.
@@ -50,7 +50,7 @@ namespace controlproblem
              *  \param compositeProblem the problem on which to operate
              *  \param dirichletBCValue the new value for the control Dirichlet boundary condition 
              */
-            void operator() (controlproblem::CompositeDifferentialProblem& compositeProblem, 
+            void operator() (DCP::CompositeDifferentialProblem& compositeProblem, 
                              const dolfin::GenericFunction& dirichletBCValue) const;
 
             // ---------------------------------------------------------------------------------------------//

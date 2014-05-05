@@ -9,7 +9,7 @@
 #include <DifferentialProblem/CompositeDifferentialProblem.hpp>
 #include <functional>
 
-namespace controlproblem
+namespace DCP
 {
     /*! \class AbstractOptimizer AbstractOptimizer.hpp
      *  \brief Abstract base class for descent methods.
@@ -63,12 +63,12 @@ namespace controlproblem
              *  \li the function that will contain the search direction after the function is ended
              *  \li the function containing the gradient
              */
-            virtual void apply (controlproblem::CompositeDifferentialProblem& problem,
-                                const controlproblem::AbstractObjectiveFunctional& objectiveFunctional, 
+            virtual void apply (DCP::CompositeDifferentialProblem& problem,
+                                const DCP::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const std::function 
                                 <
-                                    void (controlproblem::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                    void (DCP::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
                                 >& updater,
                                 const std::function
                                 <

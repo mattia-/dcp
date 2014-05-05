@@ -12,7 +12,7 @@
 4) Why did we template-ized ObjectiveFunctional over the gradient type too?
     Because we need to know what type the gradient is in order to instantiate the right object. Otherwise we can only
     do:
-        gradient_ = new controlproblem::VariableExpression (gradient);
+        gradient_ = new DCP::VariableExpression (gradient);
 
     and this would leave us with the error:
         *** Error:   Unable to evaluate expression.

@@ -1,7 +1,7 @@
 #include <Optimizer/AbstractOptimizer.hpp>
 #include <dolfin/log/dolfin_log.h>
 
-namespace controlproblem
+namespace DCP
 {
     AbstractOptimizer::AbstractOptimizer () : 
         parameters ("optimizer_parameters")

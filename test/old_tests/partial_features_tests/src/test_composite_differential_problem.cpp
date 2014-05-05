@@ -87,7 +87,7 @@ int main ()
     dolfin::set_log_level (dolfin::DBG);
 //    dolfin::set_log_level (dolfin::PROGRESS);
     
-    controlproblem::CompositeDifferentialProblem cdp;
+    DCP::CompositeDifferentialProblem cdp;
     
     // declare meshes
     boost::shared_ptr<dolfin::UnitSquareMesh> mesh (new dolfin::UnitSquareMesh (100, 100));
@@ -98,12 +98,12 @@ int main ()
     boost::shared_ptr<NavierStokes::FunctionSpace> NLV (new NavierStokes::FunctionSpace (*NLmesh));
     
     // declare problems
-    controlproblem::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> ldp (*mesh, *V, "lu_solver"); 
-//    std::unique_ptr<controlproblem::AbstractDifferentialProblem> ldp 
-//        (new controlproblem::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> (*mesh, *V, "lu_solver"));
-    controlproblem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> nldp (*NLmesh, *NLV, "trial");
-//    std::unique_ptr<controlproblem::AbstractDifferentialProblem> nldp 
-//        (new controlproblem::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> (*NLmesh, *NLV, "trial"));
+    DCP::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> ldp (*mesh, *V, "lu_solver"); 
+//    std::unique_ptr<DCP::AbstractDifferentialProblem> ldp 
+//        (new DCP::LinearDifferentialProblem<Poisson::BilinearForm, Poisson::LinearForm> (*mesh, *V, "lu_solver"));
+    DCP::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> nldp (*NLmesh, *NLV, "trial");
+//    std::unique_ptr<DCP::AbstractDifferentialProblem> nldp 
+//        (new DCP::NonlinearDifferentialProblem<NavierStokes::ResidualForm, NavierStokes::JacobianForm> (*NLmesh, *NLV, "trial"));
     
     cdp.addProblem ("ldp", ldp);
     
@@ -146,8 +146,8 @@ int main ()
     cdp["ldp"].setCoefficient ("linear_form", f2, "f");
     cdp["ldp"].setCoefficient ("linear_form", g2, "g");
     
-    cdp["ldp"].setIntegrationSubdomains ("bilinear_form", meshFacets, controlproblem::SubdomainType::BOUNDARY_FACETS);
-    cdp["ldp"].setIntegrationSubdomains ("linear_form", meshFacets, controlproblem::SubdomainType::BOUNDARY_FACETS);
+    cdp["ldp"].setIntegrationSubdomains ("bilinear_form", meshFacets, DCP::SubdomainType::BOUNDARY_FACETS);
+    cdp["ldp"].setIntegrationSubdomains ("linear_form", meshFacets, DCP::SubdomainType::BOUNDARY_FACETS);
     
     cdp["ldp"].addDirichletBC (dirichletBC);
     

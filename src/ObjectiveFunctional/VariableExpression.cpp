@@ -2,7 +2,7 @@
 #include <utility>
 #include <memory>
 
-namespace controlproblem
+namespace DCP
 {
     /******************* CONSTRUCTORS *******************/
     VariableExpression::VariableExpression (std::size_t dim) : 

@@ -12,7 +12,7 @@
 #include <vector>
 #include <functional>
 
-namespace controlproblem
+namespace DCP
 {
     /*! \class CompositeDifferentialProblem CompositeDifferentialProblem.hpp
      *  \brief Class for multi-variable and multi-equation differential problem
@@ -20,7 +20,7 @@ namespace controlproblem
      *  The class contains a \c std::map that associate a problem with its identifying name
      *  and a vector that stores the problem names in the order they should be solved.
      *  The aforementioned map associates a \c std::string to a pointer to 
-     *  \c controlproblem::AbstractDifferentialProblem.
+     *  \c DCP::AbstractDifferentialProblem.
      *  The class also offers the possibility to link a problem's coefficient to another problem's
      *  solution through the use of a 
      *  <tt> std::map<std::tuple <std::string, std::string, std::string>, std::pair <std::string, int>> </tt>
@@ -72,13 +72,13 @@ namespace controlproblem
             /*!
              *  The call from main is something like:
              *  \code
-             *  std::unique_ptr<controlproblem::AbstractDifferentialProblem> foo = 
-             *      new controlproblem::LinearDifferentialProblem<bilinear_form_type, linear_form_type> (mesh, V));
+             *  std::unique_ptr<DCP::AbstractDifferentialProblem> foo = 
+             *      new DCP::LinearDifferentialProblem<bilinear_form_type, linear_form_type> (mesh, V));
              *  comp_diff_p.addProblem ("bar", &foo);
              *  \endcode
              *  The parameters are:
              *  \param problemName the problem name
-             *  \param problem a unique pointer to a \c controlproblem::AbstractDifferentialProblem. 
+             *  \param problem a unique pointer to a \c DCP::AbstractDifferentialProblem. 
              *  The class will take ownership of the concrete problem setting the input pointer to \c nullptr.
              *  For example, referring to the snippet of code above, the class will contain (and have full ownership of)
              *  the problem *foo and will set foo to nullptr, so that it cannot be used to modify the class private
@@ -109,7 +109,7 @@ namespace controlproblem
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
              *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
-             *  \c setCoefficient (see \c controlproblem::AbstractDifferentialProblem documentation for more details)
+             *  \c setCoefficient (see \c DCP::AbstractDifferentialProblem documentation for more details)
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
@@ -132,7 +132,7 @@ namespace controlproblem
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
              *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
-             *  \c setCoefficient (see \c controlproblem::AbstractDifferentialProblem documentation for more details)
+             *  \c setCoefficient (see \c DCP::AbstractDifferentialProblem documentation for more details)
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
@@ -156,7 +156,7 @@ namespace controlproblem
              *  error message and throws an exception through the function \c dolfin::error()
              *  \return a reference to the problem
              */
-            const controlproblem::AbstractDifferentialProblem& operator[] (const std::string& name) const;
+            const DCP::AbstractDifferentialProblem& operator[] (const std::string& name) const;
             
             //! Access problem with given name [2] (read and write)
             /*!
@@ -164,7 +164,7 @@ namespace controlproblem
              *  error message and throws an exception through the function \c dolfin::error()
              *  \return a reference to the problem
              */
-            controlproblem::AbstractDifferentialProblem& operator[] (const std::string& name);
+            DCP::AbstractDifferentialProblem& operator[] (const std::string& name);
             
             //! Access problem with given position in vector \c solveOrder_ [1] (read only)
             /*!
@@ -173,7 +173,7 @@ namespace controlproblem
              *  through the function \c dolfin::error()
              *  \return a reference to the problem
              */
-            const controlproblem::AbstractDifferentialProblem& operator[] (const std::size_t& position) const;
+            const DCP::AbstractDifferentialProblem& operator[] (const std::size_t& position) const;
             
             //! Access problem with given position in vector \c solveOrder_ [2] (read and write)
             /*!
@@ -182,7 +182,7 @@ namespace controlproblem
              *  through the function \c dolfin::error()
              *  \return a reference to the problem
              */
-            controlproblem::AbstractDifferentialProblem& operator[] (const std::size_t& position);
+            DCP::AbstractDifferentialProblem& operator[] (const std::size_t& position);
             
             //! Prints information on the problems: names list (in solution order) and links information.
             //! It uses \c dolfin::cout stream
@@ -238,7 +238,7 @@ namespace controlproblem
                                                >& link);
             
             //! The stored problems
-            std::map <std::string, std::unique_ptr <controlproblem::AbstractDifferentialProblem>> storedProblems_;
+            std::map <std::string, std::unique_ptr <DCP::AbstractDifferentialProblem>> storedProblems_;
 
             //! The solution order of the problems
             std::vector <std::string> solveOrder_;
@@ -249,7 +249,7 @@ namespace controlproblem
              *  \li the first \c string contains the name of the problem whose coefficient should be linked against 
              *  some other problem's solution
              *  \li the second \c string contains the type of such coefficient, in a form that can be passed to
-             *  \c controlproblem::AbstractDifferentialProblem::setCoefficients
+             *  \c DCP::AbstractDifferentialProblem::setCoefficients
              *  \li the third \c string contains the name of said coefficient in the problem
              *  \li the fourth \c string contains the name of the problem whose solution should be used to set the 
              *  coefficient identified by the first three strings

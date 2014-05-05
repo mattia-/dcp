@@ -25,8 +25,8 @@ int main (int argc, char* argv[])
     dolfin::Parameters parameters ("main_parameters");
     parameters.add ("complete_mesh_file_name", "../src/complete_mesh/complete_mesh.xml");
     parameters.add ("partial_mesh_file_name", "../src/partial_mesh/partial_mesh.xml");
-    parameters.add ("target_u_file_name", "../src/u_target");
-    parameters.add ("target_p_file_name", "../src/p_target");
+    parameters.add ("target_u_file_name", "u_target");
+    parameters.add ("target_p_file_name", "p_target");
     
     // the next parameter is set to allow projection of solution from complete mesh to partial mesh.
     // In any case, the values that will be extrapolated are not important because the functional will
@@ -261,7 +261,7 @@ int main (int argc, char* argv[])
     // define optimizer
     controlproblem::BacktrackingOptimizer backtrackingOptimizer;
     backtrackingOptimizer.parameters ["relative_increment_tolerance"] = 1e-5;
-    backtrackingOptimizer.parameters ["max_minimization_iterations"] = 200;
+//    backtrackingOptimizer.parameters ["max_minimization_iterations"] = 200;
     backtrackingOptimizer.parameters ["output_file_name"] = "results.txt";
     
     backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater, searchDirectionComputer);

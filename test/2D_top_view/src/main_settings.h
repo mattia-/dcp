@@ -112,8 +112,8 @@ namespace adjoint
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return x[0] >= 2.5 && x[0] <= 4.5 && x[1] >= 2.5 && x[1] <= 4.5; 
-//            return x[0] >= 2.5 && x[0] <= 5 && x[1] >= 2 && x[1] <= 5; 
+//            return x[0] >= 2.5 && x[0] <= 4.5 && x[1] >= 2.5 && x[1] <= 4.5; 
+            return x[0] >= 2.5 && x[0] <= 5 && x[1] >= 2 && x[1] <= 5; 
         }
     };
 }
@@ -121,8 +121,8 @@ namespace adjoint
 // ---------------------------------------------------------------------------- //
 namespace objective_functional
 {
-    double sigma_1 = 0.1;
-    double sigma_2 = 0.1;
+    double sigma_1 = 0.01;
+    double sigma_2 = 0.01;
     
     class ControlDomain : public dolfin::SubDomain
     {

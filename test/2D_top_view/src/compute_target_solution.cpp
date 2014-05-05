@@ -81,8 +81,8 @@ int main (int argc, char* argv[])
     // define parameters and their default values
     dolfin::Parameters parameters ("main_parameters");
     parameters.add ("mesh_file_name", "../src/complete_mesh/complete_mesh.xml");
-    parameters.add ("u_output_file_name", "../src/u_target");
-    parameters.add ("p_output_file_name", "../src/p_target");
+    parameters.add ("u_output_file_name", "u_target");
+    parameters.add ("p_output_file_name", "p_target");
     parameters.add ("human_readable_print", false);
    
     // read parameters from command line and overwrite default values

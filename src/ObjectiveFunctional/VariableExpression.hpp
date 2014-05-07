@@ -148,7 +148,7 @@ namespace DCP
              *  
              *  The pair created by the two input arguments will be inserted in the protected member \c variables_
              */
-            void setCoefficient (const std::string& variableName, 
+            virtual void setCoefficient (const std::string& variableName, 
                                  const boost::shared_ptr <const dolfin::GenericFunction> value);
 
 
@@ -161,7 +161,7 @@ namespace DCP
              *
              *  \return the function, if found, as a <tt> const dolfin::Function& </tt>
              */
-            const dolfin::Function& function (const std::string& variableName) const;
+            virtual const dolfin::Function& function (const std::string& variableName) const;
 
             //! Get variable with given name and return it as a <tt> const dolfin::Expression& </tt>
             /*! 
@@ -171,7 +171,7 @@ namespace DCP
              *
              *  \return the function, if found, as a <tt> const dolfin::Expression& </tt>
              */
-            const dolfin::Expression& expression (const std::string& variableName) const;
+            virtual const dolfin::Expression& expression (const std::string& variableName) const;
 
 
             /******************* METHODS *******************/

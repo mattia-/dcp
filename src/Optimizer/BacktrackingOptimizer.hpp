@@ -138,8 +138,8 @@ namespace DCP
              *  The default value is the member function \c gradientSearchDirection(), that basically uses the above 
              *  formula with \f$ B_k = I \f$.
              *  The input arguments for \c searchDirectionComputer are:
-             *  \li the function that will contain the search direction after the function is ended
-             *  \li the function containing the gradient
+             *  \li the dolfin function that will contain the search direction after the function exits
+             *  \li the dolfin function containing the gradient
              */
             virtual void apply (DCP::CompositeDifferentialProblem& problem,
                                 const DCP::AbstractObjectiveFunctional& objectiveFunctional, 

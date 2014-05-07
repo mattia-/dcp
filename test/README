@@ -1,7 +1,6 @@
-This collection of files sets up the case for the control problem:
-[
-    insert control problem description
-]
+This collection of files sets up the case for a test control problem in which we wish to determine the
+right inflow condition to reproduce the flow around a circle with a rectanglle in front of it once the
+rectangle is removed
 
 Steps to launch the code:
 1) create a directory in which to build the code. In the following steps, it will be supposed that such directory was
@@ -20,25 +19,40 @@ called "build" and was created in the same directory as the one where this READM
 4) compile
     $ make
 
-5) run the first executable, which by default is called "compute_target_solution" and is located in the folder
-   build/src/
+5) run the first executable
+
    This executable may take four different command line arguments:
    -) mesh_file_name:       the name of the file containing the mesh for the problem. 
                             The default value is: ../src/complete_mesh/complete_mesh.xml
    -) u_output_file_name:   the name of the file to which the velocity component of the solution will be saved. It will
                             be a HDF5 file, and format string ".hdf5" will be automatically appended
-                            The default value is: ../src/u_target
+                            The default value is: u_target
    -) p_output_file_name:   the name of the file to which the pressure component of the solution will be saved. It will
                             be a HDF5 file, and format string ".hdf5" will be automatically appended
-                            The default value is: ../src/p_target.
+                            The default value is: p_target.
    -) human_readable_print: boolean flag. If set to true, also prints velocity and pressure to human readable format
                             (in particular, pvd format - i.e. xml + vtk - will be used). The name of such files will
                             be the same as the name of the hdf5 file, with different extension.
                             The dafault value is false
-   In all three cases, "../src" is prepended, so that from the directory build the program looks for the files in the
-   directory src
 
    To launch the executable the command is:
     $ ./src/compute_target_solution --mesh_file_name <mesh_file> --u_output_file_name <u_file> --p_output_file_name <p_file>
 
    One or more of the command line options may not be given. In this case, default values will be used
+
+6) run the second executable
+
+   The command line arguments for this executable are:
+   -) complete_mesh_file_name: the name of the file containing the mesh with the complete obstacle.
+                               The default value is: ../src/complete_mesh/complete_mesh.xml
+   -) partial_mesh_file_name:  the name of the file containing the mesh with the partial obstacle.
+                               The default value is: ../src/complete_mesh/complete_mesh.xml
+   -) target_u_file_name:      the name of the file from which the velocity component of the solution will be read. It will
+                               be a HDF5 file, and format string ".hdf5" will be automatically appended
+                               The default value is: u_target
+   -) target_p_file_name:      the name of the file from which the pressure component of the solution will be read. It will
+                               be a HDF5 file, and format string ".hdf5" will be automatically appended
+                               The default value is: p_target
+   To launch the executable the command is:
+    $ ./src/main --complete_mesh_file_name <complete_mesh_file> --partial_mesh_file_name <partial_mesh_file> \
+                 --target_u_file_name <u_file> --target_p_file_name <p_file>

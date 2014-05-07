@@ -313,6 +313,7 @@ int main (int argc, char* argv[])
     
     dolfin::interactive ();
     
+    
     // print control variable to file
     std::ofstream gFile ("control_values.txt");
     for (dolfin::CellIterator c(controlMesh); !c.end(); ++c)
@@ -326,8 +327,6 @@ int main (int argc, char* argv[])
             gFile << x [0] << " " << gValues [0] << std::endl;
         }
     }
-    
-    
     
     // compute functional components
     std::ofstream componentsOutputStream ("functional_components.txt");

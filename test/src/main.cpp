@@ -328,6 +328,7 @@ int main (int argc, char* argv[])
         }
     }
     
+    
     // compute functional components
     std::ofstream componentsOutputStream ("functional_components.txt");
     componentsOutputStream << "Control_component = " << dolfin::assemble (functionalControlComponent) << std::endl;

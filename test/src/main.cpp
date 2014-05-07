@@ -263,7 +263,6 @@ int main (int argc, char* argv[])
     dragComputer.set_coefficient ("p", dolfin::reference_to_no_delete_pointer (problems["primal"].solution()[1]));
     dragComputer.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer (meshFacets));
     
-    
 
     // ============================================================================== //
     // =============================== OPTIMIZATION  ================================ //
@@ -313,6 +312,21 @@ int main (int argc, char* argv[])
     dolfin::plot (differenceP, "Difference between target and controlled pressure");
     
     dolfin::interactive ();
+    
+    // print control variable to file
+    std::ofstream gFile ("control_values.txt");
+    for (dolfin::CellIterator c(controlMesh); !c.end(); ++c)
+    {
+        for (dolfin::VertexIterator v0(*c); !v0.end(); ++v0)
+        {
+            dolfin::Array<double> x (1);
+            dolfin::Array<double> gValues (1);
+            x[0] = v0 -> x(0);
+            g.eval (gValues, x);
+            gFile << x [0] << " " << gValues [0] << std::endl;
+        }
+    }
+    
     
     
     // compute functional components

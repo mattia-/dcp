@@ -111,8 +111,6 @@ int main (int argc, char* argv[])
     dolfin::Mesh mesh (parameters ["mesh_file_name"]);
     primal::FunctionSpace V (mesh);
     
-    dolfin::plot (mesh);
-
     
     // define constant
     dolfin::Constant nu (1e-1);
@@ -144,9 +142,20 @@ int main (int argc, char* argv[])
     navierStokesProblem.solve ();
 
     // plots
-    dolfin::plot (navierStokesProblem.solution ()[0]);
-    dolfin::plot (navierStokesProblem.solution ()[1]);
-
+    dolfin::VTKPlotter meshPlotter (dolfin::reference_to_no_delete_pointer (mesh));
+    meshPlotter.parameters["title"] = "Mesh";
+    meshPlotter.plot ();
+    
+    dolfin::VTKPlotter velocityPlotter (dolfin::reference_to_no_delete_pointer (navierStokesProblem.solution ()[0]));
+    velocityPlotter.parameters["title"] = "Velocity";
+    velocityPlotter.parameters["input_keys"] = "m";
+    velocityPlotter.plot ();
+    
+    dolfin::VTKPlotter pressurePlotter (dolfin::reference_to_no_delete_pointer (navierStokesProblem.solution ()[1]));
+    pressurePlotter.parameters["mode"]  = "color";
+    pressurePlotter.parameters["title"] = "Pressure";
+    pressurePlotter.plot ();
+    
     dolfin::interactive ();
     
     

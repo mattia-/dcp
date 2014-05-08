@@ -278,8 +278,6 @@ int main (int argc, char* argv[])
     
     // define optimizer
     DCP::BacktrackingOptimizer backtrackingOptimizer;
-    backtrackingOptimizer.parameters ["relative_increment_tolerance"] = 1e-5;
-//    backtrackingOptimizer.parameters ["max_minimization_iterations"] = 200;
     backtrackingOptimizer.parameters ["output_file_name"] = "results.txt";
     
     backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater, searchDirectionComputer);
@@ -290,26 +288,56 @@ int main (int argc, char* argv[])
     
     problems.solve ();
     
-    dolfin::plot (problems.solution ("primal")[0], "solution of the problem with computed control. Velocity");
-    dolfin::plot (problems.solution ("primal")[0][0], "solution of the problem with computed control. x velocity");
-    dolfin::plot (problems.solution ("primal")[0][1], "solution of the problem with computed control. y velocity");
-    dolfin::plot (problems.solution ("primal")[1], "solution of the problem with computed control. Pressure");
-    dolfin::plot (problems.solution ("adjoint")[1], "solution of the adjoint problem with computed control. Pressure");
-    dolfin::plot (g, "Control");
     
-    dolfin::Function differenceU (interpolatedTargetU);
-    dolfin::Function differenceU1 (interpolatedTargetU);
-    differenceU1.interpolate (problems.solution ("primal")[0]);
-    differenceU = differenceU1 - interpolatedTargetU; 
-    dolfin::Function differenceP (interpolatedTargetP);
-    dolfin::Function differenceP1 (interpolatedTargetP);
-    differenceP1.interpolate (problems.solution ("primal")[1]);
-    differenceP = differenceP1 - interpolatedTargetP;
+    // compute difference between target and reconstructed solution
+    dolfin::Function uDifference (interpolatedTargetU);
+    dolfin::Function uDifferenceTmp (interpolatedTargetU);
+    uDifferenceTmp.interpolate (problems.solution ("primal")[0]);
+    uDifference = uDifferenceTmp - interpolatedTargetU; 
+    dolfin::Function pDifference (interpolatedTargetP);
+    dolfin::Function pDifferenceTmp (interpolatedTargetP);
+    pDifferenceTmp.interpolate (problems.solution ("primal")[1]);
+    pDifference = pDifferenceTmp - interpolatedTargetP;
     
     
-    dolfin::plot (meshCells, "Control region");
-    dolfin::plot (differenceU, "Difference between target and controlled velocity");
-    dolfin::plot (differenceP, "Difference between target and controlled pressure");
+    // plots
+    dolfin::VTKPlotter meshPlotter (dolfin::reference_to_no_delete_pointer (mesh));
+    meshPlotter.parameters["title"] = "Mesh";
+    meshPlotter.plot ();
+    
+    dolfin::VTKPlotter primalVelocityPlotter (dolfin::reference_to_no_delete_pointer (problems.solution ("primal")[0]));
+    primalVelocityPlotter.parameters["title"] = "Solution of the problem with computed control. Velocity";
+    primalVelocityPlotter.parameters["input_keys"] = "m";
+    primalVelocityPlotter.plot ();
+    
+    dolfin::VTKPlotter primalPressurePlotter (dolfin::reference_to_no_delete_pointer (problems.solution ("primal")[1]));
+    primalPressurePlotter.parameters["mode"]  = "color";
+    primalPressurePlotter.parameters["title"] = "Solution of the problem with computed control. Pressure";
+    primalPressurePlotter.plot ();
+    
+    dolfin::VTKPlotter adjointPressurePlotter (dolfin::reference_to_no_delete_pointer (problems.solution ("adjoint")[1]));
+    adjointPressurePlotter.parameters["mode"]  = "color";
+    adjointPressurePlotter.parameters["title"] = "Solution of the adjoint problem with computed control. Pressure";
+    adjointPressurePlotter.plot ();
+    
+    dolfin::VTKPlotter controlPlotter (dolfin::reference_to_no_delete_pointer (g));
+    controlPlotter.parameters["title"] = "Control";
+    controlPlotter.plot ();
+    
+    dolfin::VTKPlotter controlRegionPlotter (dolfin::reference_to_no_delete_pointer (meshCells));
+    controlRegionPlotter.parameters["mode"]  = "color";
+    controlRegionPlotter.parameters["title"] = "Control region";
+    controlRegionPlotter.plot ();
+    
+    dolfin::VTKPlotter velocityDifferencePlotter (dolfin::reference_to_no_delete_pointer (uDifference));
+    velocityDifferencePlotter.parameters["title"] = "Difference between target and reconstructed velocity";
+    velocityDifferencePlotter.parameters["input_keys"] = "m";
+    velocityDifferencePlotter.plot ();
+    
+    dolfin::VTKPlotter pressureDifferencePlotter (dolfin::reference_to_no_delete_pointer (pDifference));
+    pressureDifferencePlotter.parameters["mode"]  = "color";
+    pressureDifferencePlotter.parameters["title"] = "Difference between target and reconstructed pressure";
+    pressureDifferencePlotter.plot ();
     
     dolfin::interactive ();
     
@@ -329,14 +357,14 @@ int main (int argc, char* argv[])
     }
     
     
-    // compute functional components
+    // compute and print to file functional components
     std::ofstream componentsOutputStream ("functional_components.txt");
     componentsOutputStream << "Control_component = " << dolfin::assemble (functionalControlComponent) << std::endl;
     componentsOutputStream << "Target_component = " << dolfin::assemble (functionalTargetComponent) << std::endl;
     componentsOutputStream.close ();
     
 
-    // compute lift and drag
+    // compute and print to file lift and drag
     std::ofstream liftDragOutputStream ("reconstructed_lift_drag.txt");
     liftDragOutputStream << "Lift = " << dolfin::assemble (liftComputer) << std::endl;
     liftDragOutputStream << "Drag = " << dolfin::assemble (dragComputer) << std::endl;

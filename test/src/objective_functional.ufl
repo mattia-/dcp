@@ -22,11 +22,17 @@ J = 0.5 * inner (u - U, u - U) * dx (1) \
     + 0.5 * sigma_1 * inner (g, g) * ds (2) \
     + 0.5 * sigma_2 * inner (grad (g), grad (g)) * ds (2)
 
-J_control_component = 0.5 * sigma_1 * inner (g, g) * ds (2) \
-                      + 0.5 * sigma_2 * inner (grad (g), grad (g)) * ds (2)
+# velocity component of the functional
+J_u = 0.5 * inner (u - U, u - U) * dx (1)
 
-J_target_component = 0.5 * inner (u - U, u - U) * dx (1) \
-                     + 0.5 * inner (p - P, p - P) * dx (1)
+# pressure component of the functional
+J_p = 0.5 * inner (p - P, p - P) * dx (1)
+
+# control component of the functional
+J_g = 0.5 * sigma_1 * inner (g, g) * ds (2)
+
+# control derivative component of the functional
+J_gDer = 0.5 * sigma_2 * inner (grad (g), grad (g)) * ds (2)
 
 # add functional to list of forms
-forms = [J, J_control_component, J_target_component]
+forms = [J, J_u, J_p, J_g, J_gDer]

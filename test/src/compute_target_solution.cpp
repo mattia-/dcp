@@ -148,7 +148,7 @@ int main (int argc, char* argv[])
     
     dolfin::VTKPlotter velocityPlotter (dolfin::reference_to_no_delete_pointer (navierStokesProblem.solution ()[0]));
     velocityPlotter.parameters["title"] = "Velocity";
-    velocityPlotter.parameters["input_keys"] = "m";
+    velocityPlotter.parameters["mode"]  = "color";
     velocityPlotter.plot ();
     
     dolfin::VTKPlotter pressurePlotter (dolfin::reference_to_no_delete_pointer (navierStokesProblem.solution ()[1]));

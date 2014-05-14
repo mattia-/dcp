@@ -16,9 +16,9 @@ Author: Mattia Tamellini, 2014  <mattia.tamellini@gmail.com>
        C_COMPILER and CXX_COMPILER: the C and C++ compiler to be used
        CMAKE_BUILD_TYPE: sets the compilation type, to allow for some optimization at compile time (see CMake documentation
                          for more details)
-       LIB_INSTAL_DIR: directory for the installation of the library. Default value: the directory "lib" in the root directory
+       LIB_INSTALL_DIR: directory for the installation of the library. Default value: the directory "lib" in the root directory
                        of the source tree
-       HEADER_INSTAL_DIR: directory for the installation of the header files. Default value: the directory "include" 
+       HEADER_INSTALL_DIR: directory for the installation of the header files. Default value: the directory "include" 
                           in the root directory of the source tree
 
    all option can be set from command line using the flag "-D":

@@ -100,8 +100,7 @@ int main (int argc, char* argv[])
     // define parameters and their default values
     dolfin::Parameters parameters ("main_parameters");
     parameters.add ("mesh_file_name", "../src/complete_mesh/complete_mesh.xml");
-    parameters.add ("u_output_file_name", "u_target");
-    parameters.add ("p_output_file_name", "p_target");
+    parameters.add ("output_file_name", "target_solution");
     parameters.add ("human_readable_print", false);
    
     // read parameters from command line and overwrite default values
@@ -161,20 +160,17 @@ int main (int argc, char* argv[])
     
     // print to file
     dolfin::cout << "Printing to hdf5 format..." << dolfin::endl;
-    dolfin::HDF5File uFile (static_cast<std::string> (parameters ["u_output_file_name"]) + ".hdf5", "w");
-    uFile.write (navierStokesProblem.solution ()[0], "u");
+    dolfin::HDF5File uFile (static_cast<std::string> (parameters ["output_file_name"]) + ".hdf5", "w");
+    uFile.write (navierStokesProblem.solution (), "solution");
     
-    dolfin::HDF5File pFile (static_cast<std::string> (parameters ["p_output_file_name"]) + ".hdf5", "w");
-    pFile.write (navierStokesProblem.solution ()[1], "p");
-
     if (static_cast<bool> (parameters ["human_readable_print"]) == true)
     {    
         dolfin::cout << "Printing to human readable format..." << dolfin::endl;
-        dolfin::File uPlotFile (static_cast<std::string> (parameters ["u_output_file_name"]) + ".pvd");
+        dolfin::File uPlotFile (static_cast<std::string> (parameters ["output_file_name"]) + "_velocity" + ".pvd");
         dolfin::Function u (navierStokesProblem.solution ()[0]);
         uPlotFile << u;
         
-        dolfin::File pPlotFile (static_cast<std::string> (parameters ["p_output_file_name"]) + ".pvd");
+        dolfin::File pPlotFile (static_cast<std::string> (parameters ["output_file_name"]) + "_pressure" + ".pvd");
         dolfin::Function p (navierStokesProblem.solution ()[1]);
         pPlotFile << p;
     }

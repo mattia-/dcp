@@ -44,8 +44,7 @@ int main (int argc, char* argv[])
     dolfin::Parameters parameters ("main_parameters");
     parameters.add ("complete_mesh_file_name", "../src/complete_mesh/complete_mesh.xml");
     parameters.add ("partial_mesh_file_name", "../src/partial_mesh/partial_mesh.xml");
-    parameters.add ("target_u_file_name", "u_target");
-    parameters.add ("target_p_file_name", "p_target");
+    parameters.add ("target_solution_file_name", "target_solution");
     
     // the next parameter is set to allow projection of solution from complete mesh to partial mesh.
     // In any case, the values that will be extrapolated are not important because the functional will
@@ -64,13 +63,10 @@ int main (int argc, char* argv[])
     primal::FunctionSpace completeV (completeMesh);
     
     // read target solutions from file
-    dolfin::Function targetU (completeV[0] -> collapse ());
-    dolfin::Function targetP (completeV[1] -> collapse ());
+    dolfin::Function targetSolution (completeV);
     
-    dolfin::HDF5File targetUFile (static_cast<std::string> (parameters ["target_u_file_name"]) + ".hdf5", "r");
-    targetUFile.read (targetU, "u");
-    dolfin::HDF5File targetPFile (static_cast<std::string> (parameters ["target_p_file_name"]) + ".hdf5", "r");
-    targetPFile.read (targetP, "p");
+    dolfin::HDF5File targetSolutionFile (static_cast<std::string> (parameters ["target_solution_file_name"]) + ".hdf5", "r");
+    targetSolutionFile.read (targetSolution, "solution");
     
     
     // create mesh and finite element space on partial geometry
@@ -78,11 +74,8 @@ int main (int argc, char* argv[])
     primal::FunctionSpace V (mesh);
     
     // interpolate target functions from completeMesh to actual mesh
-    dolfin::Function interpolatedTargetU (V[0] -> collapse ());
-    dolfin::Function interpolatedTargetP (V[1] -> collapse ());
-    
-    interpolatedTargetU.interpolate (targetU);
-    interpolatedTargetP.interpolate (targetP);
+    dolfin::Function interpolatedTargetSolution (V);
+    interpolatedTargetSolution.interpolate (targetSolution);
 
     
     // ============================================================================ //
@@ -140,8 +133,8 @@ int main (int argc, char* argv[])
 
     // adjoint problem settings
     problems["adjoint"].setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
-    problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (targetU), "U");
-    problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (targetP), "P");
+    problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (targetSolution [0]), "U");
+    problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (targetSolution [1]), "P");
 
     problems["adjoint"].addDirichletBC (dolfin::DirichletBC (*V[0], adjoint_dirichletBC, adjoint_dirichletBoundary));
 
@@ -185,8 +178,8 @@ int main (int argc, char* argv[])
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (sigma_1), "sigma_1");
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (sigma_2), "sigma_2");
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (g), "g");
-    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (targetU), "U");
-    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (targetP), "P");
+    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (targetSolution [0]), "U");
+    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (targetSolution [1]), "P");
     objectiveFunctional.setCoefficient ("functional", 
                                         dolfin::reference_to_no_delete_pointer (problems.solution("primal")[0]), 
                                         "u");
@@ -217,7 +210,7 @@ int main (int argc, char* argv[])
     objective_functional::Form_J_u functionalVelocityComponent (mesh);
         
     // functional settings
-    functionalVelocityComponent.set_coefficient ("U", dolfin::reference_to_no_delete_pointer (targetU));
+    functionalVelocityComponent.set_coefficient ("U", dolfin::reference_to_no_delete_pointer (targetSolution [0]));
     functionalVelocityComponent.set_coefficient ("u", 
                                                  dolfin::reference_to_no_delete_pointer (problems.solution("primal")[0]));
     
@@ -229,7 +222,7 @@ int main (int argc, char* argv[])
     objective_functional::Form_J_p functionalPressureComponent (mesh);
         
     // functional settings
-    functionalPressureComponent.set_coefficient ("P", dolfin::reference_to_no_delete_pointer (targetP));
+    functionalPressureComponent.set_coefficient ("P", dolfin::reference_to_no_delete_pointer (targetSolution [1]));
     functionalPressureComponent.set_coefficient ("p", dolfin::reference_to_no_delete_pointer (problems.solution("primal")[1]));
     
     functionalPressureComponent.set_cell_domains (dolfin::reference_to_no_delete_pointer (meshCells));
@@ -313,23 +306,14 @@ int main (int argc, char* argv[])
     backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater, searchDirectionComputer);
             
 
-    // solve problem with computed control value
-    updater (problems, g);
-    
-    problems.solve ();
-    
-    
     // compute difference between target and reconstructed solution
-    dolfin::Function uDifference (interpolatedTargetU);
-    dolfin::Function uDifferenceTmp (interpolatedTargetU);
-    uDifferenceTmp.interpolate (problems.solution ("primal")[0]);
-    uDifference = uDifferenceTmp - interpolatedTargetU; 
-    dolfin::Function pDifference (interpolatedTargetP);
-    dolfin::Function pDifferenceTmp (interpolatedTargetP);
-    pDifferenceTmp.interpolate (problems.solution ("primal")[1]);
-    pDifference = pDifferenceTmp - interpolatedTargetP;
+    dolfin::Function difference (V);
+    difference = problems.solution ("primal") - interpolatedTargetSolution; 
     
     
+    // ============================================================================== //
+    // =============================== POST PROCESSING ============================== //
+    // ============================================================================== //
     // plots
     dolfin::VTKPlotter meshPlotter (dolfin::reference_to_no_delete_pointer (mesh));
     meshPlotter.parameters["title"] = "Mesh";
@@ -359,12 +343,12 @@ int main (int argc, char* argv[])
     controlRegionPlotter.parameters["title"] = "Control region";
     controlRegionPlotter.plot ();
     
-    dolfin::VTKPlotter velocityDifferencePlotter (dolfin::reference_to_no_delete_pointer (uDifference));
+    dolfin::VTKPlotter velocityDifferencePlotter (dolfin::reference_to_no_delete_pointer (difference [0]));
     velocityDifferencePlotter.parameters["title"] = "Difference between target and reconstructed velocity";
     velocityDifferencePlotter.parameters["mode"]  = "color";
     velocityDifferencePlotter.plot ();
     
-    dolfin::VTKPlotter pressureDifferencePlotter (dolfin::reference_to_no_delete_pointer (pDifference));
+    dolfin::VTKPlotter pressureDifferencePlotter (dolfin::reference_to_no_delete_pointer (difference [1]));
     pressureDifferencePlotter.parameters["mode"]  = "color";
     pressureDifferencePlotter.parameters["title"] = "Difference between target and reconstructed pressure";
     pressureDifferencePlotter.plot ();
@@ -379,11 +363,11 @@ int main (int argc, char* argv[])
     dolfin::File pressureOutputFile ("reconstructed_pressure.pvd");
     pressureOutputFile << problems.solution ("primal")[1];
     
-    dolfin::File pressureDifferenceFile ("pressure_difference.pvd");
-    pressureDifferenceFile << pDifference;
-    
     dolfin::File velocityDifferenceFile ("velocity_difference.pvd");
-    velocityDifferenceFile << uDifference;
+    velocityDifferenceFile << difference [0];
+    
+    dolfin::File pressureDifferenceFile ("pressure_difference.pvd");
+    pressureDifferenceFile << difference [1];
 
     
     // print control variable to file

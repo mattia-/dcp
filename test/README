@@ -29,7 +29,8 @@ called "build" and was created in the same directory as the one where this READM
                             The default value is: target_solution
    -) human_readable_print: boolean flag. If set to true, also prints velocity and pressure to human readable format
                             (in particular, pvd format - i.e. xml + vtk - will be used). The name of such files will
-                            be the same as the name of the hdf5 file, with different extension.
+                            be the name of the hdf5 output file with the suffix "_velocity" or "_pressure"
+                            and "pvd" extension.
                             The dafault value is false
 
    To launch the executable the command is:

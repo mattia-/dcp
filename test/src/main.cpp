@@ -169,6 +169,7 @@ int main (int argc, char* argv[])
     // control variable itself:
     dolfin::Function g (controlFunctionSpace);
     g = dolfin::Constant (1.0);
+    ControlDirichletBC controlDirichletBC (g);
 
     // define subdomains for objective functional
     objective_functional::ControlDomain objective_functional_controlDomain;
@@ -177,7 +178,7 @@ int main (int argc, char* argv[])
     // functional settings
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (sigma_1), "sigma_1");
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (sigma_2), "sigma_2");
-    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (g), "g");
+    objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (controlDirichletBC), "g");
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (targetSolution [0]), "U");
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (targetSolution [1]), "P");
     objectiveFunctional.setCoefficient ("functional", 
@@ -196,7 +197,7 @@ int main (int argc, char* argv[])
                                         dolfin::reference_to_no_delete_pointer (problems.solution("adjoint")[1]),
                                         "theta");
     objectiveFunctional.setCoefficient ("gradient",
-                                        dolfin::reference_to_no_delete_pointer (g),
+                                        dolfin::reference_to_no_delete_pointer (controlDirichletBC),
                                         "g");
 
     
@@ -234,7 +235,7 @@ int main (int argc, char* argv[])
         
     // functional settings
     functionalControlComponent.set_coefficient ("sigma_1", dolfin::reference_to_no_delete_pointer (sigma_1));
-    functionalControlComponent.set_coefficient ("g", dolfin::reference_to_no_delete_pointer (g));
+    functionalControlComponent.set_coefficient ("g", dolfin::reference_to_no_delete_pointer (controlDirichletBC));
     
     functionalControlComponent.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer (meshFacets));
     
@@ -245,7 +246,7 @@ int main (int argc, char* argv[])
         
     // functional settings
     functionalControlDerivativeComponent.set_coefficient ("sigma_2", dolfin::reference_to_no_delete_pointer (sigma_2));
-    functionalControlDerivativeComponent.set_coefficient ("g", dolfin::reference_to_no_delete_pointer (g));
+    functionalControlDerivativeComponent.set_coefficient ("g", dolfin::reference_to_no_delete_pointer (controlDirichletBC));
     
     functionalControlDerivativeComponent.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer (meshFacets));
     
@@ -289,7 +290,6 @@ int main (int argc, char* argv[])
     // ============================================================================== //
     // =============================== OPTIMIZATION  ================================ //
     // ============================================================================== //
-    ControlDirichletBC controlDirichletBC (g);
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[0], controlDirichletBC, primal_inflowBoundary), "x_inflow_BC");
     
     // define control value updater

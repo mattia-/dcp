@@ -86,6 +86,28 @@ namespace DCP
                                            void (dolfin::Function&, const dolfin::Function&)
                                        >& searchDirectionComputer)
     {
+        apply (problem, objectiveFunctional, initialGuess, updater, emptyDumper, 0, searchDirectionComputer);
+    }
+
+
+
+    void BacktrackingOptimizer::apply (DCP::CompositeDifferentialProblem& problem,
+                                       const DCP::AbstractObjectiveFunctional& objectiveFunctional, 
+                                       dolfin::Function& initialGuess,
+                                       const std::function 
+                                       <
+                                           void (DCP::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                       >& updater,
+                                       const std::function 
+                                       <
+                                            void ()
+                                       >& dumper,
+                                       const int& dumpInterval,
+                                       const std::function
+                                       <
+                                           void (dolfin::Function&, const dolfin::Function&)
+                                       >& searchDirectionComputer)
+    {
         // get parameters values
         double c_1                        = this->parameters ["c_1"];
         double alpha_0                    = this->parameters ["alpha_0"];
@@ -470,6 +492,7 @@ namespace DCP
             
             if (hasOutputFile)
             {
+                dolfin::log (dolfin::DBG, "Printing results to file...");
                 print (OUTFILE, 
                        minimizationIteration, 
                        currentFunctionalValue, 
@@ -477,6 +500,12 @@ namespace DCP
                        backtrackingIteration, 
                        gradientNorm, 
                        relativeIncrement);
+            }
+            
+            if (dumpInterval != 0 && minimizationIteration % dumpInterval == 0)
+            {
+                dolfin::log (dolfin::DBG, "Dumping additional results...");
+                dumper ();
             }
             
             dolfin::end (); // "Minimization iteration %d"
@@ -499,6 +528,13 @@ namespace DCP
             dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
         }
         
+        // if minimizationIteration % dumpInterval is 0, then we already called the dumper on the same iteration
+        if (dumpInterval == 0 || minimizationIteration % dumpInterval != 0) 
+        {
+            dolfin::log (dolfin::DBG, "Dumping additional results...");
+            dumper ();
+        }
+        
         dolfin::end (); //"Starting minimization loop"
         
         if (hasOutputFile)
@@ -513,8 +549,12 @@ namespace DCP
     {
         searchDirection = gradient * (-1);
     }
+     
     
 
+    // ***************************************** //
+    // ********** PRIVATE MEMBERS ************** //
+    // ***************************************** //
     
     void BacktrackingOptimizer::print (std::ostream& OUTSTREAM, 
                                        const int& iteration,

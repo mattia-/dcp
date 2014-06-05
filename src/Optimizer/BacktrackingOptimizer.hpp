@@ -153,6 +153,53 @@ namespace DCP
                                     void (dolfin::Function&, const dolfin::Function&)
                                 >& searchDirectionComputer = BacktrackingOptimizer::gradientSearchDirection);
             
+            //! Perform optimization on the input problem using the gradient method with backtracking and dumping
+            //! results to file in the process
+            /*! 
+             *  Input arguments are:
+             *  \param problem the composite differential problem that represents the primal/adjoint system
+             *  \param objectiveFunctional the objective functional to be minimized
+             *  \param initialGuess the starting point for the minimization algorithm. At the end of the function, it
+             *  will containt the final value of the control variable
+             *  \param updater callable object to update the control parameter value. It can be either be a function 
+             *  pointer, a function object or a lambda expression. Its input argument are:
+             *  \li the composite differential problem to update
+             *  \li the new value of the control function
+             *  
+             *  \param dumper callable object to peform the dump of data during the minimization iterations. It can 
+             *  either be a function pointer, a function object or a lambda expression. 
+             *  \param dumpInterval integer that defines the frequency of dumping. The \c dumper will be called
+             *  every \c dumpInterval minimization iterations (and after the last iteration). 
+             *  If \c dumpInterval is set to \c 0, the \c dumper will be called only after the last iteration.
+             *  \param searchDirectionComputer callable object to compute the search direction. It can either be a 
+             *  function pointer, a function object or a lambda expression. In general the search direction is computed
+             *  as: 
+             *  \f[
+             *      \mathbf{d}_k = -B_k\,\nabla J_k
+             *  \f]
+             *  The default value is the member function \c gradientSearchDirection(), that basically uses the above 
+             *  formula with \f$ B_k = I \f$.
+             *  The input arguments for \c searchDirectionComputer are:
+             *  \li the dolfin function that will contain the search direction after the function exits
+             *  \li the dolfin function containing the gradient
+             */
+            virtual void apply (DCP::CompositeDifferentialProblem& problem,
+                                const DCP::AbstractObjectiveFunctional& objectiveFunctional, 
+                                dolfin::Function& initialGuess,
+                                const std::function 
+                                <
+                                    void (DCP::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                >& updater,
+                                const std::function 
+                                <
+                                    void ()
+                                >& dumper,
+                                const int& dumpInterval,
+                                const std::function
+                                <
+                                    void (dolfin::Function&, const dolfin::Function&)
+                                >& searchDirectionComputer = BacktrackingOptimizer::gradientSearchDirection);
+            
             //! Function to compute the search direction. See documentation of method \c apply() for more information
             static void gradientSearchDirection (dolfin::Function& searchDirection, const dolfin::Function& gradient);
 
@@ -167,6 +214,13 @@ namespace DCP
                         const int& backtrackingIterations,
                         const double& gradientNorm,
                         const double& relativeIncrement);
+            
+            //! Empty dumper, used for compatibility. This function will be used when the version that does not 
+            //! take a \c dumper as input argument of the method \c apply() is called
+            static void emptyDumper () 
+            {
+                dolfin::log (dolfin::DBG, "Empty dumper was called");
+            };
                 
             //! The form that will be used to compute the dot product between the gradient and the search direction. 
             /*! 

@@ -360,10 +360,14 @@ namespace DCP
         dolfin::begin ("Starting minimization loop...");
         int minimizationIteration = 0;
         
+        // print results to file
         if (hasOutputFile)
         {
             print (OUTFILE, minimizationIteration, currentFunctionalValue, 0, 0, gradientNorm, relativeIncrement);
         }
+        
+        // dump additional results
+        dumper ();
         
         while (isConverged () == false && minimizationIteration < maxMinimizationIterations)
         {

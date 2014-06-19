@@ -24,7 +24,6 @@
 #include <dolfin/function/Expression.h>
 #include <dolfin/function/Function.h>
 #include <dolfin/common/Array.h>
-#include <boost/shared_ptr.hpp>
 #include <map>
 #include <vector>
 #include <string>
@@ -81,7 +80,7 @@ namespace DCP
              *  Input arguments:
              *  \param variables map used to initialize the protected member \c variables_
              */
-            VariableExpression (const std::map <std::string, boost::shared_ptr <const dolfin::GenericFunction>>& variables);
+            VariableExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
             
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -91,7 +90,7 @@ namespace DCP
              *  \param variables map used to initialize the protected member \c variables_
              */         
             explicit VariableExpression (std::size_t dim,
-                                         const std::map <std::string, boost::shared_ptr <const dolfin::GenericFunction>>& variables);
+                                         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -103,7 +102,7 @@ namespace DCP
              */         
             VariableExpression (std::size_t dim0, 
                                 std::size_t dim1,
-                                const std::map <std::string, boost::shared_ptr <const dolfin::GenericFunction>>& variables);
+                                const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
 
             //! Create tensor-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -113,7 +112,7 @@ namespace DCP
              *  \param variables map used to initialize the protected member \c variables_
              */         
             explicit VariableExpression (std::vector<std::size_t> value_shape,
-                                         const std::map <std::string, boost::shared_ptr <const dolfin::GenericFunction>>& variables);
+                                         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
 
             //! Default copy constructor
             /*!
@@ -149,7 +148,7 @@ namespace DCP
              *  The pair created by the two input arguments will be inserted in the protected member \c variables_
              */
             virtual void setCoefficient (const std::string& variableName, 
-                                 const boost::shared_ptr <const dolfin::GenericFunction> value);
+                                 const std::shared_ptr <const dolfin::GenericFunction> value);
 
 
             /******************* GETTERS *******************/
@@ -206,7 +205,7 @@ namespace DCP
         // ---------------------------------------------------------------------------------------------//  
         protected:
             //! The map that associates variables' names and values
-            std::map <std::string, boost::shared_ptr<const dolfin::GenericFunction> > variables_;
+            std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> > variables_;
     };
 }
 

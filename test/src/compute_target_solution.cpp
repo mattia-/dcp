@@ -141,26 +141,14 @@ int main (int argc, char* argv[])
     navierStokesProblem.solve ();
 
     // plots
-    dolfin::VTKPlotter meshPlotter (dolfin::reference_to_no_delete_pointer (mesh));
-    meshPlotter.parameters["title"] = "Mesh";
-    meshPlotter.plot ();
-    
-    dolfin::VTKPlotter velocityPlotter (dolfin::reference_to_no_delete_pointer (navierStokesProblem.solution ()[0]));
-    velocityPlotter.parameters["title"] = "Velocity";
-    velocityPlotter.parameters["mode"]  = "color";
-    velocityPlotter.plot ();
-    
-    dolfin::VTKPlotter pressurePlotter (dolfin::reference_to_no_delete_pointer (navierStokesProblem.solution ()[1]));
-    pressurePlotter.parameters["mode"]  = "color";
-    pressurePlotter.parameters["title"] = "Pressure";
-    pressurePlotter.plot ();
-    
+    dolfin::plot (mesh, "Mesh");
+    dolfin::plot (navierStokesProblem.solution ()[0], "Velocity");
+    dolfin::plot (navierStokesProblem.solution ()[1], "Pressure");
     dolfin::interactive ();
-    
     
     // print to file
     dolfin::cout << "Printing to hdf5 format..." << dolfin::endl;
-    dolfin::HDF5File uFile (static_cast<std::string> (parameters ["output_file_name"]) + ".hdf5", "w");
+    dolfin::HDF5File uFile (MPI_COMM_WORLD, static_cast<std::string> (parameters ["output_file_name"]) + ".hdf5", "w");
     uFile.write (navierStokesProblem.solution (), "solution");
     
     if (static_cast<bool> (parameters ["human_readable_print"]) == true)

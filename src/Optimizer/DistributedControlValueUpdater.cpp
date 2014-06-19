@@ -35,7 +35,7 @@ namespace DCP
 
     /************************* OPERATORS ********************/
     void DistributedControlValueUpdater::operator() (DCP::CompositeDifferentialProblem& compositeProblem, 
-                                                     const boost::shared_ptr <const dolfin::GenericFunction> coefficientValue) const
+                                                     const std::shared_ptr <const dolfin::GenericFunction> coefficientValue) const
     {
         DCP::AbstractDifferentialProblem& problem = compositeProblem [problemName_];
         

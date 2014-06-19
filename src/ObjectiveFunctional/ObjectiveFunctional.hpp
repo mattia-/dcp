@@ -24,7 +24,6 @@
 #include <dolfin/mesh/MeshFunction.h>
 #include <dolfin/log/dolfin_log.h>
 #include <dolfin/fem/assemble.h>
-#include <boost/shared_ptr.hpp>
 #include <string>
 #include <memory>
 #include <DifferentialProblem/SubdomainType.hpp>
@@ -70,7 +69,7 @@ namespace DCP
              *  The functional form will be created too, calling the constructor which takes the mesh
              *  as input.
              */
-            ObjectiveFunctional (const boost::shared_ptr <dolfin::Mesh> mesh);
+            ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh);
 
 
             //! Constructor from reference [1]
@@ -94,7 +93,7 @@ namespace DCP
              *  
              *  The stored mesh's ownership will be shared between the object and the input argument.
              */
-            ObjectiveFunctional (const boost::shared_ptr <dolfin::Mesh> mesh, 
+            ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh, 
                                  const T_Gradient& gradient, 
                                  const T_FunctionalForm& functional);
 
@@ -161,7 +160,7 @@ namespace DCP
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */
             virtual void setCoefficient (const std::string& coefficientType, 
-                                         const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                          const std::string& coefficientName);
 
             //! Set integration subdomains for the protected member variable \c functional_. 
@@ -169,7 +168,7 @@ namespace DCP
             /*!
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */
-            virtual void setIntegrationSubdomains (boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+            virtual void setIntegrationSubdomains (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                    const DCP::SubdomainType& subdomainType);
 
 
@@ -204,7 +203,7 @@ namespace DCP
             T_FunctionalForm functional_;
 
             //! The gradient of the functional. Stored as a shared_ptr so that polymorphism can be applied
-            boost::shared_ptr <DCP::VariableExpression> gradient_;
+            std::shared_ptr <DCP::VariableExpression> gradient_;
 
             // ---------------------------------------------------------------------------------------------//
 
@@ -222,7 +221,7 @@ namespace DCP
     /******************* CONSTRUCTORS *******************/
     template <class T_FunctionalForm, class T_Gradient>
         ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        ObjectiveFunctional (const boost::shared_ptr <dolfin::Mesh> mesh) :
+        ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh) :
             AbstractObjectiveFunctional (mesh),
             functional_ (*mesh),
             gradient_ (new T_Gradient)
@@ -250,7 +249,7 @@ namespace DCP
 
     template <class T_FunctionalForm, class T_Gradient>
         ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        ObjectiveFunctional (const boost::shared_ptr <dolfin::Mesh> mesh, 
+        ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh, 
                              const T_Gradient& gradient, 
                              const T_FunctionalForm& functional) : 
             AbstractObjectiveFunctional (mesh),
@@ -286,9 +285,9 @@ namespace DCP
                              const std::string& copyMode) :
             AbstractObjectiveFunctional (copyMode == "shallow_copy" ? 
                                          rhs.mesh_ : 
-                                         boost::shared_ptr<const dolfin::Mesh> (new dolfin::Mesh (*(rhs.mesh_)))),
+                                         std::shared_ptr<const dolfin::Mesh> (new dolfin::Mesh (*(rhs.mesh_)))),
             functional_ (rhs.functional_),
-            gradient_ (new T_Gradient (*(boost::static_pointer_cast<T_Gradient> (rhs.gradient_))))
+            gradient_ (new T_Gradient (*(std::static_pointer_cast<T_Gradient> (rhs.gradient_))))
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional ...");
         dolfin::log (dolfin::DBG, "Copy of ObjectiveFunctional created");
@@ -311,7 +310,7 @@ namespace DCP
         const T_Gradient& ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
         gradient () const
         {
-            return *(boost::dynamic_pointer_cast<T_Gradient> (gradient_));
+            return *(std::dynamic_pointer_cast<T_Gradient> (gradient_));
         }
 
 
@@ -320,7 +319,7 @@ namespace DCP
     template <class T_FunctionalForm, class T_Gradient>
         void ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
         setCoefficient (const std::string& coefficientType, 
-                        const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                        const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                         const std::string& coefficientName)
         {
             if (coefficientType == "functional")
@@ -346,7 +345,7 @@ namespace DCP
 
     template <class T_FunctionalForm, class T_Gradient>
         void ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        setIntegrationSubdomains (boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+        setIntegrationSubdomains (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                   const DCP::SubdomainType& subdomainType)
         {
             if (subdomainType == DCP::SubdomainType::INTERNAL_CELLS)

@@ -29,7 +29,6 @@
 #include <dolfin/la/Vector.h>
 #include <dolfin/log/dolfin_log.h>
 #include <dolfin/parameter/Parameters.h>
-#include <boost/shared_ptr.hpp>
 #include <vector>
 #include <string>
 #include <memory>
@@ -77,8 +76,8 @@ namespace DCP
 
                 //!  Constructor with shared pointers [1]
                 /*!
-                 *  \param mesh the problem mesh as a <tt> const boost::shared_ptr </tt> to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a <tt> const boost::shared_ptr </tt> to 
+                 *  \param mesh the problem mesh as a <tt> const std::shared_ptr </tt> to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a <tt> const std::shared_ptr </tt> to 
                  *  \c dolfin::FunctionSpace
                  *  \param solverType the type of the solver. Default: \c lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
@@ -89,8 +88,8 @@ namespace DCP
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
-                                           const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                            const std::string& solverType = "lu_solver",
                                            const std::string& solverMethod = "default",
                                            const std::string& solverPreconditioner = "default");
@@ -141,8 +140,8 @@ namespace DCP
                 
                 //!  Constructor with shared pointers [2]
                 /*!
-                 *  \param mesh the problem mesh as a <tt> const boost::shared_ptr </tt> to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a <tt>const boost::shared_ptr </tt> to 
+                 *  \param mesh the problem mesh as a <tt> const std::shared_ptr </tt> to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a <tt>const std::shared_ptr </tt> to 
                  *  \c dolfin::FunctionSpace
                  *  \param bilinearForm a \c const reference to the problem's bilinear form
                  *  \param linearForm a \c const reference to the problem's linear form
@@ -155,8 +154,8 @@ namespace DCP
                  *  The bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
-                                           const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                            const T_BilinearForm& bilinearForm,
                                            const T_LinearForm& linearForm,
                                            const std::string& solverType = "lu_solver",
@@ -262,7 +261,7 @@ namespace DCP
                  *  See \c AbstractDifferentialProblem documentation for more details on the function
                  */
                 virtual void setCoefficient (const std::string& coefficientType, 
-                                             const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                             const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                              const std::string& coefficientName);
 
                 //! Set coefficient [2]. Override of virtual function in \c AbstractDifferentialProblem.
@@ -274,7 +273,7 @@ namespace DCP
                  *  See \c AbstractDifferentialProblem documentation for more details on the function
                  */
                 virtual void setCoefficient (const std::string& coefficientType,
-                                             const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                             const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                              const std::size_t& coefficientNumber);
 
                 //! Set integration subdomains for the forms. Override of virtual function in \c AbstractDifferentialProblem
@@ -286,7 +285,7 @@ namespace DCP
                  *  See \c AbstractDifferentialProblem documentation for more details on the function
                  */
                 virtual void setIntegrationSubdomains (const std::string& formType,
-                                                       boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+                                                       std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                        const DCP::SubdomainType& subdomainType);
 
                 //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c AbstractDifferentialProblem
@@ -389,11 +388,11 @@ namespace DCP
                 
                 //! Matrix to hold the problem's discrete operator
                 /*!
-                 *  We use a \c boost::shared_ptr for compatibility with FEniCS, version 1.3.0.
+                 *  We use a \c std::shared_ptr for compatibility with FEniCS, version 1.3.0.
                  *  Note that there is no write access to this variable from outside the class,
                  *  so it is guaranteed to be a unique shared pointer
                  */
-                boost::shared_ptr<dolfin::Matrix> problemMatrix_;
+                std::shared_ptr<dolfin::Matrix> problemMatrix_;
 
                 //! Vector to store the right hand side of the discrete problem
                 dolfin::Vector rhsVector_;
@@ -414,8 +413,8 @@ namespace DCP
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
-                                   const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                    const std::string& solverType,
                                    const std::string& solverMethod,
                                    const std::string& solverPreconditioner) :
@@ -531,8 +530,8 @@ namespace DCP
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
-                                   const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        LinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                    const T_BilinearForm& bilinearForm,
                                    const T_LinearForm& linearForm,
                                    const std::string& solverType,
@@ -695,7 +694,7 @@ namespace DCP
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         setCoefficient (const std::string& coefficientType, 
-                        const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                        const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                         const std::string& coefficientName)
         {
             if (coefficientType == "bilinear_form")
@@ -723,7 +722,7 @@ namespace DCP
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         setCoefficient (const std::string& coefficientType,
-                        const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                        const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                         const std::size_t& coefficientNumber)
         {
             if (coefficientType == "bilinear_form")
@@ -750,7 +749,7 @@ namespace DCP
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         setIntegrationSubdomains (const std::string& formType,
-                                  boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+                                  std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                   const DCP::SubdomainType& subdomainType)
         {
             if (formType == "bilinear_form")

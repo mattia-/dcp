@@ -65,7 +65,9 @@ int main (int argc, char* argv[])
     // read target solutions from file
     dolfin::Function targetSolution (completeV);
     
-    dolfin::HDF5File targetSolutionFile (static_cast<std::string> (parameters ["target_solution_file_name"]) + ".hdf5", "r");
+    dolfin::HDF5File targetSolutionFile (MPI_COMM_WORLD, 
+                                         static_cast<std::string> (parameters ["target_solution_file_name"]) + ".hdf5", 
+                                         "r");
     targetSolutionFile.read (targetSolution, "solution");
     
     

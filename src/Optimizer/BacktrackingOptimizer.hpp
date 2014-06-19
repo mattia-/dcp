@@ -112,7 +112,7 @@ namespace DCP
             /*!
              *  \param dotProductComputer the form to be stored in the protected member \c dotProductComputer_
              */
-            virtual void setDotProductComputer (const boost::shared_ptr<dolfin::Form> dotProductComputer);
+            virtual void setDotProductComputer (const std::shared_ptr<dolfin::Form> dotProductComputer);
             
             //! Reset the value of the protected membet \c dotProductComputer_ so that the default form will be used
             virtual void resetDotProductComputer ();
@@ -229,7 +229,7 @@ namespace DCP
              *  of the input objects. However, sometimes it may be useful to pass a user-defined object to perform
              *  the task. To do so, use the function \c setDotProductComputer
              */
-            boost::shared_ptr<dolfin::Form> dotProductComputer_;
+            std::shared_ptr<dolfin::Form> dotProductComputer_;
 
             // ---------------------------------------------------------------------------------------------//
 

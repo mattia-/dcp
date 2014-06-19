@@ -53,7 +53,7 @@ namespace DCP
     
 
     VariableExpression::
-    VariableExpression (const std::map <std::string, boost::shared_ptr <const dolfin::GenericFunction>>& variables) : 
+    VariableExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables) : 
         Expression (),
         variables_ (variables)
     {
@@ -64,7 +64,7 @@ namespace DCP
 
     VariableExpression::
     VariableExpression (std::size_t dim,
-                        const std::map <std::string, boost::shared_ptr <const dolfin::GenericFunction>>& variables) :
+                        const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables) :
         Expression (dim), 
         variables_ (variables)
     {
@@ -76,7 +76,7 @@ namespace DCP
     VariableExpression::
     VariableExpression (std::size_t dim0, 
                         std::size_t dim1,
-                        const std::map <std::string, boost::shared_ptr <const dolfin::GenericFunction>>& variables) : 
+                        const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables) : 
         Expression (dim0, dim1),
         variables_ (variables)
     {
@@ -87,7 +87,7 @@ namespace DCP
 
     VariableExpression::
     VariableExpression (std::vector<std::size_t> value_shape,
-                        const std::map <std::string, boost::shared_ptr <const dolfin::GenericFunction>>& variables) : 
+                        const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables) : 
         Expression (value_shape),
         variables_ (variables)
     {
@@ -98,7 +98,7 @@ namespace DCP
 
     /******************* SETTERS *******************/
     void VariableExpression::setCoefficient (const std::string& variableName, 
-                                             const boost::shared_ptr <const dolfin::GenericFunction> value)
+                                             const std::shared_ptr <const dolfin::GenericFunction> value)
     {
         dolfin::log (dolfin::DBG, "Inserting variable in map...");
         
@@ -111,7 +111,7 @@ namespace DCP
     const dolfin::Function& VariableExpression::function (const std::string& variableName) const
     {
         auto variable = variables_.find (variableName);
-        return *(boost::dynamic_pointer_cast<const dolfin::Function> (variable -> second));
+        return *(std::dynamic_pointer_cast<const dolfin::Function> (variable -> second));
     }
 
     
@@ -119,7 +119,7 @@ namespace DCP
     const dolfin::Expression& VariableExpression::expression (const std::string& variableName) const
     {
         auto variable = variables_.find (variableName);
-        return *(boost::dynamic_pointer_cast<const dolfin::Expression> (variable -> second));
+        return *(std::dynamic_pointer_cast<const dolfin::Expression> (variable -> second));
     }
         
     

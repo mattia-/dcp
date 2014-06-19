@@ -25,7 +25,6 @@
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/mesh/SubDomain.h>
 #include <string>
-#include <boost/shared_ptr.hpp>
 
 namespace DCP
 {
@@ -59,7 +58,7 @@ namespace DCP
             DirichletControlValueUpdater (const std::string& problemName, 
                                           const std::string& dirichletBCName,
                                           const dolfin::SubDomain& dirichletBoundary,
-                                          boost::shared_ptr<const dolfin::FunctionSpace> functionSpace);
+                                          std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
 
 
             /************************* OPERATORS ********************/
@@ -87,7 +86,7 @@ namespace DCP
             const dolfin::SubDomain& dirichletBoundary_;
 
             //! The function space (possibly a subspace) on which the dirichlet condition should be enforced.
-            boost::shared_ptr<const dolfin::FunctionSpace> functionSpace_;
+            std::shared_ptr<const dolfin::FunctionSpace> functionSpace_;
     };
 }
 

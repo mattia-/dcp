@@ -24,7 +24,6 @@
 #include <dolfin/mesh/MeshFunction.h>
 #include <dolfin/common/Array.h>
 #include <dolfin/fem/Form.h>
-#include <boost/shared_ptr.hpp>
 #include <string>
 #include <ObjectiveFunctional/VariableExpression.hpp>
 #include <DifferentialProblem/SubdomainType.hpp>
@@ -49,7 +48,7 @@ namespace DCP
             AbstractObjectiveFunctional () = delete;
 
             //! Constructor with \c shared_ptr
-            AbstractObjectiveFunctional (const boost::shared_ptr <const dolfin::Mesh> mesh);
+            AbstractObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh);
             
             //! Constructor with <tt> const reference </tt>
             AbstractObjectiveFunctional (const dolfin::Mesh& mesh);
@@ -92,7 +91,7 @@ namespace DCP
              *  \param coefficientName string identifying the coefficient to set
              */
             virtual void setCoefficient (const std::string& coefficientType, 
-                                         const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                          const std::string& coefficientName) = 0;
 
             //! Set integration subdomains for the protected member variable that represent the functional (which must
@@ -104,7 +103,7 @@ namespace DCP
              *  \param subdomainType the type of the subdomains, chosen among those provided by the enumeration
              *  class \c DCP::SubdomainType
              */
-            virtual void setIntegrationSubdomains (boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+            virtual void setIntegrationSubdomains (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                    const DCP::SubdomainType& subdomainType) = 0;
 
             /******************* METHODS *******************/
@@ -143,7 +142,7 @@ namespace DCP
 
         protected:
             //! The mesh over which the functional is defined
-            boost::shared_ptr <const dolfin::Mesh> mesh_;
+            std::shared_ptr <const dolfin::Mesh> mesh_;
             
             
             // ---------------------------------------------------------------------------------------------//

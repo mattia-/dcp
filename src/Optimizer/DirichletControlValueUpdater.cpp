@@ -27,7 +27,7 @@ namespace DCP
     DirichletControlValueUpdater::DirichletControlValueUpdater (const std::string& problemName, 
                                                                 const std::string& dirichletBCName,
                                                                 const dolfin::SubDomain& dirichletBoundary,
-                                                                boost::shared_ptr<const dolfin::FunctionSpace> functionSpace) : 
+                                                                std::shared_ptr<const dolfin::FunctionSpace> functionSpace) : 
         problemName_ (problemName),
         dirichletBCName_ (dirichletBCName),
         dirichletBoundary_ (dirichletBoundary),

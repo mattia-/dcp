@@ -28,7 +28,6 @@
 #include <dolfin/la/Vector.h>
 #include <dolfin/log/dolfin_log.h>
 #include <dolfin/parameter/Parameters.h>
-#include <boost/shared_ptr.hpp>
 #include <vector>
 #include <string>
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
@@ -71,8 +70,8 @@ namespace DCP
 
                 //!  Constructor with shared pointers [1]
                 /*!
-                 *  \param mesh the problem mesh as a const \c boost::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a const \c boost::shared_ptr to 
+                 *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
                  *  \c dolfin::FunctionSpace
                  *  \param residualFormSolutionName a string that identifies the name of the function representing the problem
                  *  solution in the residual form 
@@ -83,8 +82,8 @@ namespace DCP
                  *  The residual and jacobian form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                NonlinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
-                                              const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                              const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                               const std::string& residualFormSolutionName,
                                               const std::string& jacobianFormSolutionName = "" );
                 
@@ -130,8 +129,8 @@ namespace DCP
                 
                 //!  Constructor with shared pointers [2]
                 /*!
-                 *  \param mesh the problem mesh as a const \c boost::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a const \c boost::shared_ptr 
+                 *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
+                 *  \param functionSpace the problem finite element space as a const \c std::shared_ptr 
                  *  \c to dolfin::FunctionSpace
                  *  \param residualForm a const reference to the problem's residual form
                  *  \param jacobianForm a const reference to the problem's jacobian form
@@ -144,8 +143,8 @@ namespace DCP
                  *  The residual and jacobian form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                NonlinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
-                                              const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                              const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                               const T_ResidualForm& residualForm,
                                               const T_JacobianForm& jacobianForm,
                                               const std::string& residualFormSolutionName,
@@ -236,14 +235,14 @@ namespace DCP
                  *  \endcode
                  *  without specifying the coefficient name (which would not be used anyway).
                  *  Note that when setting the initial guess, even though parameter \c coefficientValue is of type
-                 *  \c boost::shared_ptr<const dolfin::GenericFunction>, the real type of the object pointed by 
+                 *  \c std::shared_ptr<const dolfin::GenericFunction>, the real type of the object pointed by 
                  *  \c coefficientValue can only be \c dolfin::Expression or \c dolfin::Function. This is because
                  *  \c setCoefficient() will call the assignement operator of class \c dolfin::Function, which only accepts
                  *  the two types mentioned before as input arguments.
                  *  See \c AbstractDifferentialProblem documentation for more details on the function
                  */
                 virtual void setCoefficient (const std::string& coefficientType, 
-                                             const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                             const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                              const std::string& coefficientName = "default");
 
                 //! Set coefficient [2]. Override of virtual function in \c AbstractDifferentialProblem.
@@ -255,7 +254,7 @@ namespace DCP
                  *  See \c AbstractDifferentialProblem documentation for more details on the function
                  */
                 virtual void setCoefficient (const std::string& coefficientType,
-                                             const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                             const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                              const std::size_t& coefficientNumber);
 
                 //! Set integration subdomains for the forms. Override of virtual function in \c AbstractDifferentialProblem
@@ -267,7 +266,7 @@ namespace DCP
                  *  See \c AbstractDifferentialProblem documentation for more details on the function
                  */
                 virtual void setIntegrationSubdomains (const std::string& formType,
-                                                       boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+                                                       std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                        const DCP::SubdomainType& subdomainType);
                 
                 /******************* METHODS *******************/
@@ -328,8 +327,8 @@ namespace DCP
 
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
-                                      const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                      const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                       const std::string& residualFormSolutionName,
                                       const std::string& jacobianFormSolutionName) : 
             AbstractDifferentialProblem (mesh, functionSpace),
@@ -466,8 +465,8 @@ namespace DCP
 
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
-                                      const boost::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                      const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                       const T_ResidualForm& residualForm,
                                       const T_JacobianForm& jacobianForm,
                                       const std::string& residualFormSolutionName,
@@ -634,7 +633,7 @@ namespace DCP
     template <class T_ResidualForm, class T_JacobianForm>
         void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
         setCoefficient (const std::string& coefficientType, 
-                        const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                        const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                         const std::string& coefficientName)
         {
             if (coefficientType == "residual_form")
@@ -651,13 +650,13 @@ namespace DCP
             {
                 dolfin::log (dolfin::DBG, "Setting initial guess...");
                 // check whether coefficientValue is a pointer to dolfin::Function or dolfin::Expression
-                if (boost::dynamic_pointer_cast<const dolfin::Function> (coefficientValue) != nullptr)
+                if (std::dynamic_pointer_cast<const dolfin::Function> (coefficientValue) != nullptr)
                 {
-                    solution_ = *(boost::dynamic_pointer_cast<const dolfin::Function> (coefficientValue));
+                    solution_ = *(std::dynamic_pointer_cast<const dolfin::Function> (coefficientValue));
                 }
-                else if (boost::dynamic_pointer_cast<const dolfin::Expression> (coefficientValue) != nullptr)
+                else if (std::dynamic_pointer_cast<const dolfin::Expression> (coefficientValue) != nullptr)
                 {
-                    solution_ = *(boost::dynamic_pointer_cast<const dolfin::Expression> (coefficientValue));
+                    solution_ = *(std::dynamic_pointer_cast<const dolfin::Expression> (coefficientValue));
                 }
                 else
                 {
@@ -677,7 +676,7 @@ namespace DCP
     template <class T_ResidualForm, class T_JacobianForm>
         void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
         setCoefficient (const std::string& coefficientType,
-                        const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                        const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                         const std::size_t& coefficientNumber)
         {
             if (coefficientType == "residual_form")
@@ -702,7 +701,7 @@ namespace DCP
     template <class T_ResidualForm, class T_JacobianForm>
         void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
         setIntegrationSubdomains (const std::string& formType,
-                                  boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+                                  std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                   const DCP::SubdomainType& subdomainType)
         {
             if (formType == "residual_form")

@@ -26,8 +26,8 @@
 namespace DCP
 {
     /************************* CONSTRUCTORS ********************/
-    AbstractDifferentialProblem::AbstractDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh,
-                                                              const boost::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
+    AbstractDifferentialProblem::AbstractDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh,
+                                                              const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
         parameters ("differential_problem_parameters"),
         mesh_ (mesh),
         functionSpace_ (functionSpace),

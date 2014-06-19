@@ -26,7 +26,6 @@
 #include <dolfin/function/Function.h>
 #include <dolfin/fem/DirichletBC.h>
 #include <dolfin/parameter/Parameters.h>
-#include <boost/shared_ptr.hpp>
 #include <DifferentialProblem/SubdomainType.hpp>
 #include <map>
 #include <string>
@@ -52,15 +51,15 @@ namespace DCP
 
             //!  Constructor with shared pointers
             /*!
-             *  \param mesh the problem mesh as a const \c boost::shared_ptr to \c dolfin::Mesh
-             *  \param functionSpace the problem finite element space as a const \c boost::shared_ptr to 
+             *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
+             *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
              *  \c dolfin::FunctionSpace
              *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
              *  The bilinear and linear form will be created too, calling the constructor which takes the function space
              *  as input.
              */
-            AbstractDifferentialProblem (const boost::shared_ptr<dolfin::Mesh> mesh, 
-                                         const boost::shared_ptr<dolfin::FunctionSpace> functionSpace);
+            AbstractDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                                         const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
 
 
             //! Constructor with references
@@ -142,7 +141,7 @@ namespace DCP
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
             virtual void setCoefficient (const std::string& coefficientType, 
-                                         const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                          const std::string& coefficientName) = 0;
 
             //! Set problem coefficients [2]
@@ -158,7 +157,7 @@ namespace DCP
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
             virtual void setCoefficient (const std::string& coefficientType,
-                                         const boost::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                          const std::size_t& coefficientNumber) = 0;
 
             //! Set integration subdomains for the forms
@@ -175,7 +174,7 @@ namespace DCP
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
             virtual void setIntegrationSubdomains (const std::string& formType,
-                                                   boost::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+                                                   std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                    const DCP::SubdomainType& subdomainType) = 0;
 
             //! Add Dirichlet boundary condition to the problem [1]
@@ -240,17 +239,17 @@ namespace DCP
         protected:
             //! The problem mesh
             /*! 
-             *  Stored as a \c boost::shared_ptr because it may be common to more than 
+             *  Stored as a \c std::shared_ptr because it may be common to more than 
              *  one problem
              */
-            boost::shared_ptr<dolfin::Mesh> mesh_;
+            std::shared_ptr<dolfin::Mesh> mesh_;
 
             //! The problem finite element space
             /*! 
-             *  Stored as a \c boost::shared_ptr because it may be common to more than 
+             *  Stored as a \c std::shared_ptr because it may be common to more than 
              *  one problem
              */
-            boost::shared_ptr<dolfin::FunctionSpace> functionSpace_;
+            std::shared_ptr<dolfin::FunctionSpace> functionSpace_;
 
             //! The Dirichlet's boundary conditions vector
             std::map<std::string, dolfin::DirichletBC> dirichletBCs_;

@@ -167,8 +167,8 @@ namespace objective_functional
             // compute laplacian of the control g
             dolfin::IntervalMesh mesh (100, 0, 7);
             function_derivative::FunctionSpace V (mesh);
-            boost::shared_ptr <dolfin::GenericFunction> g = 
-                boost::const_pointer_cast <dolfin::GenericFunction> (variables_.find ("g") -> second);
+            std::shared_ptr <dolfin::GenericFunction> g = 
+                std::const_pointer_cast <dolfin::GenericFunction> (variables_.find ("g") -> second);
             function_derivative::BilinearForm a (V, V);
             function_derivative::LinearForm L (V);
             dolfin::Function gradient (V);

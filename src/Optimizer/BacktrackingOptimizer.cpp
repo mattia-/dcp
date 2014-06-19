@@ -25,7 +25,6 @@
 #include <dolfin/common/NoDeleter.h>
 #include <dolfin/fem/assemble.h>
 #include <dolfin/fem/Form.h>
-#include <boost/shared_ptr.hpp>
 #include <string>
 #include <functional>
 #include <cmath>
@@ -60,7 +59,7 @@ namespace DCP
     
 
 
-    void BacktrackingOptimizer::setDotProductComputer (const boost::shared_ptr<dolfin::Form> dotProductComputer)
+    void BacktrackingOptimizer::setDotProductComputer (const std::shared_ptr<dolfin::Form> dotProductComputer)
     {
         dotProductComputer_ = dotProductComputer;
     }
@@ -132,7 +131,7 @@ namespace DCP
         dolfin::Function functionalGradient (controlVariable.function_space ());
         dolfin::Function searchDirection (controlVariable.function_space ());
         dolfin::Function controlVariableIncrement (controlVariable.function_space ());
-        boost::shared_ptr<dolfin::Form> dotProductComputer;
+        std::shared_ptr<dolfin::Form> dotProductComputer;
         
         // define output file and print header if necessary
         bool hasOutputFile = false;
@@ -225,7 +224,7 @@ namespace DCP
             dolfin::log (dolfin::DBG, "Control function rank is: %d", controlVariableRank);
             
             // get control variable mesh
-            boost::shared_ptr<const dolfin::Mesh> controlVariableMesh = controlVariable.function_space () -> mesh ();
+            std::shared_ptr<const dolfin::Mesh> controlVariableMesh = controlVariable.function_space () -> mesh ();
  
             if (meshCellType == "interval")
             {

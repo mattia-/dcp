@@ -22,7 +22,7 @@
 namespace DCP
 {
     /************************* CONSTRUCTORS ********************/
-    AbstractObjectiveFunctional::AbstractObjectiveFunctional (const boost::shared_ptr <const dolfin::Mesh> mesh) : 
+    AbstractObjectiveFunctional::AbstractObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh) : 
         mesh_ (mesh)
     {
         dolfin::log (dolfin::DBG, "AbstractObjectiveFunctional object created");

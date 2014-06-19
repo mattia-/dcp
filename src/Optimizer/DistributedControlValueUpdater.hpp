@@ -22,7 +22,6 @@
 
 #include <DifferentialProblem/CompositeDifferentialProblem.hpp>
 #include <dolfin/function/GenericFunction.h>
-#include <boost/shared_ptr.hpp>
 #include <string>
 
 namespace DCP
@@ -67,7 +66,7 @@ namespace DCP
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
             void operator() (DCP::CompositeDifferentialProblem& compositeProblem, 
-                             const boost::shared_ptr <const dolfin::GenericFunction> coefficientValue) const;
+                             const std::shared_ptr <const dolfin::GenericFunction> coefficientValue) const;
             
         // ---------------------------------------------------------------------------------------------//
         

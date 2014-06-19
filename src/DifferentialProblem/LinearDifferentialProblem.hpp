@@ -994,7 +994,10 @@ namespace DCP
                     (this->mesh_,
                      this->functionSpace_,
                      this->bilinearForm_, 
-                     this->linearForm_
+                     this->linearForm_,
+                     this->parameters ["desired_solver_type"],
+                     this->parameters ["desired_solver_method"],
+                     this->parameters ["desired_solver_preconditioner"]
                     );
             }
             else if (cloneMethod == "deep_clone")
@@ -1004,7 +1007,10 @@ namespace DCP
                     (*(this->mesh_),
                      *(this->functionSpace_),
                        this->bilinearForm_, 
-                       this->linearForm_
+                       this->linearForm_,
+                       this->parameters ["desired_solver_type"],
+                       this->parameters ["desired_solver_method"],
+                       this->parameters ["desired_solver_preconditioner"]
                     );
             }
             else

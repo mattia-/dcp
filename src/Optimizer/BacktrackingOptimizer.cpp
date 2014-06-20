@@ -329,12 +329,14 @@ namespace DCP
         
         
         // initialize loop variables
+        dolfin::log (dolfin::PROGRESS, "Computing gradient norm...");
         dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
         dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
         gradientNorm = sqrt (dolfin::assemble (*dotProductComputer));
         
         relativeIncrement = relativeIncrementTolerance + 1; // just an initialization to be sure that the first iteration 
                                                             // of the minimization loop is performed
+        dolfin::log (dolfin::PROGRESS, "Evaluating functional...");
         currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
 
 
@@ -381,9 +383,11 @@ namespace DCP
             int backtrackingIteration = 0;
             previousFunctionalValue = currentFunctionalValue;
             functionalGradient = objectiveFunctional.gradient ();
+            dolfin::log (dolfin::PROGRESS, "Computing search direction...");
             searchDirectionComputer (searchDirection, functionalGradient);
             
             // compute dot product between gradient and search direction
+            dolfin::log (dolfin::PROGRESS, "Computing dot product between gradient and search direction...");
             dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
             dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (searchDirection));
             gradientDotSearchDirection = dolfin::assemble (*dotProductComputer);
@@ -464,7 +468,7 @@ namespace DCP
             // update gradient norm if necessary for convergence check
             if (convergenceCriterion == "gradient" || convergenceCriterion == "both")
             {
-                dolfin::log (dolfin::DBG, "Computing gradient norm...");
+                dolfin::log (dolfin::PROGRESS, "Computing gradient norm...");
                 dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
                 dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
                 gradientNorm = sqrt (dolfin::assemble (*dotProductComputer));
@@ -475,7 +479,7 @@ namespace DCP
             // update relative increment if necessary for convergence check
             if (convergenceCriterion == "increment" || convergenceCriterion == "both")
             {
-                dolfin::log (dolfin::DBG, "Computing relative increment...");
+                dolfin::log (dolfin::PROGRESS, "Computing relative increment...");
                 dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (previousControlVariable));
                 dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (previousControlVariable));
                 previousControlVariableNorm = sqrt (dolfin::assemble (*dotProductComputer));

@@ -20,7 +20,7 @@
 #include <Optimizer/NeumannControlValueUpdater.hpp>
 #include <DifferentialProblem/AbstractDifferentialProblem.hpp>
 
-namespace DCP
+namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
     NeumannControlValueUpdater::NeumannControlValueUpdater (const std::string& problemName, 
@@ -34,10 +34,10 @@ namespace DCP
 
 
     /************************* OPERATORS ********************/
-    void NeumannControlValueUpdater::operator() (DCP::CompositeDifferentialProblem& compositeProblem, 
+    void NeumannControlValueUpdater::operator() (dcp::CompositeDifferentialProblem& compositeProblem, 
                                                  const std::shared_ptr <const dolfin::GenericFunction> coefficientValue) const
     {
-        DCP::AbstractDifferentialProblem& problem = compositeProblem [problemName_];
+        dcp::AbstractDifferentialProblem& problem = compositeProblem [problemName_];
 
         problem.setCoefficient (coefficientType_, coefficientValue, coefficientName_);
     }

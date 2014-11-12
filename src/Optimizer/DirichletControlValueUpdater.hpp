@@ -26,7 +26,7 @@
 #include <dolfin/mesh/SubDomain.h>
 #include <string>
 
-namespace DCP
+namespace dcp
 {
     /*! \class DirichletControlValueUpdater DirichletControlValueUpdater.hpp
      *  \brief Class to update the value of the control variable in Dirichlet boundary control problems.
@@ -68,7 +68,7 @@ namespace DCP
              *  \param compositeProblem the problem on which to operate
              *  \param dirichletBCValue the new value for the control Dirichlet boundary condition 
              */
-            void operator() (DCP::CompositeDifferentialProblem& compositeProblem, 
+            void operator() (dcp::CompositeDifferentialProblem& compositeProblem, 
                              const dolfin::GenericFunction& dirichletBCValue) const;
 
             // ---------------------------------------------------------------------------------------------//

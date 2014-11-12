@@ -23,7 +23,7 @@
 #include <string>
 #include <utility>
 
-namespace DCP
+namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
     AbstractDifferentialProblem::AbstractDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh,

@@ -31,7 +31,7 @@
 #include <string>
 
 
-namespace DCP
+namespace dcp
 {
     /*! \class AbstractDifferentialProblem AbstractDifferentialProblem.hpp
      *  \brief Abstract base class for differential problems. 
@@ -169,13 +169,13 @@ namespace DCP
              *  subdomain to set
              *  \param meshFunction the mesh function used to set the integration subdomains
              *  \param subdomainType the type of the subdomains, chosen among those provided by the enumeration
-             *  class \c DCP::SubdomainType
+             *  class \c dcp::SubdomainType
              * 
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
             virtual void setIntegrationSubdomains (const std::string& formType,
                                                    std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                   const DCP::SubdomainType& subdomainType) = 0;
+                                                   const dcp::SubdomainType& subdomainType) = 0;
 
             //! Add Dirichlet boundary condition to the problem [1]
             /*!
@@ -224,10 +224,10 @@ namespace DCP
             
             //! Clone method [1]
             /*!
-             *  \return a pointer to a \c DCP::AbstractDifferentialProblem containing a copy of the object on 
+             *  \return a pointer to a \c dcp::AbstractDifferentialProblem containing a copy of the object on 
              *  which it is called. 
              */
-            virtual DCP::AbstractDifferentialProblem* clone () const = 0;
+            virtual dcp::AbstractDifferentialProblem* clone () const = 0;
 
 
             /********************** VARIABLES ***********************/

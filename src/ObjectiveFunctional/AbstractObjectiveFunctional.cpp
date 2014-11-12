@@ -19,7 +19,7 @@
 
 #include <ObjectiveFunctional/AbstractObjectiveFunctional.hpp>
 
-namespace DCP
+namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
     AbstractObjectiveFunctional::AbstractObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh) : 

@@ -27,7 +27,7 @@
 #include <iostream>
 #include <string>
 
-namespace DCP
+namespace dcp
 {
     /*! class GenericFactory
      *  \brief class containing a generic factory

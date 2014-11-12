@@ -28,7 +28,7 @@
 #include <ObjectiveFunctional/VariableExpression.hpp>
 #include <DifferentialProblem/SubdomainType.hpp>
 
-namespace DCP
+namespace dcp
 {
     /*! \class AbstractObjectiveFunctional AbstractObjectiveFunctional.hpp
      *  \brief Abstract base class for objective functionals.
@@ -101,10 +101,10 @@ namespace DCP
              *  Input arguments are:
              *  \param meshFunction the mesh function used to set the integration subdomains
              *  \param subdomainType the type of the subdomains, chosen among those provided by the enumeration
-             *  class \c DCP::SubdomainType
+             *  class \c dcp::SubdomainType
              */
             virtual void setIntegrationSubdomains (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                   const DCP::SubdomainType& subdomainType) = 0;
+                                                   const dcp::SubdomainType& subdomainType) = 0;
 
             /******************* METHODS *******************/
             //! Evaluate the stored functional

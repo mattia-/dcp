@@ -20,7 +20,7 @@
 #ifndef SRC_DIFFERENTIALPROBLEM_SUBDOMAINTYPE_HPP_INCLUDE_GUARD
 #define SRC_DIFFERENTIALPROBLEM_SUBDOMAINTYPE_HPP_INCLUDE_GUARD
 
-namespace DCP
+namespace dcp
 {
     /*! \brief Enumeration class used to identify domain parts
      *

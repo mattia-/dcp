@@ -30,7 +30,7 @@
 #include <cmath>
 #include <iomanip>
 
-namespace DCP
+namespace dcp
 {
     BacktrackingOptimizer::BacktrackingOptimizer (const double& gradientNormTolerance,
                                                   const double& relativeIncrementTolerance,
@@ -73,12 +73,12 @@ namespace DCP
 
     
 
-    void BacktrackingOptimizer::apply (DCP::CompositeDifferentialProblem& problem,
-                                       const DCP::AbstractObjectiveFunctional& objectiveFunctional, 
+    void BacktrackingOptimizer::apply (dcp::CompositeDifferentialProblem& problem,
+                                       const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                        dolfin::Function& initialGuess,
                                        const std::function 
                                        <
-                                           void (DCP::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                           void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
                                        >& updater,
                                        const std::function
                                        <
@@ -90,12 +90,12 @@ namespace DCP
 
 
 
-    void BacktrackingOptimizer::apply (DCP::CompositeDifferentialProblem& problem,
-                                       const DCP::AbstractObjectiveFunctional& objectiveFunctional, 
+    void BacktrackingOptimizer::apply (dcp::CompositeDifferentialProblem& problem,
+                                       const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                        dolfin::Function& initialGuess,
                                        const std::function 
                                        <
-                                           void (DCP::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                           void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
                                        >& updater,
                                        const std::function 
                                        <

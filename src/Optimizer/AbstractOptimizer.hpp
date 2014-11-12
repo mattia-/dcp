@@ -28,7 +28,7 @@
 #include <DifferentialProblem/CompositeDifferentialProblem.hpp>
 #include <functional>
 
-namespace DCP
+namespace dcp
 {
     /*! \class AbstractOptimizer AbstractOptimizer.hpp
      *  \brief Abstract base class for descent methods.
@@ -82,12 +82,12 @@ namespace DCP
              *  \li the dolfin function that will contain the search direction after the function exits
              *  \li the dolfin function containing the gradient
              */
-            virtual void apply (DCP::CompositeDifferentialProblem& problem,
-                                const DCP::AbstractObjectiveFunctional& objectiveFunctional, 
+            virtual void apply (dcp::CompositeDifferentialProblem& problem,
+                                const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const std::function 
                                 <
-                                    void (DCP::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                    void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
                                 >& updater,
                                 const std::function
                                 <

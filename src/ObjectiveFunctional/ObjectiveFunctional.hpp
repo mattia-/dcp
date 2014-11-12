@@ -30,7 +30,7 @@
 #include <ObjectiveFunctional/VariableExpression.hpp>
 #include <ObjectiveFunctional/AbstractObjectiveFunctional.hpp>
 
-namespace DCP
+namespace dcp
 {
     /*! \class ObjectiveFunctional ObjectiveFunctional.hpp
      *  \brief Class for objective functionals.
@@ -42,11 +42,11 @@ namespace DCP
      *  
      *  Template arguments are:
      *  \arg T_FunctionalForm_ the functional form type
-     *  \arg T_Gradient_ the gradient type, which must be a class derived from \c DCP::VariableExpression
+     *  \arg T_Gradient_ the gradient type, which must be a class derived from \c dcp::VariableExpression
      */
 
     template <class T_FunctionalForm_, class T_Gradient_>
-        class ObjectiveFunctional : public DCP::AbstractObjectiveFunctional
+        class ObjectiveFunctional : public dcp::AbstractObjectiveFunctional
     {
         // ---------------------------------------------------------------------------------------------//  
 
@@ -169,7 +169,7 @@ namespace DCP
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */
             virtual void setIntegrationSubdomains (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                   const DCP::SubdomainType& subdomainType);
+                                                   const dcp::SubdomainType& subdomainType);
 
 
             /******************* METHODS *******************/
@@ -203,7 +203,7 @@ namespace DCP
             T_FunctionalForm functional_;
 
             //! The gradient of the functional. Stored as a shared_ptr so that polymorphism can be applied
-            std::shared_ptr <DCP::VariableExpression> gradient_;
+            std::shared_ptr <dcp::VariableExpression> gradient_;
 
             // ---------------------------------------------------------------------------------------------//
 
@@ -346,19 +346,19 @@ namespace DCP
     template <class T_FunctionalForm, class T_Gradient>
         void ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
         setIntegrationSubdomains (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                  const DCP::SubdomainType& subdomainType)
+                                  const dcp::SubdomainType& subdomainType)
         {
-            if (subdomainType == DCP::SubdomainType::INTERNAL_CELLS)
+            if (subdomainType == dcp::SubdomainType::INTERNAL_CELLS)
             {
                 dolfin::log (dolfin::DBG, "Setting functional integration subdomain on INTERNAL_CELLS...");
                 functional_.set_cell_domains (meshFunction);
             }
-            else if (subdomainType == DCP::SubdomainType::INTERNAL_FACETS)
+            else if (subdomainType == dcp::SubdomainType::INTERNAL_FACETS)
             {
                 dolfin::log (dolfin::DBG, "Setting functional integration subdomain on INTERNAL_FACETS...");
                 functional_.set_interior_facet_domains (meshFunction);
             }
-            else if (subdomainType == DCP::SubdomainType::BOUNDARY_FACETS)
+            else if (subdomainType == dcp::SubdomainType::BOUNDARY_FACETS)
             {
                 dolfin::log (dolfin::DBG, "Setting functional integration subdomain on BOUNDARY_FACETS...");
                 functional_.set_exterior_facet_domains (meshFunction);

@@ -27,13 +27,13 @@
 #include <functional>
 #include <string>
 
-namespace DCP
+namespace dcp
 {
     /*! \class BacktrackingOptimizer BacktrackingOptimizer.hpp
      *  \brief Class that implements the gradient method with backtracking.
      *  
      *  This class provides the implementation of the gradient method as a descent method
-     *  for optimazation of funcionals. It is derived from \c DCP::AbstractOptimizer.
+     *  for optimazation of funcionals. It is derived from \c dcp::AbstractOptimizer.
      *  Let \f$ J \f$ be the functional to be minimized and \f$ \psi \left( \alpha \right) \f$ the function defined as:
      *  \f[
      *      \psi \left( \alpha \right) = J \left( \mathbf{u} + \alpha\,\mathbf{d} \right)
@@ -66,7 +66,7 @@ namespace DCP
      *  \li \f$ \alpha^{\left(0\right)} = 0.5 \f$
      *  \li \f$ \rho = 0.5 \f$
      */
-    class BacktrackingOptimizer : public DCP::AbstractOptimizer
+    class BacktrackingOptimizer : public dcp::AbstractOptimizer
     {
         // ---------------------------------------------------------------------------------------------//
         
@@ -141,12 +141,12 @@ namespace DCP
              *  \li the dolfin function that will contain the search direction after the function exits
              *  \li the dolfin function containing the gradient
              */
-            virtual void apply (DCP::CompositeDifferentialProblem& problem,
-                                const DCP::AbstractObjectiveFunctional& objectiveFunctional, 
+            virtual void apply (dcp::CompositeDifferentialProblem& problem,
+                                const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const std::function 
                                 <
-                                    void (DCP::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                    void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
                                 >& updater,
                                 const std::function
                                 <
@@ -183,12 +183,12 @@ namespace DCP
              *  \li the dolfin function that will contain the search direction after the function exits
              *  \li the dolfin function containing the gradient
              */
-            virtual void apply (DCP::CompositeDifferentialProblem& problem,
-                                const DCP::AbstractObjectiveFunctional& objectiveFunctional, 
+            virtual void apply (dcp::CompositeDifferentialProblem& problem,
+                                const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const std::function 
                                 <
-                                    void (DCP::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                    void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
                                 >& updater,
                                 const std::function 
                                 <

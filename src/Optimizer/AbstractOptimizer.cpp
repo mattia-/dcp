@@ -20,7 +20,7 @@
 #include <Optimizer/AbstractOptimizer.hpp>
 #include <dolfin/log/dolfin_log.h>
 
-namespace DCP
+namespace dcp
 {
     AbstractOptimizer::AbstractOptimizer () : 
         parameters ("optimizer_parameters")

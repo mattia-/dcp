@@ -24,7 +24,7 @@
 #include <algorithm>
 #include <dolfin/log/dolfin_log.h>
 
-namespace DCP
+namespace dcp
 {
     /******************* CONSTRUCTORS ******************/
     CompositeDifferentialProblem::CompositeDifferentialProblem () : 
@@ -52,7 +52,7 @@ namespace DCP
          
         // create new problem object
         dolfin::log (dolfin::DBG, "Creating new problem object...");
-        std::unique_ptr<DCP::AbstractDifferentialProblem> clonedProblem (problem.clone ());
+        std::unique_ptr<dcp::AbstractDifferentialProblem> clonedProblem (problem.clone ());
         
         // insert problem into storedProblems_ taking ownership
         dolfin::log (dolfin::DBG, "Inserting problem in problems map with name \"%s\"...", problemName.c_str ());
@@ -343,7 +343,7 @@ namespace DCP
             
 
 
-    const DCP::AbstractDifferentialProblem& 
+    const dcp::AbstractDifferentialProblem& 
     CompositeDifferentialProblem::operator[] (const std::string& name) const
     {
         auto problemIterator = storedProblems_.find (name);
@@ -356,7 +356,7 @@ namespace DCP
 
 
 
-    DCP::AbstractDifferentialProblem& 
+    dcp::AbstractDifferentialProblem& 
     CompositeDifferentialProblem::operator[] (const std::string& name)
     {
         auto problemIterator = storedProblems_.find (name);
@@ -369,7 +369,7 @@ namespace DCP
 
 
 
-    const DCP::AbstractDifferentialProblem& 
+    const dcp::AbstractDifferentialProblem& 
     CompositeDifferentialProblem::operator[] (const std::size_t& position) const
     {
         if (position >= solveOrder_.size ())
@@ -381,7 +381,7 @@ namespace DCP
 
 
 
-    DCP::AbstractDifferentialProblem& 
+    dcp::AbstractDifferentialProblem& 
     CompositeDifferentialProblem::operator[] (const std::size_t& position)
     {
         if (position >= solveOrder_.size ())
@@ -444,7 +444,7 @@ namespace DCP
         dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
 
         // get problem with given name from map. Variable problemIterator will be a
-        // std::map <std::string, std::unique_ptr <DCP::AbstractDifferentialProblem>::iterator
+        // std::map <std::string, std::unique_ptr <dcp::AbstractDifferentialProblem>::iterator
         dolfin::log (dolfin::DBG, "Looking for problem \"%s\" in problems map...", problemName.c_str ());
         auto problemIterator = storedProblems_.find (problemName);
 
@@ -454,7 +454,7 @@ namespace DCP
             return;
         }
 
-        DCP::AbstractDifferentialProblem& problem = *(problemIterator->second);
+        dcp::AbstractDifferentialProblem& problem = *(problemIterator->second);
 
         // 1)
         // if forceRelinking is true, loop over problemsLinks_. 
@@ -543,7 +543,7 @@ namespace DCP
             return;
         }
 
-        DCP::AbstractDifferentialProblem& problem = *(problemIterator->second);
+        dcp::AbstractDifferentialProblem& problem = *(problemIterator->second);
 
         // check if target problem of the link exists
         dolfin::log (dolfin::DBG, "Looking for link target in problems map...");
@@ -557,7 +557,7 @@ namespace DCP
             return;
         }
 
-        DCP::AbstractDifferentialProblem& targetProblem = *(targetProblemIterator->second);
+        dcp::AbstractDifferentialProblem& targetProblem = *(targetProblemIterator->second);
 
         if (std::get<1> (link.second) == -1)
         {

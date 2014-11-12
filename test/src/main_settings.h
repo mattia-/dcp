@@ -45,7 +45,7 @@ class ControlDirichletBC : public dolfin::Expression
 class ValueUpdater
 {
     public:
-        void operator() (DCP::CompositeDifferentialProblem& compositeProblem, 
+        void operator() (dcp::CompositeDifferentialProblem& compositeProblem, 
                          const dolfin::GenericFunction& dirichletBCValue) const
         {
 
@@ -151,7 +151,7 @@ namespace objective_functional
         }
     };
     
-    class Gradient : public DCP::VariableExpression
+    class Gradient : public dcp::VariableExpression
     {
         void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
         {

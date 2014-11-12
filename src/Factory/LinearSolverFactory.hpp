@@ -24,7 +24,7 @@
 #include <string>
 #include <dolfin.h>
 
-namespace DCP
+namespace dcp
 {
     typedef GenericFactory <dolfin::GenericLinearSolver, std::string> LinearSolverFactory;
 }

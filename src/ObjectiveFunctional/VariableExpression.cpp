@@ -21,7 +21,7 @@
 #include <utility>
 #include <memory>
 
-namespace DCP
+namespace dcp
 {
     /******************* CONSTRUCTORS *******************/
     VariableExpression::VariableExpression (std::size_t dim) : 

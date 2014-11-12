@@ -22,7 +22,7 @@
 
 #include <Factory/GenericFactory.hpp>
 
-namespace DCP
+namespace dcp
 {
     /*! \class Proxy
      *  \brief A class that provides registration into a factory.

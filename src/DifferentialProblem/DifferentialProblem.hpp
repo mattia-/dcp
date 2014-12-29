@@ -22,6 +22,7 @@
 
 #include "LinearDifferentialProblem.hpp"
 #include "NonlinearDifferentialProblem.hpp"
+#include "TimeDependentDifferentialProblem.hpp"
 #include "CompositeDifferentialProblem.hpp"
 #include "SubdomainType.hpp"
 

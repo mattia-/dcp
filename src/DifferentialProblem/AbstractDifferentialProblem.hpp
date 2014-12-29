@@ -100,32 +100,32 @@ namespace dcp
             /*! 
              *  \return a const reference to the problem's mesh
              */
-            const dolfin::Mesh& mesh () const;
+            virtual const dolfin::Mesh& mesh () const;
 
             //! Get problem's finite element space
             /*! 
              *  \return a const reference to the problem's function space
              */
-            const dolfin::FunctionSpace& functionSpace () const;
+            virtual const dolfin::FunctionSpace& functionSpace () const;
 
             //! Get const reference to the problem's dirichlet boundary condition with given name
             /*! 
              *  \param bcName the name identifying the boundary condition
              *  \return a const reference to the problem's dirichletBC identified by \c bcName
              */
-            const dolfin::DirichletBC& dirichletBC (const std::string& bcName) const;
+            virtual const dolfin::DirichletBC& dirichletBC (const std::string& bcName) const;
 
             //! Get const reference to the problem's dirichlet boundary conditions map
             /*! 
              *  \return a const reference to the problem's \c dirichletBC map
              */
-            const std::map<std::string, dolfin::DirichletBC>& dirichletBCs () const;
+            virtual const std::map<std::string, dolfin::DirichletBC>& dirichletBCs () const;
 
             //! Get const reference to the problem's solution
             /*!
              *  \return a const reference to the problem's solution
              */
-            const dolfin::Function& solution () const;  
+            virtual const dolfin::Function& solution () const;  
 
             /********************** SETTERS ***********************/
             //! Set problem coefficients [1]

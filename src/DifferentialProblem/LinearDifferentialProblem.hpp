@@ -227,27 +227,27 @@ namespace dcp
                 /*! 
                  *  \return a const reference to the problem's linear form
                  */
-                const T_BilinearForm& bilinearForm () const;
+                virtual const T_BilinearForm& bilinearForm () const;
 
                 //! Get const reference to the problem's linear form
                 /*! 
                  *  \return a const reference to the problem's linear form
                  */
-                const T_LinearForm& linearForm () const;
+                virtual const T_LinearForm& linearForm () const;
 
                 //! Get const reference to the problem's linear operator
                 /*!
                  *  \return a const reference to the problem's linear operator, which
                  *  is a \c dolfin::Matrix
                  */
-                const dolfin::Matrix& linearOperator () const;
+                virtual const dolfin::Matrix& linearOperator () const;
 
                 //! Get const reference to the problem's right hand side
                 /*!
                  *  \return a const reference to the problem's right hand side, which
                  *  is a \c dolfin::Vector
                  */
-                const dolfin::Vector& rhs () const;
+                virtual const dolfin::Vector& rhs () const;
 
 
                 /******************* SETTERS *******************/
@@ -278,7 +278,7 @@ namespace dcp
 
                 //! Set integration subdomains for the forms. Override of virtual function in \c AbstractDifferentialProblem
                 /*! 
-                 *  Possible values for \c coefficientType are:
+                 *  Possible values for \c formType are:
                  *  \li \c bilinear_form to set the integration subdomain in the bilinear form
                  *  \li \c linear_form to set the integration subdomain in the linear form
                  *  
@@ -342,7 +342,7 @@ namespace dcp
                  *  \param mustReassemble set it to \c true if the system operators (matrix and right hand side vector)
                  *         should be reassembled. It is \c false by default.
                  */
-                void solve (const bool& mustReassemble);
+                virtual void solve (const bool& mustReassemble);
 
                 //! Clone method. Overrides method in \c AbstractDifferentialProblem
                 /*!
@@ -918,6 +918,8 @@ namespace dcp
 
 
 
+    /******************* METHODS *******************/
+    
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         void LinearDifferentialProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         solve () 

@@ -211,13 +211,13 @@ namespace dcp
                 /*! 
                  *  \return a const reference to the problem's residual form
                  */
-                const T_ResidualForm& residualForm () const;
+                virtual const T_ResidualForm& residualForm () const;
 
                 //! Get const reference to the problem's jacobian form
                 /*! 
                  *  \return a const reference to the problem's jacobian form
                  */
-                const T_JacobianForm& jacobianForm () const;
+                virtual const T_JacobianForm& jacobianForm () const;
 
                 /******************* SETTERS *******************/
 
@@ -259,7 +259,7 @@ namespace dcp
 
                 //! Set integration subdomains for the forms. Override of virtual function in \c AbstractDifferentialProblem
                 /*! 
-                 *  Possible values for \c coefficientType are:
+                 *  Possible values for \c formType are:
                  *  \li \c residual_form to set the integration subdomain in the residual form
                  *  \li \c jacobian_form to set the integration subdomain in the jacobian form
                  *  
@@ -283,7 +283,7 @@ namespace dcp
                  *  \param solverParameters object of type \c dolfin::parameters that contain the parameters to
                  *  be used for the non linear solver
                  */
-                void solve (const dolfin::Parameters& solverParameters);
+                virtual void solve (const dolfin::Parameters& solverParameters);
 
                 //! Clone method. Overrides method in \c AbstractDifferentialProblem
                 /*!
@@ -757,6 +757,8 @@ namespace dcp
         }
 
 
+    
+    /******************* METHODS *******************/
 
     template <class T_ResidualForm, class T_JacobianForm>
         void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::

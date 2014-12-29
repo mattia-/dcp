@@ -1,0 +1,35 @@
+This collection of files sets up the case for a test linear differential problem. We will use the Poisson equation with 
+mixed boundary conditions on the unit square:
+$$ 
+-k \Delta u = f \in \Omega
+s.t.
+\nabla u \cdot n = g \in \Gamma_N = {(x, y) \in \Omega s.t. x \in [0, 1] and y = 0}
+u = h \in \partial \Omega \setminus \Gamma_N
+$$
+with 
+$$
+k = 1
+f = 1
+g = 1
+h = 0
+$$
+
+Steps to launch the code:
+1) create a directory in which to build the code. In the following steps, it will be supposed that such directory is
+called "build" and was created in the same directory as the one where this README file is
+    $ mkdir build
+
+2) change directory
+    $ cd build
+
+3) launch cmake
+    $ cmake ..
+   
+   various options can be passed to cmake. For example, to allow compiler optimizations, run
+    $ cmake .. -DCMAKE_BUILD_TYPE=RELEASE
+
+4) compile
+    $ make
+
+5) run the executable
+    $ ./src/main

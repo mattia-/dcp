@@ -23,18 +23,19 @@
 namespace dcp
 {
     /******************* CONSTRUCTORS *******************/
-
     TimeDependentDifferentialProblem::TimeDependentDifferentialProblem 
             (const std::shared_ptr<dolfin::Mesh> mesh, 
              const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+             const double& startTime,
              const double& dt,
              const double& endTime,
              const std::vector<std::string>& dtCoefficientTypes,
              const std::vector<std::string>& previousSolutionCoefficientTypes,
-             const int& storeInterval,
              const std::shared_ptr<dcp::AbstractDifferentialProblem> timeSteppingProblem,
+             const int& storeInterval,
+             const int& plotInterval,
              const std::string& dtName,
-             const std::string& previousSolutionName) :
+             const std::string& previousSolutionName) : 
         AbstractDifferentialProblem (mesh, functionSpace),
         timeSteppingProblem_ (timeSteppingProblem),
         solutions_ ()
@@ -42,11 +43,15 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Building TimeDependentDifferentialProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
+        parameters.add ("start_time", startTime);
         parameters.add ("dt", dt);
         parameters.add ("end_time", endTime);
         parameters.add ("dt_name", dtName);
         parameters.add ("previous_solution_name", previousSolutionName);
         parameters.add ("store_interval", storeInterval);
+        parameters.add ("plot_interval", plotInterval);
+        parameters.add ("pause", false);
+        parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("clone_method", "shallow_clone");
         
         dolfin::Parameters dtCoefficientTypesParameter ("dt_coefficient_types");
@@ -73,14 +78,16 @@ namespace dcp
     TimeDependentDifferentialProblem::TimeDependentDifferentialProblem 
             (const dolfin::Mesh& mesh, 
              const dolfin::FunctionSpace& functionSpace,
+             const double& startTime,
              const double& dt,
              const double& endTime,
              const std::vector<std::string>& dtCoefficientTypes,
              const std::vector<std::string>& previousSolutionCoefficientTypes,
-             const int& storeInterval,
              const std::shared_ptr<dcp::AbstractDifferentialProblem> timeSteppingProblem,
+             const int& storeInterval,
+             const int& plotInterval,
              const std::string& dtName,
-             const std::string& previousSolutionName) :
+             const std::string& previousSolutionName) : 
         AbstractDifferentialProblem (mesh, functionSpace),
         timeSteppingProblem_ (timeSteppingProblem),
         solutions_ ()
@@ -88,11 +95,15 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Building TimeDependentDifferentialProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
+        parameters.add ("start_time", startTime);
         parameters.add ("dt", dt);
         parameters.add ("end_time", endTime);
         parameters.add ("dt_name", dtName);
         parameters.add ("previous_solution_name", previousSolutionName);
         parameters.add ("store_interval", storeInterval);
+        parameters.add ("plot_interval", plotInterval);
+        parameters.add ("pause", false);
+        parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("clone_method", "shallow_clone");
         
         dolfin::Parameters dtCoefficientTypesParameter ("dt_coefficient_types");
@@ -119,14 +130,16 @@ namespace dcp
     TimeDependentDifferentialProblem::TimeDependentDifferentialProblem 
             (dolfin::Mesh&& mesh, 
              dolfin::FunctionSpace&& functionSpace,
+             const double& startTime,
              const double& dt,
              const double& endTime,
              const std::vector<std::string>& dtCoefficientTypes,
              const std::vector<std::string>& previousSolutionCoefficientTypes,
-             const int& storeInterval,
              const std::shared_ptr<dcp::AbstractDifferentialProblem> timeSteppingProblem,
+             const int& storeInterval,
+             const int& plotInterval,
              const std::string& dtName,
-             const std::string& previousSolutionName) :
+             const std::string& previousSolutionName) : 
         AbstractDifferentialProblem (mesh, functionSpace),
         timeSteppingProblem_ (timeSteppingProblem),
         solutions_ ()
@@ -134,11 +147,15 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Building TimeDependentDifferentialProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
+        parameters.add ("start_time", startTime);
         parameters.add ("dt", dt);
         parameters.add ("end_time", endTime);
         parameters.add ("dt_name", dtName);
         parameters.add ("previous_solution_name", previousSolutionName);
         parameters.add ("store_interval", storeInterval);
+        parameters.add ("plot_interval", plotInterval);
+        parameters.add ("pause", false);
+        parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("clone_method", "shallow_clone");
         
         dolfin::Parameters dtCoefficientTypesParameter ("dt_coefficient_types");
@@ -163,10 +180,23 @@ namespace dcp
 
 
     /******************* GETTERS *******************/
-
     dcp::AbstractDifferentialProblem& TimeDependentDifferentialProblem::timeSteppingProblem ()
     {
         return *timeSteppingProblem_;
+    }
+
+    
+
+    const dolfin::Function& TimeDependentDifferentialProblem::solution () const
+    {
+        return solution_;
+    }
+
+    
+
+    const std::vector<dolfin::Function>& TimeDependentDifferentialProblem::solutionsVector () const
+    {
+        return solutions_;
     }
 
 
@@ -182,6 +212,14 @@ namespace dcp
 
     void TimeDependentDifferentialProblem::
     setInitialSolution (const dolfin::Function& initialSolution)
+    {
+        solution_ = initialSolution;
+    }
+
+    
+
+    void TimeDependentDifferentialProblem::
+    setInitialSolution (const dolfin::Expression& initialSolution)
     {
         solution_ = initialSolution;
     }
@@ -251,13 +289,13 @@ namespace dcp
 
 
     /******************* METHODS *******************/
-    
     void TimeDependentDifferentialProblem::
     solve () 
     {
         // ---- Problem settings ---- //
         dolfin::begin (dolfin::DBG, "Setting up time dependent problem...");
         
+        // get parameters' values
         dolfin::Constant dt (parameters["dt"]);
         double endTime = parameters ["end_time"];
         std::string dtName = parameters ["dt_name"];
@@ -267,6 +305,9 @@ namespace dcp
         std::vector<std::string> previousSolutionCoefficientTypes;
         parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
         int storeInterval = parameters ["store_interval"];
+        int plotInterval = parameters ["plot_interval"];
+        bool pause = parameters ["pause"];
+        int timeSteppingSolutionComponent = parameters ["time_stepping_solution_component"];
         
         for (auto& i : dtCoefficientTypes)
         {
@@ -281,38 +322,68 @@ namespace dcp
         // ---- Problem solution ---- //
         dolfin::begin (dolfin::DBG, "Solving time dependent problem...");
         
-        double t = 0;
+        double t = parameters ["start_time"];
         int timeStep = 0;
+        
+        // save initial solution in member vector
+        solutions_.push_back (solution_);
         
         while (t < endTime + DOLFIN_EPS)
         {
             timeStep++;
+            t += dt;
             
-            dolfin::log (dolfin::INFO, "==========================");
-            dolfin::log (dolfin::INFO, "Time = %f s, timestep %d", t, timeStep);
-            dolfin::begin ("==========================");
+            dolfin::begin (dolfin::INFO, "===== Time = %f s, timestep %d =====", t, timeStep);
             
             for (auto& i : previousSolutionCoefficientTypes)
             {
-                timeSteppingProblem_->setCoefficient (i, 
-                                                      dolfin::reference_to_no_delete_pointer (solution_), 
-                                                      previousSolutionName);
+                if (timeSteppingSolutionComponent >= 0)
+                {
+                    timeSteppingProblem_->setCoefficient 
+                        (i, 
+                         dolfin::reference_to_no_delete_pointer (solution_ [timeSteppingSolutionComponent]), 
+                         previousSolutionName);
+                }
+                else
+                {
+                    timeSteppingProblem_->setCoefficient 
+                        (i, 
+                         dolfin::reference_to_no_delete_pointer (solution_), 
+                         previousSolutionName);
+                }
             } 
             
-            dolfin::begin ("Solving time stepping problem...");
+            dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
             timeSteppingProblem_->solve ();
             dolfin::end ();
             
             solution_ = timeSteppingProblem_->solution ();
             
-            if (timeStep % storeInterval == 0 )
+            if (storeInterval > 0 && timeStep % storeInterval == 0)
             {
+                dolfin::log (dolfin::DBG, "Saving time stepping problem solution in solutions vector...");
                 solutions_.push_back (solution_);
             }
             
-            t += dt;
+            if (plotInterval > 0 && timeStep % plotInterval == 0)
+            {
+                dolfin::log (dolfin::DBG, "Plotting time stepping problem solution...");
+                dolfin::plot (solution_);
+                
+                if (pause)
+                {
+                    dolfin::interactive ();
+                }
+            }
             
             dolfin::end ();
+        }
+        
+        // save final solution in member vector if it has not been saved already
+        if (! (storeInterval > 0 && timeStep % storeInterval == 0) )
+        {
+            dolfin::log (dolfin::DBG, "Saving time stepping problem solution in solutions vector...");
+            solutions_.push_back (solution_);
         }
         
         dolfin::end ();
@@ -341,12 +412,14 @@ namespace dcp
             clonedProblem = 
                 new dcp::TimeDependentDifferentialProblem (this->mesh_,
                                                            this->functionSpace_,
+                                                           this->parameters ["start_time"],
                                                            this->parameters ["dt"],
                                                            this->parameters ["end_time"],
                                                            dtCoefficientTypes,
                                                            previousSolutionCoefficientTypes,
-                                                           this->parameters ["store_interval"],
                                                            this->timeSteppingProblem_,
+                                                           this->parameters ["store_interval"],
+                                                           this->parameters ["plot_interval"],
                                                            this->parameters ["dt_name"],
                                                            this->parameters ["previous_solution_name"]);
         }
@@ -359,12 +432,14 @@ namespace dcp
             clonedProblem = 
                 new dcp::TimeDependentDifferentialProblem (*(this->mesh_),
                                                            *(this->functionSpace_),
+                                                           this->parameters ["start_time"],
                                                            this->parameters ["dt"],
                                                            this->parameters ["end_time"],
                                                            dtCoefficientTypes,
                                                            previousSolutionCoefficientTypes,
-                                                           this->parameters ["store_interval"],
                                                            this->timeSteppingProblem_,
+                                                           this->parameters ["store_interval"],
+                                                           this->parameters ["plot_interval"],
                                                            this->parameters ["dt_name"],
                                                            this->parameters ["previous_solution_name"]);
         }

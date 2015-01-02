@@ -935,11 +935,22 @@ namespace dcp
             {
                 dolfin::begin (dolfin::DBG, "Assembling system...");
                 
+                dolfin::log (dolfin::DBG, "Assembling bilinear form...");
                 dolfin::assemble (*problemMatrix_, bilinearForm_);
+                
+                dolfin::log (dolfin::DBG, "Assembling linear form...");
                 dolfin::assemble (rhsVector_, linearForm_);
-                for (auto &i : dirichletBCs_)
+                
+                if (!dirichletBCs_.empty ())
                 {
-                    i.second.apply (*problemMatrix_, rhsVector_);
+                    dolfin::begin (dolfin::DBG, "Imposing Dirichlet's boundary conditions...");
+                    for (auto &i : dirichletBCs_)
+                    {
+                        dolfin::begin (dolfin::DBG, "Boundary condition: %s", i.first.c_str ());
+                        i.second.apply (*problemMatrix_, rhsVector_);
+                        dolfin::end ();
+                    }
+                    dolfin::end ();
                 }
                 
                 solver_ -> set_operator (problemMatrix_);

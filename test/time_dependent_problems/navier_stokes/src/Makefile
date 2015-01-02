@@ -17,25 +17,27 @@
 # *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
 # */ 
 
-# UFL file for poisson problem simulation
-#
-# define mesh dimension
-cell = triangle
+#shell definition
+SHELL = /bin/bash
 
-# define function spaces
-V = FiniteElement ("Lagrange", cell, 1)
+OPTIMIZATION_FLAG = -O
 
-# define test and trial functions
-u = TrialFunction (V)
-v = TestFunction (V)
+UFL_SOURCES = $(shell find . -name "*.ufl")
+HEADER_FILES = $(UFL_SOURCES:.ufl=.h)
+DEBUG_FILES = $(UFL_SOURCES:.ufl=_debug.py) 
+DEBUG_FILES += $(UFL_SOURCES:.ufl=_debug.pyc) 
 
-# define coefficients
-k = Constant (cell)
-f = Coefficient (V)
-g = Coefficient (V)
+.DEFAULT_GOAL: all
 
-# define bilinear form
-a = inner (k * grad (u), grad (v)) * dx
+.PHONY: all
 
-# define linear form 
-L = inner (f, v) * dx + inner (k * g, v) * ds[1]
+all: $(HEADER_FILES)
+
+%.h: %.ufl
+	ffc -l dolfin $(OPTIMIZATION_FLAG) $<
+	
+cleanall: 
+	$(RM) $(DEBUG_FILES) $(HEADER_FILES)
+	
+clean:
+	$(RM) $(DEBUG_FILES)

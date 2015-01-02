@@ -14,15 +14,15 @@ SET (PROJECT_NAME DCP)
 PROJECT (${PROJECT_NAME})
 
 # check on compiler being used
-IF (NOT CMAKE_COMPILER_IS_GNUCXX)
-    MESSAGE (WARNING "-- *** Compiler ID is not GNU. 
-    Proceed, but this may cause problems")
-ENDIF (NOT CMAKE_COMPILER_IS_GNUCXX)
-
-IF (NOT CMAKE_COMPILER_IS_GNUCC)
-    MESSAGE (WARNING "-- *** Linker ID is not GNU. 
-    Proceed, but this may cause problems")
-ENDIF (NOT CMAKE_COMPILER_IS_GNUCC)
+#IF (NOT CMAKE_COMPILER_IS_GNUCXX)
+#    MESSAGE (WARNING "-- *** Compiler ID is not GNU. 
+#    Proceed, but this may cause problems")
+#ENDIF (NOT CMAKE_COMPILER_IS_GNUCXX)
+#
+#IF (NOT CMAKE_COMPILER_IS_GNUCC)
+#    MESSAGE (WARNING "-- *** Linker ID is not GNU. 
+#    Proceed, but this may cause problems")
+#ENDIF (NOT CMAKE_COMPILER_IS_GNUCC)
 
 # add compilation flags
 SET (CMAKE_CXX_FLAGS "-Wall -std=c++0x")

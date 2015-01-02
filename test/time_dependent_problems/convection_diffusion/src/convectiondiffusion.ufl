@@ -17,39 +17,28 @@
 # *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
 # */ 
 
-# UFL file for Navier-Stokes simulation
+# UFL file for time dependent convection-diffusion problem
 #
 # define mesh dimension
 cell = triangle
 
 # define function spaces
-V = VectorElement ("Lagrange", cell, 2)
-Q = FiniteElement ("Lagrange", cell, 1)
-T = V * Q
+V = FiniteElement ("Lagrange", cell, 1)
 
 # define test and trial functions
-trial = Coefficient (T)
-test = TestFunction (T)
-
-u, p = split (trial)
-v, q = split (test)
+u = TrialFunction (V)
+v = TestFunction (V)
 
 # define coefficients
-nu = Constant (cell)
+k = Constant (cell)
+dt = Constant (cell)
+b = VectorConstant (cell)
+u_old = Coefficient (V)
 
-# define non linear equation
-F = nu * inner (grad (u), grad (v)) * dx \
-     + inner (dot (grad (u), u), v) * dx \
-     - inner (p, div (v)) * dx \
-     + inner (div (u), q) * dx
+# define bilinear form
+a = inner (u, v) * dx \
+    + inner (dt * k * grad (u), grad (v)) * dx \
+    + inner (dt * inner (b, grad (u)), v ) * dx
 
-# define test and trial function for jacobian
-dtrial = TrialFunction (T)
-du, dp = split (dtrial)
-
-# define jacobian
-J = nu * inner (grad (du), grad (v)) * dx \
-     + inner (dot (grad (u), du), v) * dx \
-     + inner (dot (grad (du), u), v) * dx \
-     - inner (dp, div (v)) * dx \
-     + inner (div (du), q) * dx
+# define linear form 
+L = inner (u_old, v) * dx

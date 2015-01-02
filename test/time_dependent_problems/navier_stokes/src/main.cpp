@@ -107,11 +107,25 @@ int main (int argc, char* argv[])
     navierstokes::FunctionSpace V (mesh);
     
     // define problem
+    double t0 = 0.0;
+    double dt = 0.1;
+    double T = 4;
     std::cout << "Define the problem..." << std::endl;
+    dcp::TimeDependentDifferentialProblem navierStokesProblem 
+        (dolfin::reference_to_no_delete_pointer (mesh),
+         dolfin::reference_to_no_delete_pointer (V),
+         t0,
+         dt, 
+         T, 
+         std::vector<std::string> ({"residual_form", "jacobian_form"}),
+         std::vector<std::string> ({"residual_form"})
+        );
+         
     dcp::NonlinearDifferentialProblem <navierstokes::ResidualForm, navierstokes::JacobianForm> 
-        navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh), 
+        timeSteppingProblem (dolfin::reference_to_no_delete_pointer (mesh), 
                              dolfin::reference_to_no_delete_pointer (V),
                              "trial");
+    navierStokesProblem.setTimeSteppingProblem (dolfin::reference_to_no_delete_pointer (timeSteppingProblem));
     
     // define constant
     std::cout << "Define the problem's coefficients..." << std::endl;
@@ -135,14 +149,15 @@ int main (int argc, char* argv[])
     navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
     navierStokesProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
     
+    navierStokesProblem.parameters ["time_stepping_solution_component"] = 0;
+    
     // solve problem
     std::cout << "Solve the problem..." << std::endl;
     navierStokesProblem.solve ();
 
     // plots
     dolfin::plot (mesh, "Mesh");
-    dolfin::plot (navierStokesProblem.solution ()[0], "Velocity");
-    dolfin::plot (navierStokesProblem.solution ()[1], "Pressure");
+    
     dolfin::interactive ();
     
     return 0;

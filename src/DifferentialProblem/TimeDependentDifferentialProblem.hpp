@@ -72,6 +72,7 @@ namespace dcp
              *  \param mesh the problem mesh as a <tt> const std::shared_ptr </tt> to \c dolfin::Mesh
              *  \param functionSpace the problem finite element space as a <tt> const std::shared_ptr </tt> to 
              *  \c dolfin::FunctionSpace
+             *  \param startTime the initial time for the simulation
              *  \param dt the length of the time step to be used
              *  \param endTime the final time for the simulation
              *  \param dtCoefficientTypes a vector of strings containing the types of the forms in which 
@@ -89,31 +90,45 @@ namespace dcp
              *  and \c NonlinearDifferentialProblem for suitable values for this variable.
              *  The values contained in \c previousSolutionCoefficientTypes will be saved in the member variable 
              *  \c parameters.
-             *  \param storeInterval the solution will be stored in the private member \c solutions_ every 
-             *  \c storeInterval time steps
-             *  \param timeSteppingProblem the problem to be solved on each time step
+             *  \param timeSteppingProblem the problem to be solved on each time step. Default value = nullptr
+             *  \param storeInterval interval to be used for solution storing. The solution will be stored in the 
+             *  private member \c solutions_ every  \c storeInterval time steps. A value less than or equal to 0
+             *  means that no intermediate-step solution will be saved. Default value: 1.
+             *  \param plotInterval interval to be used for solution plot. The solution will be plotted every 
+             *  \c plotInterval time steps. A value less than or equal to 0 means that no plot will pe performed.
+             *  Default value: 1.
              *  \param dtName the name of the coefficient representing the time step in the ufl file describing the
-             *  problem
+             *  problem. Default value: "dt"
              *  \param previousSolutionName the name of the function representing the solution at the previous time step
-             *  in the ufl file describing the problem
+             *  in the ufl file describing the problem. Default value: "u_old"
+             *  Note that, during the time stepping process, the \c dolfin::Function stored in the protected member 
+             *  \c solution_ will be used to set the coefficient in the equation whose name is stored in 
+             *  \c previousSolutionName. If such \c dolfin::Function has more than one component (i.e. it is a vector
+             *  function) all of its component will be used by default. To change this behaviour, one needs to change
+             *  the value of the parameter "time_stepping_solution_component", in the public member \c parameters.
+             *  This parameter's default value is -1 (which is a placeholder that stands for "use all the solution's
+             *  components", but any negative integer will work), but it can be changed to any non-negative 
+             *  integer to indicate the specific component the time loop should use.
              */
             TimeDependentDifferentialProblem 
                 (const std::shared_ptr<dolfin::Mesh> mesh, 
                  const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                 const double& startTime,
                  const double& dt,
                  const double& endTime,
                  const std::vector<std::string>& dtCoefficientTypes,
                  const std::vector<std::string>& previousSolutionCoefficientTypes,
-                 const int& storeInterval = 1,
                  const std::shared_ptr<dcp::AbstractDifferentialProblem> timeSteppingProblem = nullptr,
+                 const int& storeInterval = 1,
+                 const int& plotInterval = 1,
                  const std::string& dtName = "dt",
                  const std::string& previousSolutionName = "u_old");
-            
 
             //! Constructor with references
             /*!
              *  \param mesh the problem mesh as a <tt> const dolfin::Mesh& </tt>
              *  \param functionSpace the problem finite element space as a <tt> const dolfin::FunctionSpace& </tt>
+             *  \param startTime the initial time for the simulation
              *  \param dt the length of the time step to be used
              *  \param endTime the final time for the simulation
              *  \param dtCoefficientTypes a vector of strings containing the types of the forms in which 
@@ -131,23 +146,37 @@ namespace dcp
              *  and \c NonlinearDifferentialProblem for suitable values for this variable.
              *  The values contained in \c previousSolutionCoefficientTypes will be saved in the member variable 
              *  \c parameters.
-             *  \param storeInterval the solution will be stored in the private member \c solutions_ every 
-             *  \c storeInterval time steps
-             *  \param timeSteppingProblem the problem to be solved on each time step
+             *  \param timeSteppingProblem the problem to be solved on each time step. Default value = nullptr
+             *  \param storeInterval interval to be used for solution storing. The solution will be stored in the 
+             *  private member \c solutions_ every  \c storeInterval time steps. A value less than or equal to 0
+             *  means that no intermediate-step solution will be saved. Default value: 1.
+             *  \param plotInterval interval to be used for solution plot. The solution will be plotted every 
+             *  \c plotInterval time steps. A value less than or equal to 0 means that no plot will pe performed.
+             *  Default value: 1.
              *  \param dtName the name of the coefficient representing the time step in the ufl file describing the
-             *  problem
+             *  problem. Default value: "dt"
              *  \param previousSolutionName the name of the function representing the solution at the previous time step
-             *  in the ufl file describing the problem
+             *  in the ufl file describing the problem. Default value: "u_old"
+             *  Note that, during the time stepping process, the \c dolfin::Function stored in the protected member 
+             *  \c solution_ will be used to set the coefficient in the equation whose name is stored in 
+             *  \c previousSolutionName. If such \c dolfin::Function has more than one component (i.e. it is a vector
+             *  function) all of its component will be used by default. To change this behaviour, one needs to change
+             *  the value of the parameter "time_stepping_solution_component", in the public member \c parameters.
+             *  This parameter's default value is -1 (which is a placeholder that stands for "use all the solution's
+             *  components", but any negative integer will work), but it can be changed to any non-negative 
+             *  integer to indicate the specific component the time loop should use.
              */
             TimeDependentDifferentialProblem 
                 (const dolfin::Mesh& mesh, 
                  const dolfin::FunctionSpace& functionSpace,
+                 const double& startTime,
                  const double& dt,
                  const double& endTime,
                  const std::vector<std::string>& dtCoefficientTypes,
                  const std::vector<std::string>& previousSolutionCoefficientTypes,
-                 const int& storeInterval = 1,
                  const std::shared_ptr<dcp::AbstractDifferentialProblem> timeSteppingProblem = nullptr,
+                 const int& storeInterval = 1,
+                 const int& plotInterval = 1,
                  const std::string& dtName = "dt",
                  const std::string& previousSolutionName = "u_old");
             
@@ -156,6 +185,7 @@ namespace dcp
             /*!
              *  \param mesh the problem mesh as a <tt> const dolfin::Mesh&& </tt>
              *  \param functionSpace the problem finite element space as a <tt> const dolfin::FunctionSpace&& </tt>
+             *  \param startTime the initial time for the simulation
              *  \param dt the length of the time step to be used
              *  \param endTime the final time for the simulation
              *  \param dtCoefficientTypes a vector of strings containing the types of the forms in which 
@@ -173,29 +203,42 @@ namespace dcp
              *  and \c NonlinearDifferentialProblem for suitable values for this variable.
              *  The values contained in \c previousSolutionCoefficientTypes will be saved in the member variable 
              *  \c parameters.
-             *  \param storeInterval the solution will be stored in the private member \c solutions_ every 
-             *  \c storeInterval time steps
-             *  \param timeSteppingProblem the problem to be solved on each time step
+             *  \param timeSteppingProblem the problem to be solved on each time step. Default value = nullptr
+             *  \param storeInterval interval to be used for solution storing. The solution will be stored in the 
+             *  private member \c solutions_ every  \c storeInterval time steps. A value less than or equal to 0
+             *  means that no intermediate-step solution will be saved. Default value: 1.
+             *  \param plotInterval interval to be used for solution plot. The solution will be plotted every 
+             *  \c plotInterval time steps. A value less than or equal to 0 means that no plot will pe performed.
+             *  Default value: 1.
              *  \param dtName the name of the coefficient representing the time step in the ufl file describing the
-             *  problem
+             *  problem. Default value: "dt"
              *  \param previousSolutionName the name of the function representing the solution at the previous time step
-             *  in the ufl file describing the problem
+             *  in the ufl file describing the problem. Default value: "u_old"
+             *  Note that, during the time stepping process, the \c dolfin::Function stored in the protected member 
+             *  \c solution_ will be used to set the coefficient in the equation whose name is stored in 
+             *  \c previousSolutionName. If such \c dolfin::Function has more than one component (i.e. it is a vector
+             *  function) all of its component will be used by default. To change this behaviour, one needs to change
+             *  the value of the parameter "time_stepping_solution_component", in the public member \c parameters.
+             *  This parameter's default value is -1 (which is a placeholder that stands for "use all the solution's
+             *  components", but any negative integer will work), but it can be changed to any non-negative 
+             *  integer to indicate the specific component the time loop should use.
              */
             TimeDependentDifferentialProblem 
                 (dolfin::Mesh&& mesh, 
                  dolfin::FunctionSpace&& functionSpace,
+                 const double& startTime,
                  const double& dt,
                  const double& endTime,
                  const std::vector<std::string>& dtCoefficientTypes,
                  const std::vector<std::string>& previousSolutionCoefficientTypes,
-                 const int& storeInterval = 1,
                  const std::shared_ptr<dcp::AbstractDifferentialProblem> timeSteppingProblem = nullptr,
+                 const int& storeInterval = 1,
+                 const int& plotInterval = 1,
                  const std::string& dtName = "dt",
                  const std::string& previousSolutionName = "u_old");
 
 
             /******************* DESTRUCTOR *******************/
-            
             //! Destructor
             /*! 
              *  Default destructor, since members of the class are trivially 
@@ -211,14 +254,28 @@ namespace dcp
              */
             virtual dcp::AbstractDifferentialProblem& timeSteppingProblem ();
 
+            //! Get const reference to the problem's solution on the last considered time step
+            /*!
+             *  \return a const reference to the problem's solution on the last considered time step
+             */
+            virtual const dolfin::Function& solution () const;  
+
+            //! Get const reference to the problem's solutions vector
+            /*!
+             *  \return a const reference to the problem's solutions vector
+             */
+            virtual const std::vector<dolfin::Function>& solutionsVector () const;  
+
 
             /******************* SETTERS *******************/
-            
             //! Set time stepping problem
             virtual void setTimeSteppingProblem (const std::shared_ptr<dcp::AbstractDifferentialProblem> timeSteppingProblem);
             
-            //! Set initial solution for the time loop
+            //! Set initial solution for the time loop using a \c dolfin::Function
             virtual void setInitialSolution (const dolfin::Function& initialSolution);
+            
+            //! Set initial solution for the time loop using a \c dolfin::Expression
+            virtual void setInitialSolution (const dolfin::Expression& initialSolution);
             
             //! Set coefficient [1]. Override of virtual function in \c AbstractDifferentialProblem.
             //! This function is used to set the coefficients for the protected member \c timeSteppingProblem_.
@@ -305,7 +362,6 @@ namespace dcp
 
             
             /******************* METHODS *******************/
-
             //! Solve problem
             /*!
              *  This method solves the problem defined. It uses the protected members' value to set the problem and then

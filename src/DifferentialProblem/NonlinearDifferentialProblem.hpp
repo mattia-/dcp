@@ -788,13 +788,17 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Solver parameters set name is: %s", solverParametersSetName.c_str ());
             if (tmpDirichletBCs.size () != 0)
             {
+                dolfin::begin (dolfin::DBG, "Solving problem...");
                 dolfin::solve (residualForm_ == 0, solution_, tmpDirichletBCs, jacobianForm_, 
                                parameters (solverParametersSetName));
+                dolfin::end ();
             }
             else
             {
+                dolfin::begin (dolfin::DBG, "Solving problem...");
                 dolfin::solve (residualForm_ == 0, solution_, jacobianForm_, 
                                parameters (solverParametersSetName));
+                dolfin::end ();
             }
             
             dolfin::end ();

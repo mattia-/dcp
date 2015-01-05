@@ -206,7 +206,56 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//
 
         protected:
+            // The members listed here are for internal use only, to keep the apply method as short and easy to
+            // understand as possible
+            
+            //! Function to perform the backtracking loop iterations
+            /*
+             *  \param previousFunctionalValue the value of the functional at the beginning of the backtracking loop
+             *  \param currentFunctionalValue the new value of the functional on each iteration. At the end of the 
+             *  function, it will contain the value of the functional at the last iteration.
+             *  \param gradientDotSearchDirection the dot product between the functional gradient and the search
+             *  direction. Used for the sufficient decrease condition.
+             *  \param alpha the value of alpha in the backtracking loop. At the end of the function, it will contain 
+             *  the value of the alpha at the last iteration.
+             *  \param backtrackingIteration the iterations performed in the backtracking loop. At the end of the 
+             *  function, it will contain the total number of iterations performed.
+             *  \param controlVariable the control variable. At the end of the function, it will contain the 
+             *  control variable at the last iteration.
+             *  \param previousFunctionalValue the control variable at the beginning of the backtracking loop.
+             *  \param searchDirection the search direction
+             *  \param problem the differential problem that represents the constraint in the minimization problem
+             *  \param objectiveFunctional the objective functional
+             *  \param updater the updater (see the documentation for the method \c apply)
+             *  
+             *  \return \c true if the sufficient decrease condition is satisfied at the exit of the loop, 
+             *  \c false otherwise
+             */
+            bool backtrackingLoop (const double& previousFunctionalValue,
+                              double& currentFunctionalValue, 
+                              const double& gradientDotSearchDirection,
+                              double& alpha,
+                              int& backtrackingIteration,
+                              dolfin::Function& controlVariable,
+                              const dolfin::Function& previousControlVariable,
+                              const dolfin::Function& searchDirection,
+                              dcp::CompositeDifferentialProblem& problem,
+                              const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
+                              const std::function 
+                              <
+                                  void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                              >& updater);
+            
             //! Function to print to file some values. It is mostly useful to avid code repetition inside this class
+            /*! 
+             *  Input parameters:
+             *  \param OUTSTREAM the stream to print to
+             *  \param functionalValue the value of the functional
+             *  \param alpha the backtracking parameter
+             *  \param backtrackingIterations the number of iterations performed in the backtracking loop
+             *  \param gradientNorm the norm of the gradient of the functional
+             *  \param relativeIncrement the relative increment of the optimal solution found
+             */
             void print (std::ostream& OUTSTREAM, 
                         const int& iteration,
                         const double& functionalValue,
@@ -214,6 +263,35 @@ namespace dcp
                         const int& backtrackingIterations,
                         const double& gradientNorm,
                         const double& relativeIncrement);
+            
+            //! Function to open output file and print the header
+            /*!
+             *  \param OUTFILE the file stream to print to
+             *  
+             *  \return \c true if the file was opened, \c false otherwise
+             */
+            bool openOutputFile (std::ofstream& OUTFILE);
+            
+            //! Function to get the right dotProductComputer
+            /*!
+             *  \param controlVariable the control function used in the apply method
+             *  
+             *  \return the dotProductComputer itself
+             */
+            std::shared_ptr<dolfin::Form> getDotProductComputer (const dolfin::Function& controlVariable);
+            
+            //! Function to compute the dot product between two \c dolfin::Function objects using the
+            //! form passed as the first argument
+            /*!
+             *  \param dotProductComputer the form to compute the dot product
+             *  \param firstFunction the first function of the dot product
+             *  \param secondFunction the second function of the dot product
+             *  
+             *  \return the value of the dot product
+             */
+            double computeDotProduct (std::shared_ptr<dolfin::Form> dotProductComputer,
+                                      const dolfin::GenericFunction& firstFunction, 
+                                      const dolfin::GenericFunction& secondFunction);
             
             //! Empty dumper, used for compatibility. This function will be used when the version that does not 
             //! take a \c dumper as input argument of the method \c apply() is called

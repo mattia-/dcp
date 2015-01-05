@@ -107,6 +107,9 @@ namespace dcp
                                            void (dolfin::Function&, const dolfin::Function&)
                                        >& searchDirectionComputer)
     {
+        // ------------------------------------------------------------------------------------------------------- //
+        // minimization loop settings
+        // ------------------------------------------------------------------------------------------------------- //
         // get parameters values
         double c_1                        = this->parameters ["c_1"];
         double alpha_0                    = this->parameters ["alpha_0"];
@@ -116,7 +119,6 @@ namespace dcp
         std::string convergenceCriterion  = this->parameters ["convergence_criterion"];
         int maxMinimizationIterations     = this->parameters ["max_minimization_iterations"];
         int maxBacktrackingIterations     = this->parameters ["max_backtracking_iterations"];
-        std::string outputFileName        = this->parameters ["output_file_name"];
 
         // define loop variables
         double alpha;
@@ -134,62 +136,8 @@ namespace dcp
         std::shared_ptr<dolfin::Form> dotProductComputer;
         
         // define output file and print header if necessary
-        bool hasOutputFile = false;
         std::ofstream OUTFILE;
-        if (!outputFileName.empty ())
-        {
-            OUTFILE.open (outputFileName);
-            if (OUTFILE.fail ())
-            {
-                dolfin::error ("Cannot open output file \"%s\"", outputFileName.c_str ());
-            }
-            
-            hasOutputFile = true;
-            if (convergenceCriterion == "both")
-            {
-                OUTFILE << "# Iteration"
-                        << "     "
-                        << "Functional_value" 
-                        << "     "
-                        << "Alpha" 
-                        << "          "
-                        << "Backtracking_iterations"
-                        << "     "
-                        << "Gradient_norm" 
-                        << "     "
-                        << "Relative_increment" 
-                        << std::endl;
-            }
-            else if (convergenceCriterion == "increment")
-            {
-                OUTFILE << "# Iteration"
-                        << "     "
-                        << "Functional_value" 
-                        << "     "
-                        << "Alpha" 
-                        << "          "
-                        << "Backtracking_iterations"
-                        << "     "
-                        << "Relative_increment" 
-                        << std::endl;
-            }
-            else if (convergenceCriterion == "gradient")
-            {
-                OUTFILE << "# Iteration"
-                        << "     "
-                        << "Functional_value" 
-                        << "Alpha" 
-                        << "          "
-                        << "Backtracking_iterations"
-                        << "     "
-                        << "Gradient_norm" 
-                        << std::endl;
-            }
-            else
-            {
-                dolfin::error ("Unknown convergence criterion \"%s\"", convergenceCriterion.c_str ());
-            }
-        }
+        bool hasOutputFile = openOutputFile (OUTFILE);
         
         
         // all linear problems in the CompositeDifferentialProblem "problem" should be reassembled every time. So we
@@ -205,87 +153,11 @@ namespace dcp
         }
         dolfin::end ();
         
-
-        // ------------------------------------------------------------------------------------------------------- //
-        // create correct object-type for dotProductComputer
-        if (dotProductComputer_ != nullptr)
-        {
-            dolfin::log (dolfin::DBG, "Using protected member variable to compute dot products and norms");
-            dotProductComputer = dotProductComputer_;
-        }
-        else
-        {
-            // get type of cells in mesh
-            std::string meshCellType = dolfin::CellType::type2string ((controlVariable.function_space ()->mesh ())->type ().cell_type ());
-            dolfin::log (dolfin::DBG, "Mesh cell type is: %s", meshCellType.c_str ());
-
-            // get rank of control function
-            int controlVariableRank = controlVariable.value_rank ();
-            dolfin::log (dolfin::DBG, "Control function rank is: %d", controlVariableRank);
-            
-            // get control variable mesh
-            std::shared_ptr<const dolfin::Mesh> controlVariableMesh = controlVariable.function_space () -> mesh ();
- 
-            if (meshCellType == "interval")
-            {
-                if (controlVariableRank == 0)
-                {
-                    dolfin::log (dolfin::DBG, "Selected scalar 1D form to compute dot products and norms");
-                    dotProductComputer.reset (new dotproduct::Form_scalar1D_dotProduct (controlVariableMesh));
-                }
-                else
-                {
-                    dolfin::error ("No form to compute dot products and norms for mesh cell type \"%s\" and control function rank %d", 
-                                   meshCellType.c_str (),
-                                   controlVariableRank);
-                }
-            }
-
-            if (meshCellType == "triangle")
-            {
-                if (controlVariableRank == 0)
-                {
-                    dolfin::log (dolfin::DBG, "Selected scalar 2D form to compute dot products and norms");
-                    dotProductComputer.reset (new dotproduct::Form_scalar2D_dotProduct (controlVariableMesh));
-                }
-                else if (controlVariableRank == 1)
-                {
-                    dolfin::log (dolfin::DBG, "Selected vector 2D form to compute dot products and norms");
-                    dotProductComputer.reset (new dotproduct::Form_vector2D_dotProduct (controlVariableMesh));
-                }
-                else
-                {
-                    dolfin::error ("No form to compute dot products and norms for mesh cell type \"%s\" and control function rank %d", 
-                                   meshCellType.c_str (),
-                                   controlVariableRank);
-                }
-            }
-
-            if (meshCellType == "tetrahedron")
-            {
-                if (controlVariableRank == 0)
-                {
-                    dolfin::log (dolfin::DBG, "Selected scalar 3D form to compute dot products and norms");
-                    dotProductComputer.reset (new dotproduct::Form_scalar3D_dotProduct (controlVariableMesh));
-                }
-                else if (controlVariableRank == 1)
-                {
-                    dolfin::log (dolfin::DBG, "Selected vector 3D form to compute dot products and norms");
-                    dotProductComputer.reset (new dotproduct::Form_vector3D_dotProduct (controlVariableMesh));
-                }
-                else
-                {
-                    dolfin::error ("No form to compute dot products and norms for mesh cell type \"%s\" and control function rank %d", 
-                                   meshCellType.c_str (),
-                                   controlVariableRank);
-                }
-            }
-        }
-        // end of if statement to correctly set dotProductComputer
-        // ------------------------------------------------------------------------------------------------------- //
         
+        // get correct object-type for dotProductComputer
+        dotProductComputer = getDotProductComputer (controlVariable); 
 
-        // ------------------------------------------------------------------------------------------------------- //
+        
         // function to check convergence
         std::function <bool ()> isConverged;
         
@@ -306,15 +178,8 @@ namespace dcp
         {
             dolfin::error ("Unknown convergence criterion \"%s\"", convergenceCriterion.c_str ());
         }
-        
-        
-        // function to check if sufficient-decrease condition is satisfied
-        auto sufficientDecreaseConditionIsSatisfied = [&c_1, &gradientDotSearchDirection] 
-            (const double& previousValue, const double& currentValue, const double& alpha) 
-        {
-            return currentValue < previousValue + c_1 * alpha * gradientDotSearchDirection;
-        };
-        // end of minimization loop functions setting
+        // ------------------------------------------------------------------------------------------------------- //
+        // end of minimization loop setting
         // ------------------------------------------------------------------------------------------------------- //
 
         
@@ -330,9 +195,10 @@ namespace dcp
         
         // initialize loop variables
         dolfin::log (dolfin::PROGRESS, "Computing norm of functional gradient...");
-        dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-        dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-        gradientNorm = sqrt (dolfin::assemble (*dotProductComputer));
+        gradientNorm = sqrt (computeDotProduct (dotProductComputer, 
+                                                objectiveFunctional.gradient (), 
+                                                objectiveFunctional.gradient ())
+                             );
         
         relativeIncrement = relativeIncrementTolerance + 1; // just an initialization to be sure that the first iteration 
                                                             // of the minimization loop is performed
@@ -388,9 +254,9 @@ namespace dcp
             
             // compute dot product between gradient and search direction
             dolfin::log (dolfin::PROGRESS, "Computing dot product between gradient and search direction...");
-            dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-            dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (searchDirection));
-            gradientDotSearchDirection = dolfin::assemble (*dotProductComputer);
+            gradientDotSearchDirection = computeDotProduct (dotProductComputer,
+                                                            objectiveFunctional.gradient (), 
+                                                            searchDirection);
             
             // solution of problem with alpha_0
             dolfin::log (dolfin::INFO, "Alpha = %f", alpha);
@@ -415,63 +281,27 @@ namespace dcp
             dolfin::log (dolfin::INFO, "Functional value = %f\n", currentFunctionalValue);
             
             
-            dolfin::begin (dolfin::INFO, "Starting backtracking loop...");
-            
-            // backtacking loop
-            while (sufficientDecreaseConditionIsSatisfied (previousFunctionalValue, currentFunctionalValue, alpha) == false 
-                   && backtrackingIteration < maxBacktrackingIterations) 
-            {
-                // iteration-specific variable initialization
-                ++backtrackingIteration;
-                alpha = alpha * rho;
-                
-                dolfin::log (dolfin::INFO, "========== Backtracking iteration %d ==========", backtrackingIteration);
-                dolfin::log (dolfin::INFO, "Alpha = %f", alpha);
-                
-                // update control variable value
-                dolfin::log (dolfin::PROGRESS, "Updating control variable...");
-                controlVariable = previousControlVariable + (searchDirection * alpha);
-                
-                // update problem 
-                dolfin::log (dolfin::PROGRESS, "Updating differential problem...");
-                updater (problem, controlVariable);
-                
-                // solve problem
-                dolfin::log (dolfin::PROGRESS, "Solving differential problem...");
-                problem.solve ();
-                
-                // update value of the functional
-                dolfin::log (dolfin::PROGRESS, "Evaluating functional...");
-                currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
-                
-                dolfin::log (dolfin::INFO, "Functional value = %f", currentFunctionalValue);
-                
-                dolfin::log (dolfin::INFO, "");
-            }
-            
-            dolfin::end (); // "Starting backtracking loop"
+            // backtracking loop
+            backtrackingLoop (previousFunctionalValue, 
+                              currentFunctionalValue, 
+                              gradientDotSearchDirection, 
+                              alpha,
+                              backtrackingIteration,
+                              controlVariable,
+                              previousControlVariable,
+                              searchDirection,
+                              problem,
+                              objectiveFunctional,
+                              updater);
              
-            if (sufficientDecreaseConditionIsSatisfied (previousFunctionalValue, currentFunctionalValue, alpha) == false) 
-            {
-                dolfin::log (dolfin::INFO, "");
-                dolfin::warning ("Backtracking loop ended because maximum number of iterations was reached");
-                dolfin::log (dolfin::INFO, "Alpha (determined with backtracking) = %f", alpha);
-            }
-            else
-            {
-                dolfin::log (dolfin::INFO, "");
-                dolfin::log (dolfin::INFO, "Backtracking loop ended. Iterations performed: %d\n", backtrackingIteration);
-                dolfin::log (dolfin::INFO, "Alpha (determined with backtracking) = %f", alpha);
-            }
-                
-            
             // update gradient norm if necessary for convergence check
             if (convergenceCriterion == "gradient" || convergenceCriterion == "both")
             {
                 dolfin::log (dolfin::PROGRESS, "Computing norm of functional gradient...");
-                dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-                dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (objectiveFunctional.gradient ()));
-                gradientNorm = sqrt (dolfin::assemble (*dotProductComputer));
+                gradientNorm = sqrt (computeDotProduct (dotProductComputer, 
+                                                        objectiveFunctional.gradient (), 
+                                                        objectiveFunctional.gradient ())
+                                     );
                 dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
             }
             
@@ -480,14 +310,16 @@ namespace dcp
             if (convergenceCriterion == "increment" || convergenceCriterion == "both")
             {
                 dolfin::log (dolfin::PROGRESS, "Computing relative increment...");
-                dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (previousControlVariable));
-                dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (previousControlVariable));
-                previousControlVariableNorm = sqrt (dolfin::assemble (*dotProductComputer));
+                previousControlVariableNorm = sqrt (computeDotProduct (dotProductComputer, 
+                                                                       previousControlVariable,
+                                                                       previousControlVariable)
+                                                   );
 
                 controlVariableIncrement = controlVariable - previousControlVariable;
-                dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
-                dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (controlVariableIncrement));
-                incrementNorm = sqrt (dolfin::assemble (*dotProductComputer));
+                incrementNorm = sqrt (computeDotProduct (dotProductComputer, 
+                                                         controlVariableIncrement,
+                                                         controlVariableIncrement)
+                                     );
 
                 // compute relative increment. We add DOLFIN_EPS at the denominator in case previousControlVariableNorm 
                 // is zero (like at the first iteration)
@@ -562,6 +394,85 @@ namespace dcp
     // ***************************************** //
     // ********** PRIVATE MEMBERS ************** //
     // ***************************************** //
+    bool BacktrackingOptimizer::
+    backtrackingLoop (const double& previousFunctionalValue,
+                      double& currentFunctionalValue, 
+                      const double& gradientDotSearchDirection,
+                      double& alpha,
+                      int& backtrackingIteration,
+                      dolfin::Function& controlVariable,
+                      const dolfin::Function& previousControlVariable,
+                      const dolfin::Function& searchDirection,
+                      dcp::CompositeDifferentialProblem& problem,
+                      const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
+                      const std::function 
+                      <
+                          void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                      >& updater)
+    {
+        // get parameters
+        double c_1 = this->parameters ["c_1"];
+        double rho = this->parameters ["rho"];
+        int maxBacktrackingIterations = this->parameters ["max_backtracking_iterations"];
+        
+        // function to check if sufficient-decrease condition is satisfied
+        auto sufficientDecreaseConditionIsSatisfied = [&c_1, &gradientDotSearchDirection] 
+            (const double& previousValue, const double& currentValue, const double& alpha) 
+        {
+            return currentValue < previousValue + c_1 * alpha * gradientDotSearchDirection;
+        };
+        
+        dolfin::begin (dolfin::INFO, "Starting backtracking loop...");
+        while (sufficientDecreaseConditionIsSatisfied (previousFunctionalValue, currentFunctionalValue, alpha) == false 
+               && backtrackingIteration < maxBacktrackingIterations) 
+        {
+            // iteration-specific variable initialization
+            ++backtrackingIteration;
+            alpha = alpha * rho;
+    
+            dolfin::log (dolfin::INFO, "========== Backtracking iteration %d ==========", backtrackingIteration);
+            dolfin::log (dolfin::INFO, "Alpha = %f", alpha);
+    
+            // update control variable value
+            dolfin::log (dolfin::PROGRESS, "Updating control variable...");
+            controlVariable = previousControlVariable + (searchDirection * alpha);
+    
+            // update problem 
+            dolfin::log (dolfin::PROGRESS, "Updating differential problem...");
+            updater (problem, controlVariable);
+    
+            // solve problem
+            dolfin::log (dolfin::PROGRESS, "Solving differential problem...");
+            problem.solve ();
+    
+            // update value of the functional
+            dolfin::log (dolfin::PROGRESS, "Evaluating functional...");
+            currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
+    
+            dolfin::log (dolfin::INFO, "Functional value = %f", currentFunctionalValue);
+    
+            dolfin::log (dolfin::INFO, "");
+        }
+       
+        dolfin::end ();
+        
+        if (sufficientDecreaseConditionIsSatisfied (previousFunctionalValue, currentFunctionalValue, alpha) == false) 
+        {
+            dolfin::log (dolfin::INFO, "");
+            dolfin::warning ("Backtracking loop ended because maximum number of iterations was reached");
+            dolfin::log (dolfin::INFO, "Alpha (determined with backtracking) = %f", alpha);
+            return false;
+        }
+        else
+        {
+            dolfin::log (dolfin::INFO, "");
+            dolfin::log (dolfin::INFO, "Backtracking loop ended. Iterations performed: %d\n", backtrackingIteration);
+            dolfin::log (dolfin::INFO, "Alpha (determined with backtracking) = %f", alpha);
+            return true;
+        }
+    }
+    
+    
     
     void BacktrackingOptimizer::print (std::ostream& OUTSTREAM, 
                                        const int& iteration,
@@ -628,5 +539,173 @@ namespace dcp
         {
             dolfin::error ("Unknown convergence criterion \"%s\"", convergenceCriterion.c_str ());
         }
+    }
+    
+
+
+    bool BacktrackingOptimizer::openOutputFile (std::ofstream& OUTFILE)
+    {
+        std::string outputFileName = this->parameters ["output_file_name"];
+        std::string convergenceCriterion = this->parameters ["convergence_criterion"];
+        
+        if (!outputFileName.empty ())
+        {
+            OUTFILE.open (outputFileName);
+            if (OUTFILE.fail ())
+            {
+                dolfin::error ("Cannot open output file \"%s\"", outputFileName.c_str ());
+            }
+            
+            if (convergenceCriterion == "both")
+            {
+                OUTFILE << "# Iteration"
+                        << "     "
+                        << "Functional_value" 
+                        << "     "
+                        << "Alpha" 
+                        << "          "
+                        << "Backtracking_iterations"
+                        << "     "
+                        << "Gradient_norm" 
+                        << "     "
+                        << "Relative_increment" 
+                        << std::endl;
+            }
+            else if (convergenceCriterion == "increment")
+            {
+                OUTFILE << "# Iteration"
+                        << "     "
+                        << "Functional_value" 
+                        << "     "
+                        << "Alpha" 
+                        << "          "
+                        << "Backtracking_iterations"
+                        << "     "
+                        << "Relative_increment" 
+                        << std::endl;
+            }
+            else if (convergenceCriterion == "gradient")
+            {
+                OUTFILE << "# Iteration"
+                        << "     "
+                        << "Functional_value" 
+                        << "Alpha" 
+                        << "          "
+                        << "Backtracking_iterations"
+                        << "     "
+                        << "Gradient_norm" 
+                        << std::endl;
+            }
+            else
+            {
+                dolfin::error ("Unknown convergence criterion \"%s\"", convergenceCriterion.c_str ());
+            }
+            return true;
+        }
+        
+        return false;
+    }
+    
+
+
+    std::shared_ptr<dolfin::Form> BacktrackingOptimizer::getDotProductComputer (const dolfin::Function& controlVariable)
+    {
+        if (dotProductComputer_ != nullptr)
+        {
+            dolfin::log (dolfin::DBG, "Using protected member variable to compute dot products and norms");
+            return dotProductComputer_;
+        }
+        else
+        {
+            // get type of cells in mesh
+            std::string meshCellType = 
+                dolfin::CellType::type2string ((controlVariable.function_space ()->mesh ())->type ().cell_type ());
+            dolfin::log (dolfin::DBG, "Mesh cell type is: %s", meshCellType.c_str ());
+
+            // get rank of control function
+            int controlVariableRank = controlVariable.value_rank ();
+            dolfin::log (dolfin::DBG, "Control function rank is: %d", controlVariableRank);
+            
+            // get control variable mesh
+            std::shared_ptr<const dolfin::Mesh> controlVariableMesh = controlVariable.function_space () -> mesh ();
+ 
+            if (meshCellType == "interval")
+            {
+                if (controlVariableRank == 0)
+                {
+                    dolfin::log (dolfin::DBG, "Selected scalar 1D form to compute dot products and norms");
+                    std::shared_ptr <dolfin::Form> tmp = nullptr;
+                    tmp.reset (new dotproduct::Form_scalar1D_dotProduct (controlVariableMesh));
+                    return tmp;
+                }
+                else
+                {
+                    dolfin::error ("No form to compute dot products and norms for mesh cell type \"%s\" and control function rank %d", 
+                                   meshCellType.c_str (),
+                                   controlVariableRank);
+                }
+            }
+
+            if (meshCellType == "triangle")
+            {
+                if (controlVariableRank == 0)
+                {
+                    dolfin::log (dolfin::DBG, "Selected scalar 2D form to compute dot products and norms");
+                    std::shared_ptr <dolfin::Form> tmp = nullptr;
+                    tmp.reset (new dotproduct::Form_scalar2D_dotProduct (controlVariableMesh));
+                    return tmp;
+                }
+                else if (controlVariableRank == 1)
+                {
+                    dolfin::log (dolfin::DBG, "Selected vector 2D form to compute dot products and norms");
+                    std::shared_ptr <dolfin::Form> tmp = nullptr;
+                    tmp.reset (new dotproduct::Form_vector2D_dotProduct (controlVariableMesh));
+                    return tmp;
+                }
+                else
+                {
+                    dolfin::error ("No form to compute dot products and norms for mesh cell type \"%s\" and control function rank %d", 
+                                   meshCellType.c_str (),
+                                   controlVariableRank);
+                }
+            }
+
+            if (meshCellType == "tetrahedron")
+            {
+                if (controlVariableRank == 0)
+                {
+                    dolfin::log (dolfin::DBG, "Selected scalar 3D form to compute dot products and norms");
+                    std::shared_ptr <dolfin::Form> tmp = nullptr;
+                    tmp.reset (new dotproduct::Form_scalar3D_dotProduct (controlVariableMesh));
+                    return tmp;
+                }
+                else if (controlVariableRank == 1)
+                {
+                    dolfin::log (dolfin::DBG, "Selected vector 3D form to compute dot products and norms");
+                    std::shared_ptr <dolfin::Form> tmp = nullptr;
+                    tmp.reset (new dotproduct::Form_vector3D_dotProduct (controlVariableMesh));
+                    return tmp;
+                }
+                else
+                {
+                    dolfin::error ("No form to compute dot products and norms for mesh cell type \"%s\" and control function rank %d", 
+                                   meshCellType.c_str (),
+                                   controlVariableRank);
+                }
+            }
+        }
+        return nullptr;
+    }
+    
+
+
+    double BacktrackingOptimizer::computeDotProduct (std::shared_ptr<dolfin::Form> dotProductComputer,
+                                                     const dolfin::GenericFunction& firstFunction, 
+                                                     const dolfin::GenericFunction& secondFunction)
+    {
+        dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (firstFunction));
+        dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (secondFunction));
+        return dolfin::assemble (*dotProductComputer);
+
     }
 }

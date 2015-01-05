@@ -20,6 +20,7 @@
 #include <iostream>
 #include <string>
 #include <dolfin.h>
+#include <mshr.h>
 #include "primal.h"
 #include "lift_drag.h"
 #include <DifferentialProblem/NonlinearDifferentialProblem.hpp>
@@ -99,7 +100,6 @@ int main (int argc, char* argv[])
 {
     // define parameters and their default values
     dolfin::Parameters parameters ("main_parameters");
-    parameters.add ("mesh_file_name", "../src/complete_mesh/complete_mesh.xml");
     parameters.add ("output_file_name", "target_solution");
     parameters.add ("human_readable_print", false);
    
@@ -107,7 +107,11 @@ int main (int argc, char* argv[])
     parameters.parse (argc, argv);
     
     // create mesh and finite element space
-    dolfin::Mesh mesh (parameters ["mesh_file_name"]);
+    mshr::Rectangle domain (dolfin::Point (0.0, 0.0), dolfin::Point (10.0, 7.0));
+    mshr::Rectangle rectangle (dolfin::Point (1.75, 3.0), dolfin::Point (2.0, 4.0));
+    mshr::Circle obstacle (dolfin::Point (3.5, 3.5), 0.5);
+    dolfin::Mesh mesh;
+    mshr::generate (mesh, *(domain - rectangle - obstacle), 40);
     primal::FunctionSpace V (mesh);
     
     
@@ -197,7 +201,6 @@ int main (int argc, char* argv[])
     liftDragOutputStream << "Lift = " << dolfin::assemble (liftComputer) << std::endl;
     liftDragOutputStream << "Drag = " << dolfin::assemble (dragComputer) << std::endl;
     liftDragOutputStream.close ();
-    
     
     return 0;
 }

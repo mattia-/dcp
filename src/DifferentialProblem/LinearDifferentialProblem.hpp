@@ -926,6 +926,8 @@ namespace dcp
         {
             update ();
             
+            dolfin::begin (dolfin::INFO, "Solving problem...");
+            
             // define auxiliary string variables
             bool systemIsAssembled = parameters ["system_is_assembled"];
             bool forceReassembleSystem = parameters ["force_reassemble_system"];
@@ -959,8 +961,6 @@ namespace dcp
                 
                 dolfin::end ();
             }
-            
-            dolfin::begin (dolfin::DBG, "Solving problem...");
             
             solver_ -> solve (*solution_.vector (), rhsVector_);
             

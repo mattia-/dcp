@@ -21,9 +21,7 @@ called "build" and was created in the same directory as the one where this READM
 
 5) run the first executable
 
-   This executable may take four different command line arguments:
-   -) mesh_file_name:       the name of the file containing the mesh for the problem. 
-                            The default value is: ../src/complete_mesh/complete_mesh.xml
+   This executable may take two different command line arguments:
    -) output_file_name:     the name of the file to which the solution will be saved. It will
                             be a HDF5 file, and format string ".hdf5" will be automatically appended
                             The default value is: target_solution
@@ -34,20 +32,15 @@ called "build" and was created in the same directory as the one where this READM
                             The dafault value is false
 
    To launch the executable the command is:
-    $ ./src/compute_target_solution --mesh_file_name <mesh_file> --output_file_name <file_name>
+    $ ./src/compute_target_solution --output_file_name <file_name> --human_readable_print <boolean_value>
 
    One or more of the command line options may not be given. In this case, default values will be used
 
 6) run the second executable
 
    The command line arguments for this executable are:
-   -) complete_mesh_file_name:   the name of the file containing the mesh with the complete obstacle.
-                                 The default value is: ../src/complete_mesh/complete_mesh.xml
-   -) partial_mesh_file_name:    the name of the file containing the mesh with the partial obstacle.
-                                 The default value is: ../src/complete_mesh/complete_mesh.xml
    -) target_solution_file_name: the name of the file from which the solution will be read. It will
                                  be a HDF5 file, and format string ".hdf5" will be automatically appended
                                  The default value is: target_solution
    To launch the executable the command is:
-    $ ./src/main --complete_mesh_file_name <complete_mesh_file> --partial_mesh_file_name <partial_mesh_file> \
-                 --target_solution_file_name <file_name>
+    $ ./src/main --target_solution_file_name <file_name>

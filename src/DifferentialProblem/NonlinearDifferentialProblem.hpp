@@ -764,7 +764,7 @@ namespace dcp
         void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
         solve () 
         {
-            dolfin::begin (dolfin::DBG, "Solving problem...");
+            dolfin::begin (dolfin::INFO, "Solving problem...");
             
             dolfin::log (dolfin::DBG, "Creating temporary vectors of dolfin::DirichletBC pointers...");
             // create vector of POINTERS to DirichletBC. This is needed to call the function dolfin::solve
@@ -788,17 +788,13 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Solver parameters set name is: %s", solverParametersSetName.c_str ());
             if (tmpDirichletBCs.size () != 0)
             {
-                dolfin::begin (dolfin::DBG, "Solving problem...");
                 dolfin::solve (residualForm_ == 0, solution_, tmpDirichletBCs, jacobianForm_, 
                                parameters (solverParametersSetName));
-                dolfin::end ();
             }
             else
             {
-                dolfin::begin (dolfin::DBG, "Solving problem...");
                 dolfin::solve (residualForm_ == 0, solution_, jacobianForm_, 
                                parameters (solverParametersSetName));
-                dolfin::end ();
             }
             
             dolfin::end ();

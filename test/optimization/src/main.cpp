@@ -20,6 +20,7 @@
 #include <iostream>
 #include <string>
 #include <dolfin.h>
+#include <mshr.h>
 #include <DifferentialProblem/DifferentialProblem.hpp>
 #include <ObjectiveFunctional/Functional.hpp>
 #include <Optimizer/Optimizer.hpp>
@@ -42,8 +43,6 @@ int main (int argc, char* argv[])
 
     // define parameters and their default values
     dolfin::Parameters parameters ("main_parameters");
-    parameters.add ("complete_mesh_file_name", "../src/complete_mesh/complete_mesh.xml");
-    parameters.add ("partial_mesh_file_name", "../src/partial_mesh/partial_mesh.xml");
     parameters.add ("target_solution_file_name", "target_solution");
     
     // the next parameter is set to allow projection of solution from complete mesh to partial mesh.
@@ -59,7 +58,11 @@ int main (int argc, char* argv[])
     // =========================== TARGET SOLUTION ================================ //
     // ============================================================================ //
     // create mesh and finite element space to read target solution
-    dolfin::Mesh completeMesh (parameters ["complete_mesh_file_name"]);
+    mshr::Rectangle domain (dolfin::Point (0.0, 0.0), dolfin::Point (10.0, 7.0));
+    mshr::Rectangle rectangle (dolfin::Point (1.75, 3.0), dolfin::Point (2.0, 4.0));
+    mshr::Circle obstacle (dolfin::Point (3.5, 3.5), 0.5);
+    dolfin::Mesh completeMesh;
+    mshr::generate (completeMesh, *(domain - rectangle - obstacle), 40);
     primal::FunctionSpace completeV (completeMesh);
     
     // read target solutions from file
@@ -72,14 +75,14 @@ int main (int argc, char* argv[])
     
     
     // create mesh and finite element space on partial geometry
-    dolfin::Mesh mesh (parameters ["partial_mesh_file_name"]);
+    dolfin::Mesh mesh;
+    mshr::generate (mesh, *(domain - obstacle), 40);
     primal::FunctionSpace V (mesh);
     
     // interpolate target functions from completeMesh to actual mesh
     dolfin::Function interpolatedTargetSolution (V);
     interpolatedTargetSolution.interpolate (targetSolution);
 
-    
     // ============================================================================ //
     // =========================== COMPOSITE PROBLEM ============================== //
     // ============================================================================ //

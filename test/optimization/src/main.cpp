@@ -21,9 +21,9 @@
 #include <string>
 #include <dolfin.h>
 #include <mshr.h>
-#include <DifferentialProblem/DifferentialProblem.hpp>
-#include <ObjectiveFunctional/Functional.hpp>
-#include <Optimizer/Optimizer.hpp>
+#include <differential_problems/differential_problems.h>
+#include <objective_functional/objective_functional.h>
+#include <optimizers/optimizers.h>
 #include "primal.h"
 #include "adjoint.h"
 #include "objective_functional.h"

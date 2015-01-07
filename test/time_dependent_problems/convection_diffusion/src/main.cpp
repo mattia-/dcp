@@ -21,7 +21,7 @@
 #include <string>
 #include <dolfin.h>
 #include <mshr.h>
-#include <DifferentialProblem/DifferentialProblem.hpp>
+#include <differential_problems/differential_problems.h>
 #include "convectiondiffusion.h"
 
 namespace convectiondiffusion
@@ -45,8 +45,6 @@ namespace convectiondiffusion
 
 int main (int argc, char* argv[])
 {
-    dolfin::set_log_level (dolfin::DBG);
-    
     // create mesh and finite element space 
     std::cout << "Create mesh and finite element space..." << std::endl;
     mshr::Rectangle rectangle (dolfin::Point (0.0, 0.0), dolfin::Point (10.0, 7.0));

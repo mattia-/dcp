@@ -23,7 +23,7 @@
 #include <mshr.h>
 #include "primal.h"
 #include "lift_drag.h"
-#include <DifferentialProblem/NonlinearDifferentialProblem.hpp>
+#include <differential_problems/NonlinearDifferentialProblem.h>
 
 namespace navierstokes
 {

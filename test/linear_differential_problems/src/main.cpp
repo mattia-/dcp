@@ -20,7 +20,7 @@
 #include <iostream>
 #include <string>
 #include <dolfin.h>
-#include <DifferentialProblem/DifferentialProblem.hpp>
+#include <differential_problems/differential_problems.h>
 #include "poisson.h"
 
 namespace poisson

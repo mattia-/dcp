@@ -108,7 +108,7 @@ int main (int argc, char* argv[])
     
     // define problem
     std::cout << "Define the problem..." << std::endl;
-    dcp::NonlinearDifferentialProblem <navierstokes::ResidualForm, navierstokes::JacobianForm> 
+    dcp::NonlinearProblem <navierstokes::ResidualForm, navierstokes::JacobianForm> 
         navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh), 
                              dolfin::reference_to_no_delete_pointer (V),
                              "trial");

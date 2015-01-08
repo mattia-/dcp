@@ -17,10 +17,10 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OPTIMIZERS_DISTRIBUTEDCONTROLVALUEUPDATER_HPP_INCLUDE_GUARD
-#define SRC_OPTIMIZERS_DISTRIBUTEDCONTROLVALUEUPDATER_HPP_INCLUDE_GUARD
+#ifndef SRC_OPTIMIZERS_DISTRIBUTEDCONTROLVALUEUPDATER_H_INCLUDE_GUARD
+#define SRC_OPTIMIZERS_DISTRIBUTEDCONTROLVALUEUPDATER_H_INCLUDE_GUARD
 
-#include <differential_problems/CompositeDifferentialProblem.h>
+#include <differential_problems/CompositeProblem.h>
 #include <dolfin/function/GenericFunction.h>
 #include <string>
 
@@ -31,7 +31,7 @@ namespace dcp
      *  
      *  This class is a functor which can be passed to the method \c apply() of any class
      *  of the \c AbstractOptimizer hierarchy, which will use it to update the value of
-     *  the control parameter in the \c DifferentialProblem (also passed to the method \c apply()
+     *  the control parameter in the \c CompositeProblem (also passed to the method \c apply()
      *  of the same class) as the optimization proceeds.
      */
     class DistributedControlValueUpdater
@@ -46,10 +46,10 @@ namespace dcp
             //! Constructor
             /*! 
              *  Input arguments are:
-             *  \param problemName string that identifies the problem (in the \c CompositeDifferentialProblem object 
+             *  \param problemName string that identifies the problem (in the \c CompositeProblem object 
              *  passed as input to <tt>this->operator() () </tt>) which contains the control parameter to be updated
              *  \param coefficientType the type of the coefficient representing the control parameter inside the problem. 
-             *  This will be used by the call to \c dcp::AbstractDifferentialProblem::setCoefficient()
+             *  This will be used by the call to \c dcp::AbstractProblem::setCoefficient()
              *  \param coefficientName the name of the coefficient representing the control parameter in the problem 
              *  passed as first argument
              */
@@ -65,18 +65,18 @@ namespace dcp
              *  \param compositeProblem the problem on which to operate
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
-            void operator() (dcp::CompositeDifferentialProblem& compositeProblem, 
+            void operator() (dcp::CompositeProblem& compositeProblem, 
                              const std::shared_ptr <const dolfin::GenericFunction> coefficientValue) const;
             
         // ---------------------------------------------------------------------------------------------//
         
         protected:
-            //! The name identifying the problem inside the \c CompositeDifferentialProblem which contains the
+            //! The name identifying the problem inside the \c CompositeProblem which contains the
             //! control parameter
             std::string problemName_;
            
             //! The type of the coefficient representing the control parameter inside the problem. This will be used
-            //! by the call to \c dcp::AbstractDifferentialProblem::setCoefficient()
+            //! by the call to \c dcp::AbstractProblem::setCoefficient()
             std::string coefficientType_;
            
             //! The name of the control parameter inside the problem identified by \c problemName_

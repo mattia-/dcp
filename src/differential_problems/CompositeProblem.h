@@ -17,12 +17,12 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_COMPOSITEDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_COMPOSITEDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
+#ifndef SRC_DIFFERENTIAL_PROBLEMS_COMPOSITEDIFFERENTIALPROBLEM_H_INCLUDE_GUARD
+#define SRC_DIFFERENTIAL_PROBLEMS_COMPOSITEDIFFERENTIALPROBLEM_H_INCLUDE_GUARD
 
-#include <differential_problems/AbstractDifferentialProblem.h>
-#include <differential_problems/LinearDifferentialProblem.h>
-#include <differential_problems/NonlinearDifferentialProblem.h>
+#include <differential_problems/AbstractProblem.h>
+#include <differential_problems/LinearProblem.h>
+#include <differential_problems/NonlinearProblem.h>
 #include <map>
 #include <tuple>
 #include <memory>
@@ -33,44 +33,44 @@
 
 namespace dcp
 {
-    /*! \class CompositeDifferentialProblem CompositeDifferentialProblem.h
+    /*! \class CompositeProblem CompositeProblem.h
      *  \brief Class for multi-variable and multi-equation differential problem
      *  
      *  The class contains a \c std::map that associate a problem with its identifying name
      *  and a vector that stores the problem names in the order they should be solved.
      *  The aforementioned map associates a \c std::string to a pointer to 
-     *  \c dcp::AbstractDifferentialProblem.
+     *  \c dcp::AbstractProblem.
      *  The class also offers the possibility to link a problem's coefficient to another problem's
      *  solution through the use of a 
      *  <tt> std::map<std::tuple <std::string, std::string, std::string>, std::pair <std::string, int>> </tt>
      */
-    class CompositeDifferentialProblem
+    class CompositeProblem
     {
         // ---------------------------------------------------------------------------------------------//  
 
         public:
             /******************* CONSTRUCTORS ******************/
             //! Default constructor 
-            CompositeDifferentialProblem ();
+            CompositeProblem ();
             
             //! Copy constructor. Deleted, since it makes no sense for unique_ptr's
-            CompositeDifferentialProblem (const CompositeDifferentialProblem& rhs) = delete;
+            CompositeProblem (const CompositeProblem& rhs) = delete;
             
             //! Move constructor
-            CompositeDifferentialProblem (CompositeDifferentialProblem&& rhs) = default;
+            CompositeProblem (CompositeProblem&& rhs) = default;
             
             
             /******************* DESTRUCTOR *******************/
             //! Default destructor
-            ~CompositeDifferentialProblem () = default;
+            ~CompositeProblem () = default;
             
 
             /******************** OPERATORS *********************/
             //! Copy operator. Deleted since it makes no sense for unique_ptr's
-            CompositeDifferentialProblem& operator= (const CompositeDifferentialProblem& rhs) = delete;
+            CompositeProblem& operator= (const CompositeProblem& rhs) = delete;
             
             //! Move operator
-            CompositeDifferentialProblem& operator= (CompositeDifferentialProblem&& rhs) = default;
+            CompositeProblem& operator= (CompositeProblem&& rhs) = default;
             
 
             /******************** METHODS *********************/
@@ -81,23 +81,23 @@ namespace dcp
             /*!
              *  The parameters are:
              *  \param problemName the problem name
-             *  \param problem a const reference to an \c AbstractDifferentialProblem. 
+             *  \param problem a const reference to an \c AbstractProblem. 
              *  The class will make a copy of the input problem calling the method \c clone().
              *  The problem's name is inserted at the end of \c solveOrder_
              */
-            void addProblem (const std::string& problemName, AbstractDifferentialProblem& problem);
+            void addProblem (const std::string& problemName, AbstractProblem& problem);
             
             //! Add problem to the map of problems to be solved [2]
             /*!
              *  The call from main is something like:
              *  \code
-             *  std::unique_ptr<dcp::AbstractDifferentialProblem> foo = 
-             *      new dcp::LinearDifferentialProblem<bilinear_form_type, linear_form_type> (mesh, V));
+             *  std::unique_ptr<dcp::AbstractProblem> foo = 
+             *      new dcp::LinearProblem<bilinear_form_type, linear_form_type> (mesh, V));
              *  comp_diff_p.addProblem ("bar", &foo);
              *  \endcode
              *  The parameters are:
              *  \param problemName the problem name
-             *  \param problem a unique pointer to a \c dcp::AbstractDifferentialProblem. 
+             *  \param problem a unique pointer to a \c dcp::AbstractProblem. 
              *  The class will take ownership of the concrete problem setting the input pointer to \c nullptr.
              *  For example, referring to the snippet of code above, the class will contain (and have full ownership of)
              *  the problem *foo and will set foo to nullptr, so that it cannot be used to modify the class private
@@ -105,7 +105,7 @@ namespace dcp
              *  The problem's name is inserted at the end of \c solveOrder_
              */
             void addProblem (const std::string& problemName, 
-                             std::unique_ptr<AbstractDifferentialProblem>& problem);
+                             std::unique_ptr<AbstractProblem>& problem);
             
             //! Remove problem with the given name from the private member variables. A warning is issued if the name is 
             //! not found
@@ -128,7 +128,7 @@ namespace dcp
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
              *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
-             *  \c setCoefficient (see \c dcp::AbstractDifferentialProblem documentation for more details)
+             *  \c setCoefficient (see \c dcp::AbstractProblem documentation for more details)
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
@@ -151,7 +151,7 @@ namespace dcp
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
              *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
-             *  \c setCoefficient (see \c dcp::AbstractDifferentialProblem documentation for more details)
+             *  \c setCoefficient (see \c dcp::AbstractProblem documentation for more details)
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
@@ -175,7 +175,7 @@ namespace dcp
              *  error message and throws an exception through the function \c dolfin::error()
              *  \return a reference to the problem
              */
-            const dcp::AbstractDifferentialProblem& operator[] (const std::string& name) const;
+            const dcp::AbstractProblem& operator[] (const std::string& name) const;
             
             //! Access problem with given name [2] (read and write)
             /*!
@@ -183,7 +183,7 @@ namespace dcp
              *  error message and throws an exception through the function \c dolfin::error()
              *  \return a reference to the problem
              */
-            dcp::AbstractDifferentialProblem& operator[] (const std::string& name);
+            dcp::AbstractProblem& operator[] (const std::string& name);
             
             //! Access problem with given position in vector \c solveOrder_ [1] (read only)
             /*!
@@ -192,7 +192,7 @@ namespace dcp
              *  through the function \c dolfin::error()
              *  \return a reference to the problem
              */
-            const dcp::AbstractDifferentialProblem& operator[] (const std::size_t& position) const;
+            const dcp::AbstractProblem& operator[] (const std::size_t& position) const;
             
             //! Access problem with given position in vector \c solveOrder_ [2] (read and write)
             /*!
@@ -201,7 +201,7 @@ namespace dcp
              *  through the function \c dolfin::error()
              *  \return a reference to the problem
              */
-            dcp::AbstractDifferentialProblem& operator[] (const std::size_t& position);
+            dcp::AbstractProblem& operator[] (const std::size_t& position);
             
             //! Prints information on the problems: names list (in solution order) and links information.
             //! It uses \c dolfin::cout stream
@@ -257,7 +257,7 @@ namespace dcp
                                                >& link);
             
             //! The stored problems
-            std::map <std::string, std::unique_ptr <dcp::AbstractDifferentialProblem>> storedProblems_;
+            std::map <std::string, std::unique_ptr <dcp::AbstractProblem>> storedProblems_;
 
             //! The solution order of the problems
             std::vector <std::string> solveOrder_;
@@ -268,7 +268,7 @@ namespace dcp
              *  \li the first \c string contains the name of the problem whose coefficient should be linked against 
              *  some other problem's solution
              *  \li the second \c string contains the type of such coefficient, in a form that can be passed to
-             *  \c dcp::AbstractDifferentialProblem::setCoefficients
+             *  \c dcp::AbstractProblem::setCoefficients
              *  \li the third \c string contains the name of said coefficient in the problem
              *  \li the fourth \c string contains the name of the problem whose solution should be used to set the 
              *  coefficient identified by the first three strings

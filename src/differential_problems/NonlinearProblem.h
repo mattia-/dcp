@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_NONLINEARDIFFERENTIAL_PROBLEMS_HPP_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_NONLINEARDIFFERENTIAL_PROBLEMS_HPP_INCLUDE_GUARD
+#ifndef SRC_DIFFERENTIAL_PROBLEMS_NONLINEARDIFFERENTIAL_PROBLEMS_H_INCLUDE_GUARD
+#define SRC_DIFFERENTIAL_PROBLEMS_NONLINEARDIFFERENTIAL_PROBLEMS_H_INCLUDE_GUARD
 
 #include <dolfin/mesh/Mesh.h>
 #include <dolfin/mesh/MeshFunction.h>
@@ -30,12 +30,12 @@
 #include <dolfin/parameter/Parameters.h>
 #include <vector>
 #include <string>
-#include <differential_problems/AbstractDifferentialProblem.h>
+#include <differential_problems/AbstractProblem.h>
 #include <differential_problems/SubdomainType.h>
 
 namespace dcp
 {
-    /*! \class NonlinearDifferentialProblem NonlinearDifferentialProblem.h
+    /*! \class NonlinearProblem NonlinearProblem.h
      *  \brief Class for non-linear differential problems.
      *
      *  This class represents problem of the form
@@ -44,7 +44,7 @@ namespace dcp
      *  \f]
      *  with \f$ F \left(u, v\right) : V \times V \rightarrow \mathds{R}\f$ non linear in the problem unknown \f$u\f$.
      *  
-     *  It inherits publicly from \c AbstractDifferentialProblem
+     *  It inherits publicly from \c AbstractProblem
      *  and it extends its functionalities to a concrete differential
      *  problem.
      *  Template arguments are:
@@ -54,7 +54,7 @@ namespace dcp
      */
 
     template <class T_ResidualForm_, class T_JacobianForm_>
-        class NonlinearDifferentialProblem : public AbstractDifferentialProblem
+        class NonlinearProblem : public AbstractProblem
         {
             // ---------------------------------------------------------------------------------------------//  
 
@@ -66,7 +66,7 @@ namespace dcp
                 
                 /******************* CONSTRUCTORS *******************/
                 //! Default constructor is deleted. The class is not default constructable.
-                NonlinearDifferentialProblem () = delete;
+                NonlinearProblem () = delete;
 
                 //!  Constructor with shared pointers [1]
                 /*!
@@ -82,7 +82,7 @@ namespace dcp
                  *  The residual and jacobian form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
                                               const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                               const std::string& residualFormSolutionName,
                                               const std::string& jacobianFormSolutionName = "" );
@@ -102,7 +102,7 @@ namespace dcp
                  *  The residual and jacobian form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                NonlinearDifferentialProblem (const dolfin::Mesh& mesh, 
+                NonlinearProblem (const dolfin::Mesh& mesh, 
                                               const dolfin::FunctionSpace& functionSpace,
                                               const std::string& residualFormSolutionName,
                                               const std::string& jacobianFormSolutionName = "" );
@@ -121,7 +121,7 @@ namespace dcp
                  *  The residual and jacobian form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                NonlinearDifferentialProblem (dolfin::Mesh&& mesh, 
+                NonlinearProblem (dolfin::Mesh&& mesh, 
                                               dolfin::FunctionSpace&& functionSpace,
                                               const std::string& residualFormSolutionName,
                                               const std::string& jacobianFormSolutionName = "" );
@@ -143,7 +143,7 @@ namespace dcp
                  *  The residual and jacobian form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+                NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
                                               const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                               const T_ResidualForm& residualForm,
                                               const T_JacobianForm& jacobianForm,
@@ -166,7 +166,7 @@ namespace dcp
                  *  The residual and jacobian form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                NonlinearDifferentialProblem (const dolfin::Mesh& mesh, 
+                NonlinearProblem (const dolfin::Mesh& mesh, 
                                               const dolfin::FunctionSpace& functionSpace,
                                               const T_ResidualForm& residualForm,
                                               const T_JacobianForm& jacobianForm,
@@ -189,7 +189,7 @@ namespace dcp
                  *  The residual and jacobian form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                NonlinearDifferentialProblem (dolfin::Mesh&& mesh, 
+                NonlinearProblem (dolfin::Mesh&& mesh, 
                                               dolfin::FunctionSpace&& functionSpace,
                                               T_ResidualForm&& residualForm,
                                               T_JacobianForm&& jacobianForm,
@@ -203,7 +203,7 @@ namespace dcp
                 /*! Default destructor, since members of the class are trivially 
                  * destructible.
                  */
-                virtual ~NonlinearDifferentialProblem () {};
+                virtual ~NonlinearProblem () {};
 
                 
                 /******************* GETTERS *******************/
@@ -221,7 +221,7 @@ namespace dcp
 
                 /******************* SETTERS *******************/
 
-                //! Set coefficient [1]. Override of virtual function in \c AbstractDifferentialProblem.
+                //! Set coefficient [1]. Override of virtual function in \c AbstractProblem.
                 /*!
                  *  Possible values for \c coefficientType are:
                  *  \li \c residual_form to set the coefficient in the residual form
@@ -239,31 +239,31 @@ namespace dcp
                  *  \c coefficientValue can only be \c dolfin::Expression or \c dolfin::Function. This is because
                  *  \c setCoefficient() will call the assignement operator of class \c dolfin::Function, which only accepts
                  *  the two types mentioned before as input arguments.
-                 *  See \c AbstractDifferentialProblem documentation for more details on the function
+                 *  See \c AbstractProblem documentation for more details on the function
                  */
                 virtual void setCoefficient (const std::string& coefficientType, 
                                              const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                              const std::string& coefficientName = "default");
 
-                //! Set coefficient [2]. Override of virtual function in \c AbstractDifferentialProblem.
+                //! Set coefficient [2]. Override of virtual function in \c AbstractProblem.
                 /*!
                  *  Possible values for \c coefficientType are:
                  *  \li \c residual_form to set the coefficient in the residual form
                  *  \li \c jacobian_form to set the coefficient in the jacobian form
                  *  
-                 *  See \c AbstractDifferentialProblem documentation for more details on the function
+                 *  See \c AbstractProblem documentation for more details on the function
                  */
                 virtual void setCoefficient (const std::string& coefficientType,
                                              const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                              const std::size_t& coefficientNumber);
 
-                //! Set integration subdomains for the forms. Override of virtual function in \c AbstractDifferentialProblem
+                //! Set integration subdomains for the forms. Override of virtual function in \c AbstractProblem
                 /*! 
                  *  Possible values for \c formType are:
                  *  \li \c residual_form to set the integration subdomain in the residual form
                  *  \li \c jacobian_form to set the integration subdomain in the jacobian form
                  *  
-                 *  See \c AbstractDifferentialProblem documentation for more details on the function
+                 *  See \c AbstractProblem documentation for more details on the function
                  */
                 virtual void setIntegrationSubdomains (const std::string& formType,
                                                        std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
@@ -285,7 +285,7 @@ namespace dcp
                  */
                 virtual void solve (const dolfin::Parameters& solverParameters);
 
-                //! Clone method. Overrides method in \c AbstractDifferentialProblem
+                //! Clone method. Overrides method in \c AbstractProblem
                 /*!
                  *  It uses the parameter \c clone_method to decide which type of cloning to perform.
                  *  Possible values for such parameter are:
@@ -299,7 +299,7 @@ namespace dcp
                  *  
                  *  \return a pointer to the cloned object
                  */
-                virtual dcp::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>*
+                virtual dcp::NonlinearProblem <T_ResidualForm, T_JacobianForm>*
                     clone () const;
                 
                 // ---------------------------------------------------------------------------------------------//
@@ -326,16 +326,16 @@ namespace dcp
     /******************* CONSTRUCTORS *******************/
 
     template <class T_ResidualForm, class T_JacobianForm>
-        NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+        NonlinearProblem<T_ResidualForm, T_JacobianForm>::
+        NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
                                       const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                       const std::string& residualFormSolutionName,
                                       const std::string& jacobianFormSolutionName) : 
-            AbstractDifferentialProblem (mesh, functionSpace),
+            AbstractProblem (mesh, functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
-            dolfin::begin (dolfin::DBG, "Building NonlinearDifferentialProblem...");
+            dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
@@ -366,22 +366,22 @@ namespace dcp
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
+            dolfin::log (dolfin::DBG, "NonlinearProblem object created");
         }
 
 
 
     template <class T_ResidualForm, class T_JacobianForm>
-        NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearDifferentialProblem (const dolfin::Mesh& mesh, 
+        NonlinearProblem<T_ResidualForm, T_JacobianForm>::
+        NonlinearProblem (const dolfin::Mesh& mesh, 
                                       const dolfin::FunctionSpace& functionSpace,
                                       const std::string& residualFormSolutionName,
                                       const std::string& jacobianFormSolutionName) : 
-            AbstractDifferentialProblem (mesh, functionSpace),
+            AbstractProblem (mesh, functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
-            dolfin::begin (dolfin::DBG, "Building NonlinearDifferentialProblem...");
+            dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
@@ -412,22 +412,22 @@ namespace dcp
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
+            dolfin::log (dolfin::DBG, "NonlinearProblem object created");
         }
             
 
     
     template <class T_ResidualForm, class T_JacobianForm>
-        NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearDifferentialProblem (dolfin::Mesh&& mesh, 
+        NonlinearProblem<T_ResidualForm, T_JacobianForm>::
+        NonlinearProblem (dolfin::Mesh&& mesh, 
                                       dolfin::FunctionSpace&& functionSpace,
                                       const std::string& residualFormSolutionName,
                                       const std::string& jacobianFormSolutionName) : 
-            AbstractDifferentialProblem (mesh, functionSpace),
+            AbstractProblem (mesh, functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
-            dolfin::begin (dolfin::DBG, "Building NonlinearDifferentialProblem...");
+            dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
@@ -458,24 +458,24 @@ namespace dcp
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
+            dolfin::log (dolfin::DBG, "NonlinearProblem object created");
         }
             
 
 
     template <class T_ResidualForm, class T_JacobianForm>
-        NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+        NonlinearProblem<T_ResidualForm, T_JacobianForm>::
+        NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
                                       const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                       const T_ResidualForm& residualForm,
                                       const T_JacobianForm& jacobianForm,
                                       const std::string& residualFormSolutionName,
                                       const std::string& jacobianFormSolutionName) : 
-            AbstractDifferentialProblem (mesh, functionSpace),
+            AbstractProblem (mesh, functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 
-            dolfin::begin (dolfin::DBG, "Building NonlinearDifferentialProblem...");
+            dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
@@ -506,24 +506,24 @@ namespace dcp
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
+            dolfin::log (dolfin::DBG, "NonlinearProblem object created");
         }
 
     
 
     template <class T_ResidualForm, class T_JacobianForm>
-        NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearDifferentialProblem (const dolfin::Mesh& mesh, 
+        NonlinearProblem<T_ResidualForm, T_JacobianForm>::
+        NonlinearProblem (const dolfin::Mesh& mesh, 
                                       const dolfin::FunctionSpace& functionSpace,
                                       const T_ResidualForm& residualForm,
                                       const T_JacobianForm& jacobianForm,
                                       const std::string& residualFormSolutionName,
                                       const std::string& jacobianFormSolutionName) : 
-            AbstractDifferentialProblem (mesh, functionSpace),
+            AbstractProblem (mesh, functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 
-            dolfin::begin (dolfin::DBG, "Building NonlinearDifferentialProblem...");
+            dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
@@ -554,24 +554,24 @@ namespace dcp
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
+            dolfin::log (dolfin::DBG, "NonlinearProblem object created");
         }
             
 
 
     template <class T_ResidualForm, class T_JacobianForm>
-        NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearDifferentialProblem (dolfin::Mesh&& mesh, 
+        NonlinearProblem<T_ResidualForm, T_JacobianForm>::
+        NonlinearProblem (dolfin::Mesh&& mesh, 
                                       dolfin::FunctionSpace&& functionSpace,
                                       T_ResidualForm&& residualForm,
                                       T_JacobianForm&& jacobianForm,
                                       const std::string& residualFormSolutionName,
                                       const std::string& jacobianFormSolutionName) : 
-            AbstractDifferentialProblem (mesh, functionSpace),
+            AbstractProblem (mesh, functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 
-            dolfin::begin (dolfin::DBG, "Building NonlinearDifferentialProblem...");
+            dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
@@ -603,7 +603,7 @@ namespace dcp
             
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "NonlinearDifferentialProblem object created");
+            dolfin::log (dolfin::DBG, "NonlinearProblem object created");
         }
     
 
@@ -611,7 +611,7 @@ namespace dcp
     /******************* GETTERS *******************/
 
     template <class T_ResidualForm, class T_JacobianForm>
-        const T_ResidualForm& NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
+        const T_ResidualForm& NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         residualForm () const
         {
             return residualForm_;
@@ -620,7 +620,7 @@ namespace dcp
 
 
     template <class T_ResidualForm, class T_JacobianForm>
-        const T_JacobianForm& NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
+        const T_JacobianForm& NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         jacobianForm () const
         {
             return jacobianForm_;
@@ -631,7 +631,7 @@ namespace dcp
     /******************* SETTERS *******************/
 
     template <class T_ResidualForm, class T_JacobianForm>
-        void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
+        void NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         setCoefficient (const std::string& coefficientType, 
                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                         const std::string& coefficientName)
@@ -674,7 +674,7 @@ namespace dcp
 
 
     template <class T_ResidualForm, class T_JacobianForm>
-        void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
+        void NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         setCoefficient (const std::string& coefficientType,
                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                         const std::size_t& coefficientNumber)
@@ -699,7 +699,7 @@ namespace dcp
 
 
     template <class T_ResidualForm, class T_JacobianForm>
-        void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
+        void NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         setIntegrationSubdomains (const std::string& formType,
                                   std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                   const dcp::SubdomainType& subdomainType)
@@ -761,7 +761,7 @@ namespace dcp
     /******************* METHODS *******************/
 
     template <class T_ResidualForm, class T_JacobianForm>
-        void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
+        void NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         solve () 
         {
             dolfin::begin (dolfin::INFO, "Solving problem...");
@@ -803,7 +803,7 @@ namespace dcp
 
 
     template <class T_ResidualForm, class T_JacobianForm>
-        void NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
+        void NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         solve (const dolfin::Parameters& solverParameters)
         {
             dolfin::begin (dolfin::DBG, "Solving problem...");
@@ -840,8 +840,8 @@ namespace dcp
     
     
     template <class T_ResidualForm, class T_JacobianForm>
-        dcp::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>*
-        NonlinearDifferentialProblem<T_ResidualForm, T_JacobianForm>::
+        dcp::NonlinearProblem <T_ResidualForm, T_JacobianForm>*
+        NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         clone () const
         {
             dolfin::begin (dolfin::DBG, "Cloning object...");
@@ -849,14 +849,14 @@ namespace dcp
             std::string cloneMethod = parameters["clone_method"];
             
             dolfin::log (dolfin::DBG, "Clone method: %s", cloneMethod.c_str ());
-            dolfin::log (dolfin::DBG, "Creating new object of type NonlinearDifferentialProblem...");
+            dolfin::log (dolfin::DBG, "Creating new object of type NonlinearProblem...");
             
             // create new object
-            dcp::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm>* clonedProblem = nullptr;
+            dcp::NonlinearProblem <T_ResidualForm, T_JacobianForm>* clonedProblem = nullptr;
             if (cloneMethod == "shallow_clone")
             {
                 clonedProblem = 
-                    new dcp::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm> 
+                    new dcp::NonlinearProblem <T_ResidualForm, T_JacobianForm> 
                         ( this->mesh_,
                           this->functionSpace_,
                           this->residualForm_, 
@@ -868,7 +868,7 @@ namespace dcp
             else if (cloneMethod == "deep_clone")
             {
                 clonedProblem = 
-                    new dcp::NonlinearDifferentialProblem <T_ResidualForm, T_JacobianForm> 
+                    new dcp::NonlinearProblem <T_ResidualForm, T_JacobianForm> 
                         (*(this->mesh_),
                          *(this->functionSpace_),
                            this->residualForm_, 

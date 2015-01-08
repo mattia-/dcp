@@ -87,18 +87,16 @@ int main (int argc, char* argv[])
     // =========================== COMPOSITE PROBLEM ============================== //
     // ============================================================================ //
     // define problems
-    dcp::NonlinearDifferentialProblem <primal::ResidualForm, primal::JacobianForm> 
-        primalProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                        dolfin::reference_to_no_delete_pointer (V),
-                        "trial");
+    dcp::NonlinearProblem <primal::ResidualForm, primal::JacobianForm> primalProblem (dolfin::reference_to_no_delete_pointer (mesh), 
+                                                                                      dolfin::reference_to_no_delete_pointer (V),
+                                                                                      "trial");
 
-    dcp::LinearDifferentialProblem <adjoint::BilinearForm, adjoint::LinearForm> 
-        adjointProblem (dolfin::reference_to_no_delete_pointer (mesh),
-                         dolfin::reference_to_no_delete_pointer (V));
+    dcp::LinearProblem <adjoint::BilinearForm, adjoint::LinearForm> adjointProblem (dolfin::reference_to_no_delete_pointer (mesh),
+                                                                                    dolfin::reference_to_no_delete_pointer (V));
 
     
     // create composite differential problem
-    dcp::CompositeDifferentialProblem problems;
+    dcp::CompositeProblem problems;
     problems.addProblem ("primal", primalProblem);
     problems.addProblem ("adjoint", adjointProblem);
     

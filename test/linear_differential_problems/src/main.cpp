@@ -55,9 +55,8 @@ int main (int argc, char* argv[])
     
     // define problem
     dolfin::info ("Define the problem...");
-    dcp::LinearDifferentialProblem <poisson::BilinearForm, poisson::LinearForm> 
-        poissonProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                        dolfin::reference_to_no_delete_pointer (V));
+    dcp::LinearProblem <poisson::BilinearForm, poisson::LinearForm> poissonProblem (dolfin::reference_to_no_delete_pointer (mesh), 
+                                                                                    dolfin::reference_to_no_delete_pointer (V));
 
     // define coefficients
     dolfin::info ("Define the problem's coefficients...");

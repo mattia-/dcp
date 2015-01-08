@@ -111,17 +111,16 @@ int main (int argc, char* argv[])
     double dt = 0.1;
     double T = 4;
     std::cout << "Define the problem..." << std::endl;
-    dcp::TimeDependentDifferentialProblem navierStokesProblem 
-        (dolfin::reference_to_no_delete_pointer (mesh),
-         dolfin::reference_to_no_delete_pointer (V),
-         t0,
-         dt, 
-         T, 
-         std::vector<std::string> ({"residual_form", "jacobian_form"}),
-         std::vector<std::string> ({"residual_form"})
-        );
+    dcp::TimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh),
+                                                   dolfin::reference_to_no_delete_pointer (V),
+                                                   t0,
+                                                   dt, 
+                                                   T, 
+                                                   std::vector<std::string> ({"residual_form", "jacobian_form"}),
+                                                   std::vector<std::string> ({"residual_form"})
+                                                  );
          
-    dcp::NonlinearDifferentialProblem <navierstokes::ResidualForm, navierstokes::JacobianForm> 
+    dcp::NonlinearProblem <navierstokes::ResidualForm, navierstokes::JacobianForm> 
         timeSteppingProblem (dolfin::reference_to_no_delete_pointer (mesh), 
                              dolfin::reference_to_no_delete_pointer (V),
                              "trial");

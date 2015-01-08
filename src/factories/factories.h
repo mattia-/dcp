@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_FACTORY_FACTORY_HPP_INCLUDE_GUARD
-#define SRC_FACTORY_FACTORY_HPP_INCLUDE_GUARD
+#ifndef SRC_FACTORY_FACTORY_H_INCLUDE_GUARD
+#define SRC_FACTORY_FACTORY_H_INCLUDE_GUARD
 
 #include "GenericFactory.h"
 #include "LinearSolverFactory.h"

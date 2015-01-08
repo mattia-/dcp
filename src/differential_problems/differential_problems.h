@@ -17,13 +17,13 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_DIFFERENTIAL_PROBLEMS_HPP_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_DIFFERENTIAL_PROBLEMS_HPP_INCLUDE_GUARD
+#ifndef SRC_DIFFERENTIAL_PROBLEMS_DIFFERENTIAL_PROBLEMS_H_INCLUDE_GUARD
+#define SRC_DIFFERENTIAL_PROBLEMS_DIFFERENTIAL_PROBLEMS_H_INCLUDE_GUARD
 
-#include "LinearDifferentialProblem.h"
-#include "NonlinearDifferentialProblem.h"
-#include "TimeDependentDifferentialProblem.h"
-#include "CompositeDifferentialProblem.h"
+#include "LinearProblem.h"
+#include "NonlinearProblem.h"
+#include "TimeDependentProblem.h"
+#include "CompositeProblem.h"
 #include "SubdomainType.h"
 
 #endif

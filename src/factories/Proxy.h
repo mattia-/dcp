@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_FACTORY_PROXY_HPP_INCLUDE_GUARD
-#define SRC_FACTORY_PROXY_HPP_INCLUDE_GUARD
+#ifndef SRC_FACTORY_PROXY_H_INCLUDE_GUARD
+#define SRC_FACTORY_PROXY_H_INCLUDE_GUARD
 
 #include <factories/GenericFactory.h>
 

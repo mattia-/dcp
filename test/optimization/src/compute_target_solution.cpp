@@ -23,7 +23,7 @@
 #include <mshr.h>
 #include "primal.h"
 #include "lift_drag.h"
-#include <differential_problems/NonlinearDifferentialProblem.h>
+#include <differential_problems/NonlinearProblem.h>
 
 namespace navierstokes
 {
@@ -127,10 +127,10 @@ int main (int argc, char* argv[])
     navierstokes::NoSlipBoundary noSlipBoundary;
 
     // define problem
-    dcp::NonlinearDifferentialProblem <primal::ResidualForm, primal::JacobianForm> 
+    dcp::NonlinearProblem <primal::ResidualForm, primal::JacobianForm> 
         navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                       dolfin::reference_to_no_delete_pointer (V),
-                       "trial");
+                             dolfin::reference_to_no_delete_pointer (V),
+                             "trial");
 
     // problem settings
     navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nu), "nu");

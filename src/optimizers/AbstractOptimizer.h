@@ -17,15 +17,15 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OPTIMIZERS_ABSTRACTOPTIMIZER_HPP_INCLUDE_GUARD
-#define SRC_OPTIMIZERS_ABSTRACTOPTIMIZER_HPP_INCLUDE_GUARD
+#ifndef SRC_OPTIMIZERS_ABSTRACTOPTIMIZER_H_INCLUDE_GUARD
+#define SRC_OPTIMIZERS_ABSTRACTOPTIMIZER_H_INCLUDE_GUARD
 
 #include <dolfin/parameter/Parameters.h>
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Function.h>
 #include <dolfin/function/Expression.h>
 #include <objective_functional/AbstractObjectiveFunctional.h>
-#include <differential_problems/CompositeDifferentialProblem.h>
+#include <differential_problems/CompositeProblem.h>
 #include <functional>
 
 namespace dcp
@@ -82,12 +82,12 @@ namespace dcp
              *  \li the dolfin function that will contain the search direction after the function exits
              *  \li the dolfin function containing the gradient
              */
-            virtual void apply (dcp::CompositeDifferentialProblem& problem,
+            virtual void apply (dcp::CompositeProblem& problem,
                                 const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const std::function 
                                 <
-                                    void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                    void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
                                 >& updater,
                                 const std::function
                                 <

@@ -18,7 +18,7 @@
  */ 
 
 #include <optimizers/DirichletControlValueUpdater.h>
-#include <differential_problems/AbstractDifferentialProblem.h>
+#include <differential_problems/AbstractProblem.h>
 #include <dolfin/fem/DirichletBC.h>
 
 namespace dcp
@@ -37,10 +37,10 @@ namespace dcp
 
 
     /************************* OPERATORS ********************/
-    void DirichletControlValueUpdater::operator() (dcp::CompositeDifferentialProblem& compositeProblem, 
+    void DirichletControlValueUpdater::operator() (dcp::CompositeProblem& compositeProblem, 
                                                    const dolfin::GenericFunction& dirichletBCValue) const
     {
-        dcp::AbstractDifferentialProblem& problem = compositeProblem [problemName_];
+        dcp::AbstractProblem& problem = compositeProblem [problemName_];
         
         problem.removeDirichletBC (dirichletBCName_);
         

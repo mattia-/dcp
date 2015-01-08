@@ -59,16 +59,15 @@ int main (int argc, char* argv[])
     double dt = 0.1;
     double T = 4;
     std::cout << "Define the problem..." << std::endl;
-    dcp::TimeDependentDifferentialProblem convectionDiffusionProblem 
-        (dolfin::reference_to_no_delete_pointer (mesh), 
-         dolfin::reference_to_no_delete_pointer (V),
-         t0,
-         dt,
-         T,
-         std::vector<std::string> ({"bilinear_form"}),
-         std::vector<std::string> ({"linear_form"}));
+    dcp::TimeDependentProblem convectionDiffusionProblem (dolfin::reference_to_no_delete_pointer (mesh), 
+                                                          dolfin::reference_to_no_delete_pointer (V),
+                                                          t0,
+                                                          dt,
+                                                          T,
+                                                          std::vector<std::string> ({"bilinear_form"}),
+                                                          std::vector<std::string> ({"linear_form"}));
     
-    dcp::LinearDifferentialProblem <convectiondiffusion::BilinearForm, convectiondiffusion::LinearForm>
+    dcp::LinearProblem <convectiondiffusion::BilinearForm, convectiondiffusion::LinearForm>
         timeSteppingProblem (dolfin::reference_to_no_delete_pointer (mesh), 
                              dolfin::reference_to_no_delete_pointer (V));
     

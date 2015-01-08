@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OBJECTIVE_FUNCTIONAL_VARIABLEEXPRESSION_HPP_INCLUDE_GUARD
-#define SRC_OBJECTIVE_FUNCTIONAL_VARIABLEEXPRESSION_HPP_INCLUDE_GUARD
+#ifndef SRC_OBJECTIVE_FUNCTIONAL_VARIABLEEXPRESSION_H_INCLUDE_GUARD
+#define SRC_OBJECTIVE_FUNCTIONAL_VARIABLEEXPRESSION_H_INCLUDE_GUARD
 
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Expression.h>

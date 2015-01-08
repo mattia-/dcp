@@ -73,12 +73,12 @@ namespace dcp
 
     
 
-    void BacktrackingOptimizer::apply (dcp::CompositeDifferentialProblem& problem,
+    void BacktrackingOptimizer::apply (dcp::CompositeProblem& problem,
                                        const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                        dolfin::Function& initialGuess,
                                        const std::function 
                                        <
-                                           void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                           void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
                                        >& updater,
                                        const std::function
                                        <
@@ -90,12 +90,12 @@ namespace dcp
 
 
 
-    void BacktrackingOptimizer::apply (dcp::CompositeDifferentialProblem& problem,
+    void BacktrackingOptimizer::apply (dcp::CompositeProblem& problem,
                                        const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                        dolfin::Function& initialGuess,
                                        const std::function 
                                        <
-                                           void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                           void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
                                        >& updater,
                                        const std::function 
                                        <
@@ -140,7 +140,7 @@ namespace dcp
         bool hasOutputFile = openOutputFile (OUTFILE);
         
         
-        // all linear problems in the CompositeDifferentialProblem "problem" should be reassembled every time. So we
+        // all linear problems in the CompositeProblem "problem" should be reassembled every time. So we
         // set the parameter "force_reassemble_system" to true for every one of them
         dolfin::begin (dolfin::DBG, "Scanning composite differential problem...");
         for (std::size_t i = 0; i < problem.size (); ++i)
@@ -403,11 +403,11 @@ namespace dcp
                       dolfin::Function& controlVariable,
                       const dolfin::Function& previousControlVariable,
                       const dolfin::Function& searchDirection,
-                      dcp::CompositeDifferentialProblem& problem,
+                      dcp::CompositeProblem& problem,
                       const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                       const std::function 
                       <
-                          void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                          void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
                       >& updater)
     {
         // get parameters

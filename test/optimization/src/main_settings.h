@@ -45,7 +45,7 @@ class ControlDirichletBC : public dolfin::Expression
 class ValueUpdater
 {
     public:
-        void operator() (dcp::CompositeDifferentialProblem& compositeProblem, 
+        void operator() (dcp::CompositeProblem& compositeProblem, 
                          const dolfin::GenericFunction& dirichletBCValue) const
         {
 

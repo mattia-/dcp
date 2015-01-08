@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <differential_problems/CompositeDifferentialProblem.h>
+#include <differential_problems/CompositeProblem.h>
 #include <utility>
 #include <tuple>
 #include <dolfin.h>
@@ -27,32 +27,32 @@
 namespace dcp
 {
     /******************* CONSTRUCTORS ******************/
-    CompositeDifferentialProblem::CompositeDifferentialProblem () : 
+    CompositeProblem::CompositeProblem () : 
         storedProblems_ (),
         solveOrder_ (),
         problemsLinks_ ()
     { 
-        dolfin::log (dolfin::DBG, "CompositeDifferentialProblem object created");
+        dolfin::log (dolfin::DBG, "CompositeProblem object created");
     }
 
     
 
     /******************* METHODS *******************/
-    std::size_t CompositeDifferentialProblem::size ()
+    std::size_t CompositeProblem::size ()
     {
         return storedProblems_.size ();
     }
 
 
 
-    void CompositeDifferentialProblem::addProblem (const std::string& problemName, 
-                                                   AbstractDifferentialProblem& problem)
+    void CompositeProblem::addProblem (const std::string& problemName, 
+                                                   AbstractProblem& problem)
     {
         dolfin::begin (dolfin::DBG, "Inserting problem \"%s\" in composite differential problem...", problemName.c_str ());
          
         // create new problem object
         dolfin::log (dolfin::DBG, "Creating new problem object...");
-        std::unique_ptr<dcp::AbstractDifferentialProblem> clonedProblem (problem.clone ());
+        std::unique_ptr<dcp::AbstractProblem> clonedProblem (problem.clone ());
         
         // insert problem into storedProblems_ taking ownership
         dolfin::log (dolfin::DBG, "Inserting problem in problems map with name \"%s\"...", problemName.c_str ());
@@ -73,8 +73,8 @@ namespace dcp
     
     
 
-    void CompositeDifferentialProblem::addProblem (const std::string& problemName, 
-                                                   std::unique_ptr<AbstractDifferentialProblem>& problem)
+    void CompositeProblem::addProblem (const std::string& problemName, 
+                                                   std::unique_ptr<AbstractProblem>& problem)
     {
         dolfin::begin (dolfin::DBG, "Inserting problem \"%s\" in composite differential problem...", problemName.c_str ());
         
@@ -97,7 +97,7 @@ namespace dcp
 
 
 
-    void CompositeDifferentialProblem::removeProblem (const std::string& problemName)
+    void CompositeProblem::removeProblem (const std::string& problemName)
     {
         dolfin::begin (dolfin::DBG, "Removing problem \"%s\" from composite differential problem...", problemName.c_str ());
         
@@ -165,7 +165,7 @@ namespace dcp
 
 
 
-    void CompositeDifferentialProblem::reorderProblems (const std::vector<std::string>& solveOrder)
+    void CompositeProblem::reorderProblems (const std::vector<std::string>& solveOrder)
     {
         dolfin::log (dolfin::DBG, "Setting problems order...");
         solveOrder_ = solveOrder;
@@ -173,7 +173,7 @@ namespace dcp
 
 
 
-    void CompositeDifferentialProblem::addLink (const std::string& linkFrom, 
+    void CompositeProblem::addLink (const std::string& linkFrom, 
                                                 const std::string& linkedCoefficientName,
                                                 const std::string& linkedCoefficientType, 
                                                 const std::string& linkTo,
@@ -255,7 +255,7 @@ namespace dcp
 
 
 
-    void CompositeDifferentialProblem::addLink (const std::string& linkFrom, 
+    void CompositeProblem::addLink (const std::string& linkFrom, 
                                                 const std::string& linkedCoefficientName,
                                                 const std::string& linkedCoefficientType, 
                                                 const std::string& linkTo,
@@ -343,8 +343,8 @@ namespace dcp
             
 
 
-    const dcp::AbstractDifferentialProblem& 
-    CompositeDifferentialProblem::operator[] (const std::string& name) const
+    const dcp::AbstractProblem& 
+    CompositeProblem::operator[] (const std::string& name) const
     {
         auto problemIterator = storedProblems_.find (name);
         if (problemIterator == storedProblems_.end ())
@@ -356,8 +356,8 @@ namespace dcp
 
 
 
-    dcp::AbstractDifferentialProblem& 
-    CompositeDifferentialProblem::operator[] (const std::string& name)
+    dcp::AbstractProblem& 
+    CompositeProblem::operator[] (const std::string& name)
     {
         auto problemIterator = storedProblems_.find (name);
         if (problemIterator == storedProblems_.end ())
@@ -369,8 +369,8 @@ namespace dcp
 
 
 
-    const dcp::AbstractDifferentialProblem& 
-    CompositeDifferentialProblem::operator[] (const std::size_t& position) const
+    const dcp::AbstractProblem& 
+    CompositeProblem::operator[] (const std::size_t& position) const
     {
         if (position >= solveOrder_.size ())
         {
@@ -381,8 +381,8 @@ namespace dcp
 
 
 
-    dcp::AbstractDifferentialProblem& 
-    CompositeDifferentialProblem::operator[] (const std::size_t& position)
+    dcp::AbstractProblem& 
+    CompositeProblem::operator[] (const std::size_t& position)
     {
         if (position >= solveOrder_.size ())
         {
@@ -393,7 +393,7 @@ namespace dcp
 
 
 
-    void CompositeDifferentialProblem::print ()
+    void CompositeProblem::print ()
     {
         dolfin::cout << "Problems solve order:" << dolfin::endl;
         for (auto i : solveOrder_)
@@ -423,7 +423,7 @@ namespace dcp
 
 
 
-    void CompositeDifferentialProblem::solve (const bool& forceRelinking)
+    void CompositeProblem::solve (const bool& forceRelinking)
     {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving
@@ -439,12 +439,12 @@ namespace dcp
 
 
 
-    void CompositeDifferentialProblem::solve (const std::string& problemName, const bool& forceRelinking)
+    void CompositeProblem::solve (const std::string& problemName, const bool& forceRelinking)
     {
         dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
 
         // get problem with given name from map. Variable problemIterator will be a
-        // std::map <std::string, std::unique_ptr <dcp::AbstractDifferentialProblem>::iterator
+        // std::map <std::string, std::unique_ptr <dcp::AbstractProblem>::iterator
         dolfin::log (dolfin::DBG, "Looking for problem \"%s\" in problems map...", problemName.c_str ());
         auto problemIterator = storedProblems_.find (problemName);
 
@@ -454,7 +454,7 @@ namespace dcp
             return;
         }
 
-        dcp::AbstractDifferentialProblem& problem = *(problemIterator->second);
+        dcp::AbstractProblem& problem = *(problemIterator->second);
 
         // 1)
         // if forceRelinking is true, loop over problemsLinks_. 
@@ -487,14 +487,14 @@ namespace dcp
 
 
 
-    void CompositeDifferentialProblem::solve (const char* problemName, const bool& forceRelinking)
+    void CompositeProblem::solve (const char* problemName, const bool& forceRelinking)
     {
         solve (std::string (problemName), forceRelinking);
     }
 
 
 
-    const dolfin::Function& CompositeDifferentialProblem::solution (const std::string& problemName) const
+    const dolfin::Function& CompositeProblem::solution (const std::string& problemName) const
     {
         auto problemIterator = storedProblems_.find (problemName);
         if (problemIterator == storedProblems_.end ())
@@ -507,7 +507,7 @@ namespace dcp
 
     
     /******************* PROTECTED METHODS *******************/
-    void CompositeDifferentialProblem::linkProblems (const std::pair <
+    void CompositeProblem::linkProblems (const std::pair <
                                                                       std::tuple <std::string, std::string, std::string>, 
                                                                       std::pair  <std::string, int>
                                                                      >& link)
@@ -543,7 +543,7 @@ namespace dcp
             return;
         }
 
-        dcp::AbstractDifferentialProblem& problem = *(problemIterator->second);
+        dcp::AbstractProblem& problem = *(problemIterator->second);
 
         // check if target problem of the link exists
         dolfin::log (dolfin::DBG, "Looking for link target in problems map...");
@@ -557,7 +557,7 @@ namespace dcp
             return;
         }
 
-        dcp::AbstractDifferentialProblem& targetProblem = *(targetProblemIterator->second);
+        dcp::AbstractProblem& targetProblem = *(targetProblemIterator->second);
 
         if (std::get<1> (link.second) == -1)
         {

@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_ABSTRACTDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_ABSTRACTDIFFERENTIALPROBLEM_HPP_INCLUDE_GUARD
+#ifndef SRC_DIFFERENTIAL_PROBLEMS_ABSTRACTDIFFERENTIALPROBLEM_H_INCLUDE_GUARD
+#define SRC_DIFFERENTIAL_PROBLEMS_ABSTRACTDIFFERENTIALPROBLEM_H_INCLUDE_GUARD
 
 #include <dolfin/mesh/Mesh.h>
 #include <dolfin/mesh/MeshFunction.h>
@@ -33,21 +33,21 @@
 
 namespace dcp
 {
-    /*! \class AbstractDifferentialProblem AbstractDifferentialProblem.h
+    /*! \class AbstractProblem AbstractProblem.h
      *  \brief Abstract base class for differential problems. 
      *         
      *  This class contains the basic interface for a differential problem to be
      *  solved with FEniCS library. It is an abstract class, it only provides the
      *  basic interface to all differential problems
      */ 
-    class AbstractDifferentialProblem
+    class AbstractProblem
     {
         // ---------------------------------------------------------------------------------------------//
 
         public:
             /************************* CONSTRUCTORS ********************/
             //! Default constructor
-            AbstractDifferentialProblem () = delete;
+            AbstractProblem () = delete;
 
             //!  Constructor with shared pointers
             /*!
@@ -58,7 +58,7 @@ namespace dcp
              *  The bilinear and linear form will be created too, calling the constructor which takes the function space
              *  as input.
              */
-            AbstractDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
+            AbstractProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
                                          const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
 
 
@@ -71,7 +71,7 @@ namespace dcp
              *  The bilinear and linear form will be created too, calling the constructor which takes the function space
              *  as input.
              */
-            AbstractDifferentialProblem (const dolfin::Mesh& mesh, 
+            AbstractProblem (const dolfin::Mesh& mesh, 
                                          const dolfin::FunctionSpace& functionSpace);
 
             //! Constructor with rvalue references
@@ -83,7 +83,7 @@ namespace dcp
              *  The bilinear and linear form will be created too, calling the constructor which takes the function space
              *  as input.
              */
-            AbstractDifferentialProblem (dolfin::Mesh&& mesh, 
+            AbstractProblem (dolfin::Mesh&& mesh, 
                                          dolfin::FunctionSpace&& functionSpace);
 
 
@@ -92,7 +92,7 @@ namespace dcp
             /*! Default destructor, since members of the class are trivially 
              * destructible.
              */
-            virtual ~AbstractDifferentialProblem () {};
+            virtual ~AbstractProblem () {};
 
 
             /********************** GETTERS ***********************/
@@ -224,10 +224,10 @@ namespace dcp
             
             //! Clone method [1]
             /*!
-             *  \return a pointer to a \c dcp::AbstractDifferentialProblem containing a copy of the object on 
+             *  \return a pointer to a \c dcp::AbstractProblem containing a copy of the object on 
              *  which it is called. 
              */
-            virtual dcp::AbstractDifferentialProblem* clone () const = 0;
+            virtual dcp::AbstractProblem* clone () const = 0;
 
 
             /********************** VARIABLES ***********************/

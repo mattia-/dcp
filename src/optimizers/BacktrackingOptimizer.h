@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OPTIMIZERS_BACKTRACKINGOPTIMIZER_HPP_INCLUDE_GUARD
-#define SRC_OPTIMIZERS_BACKTRACKINGOPTIMIZER_HPP_INCLUDE_GUARD
+#ifndef SRC_OPTIMIZERS_BACKTRACKINGOPTIMIZER_H_INCLUDE_GUARD
+#define SRC_OPTIMIZERS_BACKTRACKINGOPTIMIZER_H_INCLUDE_GUARD
 
 #include <optimizers/AbstractOptimizer.h>
 #include <objective_functional/AbstractObjectiveFunctional.h>
@@ -141,12 +141,12 @@ namespace dcp
              *  \li the dolfin function that will contain the search direction after the function exits
              *  \li the dolfin function containing the gradient
              */
-            virtual void apply (dcp::CompositeDifferentialProblem& problem,
+            virtual void apply (dcp::CompositeProblem& problem,
                                 const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const std::function 
                                 <
-                                    void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                    void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
                                 >& updater,
                                 const std::function
                                 <
@@ -183,12 +183,12 @@ namespace dcp
              *  \li the dolfin function that will contain the search direction after the function exits
              *  \li the dolfin function containing the gradient
              */
-            virtual void apply (dcp::CompositeDifferentialProblem& problem,
+            virtual void apply (dcp::CompositeProblem& problem,
                                 const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const std::function 
                                 <
-                                    void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                    void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
                                 >& updater,
                                 const std::function 
                                 <
@@ -239,11 +239,11 @@ namespace dcp
                               dolfin::Function& controlVariable,
                               const dolfin::Function& previousControlVariable,
                               const dolfin::Function& searchDirection,
-                              dcp::CompositeDifferentialProblem& problem,
+                              dcp::CompositeProblem& problem,
                               const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                               const std::function 
                               <
-                                  void (dcp::CompositeDifferentialProblem&, const dolfin::GenericFunction&)
+                                  void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
                               >& updater);
             
             //! Function to print to file some values. It is mostly useful to avid code repetition inside this class

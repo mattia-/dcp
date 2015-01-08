@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTDIFFERENTIAL_PROBLEMS_HPP_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTDIFFERENTIAL_PROBLEMS_HPP_INCLUDE_GUARD
+#ifndef SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTDIFFERENTIAL_PROBLEMS_H_INCLUDE_GUARD
+#define SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTDIFFERENTIAL_PROBLEMS_H_INCLUDE_GUARD
 
 #include <dolfin/mesh/Mesh.h>
 #include <dolfin/mesh/MeshFunction.h>
@@ -32,13 +32,13 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <differential_problems/AbstractDifferentialProblem.h>
+#include <differential_problems/AbstractProblem.h>
 #include <factories/LinearSolverFactory.h>
 #include <differential_problems/SubdomainType.h>
 
 namespace dcp
 {
-    /*! \class TimeDependentDifferentialProblem TimeDependentDifferentialProblem.h
+    /*! \class TimeDependentProblem TimeDependentProblem.h
      *  \brief Class for linear differential problems.
      *
      *  This class represents problem of the form
@@ -52,20 +52,20 @@ namespace dcp
      *  with \f$ a \left(u \left(t\right), v\right) : V \times V \rightarrow \mathds{R}\f$ generic form on \f$V\f$
      *  and \f$ L \left(v\right) : V \rightarrow \mathds{R} \f$ linear form on the same space.
      *  
-     *  It inherits publicly from \c AbstractDifferentialProblem
+     *  It inherits publicly from \c AbstractProblem
      *  and it extends its functionalities to a concrete differential
      *  problem. The problem to be solved on each timestep is stored as a 
-     *  <tt> shared_ptr <dcp::AbstractDifferentialProblem> </tt>
+     *  <tt> shared_ptr <dcp::AbstractProblem> </tt>
      */
 
-    class TimeDependentDifferentialProblem : public AbstractDifferentialProblem
+    class TimeDependentProblem : public AbstractProblem
     {
         // ---------------------------------------------------------------------------------------------//  
 
         public:
             /******************* CONSTRUCTORS *******************/
             //! Default constructor is deleted. The class is not default constructable.
-            TimeDependentDifferentialProblem () = delete;
+            TimeDependentProblem () = delete;
 
             //!  Constructor with shared pointers
             /*!
@@ -79,15 +79,15 @@ namespace dcp
              *  the parameter whose name is stored in the member variable \c dtName should be set. 
              *  These strings will be used to call the function \c setCoefficient
              *  on the member variable \c timeSteppingProblem_, so they need to be suitable for that kind of problem.
-             *  See the documentation of the function \c setCoefficient in the class \c LinearDifferentialProblem a
-             *  and \c NonlinearDifferentialProblem for suitable values for this variable.
+             *  See the documentation of the function \c setCoefficient in the class \c LinearProblem a
+             *  and \c NonlinearProblem for suitable values for this variable.
              *  The values contained in \c dtCoefficientTypes will be saved in the member variable \c parameters.
              *  \param previousSolutionCoefficientTypes a vector of strings containing the types of the forms in which 
              *  the parameter whose name is stored in the member variable\c previousSolutionName should be set. 
              *  These strings will be used to call the function \c setCoefficient
              *  on the member variable \c timeSteppingProblem_, so they need to be suitable for that kind of problem.
-             *  See the documentation of the function \c setCoefficient in the class \c LinearDifferentialProblem a
-             *  and \c NonlinearDifferentialProblem for suitable values for this variable.
+             *  See the documentation of the function \c setCoefficient in the class \c LinearProblem a
+             *  and \c NonlinearProblem for suitable values for this variable.
              *  The values contained in \c previousSolutionCoefficientTypes will be saved in the member variable 
              *  \c parameters.
              *  \param timeSteppingProblem the problem to be solved on each time step. Default value = nullptr
@@ -110,7 +110,7 @@ namespace dcp
              *  components", but any negative integer will work), but it can be changed to any non-negative 
              *  integer to indicate the specific component the time loop should use.
              */
-            TimeDependentDifferentialProblem 
+            TimeDependentProblem 
                 (const std::shared_ptr<dolfin::Mesh> mesh, 
                  const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                  const double& startTime,
@@ -118,7 +118,7 @@ namespace dcp
                  const double& endTime,
                  const std::vector<std::string>& dtCoefficientTypes,
                  const std::vector<std::string>& previousSolutionCoefficientTypes,
-                 const std::shared_ptr<dcp::AbstractDifferentialProblem> timeSteppingProblem = nullptr,
+                 const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem = nullptr,
                  const int& storeInterval = 1,
                  const int& plotInterval = 1,
                  const std::string& dtName = "dt",
@@ -135,15 +135,15 @@ namespace dcp
              *  the parameter whose name is stored in the member variable \c dtName should be set. 
              *  These strings will be used to call the function \c setCoefficient
              *  on the member variable \c timeSteppingProblem_, so they need to be suitable for that kind of problem.
-             *  See the documentation of the function \c setCoefficient in the class \c LinearDifferentialProblem a
-             *  and \c NonlinearDifferentialProblem for suitable values for this variable.
+             *  See the documentation of the function \c setCoefficient in the class \c LinearProblem a
+             *  and \c NonlinearProblem for suitable values for this variable.
              *  The values contained in \c dtCoefficientTypes will be saved in the member variable \c parameters.
              *  \param previousSolutionCoefficientTypes a vector of strings containing the types of the forms in which 
              *  the parameter whose name is stored in the member variable\c previousSolutionName should be set. 
              *  These strings will be used to call the function \c setCoefficient
              *  on the member variable \c timeSteppingProblem_, so they need to be suitable for that kind of problem.
-             *  See the documentation of the function \c setCoefficient in the class \c LinearDifferentialProblem a
-             *  and \c NonlinearDifferentialProblem for suitable values for this variable.
+             *  See the documentation of the function \c setCoefficient in the class \c LinearProblem a
+             *  and \c NonlinearProblem for suitable values for this variable.
              *  The values contained in \c previousSolutionCoefficientTypes will be saved in the member variable 
              *  \c parameters.
              *  \param timeSteppingProblem the problem to be solved on each time step. Default value = nullptr
@@ -166,7 +166,7 @@ namespace dcp
              *  components", but any negative integer will work), but it can be changed to any non-negative 
              *  integer to indicate the specific component the time loop should use.
              */
-            TimeDependentDifferentialProblem 
+            TimeDependentProblem 
                 (const dolfin::Mesh& mesh, 
                  const dolfin::FunctionSpace& functionSpace,
                  const double& startTime,
@@ -174,7 +174,7 @@ namespace dcp
                  const double& endTime,
                  const std::vector<std::string>& dtCoefficientTypes,
                  const std::vector<std::string>& previousSolutionCoefficientTypes,
-                 const std::shared_ptr<dcp::AbstractDifferentialProblem> timeSteppingProblem = nullptr,
+                 const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem = nullptr,
                  const int& storeInterval = 1,
                  const int& plotInterval = 1,
                  const std::string& dtName = "dt",
@@ -192,15 +192,15 @@ namespace dcp
              *  the parameter whose name is stored in the member variable \c dtName should be set. 
              *  These strings will be used to call the function \c setCoefficient
              *  on the member variable \c timeSteppingProblem_, so they need to be suitable for that kind of problem.
-             *  See the documentation of the function \c setCoefficient in the class \c LinearDifferentialProblem a
-             *  and \c NonlinearDifferentialProblem for suitable values for this variable.
+             *  See the documentation of the function \c setCoefficient in the class \c LinearProblem a
+             *  and \c NonlinearProblem for suitable values for this variable.
              *  The values contained in \c dtCoefficientTypes will be saved in the member variable \c parameters.
              *  \param previousSolutionCoefficientTypes a vector of strings containing the types of the forms in which 
              *  the parameter whose name is stored in the member variable\c previousSolutionName should be set. 
              *  These strings will be used to call the function \c setCoefficient
              *  on the member variable \c timeSteppingProblem_, so they need to be suitable for that kind of problem.
-             *  See the documentation of the function \c setCoefficient in the class \c LinearDifferentialProblem a
-             *  and \c NonlinearDifferentialProblem for suitable values for this variable.
+             *  See the documentation of the function \c setCoefficient in the class \c LinearProblem a
+             *  and \c NonlinearProblem for suitable values for this variable.
              *  The values contained in \c previousSolutionCoefficientTypes will be saved in the member variable 
              *  \c parameters.
              *  \param timeSteppingProblem the problem to be solved on each time step. Default value = nullptr
@@ -223,7 +223,7 @@ namespace dcp
              *  components", but any negative integer will work), but it can be changed to any non-negative 
              *  integer to indicate the specific component the time loop should use.
              */
-            TimeDependentDifferentialProblem 
+            TimeDependentProblem 
                 (dolfin::Mesh&& mesh, 
                  dolfin::FunctionSpace&& functionSpace,
                  const double& startTime,
@@ -231,7 +231,7 @@ namespace dcp
                  const double& endTime,
                  const std::vector<std::string>& dtCoefficientTypes,
                  const std::vector<std::string>& previousSolutionCoefficientTypes,
-                 const std::shared_ptr<dcp::AbstractDifferentialProblem> timeSteppingProblem = nullptr,
+                 const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem = nullptr,
                  const int& storeInterval = 1,
                  const int& plotInterval = 1,
                  const std::string& dtName = "dt",
@@ -244,7 +244,7 @@ namespace dcp
              *  Default destructor, since members of the class are trivially 
              *  destructible.
              */
-            virtual ~TimeDependentDifferentialProblem () {};
+            virtual ~TimeDependentProblem () {};
 
             
             /******************* GETTERS *******************/
@@ -252,7 +252,7 @@ namespace dcp
             /*! 
              *  \return a const reference to the problem's time stepping problem
              */
-            virtual dcp::AbstractDifferentialProblem& timeSteppingProblem ();
+            virtual dcp::AbstractProblem& timeSteppingProblem ();
 
             //! Get const reference to the problem's solution on the last considered time step
             /*!
@@ -269,7 +269,7 @@ namespace dcp
 
             /******************* SETTERS *******************/
             //! Set time stepping problem
-            virtual void setTimeSteppingProblem (const std::shared_ptr<dcp::AbstractDifferentialProblem> timeSteppingProblem);
+            virtual void setTimeSteppingProblem (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem);
             
             //! Set initial solution for the time loop using a \c dolfin::Function
             virtual void setInitialSolution (const dolfin::Function& initialSolution);
@@ -277,7 +277,7 @@ namespace dcp
             //! Set initial solution for the time loop using a \c dolfin::Expression
             virtual void setInitialSolution (const dolfin::Expression& initialSolution);
             
-            //! Set coefficient [1]. Override of virtual function in \c AbstractDifferentialProblem.
+            //! Set coefficient [1]. Override of virtual function in \c AbstractProblem.
             //! This function is used to set the coefficients for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c setCoefficient function.
             /*!
@@ -285,13 +285,13 @@ namespace dcp
              *  \li \c bilinear_form to set the coefficient in the bilinear form
              *  \li \c linear_form to set the coefficient in the linear form
              *  
-             *  See \c AbstractDifferentialProblem documentation for more details on the function.
+             *  See \c AbstractProblem documentation for more details on the function.
              */
             virtual void setCoefficient (const std::string& coefficientType, 
                                          const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                          const std::string& coefficientName);
 
-            //! Set coefficient [2]. Override of virtual function in \c AbstractDifferentialProblem.
+            //! Set coefficient [2]. Override of virtual function in \c AbstractProblem.
             //! This function is used to set the coefficients for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c setCoefficient function.
             /*!
@@ -299,13 +299,13 @@ namespace dcp
              *  \li \c bilinear_form to set the coefficient in the bilinear form
              *  \li \c linear_form to set the coefficient in the linear form
              *  
-             *  See \c AbstractDifferentialProblem documentation for more details on the function
+             *  See \c AbstractProblem documentation for more details on the function
              */
             virtual void setCoefficient (const std::string& coefficientType,
                                          const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                          const std::size_t& coefficientNumber);
 
-            //! Set integration subdomains for the forms. Override of virtual function in \c AbstractDifferentialProblem
+            //! Set integration subdomains for the forms. Override of virtual function in \c AbstractProblem
             //! This function sets the integration subdomains for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c setCoefficient function.
             /*! 
@@ -313,13 +313,13 @@ namespace dcp
              *  \li \c bilinear_form to set the integration subdomain in the bilinear form
              *  \li \c linear_form to set the integration subdomain in the linear form
              *  
-             *  See \c AbstractDifferentialProblem documentation for more details on the function
+             *  See \c AbstractProblem documentation for more details on the function
              */
             virtual void setIntegrationSubdomains (const std::string& formType,
                                                    std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                    const dcp::SubdomainType& subdomainType);
 
-            //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c AbstractDifferentialProblem
+            //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c AbstractProblem
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
@@ -331,7 +331,7 @@ namespace dcp
              */
             virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, std::string bcName = "");
 
-            //! Add Dirichlet boundary condition to the problem [2]. Overrides method in \c AbstractDifferentialProblem
+            //! Add Dirichlet boundary condition to the problem [2]. Overrides method in \c AbstractProblem
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
@@ -343,7 +343,7 @@ namespace dcp
              */
             virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, std::string bcName = "");
 
-            //! Remove Dirichlet boundary condition with given position. Overrides method in \c AbstractDifferentialProblem
+            //! Remove Dirichlet boundary condition with given position. Overrides method in \c AbstractProblem
             //! This function removes the given Dirichlet boundary conditions from the protected member 
             //! \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c removeDirichletBC function.
@@ -373,7 +373,7 @@ namespace dcp
              */
             virtual void solve ();
 
-            //! Clone method. Overrides method in \c AbstractDifferentialProblem
+            //! Clone method. Overrides method in \c AbstractProblem
             /*!
              *  It uses the parameter \c clone_method to decide which type of cloning to perform.
              *  Possible values for such parameter are:
@@ -387,13 +387,13 @@ namespace dcp
              *  
              *  \return a pointer to the cloned object
              */
-            virtual dcp::TimeDependentDifferentialProblem* clone () const;
+            virtual dcp::TimeDependentProblem* clone () const;
 
             // ---------------------------------------------------------------------------------------------//
 
         protected:
             //! The problem to be solved on each time step
-            std::shared_ptr <dcp::AbstractDifferentialProblem> timeSteppingProblem_;
+            std::shared_ptr <dcp::AbstractProblem> timeSteppingProblem_;
             
             //! A vector containing the solutions on the different timesteps, saved every \c storeInterval 
             //! time steps. Note that the value of the variable \c storeInterval is saved in the 

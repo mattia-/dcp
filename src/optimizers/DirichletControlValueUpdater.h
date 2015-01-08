@@ -17,10 +17,10 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OPTIMIZERS_DIRICHLETCONTROLVALUEUPDATER_HPP_INCLUDE_GUARD
-#define SRC_OPTIMIZERS_DIRICHLETCONTROLVALUEUPDATER_HPP_INCLUDE_GUARD
+#ifndef SRC_OPTIMIZERS_DIRICHLETCONTROLVALUEUPDATER_H_INCLUDE_GUARD
+#define SRC_OPTIMIZERS_DIRICHLETCONTROLVALUEUPDATER_H_INCLUDE_GUARD
 
-#include <differential_problems/CompositeDifferentialProblem.h>
+#include <differential_problems/CompositeProblem.h>
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/mesh/SubDomain.h>
@@ -33,7 +33,7 @@ namespace dcp
      *  
      *  This class is a functor which can be passed to the method \c apply() of any class
      *  of the \c AbstractOptimizer hierarchy, which will use it to update the value of
-     *  the control parameter in the \c DifferentialProblem (also passed to the method \c apply()
+     *  the control parameter in the \c CompositeProblem (also passed to the method \c apply()
      *  of the same class) as the optimization proceeds.
      */
     class DirichletControlValueUpdater
@@ -48,7 +48,7 @@ namespace dcp
             //! Constructor
             /*! 
              *  Input arguments are:
-             *  \param problemName string that identifies the problem (in the \c CompositeDifferentialProblem object 
+             *  \param problemName string that identifies the problem (in the \c CompositeProblem object 
              *  passed as input to <tt> this->operator() ()</tt> ) which contains the control parameter to be updated
              *  \param dirichletBCName the name under which the control Dirichlet boundary condition is stored in the 
              *  protected member \c map in the problem
@@ -68,13 +68,13 @@ namespace dcp
              *  \param compositeProblem the problem on which to operate
              *  \param dirichletBCValue the new value for the control Dirichlet boundary condition 
              */
-            void operator() (dcp::CompositeDifferentialProblem& compositeProblem, 
+            void operator() (dcp::CompositeProblem& compositeProblem, 
                              const dolfin::GenericFunction& dirichletBCValue) const;
 
             // ---------------------------------------------------------------------------------------------//
 
         protected:
-            //! The name identifying the problem inside the \c CompositeDifferentialProblem which contains the
+            //! The name identifying the problem inside the \c CompositeProblem which contains the
             //! control parameter
             std::string problemName_;
 

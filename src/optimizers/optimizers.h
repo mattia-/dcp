@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OPTIMIZERS_OPTIMIZER_HPP_INCLUDE_GUARD
-#define SRC_OPTIMIZERS_OPTIMIZER_HPP_INCLUDE_GUARD
+#ifndef SRC_OPTIMIZERS_OPTIMIZER_H_INCLUDE_GUARD
+#define SRC_OPTIMIZERS_OPTIMIZER_H_INCLUDE_GUARD
 
 #include "BacktrackingOptimizer.h"
 #include "DirichletControlValueUpdater.h"

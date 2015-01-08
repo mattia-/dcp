@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <differential_problems/AbstractDifferentialProblem.h>
+#include <differential_problems/AbstractProblem.h>
 #include <dolfin/log/dolfin_log.h>
 #include <map>
 #include <string>
@@ -26,7 +26,7 @@
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    AbstractDifferentialProblem::AbstractDifferentialProblem (const std::shared_ptr<dolfin::Mesh> mesh,
+    AbstractProblem::AbstractProblem (const std::shared_ptr<dolfin::Mesh> mesh,
                                                               const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
         parameters ("differential_problem_parameters"),
         mesh_ (mesh),
@@ -35,12 +35,12 @@ namespace dcp
         solution_ (*functionSpace_),
         dirichletBCsCounter_ (0)
     { 
-        dolfin::log (dolfin::DBG, "AbstractDifferentialProblem object created");
+        dolfin::log (dolfin::DBG, "AbstractProblem object created");
     }
 
 
 
-    AbstractDifferentialProblem::AbstractDifferentialProblem (const dolfin::Mesh& mesh,
+    AbstractProblem::AbstractProblem (const dolfin::Mesh& mesh,
                                                               const dolfin::FunctionSpace& functionSpace) : 
         parameters ("differential_problem_parameters"),
         mesh_ (new dolfin::Mesh (mesh)),
@@ -49,12 +49,12 @@ namespace dcp
         solution_ (*functionSpace_),
         dirichletBCsCounter_ (0)
     { 
-        dolfin::log (dolfin::DBG, "AbstractDifferentialProblem object created"); 
+        dolfin::log (dolfin::DBG, "AbstractProblem object created"); 
     }
 
 
 
-    AbstractDifferentialProblem::AbstractDifferentialProblem (dolfin::Mesh&& mesh, 
+    AbstractProblem::AbstractProblem (dolfin::Mesh&& mesh, 
                                                               dolfin::FunctionSpace&& functionSpace) : 
         parameters ("differential_problem_parameters"),
         mesh_ (new dolfin::Mesh (std::move (mesh))),
@@ -63,27 +63,27 @@ namespace dcp
         solution_ (*functionSpace_),
         dirichletBCsCounter_ (0)
     { 
-        dolfin::log (dolfin::DBG, "AbstractDifferentialProblem object created"); 
+        dolfin::log (dolfin::DBG, "AbstractProblem object created"); 
     }
 
 
 
     /********************** GETTERS ***********************/
-    const dolfin::Mesh& AbstractDifferentialProblem::mesh () const
+    const dolfin::Mesh& AbstractProblem::mesh () const
     {
         return *mesh_;      
     }
 
 
 
-    const dolfin::FunctionSpace& AbstractDifferentialProblem::functionSpace () const
+    const dolfin::FunctionSpace& AbstractProblem::functionSpace () const
     {
         return *functionSpace_;
     }
 
 
 
-    const dolfin::DirichletBC& AbstractDifferentialProblem::dirichletBC (const std::string& bcName) const
+    const dolfin::DirichletBC& AbstractProblem::dirichletBC (const std::string& bcName) const
     {
         auto bcIterator = dirichletBCs_.find (bcName);
         if (bcIterator == dirichletBCs_.end ())
@@ -95,14 +95,14 @@ namespace dcp
 
 
 
-    const std::map<std::string, dolfin::DirichletBC>& AbstractDifferentialProblem::dirichletBCs () const
+    const std::map<std::string, dolfin::DirichletBC>& AbstractProblem::dirichletBCs () const
     {
         return dirichletBCs_;
     }
 
 
 
-    const dolfin::Function& AbstractDifferentialProblem::solution () const
+    const dolfin::Function& AbstractProblem::solution () const
     {
         return solution_;
     }
@@ -110,7 +110,7 @@ namespace dcp
 
 
     /********************** SETTERS ***********************/
-    bool AbstractDifferentialProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
+    bool AbstractProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
                                                       std::string bcName)
     {
         if (bcName.empty ())
@@ -133,7 +133,7 @@ namespace dcp
 
 
 
-    bool AbstractDifferentialProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition,
+    bool AbstractProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition,
                                                       std::string bcName)
     {
         std::string bcName_ (bcName);
@@ -157,7 +157,7 @@ namespace dcp
 
 
 
-    bool AbstractDifferentialProblem::removeDirichletBC (const std::string& bcName)
+    bool AbstractProblem::removeDirichletBC (const std::string& bcName)
     {
         dolfin::log (dolfin::DBG, "Removing dirichlet boundary condition \"%s\" from boundary conditions map...", 
                      bcName.c_str ());
@@ -173,7 +173,7 @@ namespace dcp
     
 
 
-    void AbstractDifferentialProblem::update ()
+    void AbstractProblem::update ()
     {
 
     }

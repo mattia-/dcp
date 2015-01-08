@@ -18,7 +18,7 @@
  */ 
 
 #include <optimizers/DistributedControlValueUpdater.h>
-#include <differential_problems/AbstractDifferentialProblem.h>
+#include <differential_problems/AbstractProblem.h>
 
 namespace dcp
 {
@@ -34,10 +34,10 @@ namespace dcp
 
 
     /************************* OPERATORS ********************/
-    void DistributedControlValueUpdater::operator() (dcp::CompositeDifferentialProblem& compositeProblem, 
+    void DistributedControlValueUpdater::operator() (dcp::CompositeProblem& compositeProblem, 
                                                      const std::shared_ptr <const dolfin::GenericFunction> coefficientValue) const
     {
-        dcp::AbstractDifferentialProblem& problem = compositeProblem [problemName_];
+        dcp::AbstractProblem& problem = compositeProblem [problemName_];
         
         problem.setCoefficient (coefficientType_, coefficientValue, coefficientName_);
     }

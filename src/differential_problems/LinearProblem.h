@@ -89,11 +89,11 @@ namespace dcp
                  *  as input.
                  */
                 LinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-                                           const std::string& solverType = "lu_solver",
-                                           const std::string& solverMethod = "default",
-                                           const std::string& solverPreconditioner = "default");
-                
+                               const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                               const std::string& solverType = "lu_solver",
+                               const std::string& solverMethod = "default",
+                               const std::string& solverPreconditioner = "default");
+
 
                 //! Constructor with references [1]
                 /*!
@@ -111,10 +111,10 @@ namespace dcp
                  *  as input.
                  */
                 LinearProblem (const dolfin::Mesh& mesh, 
-                                           const dolfin::FunctionSpace& functionSpace,
-                                           const std::string& solverType = "lu_solver",
-                                           const std::string& solverMethod = "default",
-                                           const std::string& solverPreconditioner = "default");
+                               const dolfin::FunctionSpace& functionSpace,
+                               const std::string& solverType = "lu_solver",
+                               const std::string& solverMethod = "default",
+                               const std::string& solverPreconditioner = "default");
 
                 //! Constructor with rvalue references [1]
                 /*!
@@ -132,12 +132,12 @@ namespace dcp
                  *  as input.
                  */
                 LinearProblem (dolfin::Mesh&& mesh, 
-                                           dolfin::FunctionSpace&& functionSpace,
-                                           const std::string& solverType = "lu_solver",
-                                           const std::string& solverMethod = "default",
-                                           const std::string& solverPreconditioner = "default");
+                               dolfin::FunctionSpace&& functionSpace,
+                               const std::string& solverType = "lu_solver",
+                               const std::string& solverMethod = "default",
+                               const std::string& solverPreconditioner = "default");
 
-                
+
                 //!  Constructor with shared pointers [2]
                 /*!
                  *  \param mesh the problem mesh as a <tt> const std::shared_ptr </tt> to \c dolfin::Mesh
@@ -155,12 +155,12 @@ namespace dcp
                  *  as input.
                  */
                 LinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                           const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-                                           const T_BilinearForm& bilinearForm,
-                                           const T_LinearForm& linearForm,
-                                           const std::string& solverType = "lu_solver",
-                                           const std::string& solverMethod = "default",
-                                           const std::string& solverPreconditioner = "default");
+                               const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                               const T_BilinearForm& bilinearForm,
+                               const T_LinearForm& linearForm,
+                               const std::string& solverType = "lu_solver",
+                               const std::string& solverMethod = "default",
+                               const std::string& solverPreconditioner = "default");
 
                 //! Constructor with references [2]
                 /*!
@@ -180,12 +180,12 @@ namespace dcp
                  *  as input.
                  */
                 LinearProblem (const dolfin::Mesh& mesh, 
-                                           const dolfin::FunctionSpace& functionSpace,
-                                           const T_BilinearForm& bilinearForm,
-                                           const T_LinearForm& linearForm,
-                                           const std::string& solverType = "lu_solver",
-                                           const std::string& solverMethod = "default",
-                                           const std::string& solverPreconditioner = "default");
+                               const dolfin::FunctionSpace& functionSpace,
+                               const T_BilinearForm& bilinearForm,
+                               const T_LinearForm& linearForm,
+                               const std::string& solverType = "lu_solver",
+                               const std::string& solverMethod = "default",
+                               const std::string& solverPreconditioner = "default");
 
                 //! Constructor with rvalue references [2]
                 /*!
@@ -205,15 +205,15 @@ namespace dcp
                  *  as input.
                  */
                 LinearProblem (dolfin::Mesh&& mesh, 
-                                           dolfin::FunctionSpace&& functionSpace,
-                                           T_BilinearForm&& bilinearForm,
-                                           T_LinearForm&& linearForm,
-                                           const std::string& solverType = "lu_solver",
-                                           const std::string& solverMethod = "default",
-                                           const std::string& solverPreconditioner = "default");
+                               dolfin::FunctionSpace&& functionSpace,
+                               T_BilinearForm&& bilinearForm,
+                               T_LinearForm&& linearForm,
+                               const std::string& solverType = "lu_solver",
+                               const std::string& solverMethod = "default",
+                               const std::string& solverPreconditioner = "default");
 
                 /******************* DESTRUCTOR *******************/
-                
+
                 //! Destructor
                 /*! 
                  *  Default destructor, since members of the class are trivially 
@@ -414,10 +414,10 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-                                   const std::string& solverType,
-                                   const std::string& solverMethod,
-                                   const std::string& solverPreconditioner) :
+                       const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                       const std::string& solverType,
+                       const std::string& solverMethod,
+                       const std::string& solverPreconditioner) :
             AbstractProblem (mesh, functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
@@ -453,10 +453,10 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (const dolfin::Mesh& mesh, 
-                                   const dolfin::FunctionSpace& functionSpace,
-                                   const std::string& solverType,
-                                   const std::string& solverMethod,
-                                   const std::string& solverPreconditioner) :
+                       const dolfin::FunctionSpace& functionSpace,
+                       const std::string& solverType,
+                       const std::string& solverMethod,
+                       const std::string& solverPreconditioner) :
             AbstractProblem (mesh, functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
@@ -492,10 +492,10 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (dolfin::Mesh&& mesh, 
-                                   dolfin::FunctionSpace&& functionSpace,
-                                   const std::string& solverType,
-                                   const std::string& solverMethod,
-                                   const std::string& solverPreconditioner) :
+                       dolfin::FunctionSpace&& functionSpace,
+                       const std::string& solverType,
+                       const std::string& solverMethod,
+                       const std::string& solverPreconditioner) :
             AbstractProblem (mesh, functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
@@ -531,12 +531,12 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                   const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-                                   const T_BilinearForm& bilinearForm,
-                                   const T_LinearForm& linearForm,
-                                   const std::string& solverType,
-                                   const std::string& solverMethod,
-                                   const std::string& solverPreconditioner) :
+                       const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                       const T_BilinearForm& bilinearForm,
+                       const T_LinearForm& linearForm,
+                       const std::string& solverType,
+                       const std::string& solverMethod,
+                       const std::string& solverPreconditioner) :
             AbstractProblem (mesh, functionSpace),
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
@@ -572,12 +572,12 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (const dolfin::Mesh& mesh, 
-                                   const dolfin::FunctionSpace& functionSpace,
-                                   const T_BilinearForm& bilinearForm,
-                                   const T_LinearForm& linearForm,
-                                   const std::string& solverType,
-                                   const std::string& solverMethod,
-                                   const std::string& solverPreconditioner) :
+                       const dolfin::FunctionSpace& functionSpace,
+                       const T_BilinearForm& bilinearForm,
+                       const T_LinearForm& linearForm,
+                       const std::string& solverType,
+                       const std::string& solverMethod,
+                       const std::string& solverPreconditioner) :
             AbstractProblem (mesh, functionSpace),
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
@@ -613,12 +613,12 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (dolfin::Mesh&& mesh, 
-                                   dolfin::FunctionSpace&& functionSpace,
-                                   T_BilinearForm&& bilinearForm,
-                                   T_LinearForm&& linearForm,
-                                   const std::string& solverType,
-                                   const std::string& solverMethod,
-                                   const std::string& solverPreconditioner) :
+                       dolfin::FunctionSpace&& functionSpace,
+                       T_BilinearForm&& bilinearForm,
+                       T_LinearForm&& linearForm,
+                       const std::string& solverType,
+                       const std::string& solverMethod,
+                       const std::string& solverPreconditioner) :
             AbstractProblem (mesh, functionSpace),
             bilinearForm_ (std::move (bilinearForm)),
             linearForm_ (std::move (linearForm)),

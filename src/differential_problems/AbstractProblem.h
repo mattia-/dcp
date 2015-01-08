@@ -59,7 +59,7 @@ namespace dcp
              *  as input.
              */
             AbstractProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                         const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
+                             const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
 
 
             //! Constructor with references
@@ -72,7 +72,7 @@ namespace dcp
              *  as input.
              */
             AbstractProblem (const dolfin::Mesh& mesh, 
-                                         const dolfin::FunctionSpace& functionSpace);
+                             const dolfin::FunctionSpace& functionSpace);
 
             //! Constructor with rvalue references
             /*!
@@ -84,7 +84,7 @@ namespace dcp
              *  as input.
              */
             AbstractProblem (dolfin::Mesh&& mesh, 
-                                         dolfin::FunctionSpace&& functionSpace);
+                             dolfin::FunctionSpace&& functionSpace);
 
 
             /************************* DESTRUCTOR ********************/

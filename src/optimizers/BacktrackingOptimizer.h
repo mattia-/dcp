@@ -232,19 +232,19 @@ namespace dcp
              *  \c false otherwise
              */
             bool backtrackingLoop (const double& previousFunctionalValue,
-                              double& currentFunctionalValue, 
-                              const double& gradientDotSearchDirection,
-                              double& alpha,
-                              int& backtrackingIteration,
-                              dolfin::Function& controlVariable,
-                              const dolfin::Function& previousControlVariable,
-                              const dolfin::Function& searchDirection,
-                              dcp::CompositeProblem& problem,
-                              const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
-                              const std::function 
-                              <
-                                  void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
-                              >& updater);
+                                   double& currentFunctionalValue, 
+                                   const double& gradientDotSearchDirection,
+                                   double& alpha,
+                                   int& backtrackingIteration,
+                                   dolfin::Function& controlVariable,
+                                   const dolfin::Function& previousControlVariable,
+                                   const dolfin::Function& searchDirection,
+                                   dcp::CompositeProblem& problem,
+                                   const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
+                                   const std::function 
+                                   <
+                                       void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
+                                   >& updater);
             
             //! Function to print to file some values. It is mostly useful to avid code repetition inside this class
             /*! 

@@ -148,7 +148,7 @@ namespace dcp
              *  The pair created by the two input arguments will be inserted in the protected member \c variables_
              */
             virtual void setCoefficient (const std::string& variableName, 
-                                 const std::shared_ptr <const dolfin::GenericFunction> value);
+                                         const std::shared_ptr <const dolfin::GenericFunction> value);
 
 
             /******************* GETTERS *******************/

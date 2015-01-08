@@ -27,7 +27,7 @@ namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
     AbstractProblem::AbstractProblem (const std::shared_ptr<dolfin::Mesh> mesh,
-                                                              const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
+                                      const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
         parameters ("differential_problem_parameters"),
         mesh_ (mesh),
         functionSpace_ (functionSpace),
@@ -41,7 +41,7 @@ namespace dcp
 
 
     AbstractProblem::AbstractProblem (const dolfin::Mesh& mesh,
-                                                              const dolfin::FunctionSpace& functionSpace) : 
+                                      const dolfin::FunctionSpace& functionSpace) : 
         parameters ("differential_problem_parameters"),
         mesh_ (new dolfin::Mesh (mesh)),
         functionSpace_ (new dolfin::FunctionSpace (functionSpace)),
@@ -55,7 +55,7 @@ namespace dcp
 
 
     AbstractProblem::AbstractProblem (dolfin::Mesh&& mesh, 
-                                                              dolfin::FunctionSpace&& functionSpace) : 
+                                      dolfin::FunctionSpace&& functionSpace) : 
         parameters ("differential_problem_parameters"),
         mesh_ (new dolfin::Mesh (std::move (mesh))),
         functionSpace_ (new dolfin::FunctionSpace (std::move (functionSpace))),
@@ -111,7 +111,7 @@ namespace dcp
 
     /********************** SETTERS ***********************/
     bool AbstractProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
-                                                      std::string bcName)
+                                          std::string bcName)
     {
         if (bcName.empty ())
         {
@@ -134,7 +134,7 @@ namespace dcp
 
 
     bool AbstractProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition,
-                                                      std::string bcName)
+                                          std::string bcName)
     {
         std::string bcName_ (bcName);
         if (bcName_.empty ())

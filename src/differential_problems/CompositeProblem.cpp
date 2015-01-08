@@ -46,7 +46,7 @@ namespace dcp
 
 
     void CompositeProblem::addProblem (const std::string& problemName, 
-                                                   AbstractProblem& problem)
+                                       AbstractProblem& problem)
     {
         dolfin::begin (dolfin::DBG, "Inserting problem \"%s\" in composite differential problem...", problemName.c_str ());
          
@@ -74,7 +74,7 @@ namespace dcp
     
 
     void CompositeProblem::addProblem (const std::string& problemName, 
-                                                   std::unique_ptr<AbstractProblem>& problem)
+                                       std::unique_ptr<AbstractProblem>& problem)
     {
         dolfin::begin (dolfin::DBG, "Inserting problem \"%s\" in composite differential problem...", problemName.c_str ());
         
@@ -174,10 +174,10 @@ namespace dcp
 
 
     void CompositeProblem::addLink (const std::string& linkFrom, 
-                                                const std::string& linkedCoefficientName,
-                                                const std::string& linkedCoefficientType, 
-                                                const std::string& linkTo,
-                                                const bool& forceRelinking)
+                                    const std::string& linkedCoefficientName,
+                                    const std::string& linkedCoefficientType, 
+                                    const std::string& linkTo,
+                                    const bool& forceRelinking)
     {
         dolfin::begin (dolfin::DBG, "Setting up link (%s, %s, %s) -> (%s, all solution components)...",
                        linkFrom.c_str (),
@@ -256,11 +256,11 @@ namespace dcp
 
 
     void CompositeProblem::addLink (const std::string& linkFrom, 
-                                                const std::string& linkedCoefficientName,
-                                                const std::string& linkedCoefficientType, 
-                                                const std::string& linkTo,
-                                                const int& linkToComponent,
-                                                const bool& forceRelinking)
+                                    const std::string& linkedCoefficientName,
+                                    const std::string& linkedCoefficientType, 
+                                    const std::string& linkTo,
+                                    const int& linkToComponent,
+                                    const bool& forceRelinking)
     {
         dolfin::begin (dolfin::DBG, "Setting up link (%s, %s, %s) -> (%s, component %d)...",
                        linkFrom.c_str (),
@@ -508,9 +508,9 @@ namespace dcp
     
     /******************* PROTECTED METHODS *******************/
     void CompositeProblem::linkProblems (const std::pair <
-                                                                      std::tuple <std::string, std::string, std::string>, 
-                                                                      std::pair  <std::string, int>
-                                                                     >& link)
+                                                          std::tuple <std::string, std::string, std::string>, 
+                                                          std::pair  <std::string, int>
+                                                         >& link)
     {
         if (std::get<1> (link.second) == -1)
         {

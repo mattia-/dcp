@@ -83,9 +83,9 @@ namespace dcp
                  *  as input.
                  */
                 NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                              const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-                                              const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName = "" );
+                                  const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                                  const std::string& residualFormSolutionName,
+                                  const std::string& jacobianFormSolutionName = "" );
                 
 
                 //! Constructor with references [1]
@@ -103,9 +103,9 @@ namespace dcp
                  *  as input.
                  */
                 NonlinearProblem (const dolfin::Mesh& mesh, 
-                                              const dolfin::FunctionSpace& functionSpace,
-                                              const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName = "" );
+                                  const dolfin::FunctionSpace& functionSpace,
+                                  const std::string& residualFormSolutionName,
+                                  const std::string& jacobianFormSolutionName = "" );
 
                 //! Constructor with rvalue references [1]
                 /*!
@@ -122,9 +122,9 @@ namespace dcp
                  *  as input.
                  */
                 NonlinearProblem (dolfin::Mesh&& mesh, 
-                                              dolfin::FunctionSpace&& functionSpace,
-                                              const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName = "" );
+                                  dolfin::FunctionSpace&& functionSpace,
+                                  const std::string& residualFormSolutionName,
+                                  const std::string& jacobianFormSolutionName = "" );
 
                 
                 //!  Constructor with shared pointers [2]
@@ -144,11 +144,11 @@ namespace dcp
                  *  as input.
                  */
                 NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                              const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-                                              const T_ResidualForm& residualForm,
-                                              const T_JacobianForm& jacobianForm,
-                                              const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName = "" );
+                                  const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                                  const T_ResidualForm& residualForm,
+                                  const T_JacobianForm& jacobianForm,
+                                  const std::string& residualFormSolutionName,
+                                  const std::string& jacobianFormSolutionName = "" );
 
                 //! Constructor with references [2]
                 /*!
@@ -167,11 +167,11 @@ namespace dcp
                  *  as input.
                  */
                 NonlinearProblem (const dolfin::Mesh& mesh, 
-                                              const dolfin::FunctionSpace& functionSpace,
-                                              const T_ResidualForm& residualForm,
-                                              const T_JacobianForm& jacobianForm,
-                                              const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName = "" );
+                                  const dolfin::FunctionSpace& functionSpace,
+                                  const T_ResidualForm& residualForm,
+                                  const T_JacobianForm& jacobianForm,
+                                  const std::string& residualFormSolutionName,
+                                  const std::string& jacobianFormSolutionName = "" );
 
                 //! Constructor with rvalue references [2]
                 /*!
@@ -190,11 +190,11 @@ namespace dcp
                  *  as input.
                  */
                 NonlinearProblem (dolfin::Mesh&& mesh, 
-                                              dolfin::FunctionSpace&& functionSpace,
-                                              T_ResidualForm&& residualForm,
-                                              T_JacobianForm&& jacobianForm,
-                                              const std::string& residualFormSolutionName,
-                                              const std::string& jacobianFormSolutionName = "" );
+                                  dolfin::FunctionSpace&& functionSpace,
+                                  T_ResidualForm&& residualForm,
+                                  T_JacobianForm&& jacobianForm,
+                                  const std::string& residualFormSolutionName,
+                                  const std::string& jacobianFormSolutionName = "" );
                 
 
                 /******************* DESTRUCTOR *******************/
@@ -328,9 +328,9 @@ namespace dcp
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                      const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-                                      const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName) : 
+                          const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                          const std::string& residualFormSolutionName,
+                          const std::string& jacobianFormSolutionName) : 
             AbstractProblem (mesh, functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
@@ -374,9 +374,9 @@ namespace dcp
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         NonlinearProblem (const dolfin::Mesh& mesh, 
-                                      const dolfin::FunctionSpace& functionSpace,
-                                      const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName) : 
+                          const dolfin::FunctionSpace& functionSpace,
+                          const std::string& residualFormSolutionName,
+                          const std::string& jacobianFormSolutionName) : 
             AbstractProblem (mesh, functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
@@ -420,9 +420,9 @@ namespace dcp
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         NonlinearProblem (dolfin::Mesh&& mesh, 
-                                      dolfin::FunctionSpace&& functionSpace,
-                                      const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName) : 
+                          dolfin::FunctionSpace&& functionSpace,
+                          const std::string& residualFormSolutionName,
+                          const std::string& jacobianFormSolutionName) : 
             AbstractProblem (mesh, functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
@@ -466,11 +466,11 @@ namespace dcp
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                      const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-                                      const T_ResidualForm& residualForm,
-                                      const T_JacobianForm& jacobianForm,
-                                      const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName) : 
+                          const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                          const T_ResidualForm& residualForm,
+                          const T_JacobianForm& jacobianForm,
+                          const std::string& residualFormSolutionName,
+                          const std::string& jacobianFormSolutionName) : 
             AbstractProblem (mesh, functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
@@ -514,11 +514,11 @@ namespace dcp
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         NonlinearProblem (const dolfin::Mesh& mesh, 
-                                      const dolfin::FunctionSpace& functionSpace,
-                                      const T_ResidualForm& residualForm,
-                                      const T_JacobianForm& jacobianForm,
-                                      const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName) : 
+                          const dolfin::FunctionSpace& functionSpace,
+                          const T_ResidualForm& residualForm,
+                          const T_JacobianForm& jacobianForm,
+                          const std::string& residualFormSolutionName,
+                          const std::string& jacobianFormSolutionName) : 
             AbstractProblem (mesh, functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
@@ -562,11 +562,11 @@ namespace dcp
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         NonlinearProblem (dolfin::Mesh&& mesh, 
-                                      dolfin::FunctionSpace&& functionSpace,
-                                      T_ResidualForm&& residualForm,
-                                      T_JacobianForm&& jacobianForm,
-                                      const std::string& residualFormSolutionName,
-                                      const std::string& jacobianFormSolutionName) : 
+                          dolfin::FunctionSpace&& functionSpace,
+                          T_ResidualForm&& residualForm,
+                          T_JacobianForm&& jacobianForm,
+                          const std::string& residualFormSolutionName,
+                          const std::string& jacobianFormSolutionName) : 
             AbstractProblem (mesh, functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)

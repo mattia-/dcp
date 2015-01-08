@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_COMPOSITEDIFFERENTIALPROBLEM_H_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_COMPOSITEDIFFERENTIALPROBLEM_H_INCLUDE_GUARD
+#ifndef SRC_DIFFERENTIAL_PROBLEMS_COMPOSITEPROBLEM_H_INCLUDE_GUARD
+#define SRC_DIFFERENTIAL_PROBLEMS_COMPOSITEPROBLEM_H_INCLUDE_GUARD
 
 #include <differential_problems/AbstractProblem.h>
 #include <differential_problems/LinearProblem.h>

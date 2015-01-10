@@ -262,7 +262,7 @@ namespace dcp
                  */
                 virtual void setCoefficient (const std::string& coefficientType, 
                                              const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-                                             const std::string& coefficientName);
+                                             const std::string& coefficientName) override;
 
                 //! Set coefficient [2]. Override of virtual function in \c AbstractProblem.
                 /*!
@@ -274,7 +274,7 @@ namespace dcp
                  */
                 virtual void setCoefficient (const std::string& coefficientType,
                                              const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-                                             const std::size_t& coefficientNumber);
+                                             const std::size_t& coefficientNumber) override;
 
                 //! Set integration subdomains for the forms. Override of virtual function in \c AbstractProblem
                 /*! 
@@ -286,7 +286,7 @@ namespace dcp
                  */
                 virtual void setIntegrationSubdomains (const std::string& formType,
                                                        std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                       const dcp::SubdomainType& subdomainType);
+                                                       const dcp::SubdomainType& subdomainType) override;
 
                 //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c AbstractProblem
                 /*!
@@ -297,7 +297,7 @@ namespace dcp
                  *  
                  *  \return boolean flag, with \c true representing success and \c false representing failure
                  */
-                virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, std::string bcName = "");
+                virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, std::string bcName = "") override;
 
                 //! Add Dirichlet boundary condition to the problem [2]. Overrides method in \c AbstractProblem
                 /*!
@@ -308,7 +308,7 @@ namespace dcp
                  *  
                  *  \return boolean flag, with \c true representing success and \c false representing failure
                  */
-                virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, std::string bcName = "");
+                virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, std::string bcName = "") override;
 
                 //! Remove Dirichlet boundary condition with given position. Overrides method in \c AbstractProblem
                 /*!
@@ -317,11 +317,11 @@ namespace dcp
                  *  
                  *  \return boolean flag, with \c true representing success and \c false representing failure
                  */
-                virtual bool removeDirichletBC (const std::string& bcName);
+                virtual bool removeDirichletBC (const std::string& bcName) override;
                 
                 //! Method to update class members. It checks for differences between desired and current solver parameters
                 //! and creates a new solver, setting also the proper parameters
-                virtual void update ();
+                virtual void update () override;
 
                 
                 /******************* METHODS *******************/
@@ -333,16 +333,13 @@ namespace dcp
                  *  \c parameters to decided whether problem's matrix and vector should be reassembled and if
                  *  the values of the parameters \c desired_solver_type, \c desired_solver_method and 
                  *  \c desired_solver_preconditioner match the values of \c current_solver_type, \c current_solver_method
-                 *  and \c current_solver_preconditioner. If they differ, it calls \c createSolver()
+                 *  and \c current_solver_preconditioner. If they differ, it calls \c createSolver().
+                 * 
+                 *  \param type the solution type wanted. Possible values are:
+                 *  \li \c "default" : the normal solution process
+                 *  \li \c "must_reassemble" : force system reassembly
                  */
-                virtual void solve ();
-
-                //! Solve problem specifying flag
-                /*!
-                 *  \param mustReassemble set it to \c true if the system operators (matrix and right hand side vector)
-                 *         should be reassembled. It is \c false by default.
-                 */
-                virtual void solve (const bool& mustReassemble);
+                virtual void solve (const std::string& type = "default") override;
 
                 //! Clone method. Overrides method in \c AbstractProblem
                 /*!
@@ -358,8 +355,7 @@ namespace dcp
                  *  
                  *  \return a pointer to the cloned object
                  */
-                virtual dcp::LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>*
-                    clone () const;
+                virtual dcp::LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>* clone () const override;
 
                 // ---------------------------------------------------------------------------------------------//
 
@@ -427,6 +423,8 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
             parameters.add ("current_solver_type", solverType);
@@ -466,6 +464,8 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
             parameters.add ("current_solver_type", solverType);
@@ -504,6 +504,8 @@ namespace dcp
             rhsVector_ ()
         { 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
+            
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
@@ -546,6 +548,8 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
             parameters.add ("current_solver_type", solverType);
@@ -587,6 +591,8 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
             parameters.add ("current_solver_type", solverType);
@@ -627,6 +633,8 @@ namespace dcp
             rhsVector_ ()
         {
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
+            
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
@@ -922,11 +930,19 @@ namespace dcp
     
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         void LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        solve () 
+        solve (const std::string& type) 
         {
             update ();
             
             dolfin::begin (dolfin::INFO, "Solving problem...");
+            
+            // variable to save current value of parameter force_reassemble_system
+            bool forceReassembleSystemBackup = parameters ["force_reassemble_system"];
+            if (type == "must_reassemble")
+            {
+                // overwrite parameter force_reassemble_system with input value and solve problem
+                parameters ["force_reassemble_system"] = true;
+            }
             
             // define auxiliary string variables
             bool systemIsAssembled = parameters ["system_is_assembled"];
@@ -962,26 +978,15 @@ namespace dcp
                 dolfin::end ();
             }
             
-            solver_ -> solve (*solution_.vector (), rhsVector_);
+            solver_ -> solve (*(solution_.back ().vector ()), rhsVector_);
+            
+            if (type == "must_reassemble")
+            {
+                // restore value of parameter force_reassemble_system
+                parameters ["force_reassemble_system"] = forceReassembleSystemBackup;
+            }
             
             dolfin::end ();
-        }
-
-
-
-    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        void LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        solve (const bool& mustReassemble)
-        {
-            // save current value of parameter force_reassemble_system
-            bool forceReassembleSystemBackup = parameters ["force_reassemble_system"];
-            
-            // overwrite parameter force_reassemble_system with input value and solve problem
-            parameters ["force_reassemble_system"] = mustReassemble;
-            solve ();
-            
-            // restore value of parameter force_reassemble_system
-            parameters ["force_reassemble_system"] = forceReassembleSystemBackup;
         }
     
     

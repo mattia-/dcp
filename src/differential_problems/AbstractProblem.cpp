@@ -32,7 +32,7 @@ namespace dcp
         mesh_ (mesh),
         functionSpace_ (functionSpace),
         dirichletBCs_ (),
-        solution_ (*functionSpace_),
+        solution_ (),
         dirichletBCsCounter_ (0)
     { 
         dolfin::log (dolfin::DBG, "AbstractProblem object created");
@@ -46,7 +46,7 @@ namespace dcp
         mesh_ (new dolfin::Mesh (mesh)),
         functionSpace_ (new dolfin::FunctionSpace (functionSpace)),
         dirichletBCs_ (),
-        solution_ (*functionSpace_),
+        solution_ (),
         dirichletBCsCounter_ (0)
     { 
         dolfin::log (dolfin::DBG, "AbstractProblem object created"); 
@@ -60,7 +60,7 @@ namespace dcp
         mesh_ (new dolfin::Mesh (std::move (mesh))),
         functionSpace_ (new dolfin::FunctionSpace (std::move (functionSpace))),
         dirichletBCs_ (),
-        solution_ (*functionSpace_),
+        solution_ (),
         dirichletBCsCounter_ (0)
     { 
         dolfin::log (dolfin::DBG, "AbstractProblem object created"); 
@@ -69,16 +69,16 @@ namespace dcp
 
 
     /********************** GETTERS ***********************/
-    const dolfin::Mesh& AbstractProblem::mesh () const
+    std::shared_ptr<dolfin::Mesh> AbstractProblem::mesh () const
     {
-        return *mesh_;      
+        return mesh_;      
     }
 
 
 
-    const dolfin::FunctionSpace& AbstractProblem::functionSpace () const
+    std::shared_ptr<dolfin::FunctionSpace> AbstractProblem::functionSpace () const
     {
-        return *functionSpace_;
+        return functionSpace_;
     }
 
 
@@ -104,7 +104,7 @@ namespace dcp
 
     const dolfin::Function& AbstractProblem::solution () const
     {
-        return solution_;
+        return solution_.back ();
     }
 
 

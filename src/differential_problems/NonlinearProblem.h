@@ -243,7 +243,7 @@ namespace dcp
                  */
                 virtual void setCoefficient (const std::string& coefficientType, 
                                              const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-                                             const std::string& coefficientName = "default");
+                                             const std::string& coefficientName = "default") override;
 
                 //! Set coefficient [2]. Override of virtual function in \c AbstractProblem.
                 /*!
@@ -255,7 +255,7 @@ namespace dcp
                  */
                 virtual void setCoefficient (const std::string& coefficientType,
                                              const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-                                             const std::size_t& coefficientNumber);
+                                             const std::size_t& coefficientNumber) override;
 
                 //! Set integration subdomains for the forms. Override of virtual function in \c AbstractProblem
                 /*! 
@@ -267,7 +267,7 @@ namespace dcp
                  */
                 virtual void setIntegrationSubdomains (const std::string& formType,
                                                        std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                       const dcp::SubdomainType& subdomainType);
+                                                       const dcp::SubdomainType& subdomainType) override;
                 
                 /******************* METHODS *******************/
 
@@ -275,8 +275,11 @@ namespace dcp
                 /*!
                  * This method solves the problem defined. It uses the private members' value to set the problem and then
                  * stores the solution in the private member \c solution_
+                 *
+                 * \param type the solution type requested. In this class, the only possibility is to set
+                 * \c type equal to \c "default".
                  */
-                virtual void solve ();
+                virtual void solve (const std::string& type = "default") override;
 
                 //! Solve problem specifying flag
                 /*!
@@ -299,8 +302,7 @@ namespace dcp
                  *  
                  *  \return a pointer to the cloned object
                  */
-                virtual dcp::NonlinearProblem <T_ResidualForm, T_JacobianForm>*
-                    clone () const;
+                virtual dcp::NonlinearProblem <T_ResidualForm, T_JacobianForm>* clone () const override;
                 
                 // ---------------------------------------------------------------------------------------------//
 
@@ -337,6 +339,8 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
@@ -355,13 +359,13 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             
             dolfin::end ();
@@ -383,6 +387,8 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
@@ -401,13 +407,13 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             
             dolfin::end ();
@@ -429,6 +435,8 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
@@ -447,13 +455,13 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             
             dolfin::end ();
@@ -477,6 +485,8 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
@@ -495,13 +505,13 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             
             dolfin::end ();
@@ -525,6 +535,8 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
@@ -543,13 +555,13 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             
             dolfin::end ();
@@ -573,6 +585,8 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
@@ -592,13 +606,13 @@ namespace dcp
             
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_));
+                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             
             dolfin::end ();
@@ -652,11 +666,11 @@ namespace dcp
                 // check whether coefficientValue is a pointer to dolfin::Function or dolfin::Expression
                 if (std::dynamic_pointer_cast<const dolfin::Function> (coefficientValue) != nullptr)
                 {
-                    solution_ = *(std::dynamic_pointer_cast<const dolfin::Function> (coefficientValue));
+                    solution_.back () = *(std::dynamic_pointer_cast<const dolfin::Function> (coefficientValue));
                 }
                 else if (std::dynamic_pointer_cast<const dolfin::Expression> (coefficientValue) != nullptr)
                 {
-                    solution_ = *(std::dynamic_pointer_cast<const dolfin::Expression> (coefficientValue));
+                    solution_.back () = *(std::dynamic_pointer_cast<const dolfin::Expression> (coefficientValue));
                 }
                 else
                 {
@@ -762,7 +776,7 @@ namespace dcp
 
     template <class T_ResidualForm, class T_JacobianForm>
         void NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        solve () 
+        solve (const std::string& type) 
         {
             dolfin::begin (dolfin::INFO, "Solving problem...");
             
@@ -788,12 +802,12 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Solver parameters set name is: %s", solverParametersSetName.c_str ());
             if (tmpDirichletBCs.size () != 0)
             {
-                dolfin::solve (residualForm_ == 0, solution_, tmpDirichletBCs, jacobianForm_, 
+                dolfin::solve (residualForm_ == 0, solution_.back (), tmpDirichletBCs, jacobianForm_, 
                                parameters (solverParametersSetName));
             }
             else
             {
-                dolfin::solve (residualForm_ == 0, solution_, jacobianForm_, 
+                dolfin::solve (residualForm_ == 0, solution_.back (), jacobianForm_, 
                                parameters (solverParametersSetName));
             }
             
@@ -827,11 +841,11 @@ namespace dcp
             // Parameters passed to the solver are those stored in the input variable
             if (tmpDirichletBCs.size () != 0)
             {
-                dolfin::solve (residualForm_ == 0, solution_, tmpDirichletBCs, jacobianForm_, solverParameters);
+                dolfin::solve (residualForm_ == 0, solution_.back (), tmpDirichletBCs, jacobianForm_, solverParameters);
             }
             else
             {
-                dolfin::solve (residualForm_ == 0, solution_, jacobianForm_, solverParameters);
+                dolfin::solve (residualForm_ == 0, solution_.back (), jacobianForm_, solverParameters);
             }
             
             dolfin::end ();

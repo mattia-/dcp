@@ -100,13 +100,13 @@ namespace dcp
             /*! 
              *  \return a const reference to the problem's mesh
              */
-            virtual const dolfin::Mesh& mesh () const;
+            virtual std::shared_ptr<dolfin::Mesh> mesh () const;
 
             //! Get problem's finite element space
             /*! 
              *  \return a const reference to the problem's function space
              */
-            virtual const dolfin::FunctionSpace& functionSpace () const;
+            virtual std::shared_ptr<dolfin::FunctionSpace> functionSpace () const;
 
             //! Get const reference to the problem's dirichlet boundary condition with given name
             /*! 
@@ -123,7 +123,7 @@ namespace dcp
 
             //! Get const reference to the problem's solution
             /*!
-             *  \return a const reference to the problem's solution
+             *  \return a const reference to the last element of the protected member \c solution
              */
             virtual const dolfin::Function& solution () const;  
 
@@ -218,9 +218,12 @@ namespace dcp
             /*!
              * Solves differential problem storing the solution in the private member \c solution_.
              * It is a pure virtual method that needs to be overridden
-             * in any concrete instance of the class
+             * in any concrete instance of the class.
+             * 
+             * \param type the solve type requested. It may be useful to differentiate among different behaviours in
+             * the derived classes
              */
-            virtual void solve () = 0;
+            virtual void solve (const std::string& type = "default") = 0;
             
             //! Clone method [1]
             /*!
@@ -254,8 +257,9 @@ namespace dcp
             //! The Dirichlet's boundary conditions vector
             std::map<std::string, dolfin::DirichletBC> dirichletBCs_;
 
-            //! Solution of the differential problem
-            dolfin::Function solution_;
+            //! Solution of the differential problem. It is declared as a vector sot that it may contain the solution 
+            //! on different timesteps in the time-dependent problem. For steady problems, it will just have size 1.
+            std::vector<dolfin::Function> solution_;
             
             //! Counter of dirichletBC inserted in the protected member map. It is used to create a unique
             //! name for insertion of dirichlet bcs if the input argument \c bcName to \c addDirichletBC() is

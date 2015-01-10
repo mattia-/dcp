@@ -141,13 +141,13 @@ namespace dcp
             /*! 
              *  \return a const reference to the functional form
              */
-            virtual const T_FunctionalForm& functional () const;
+            virtual const T_FunctionalForm& functional () const override;
 
             //! Get const reference to the functional gradient. Overrides method in \c AbstractObjectiveFunctional
             /*! 
              *  \return a const reference to the functional gradient
              */
-            virtual const T_Gradient& gradient () const;
+            virtual const T_Gradient& gradient () const override;
 
 
             /******************* SETTERS *******************/
@@ -161,7 +161,7 @@ namespace dcp
              */
             virtual void setCoefficient (const std::string& coefficientType, 
                                          const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-                                         const std::string& coefficientName);
+                                         const std::string& coefficientName) override;
 
             //! Set integration subdomains for the protected member variable \c functional_. 
             //! Overrides method in \c AbstractObjectiveFunctional
@@ -169,7 +169,7 @@ namespace dcp
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */
             virtual void setIntegrationSubdomains (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                   const dcp::SubdomainType& subdomainType);
+                                                   const dcp::SubdomainType& subdomainType) override;
 
 
             /******************* METHODS *******************/
@@ -177,7 +177,7 @@ namespace dcp
             /*!
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */
-            virtual double evaluateFunctional () const;
+            virtual double evaluateFunctional () const override;
 
             //! Evaluate at given point in given cell at given point. Overrides method in 
             //! \c AbstractObjectiveFunctional
@@ -186,7 +186,7 @@ namespace dcp
              */
             virtual void evaluateGradient (dolfin::Array<double>& values, 
                                            const dolfin::Array<double>& x, 
-                                           const ufc::cell& cell) const;
+                                           const ufc::cell& cell) const override;
 
             //! Evaluate the stored functional gradient at given point. Overrides method in 
             //! \c AbstractObjectiveFunctional
@@ -194,7 +194,7 @@ namespace dcp
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */
             virtual void evaluateGradient (dolfin::Array<double>& values, 
-                                           const dolfin::Array<double>& x) const;
+                                           const dolfin::Array<double>& x) const override;
 
             // ---------------------------------------------------------------------------------------------//
 

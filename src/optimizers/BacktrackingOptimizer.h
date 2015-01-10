@@ -151,7 +151,7 @@ namespace dcp
                                 const std::function
                                 <
                                     void (dolfin::Function&, const dolfin::Function&)
-                                >& searchDirectionComputer = BacktrackingOptimizer::gradientSearchDirection);
+                                >& searchDirectionComputer = BacktrackingOptimizer::gradientSearchDirection) override;
             
             //! Perform optimization on the input problem using the gradient method with backtracking and dumping
             //! results to file in the process

@@ -932,6 +932,16 @@ namespace dcp
         void LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         solve (const std::string& type) 
         {
+            if (type != "default" && type != "must_reassemble")
+            {
+                dolfin::dolfin_error ("dcp: LinearProblem.h", 
+                                      "solve",
+                                      "Unknown solve type \"%s\" requested",
+                                      type);
+            }
+            
+            dolfin::log (dolfin::DBG, "Solve type: %s", type);
+            
             update ();
             
             dolfin::begin (dolfin::INFO, "Solving problem...");

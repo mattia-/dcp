@@ -229,6 +229,16 @@ namespace dcp
     
     void TimeDependentProblem::solve (const std::string& type) 
     {
+        if (type != "default" && type != "step" && type != "clear_default" && type != "clear_step")
+        {
+            dolfin::dolfin_error ("dcp: TimeDependentProblem.h", 
+                                  "solve",
+                                  "Unknown solve type \"%s\" requested",
+                                  type);
+        }
+
+        dolfin::log (dolfin::DBG, "Solve type: %s", type);
+            
         if (std::regex_match (type, std::regex (".*clear.*")))
         {
             clear ();

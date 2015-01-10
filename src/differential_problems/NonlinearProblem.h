@@ -778,6 +778,16 @@ namespace dcp
         void NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         solve (const std::string& type) 
         {
+            if (type != "default")
+            {
+                dolfin::dolfin_error ("dcp: NonlinearProblem.h", 
+                                      "solve",
+                                      "Unknown solve type \"%s\" requested",
+                                      type);
+            }
+            
+            dolfin::log (dolfin::DBG, "Solve type: %s", type);
+            
             dolfin::begin (dolfin::INFO, "Solving problem...");
             
             dolfin::log (dolfin::DBG, "Creating temporary vectors of dolfin::DirichletBC pointers...");

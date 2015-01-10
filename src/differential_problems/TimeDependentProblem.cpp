@@ -229,6 +229,7 @@ namespace dcp
     
     void TimeDependentProblem::solve (const std::string& type) 
     {
+        // parse solve type
         if (type != "default" && type != "step" && type != "clear_default" && type != "clear_step")
         {
             dolfin::dolfin_error ("dcp: TimeDependentProblem.h", 
@@ -297,6 +298,10 @@ namespace dcp
             maxTimeSteps = 1;
         }
         
+        // function used to step through the time loop
+        dolfin::Function tmpSolution = solution_.back ();
+        
+        // start time loop
         while (t_ < endTime + DOLFIN_EPS && timeStep != maxTimeSteps)
         {
             timeStep++;
@@ -312,14 +317,14 @@ namespace dcp
                 {
                     timeSteppingProblem_->setCoefficient 
                         (i, 
-                         dolfin::reference_to_no_delete_pointer (solution_.back () [timeSteppingSolutionComponent]), 
+                         dolfin::reference_to_no_delete_pointer (tmpSolution [timeSteppingSolutionComponent]), 
                          previousSolutionName);
                 }
                 else
                 {
                     timeSteppingProblem_->setCoefficient 
                         (i, 
-                         dolfin::reference_to_no_delete_pointer (solution_.back ()), 
+                         dolfin::reference_to_no_delete_pointer (tmpSolution), 
                          previousSolutionName);
                 }
             } 
@@ -328,24 +333,19 @@ namespace dcp
             timeSteppingProblem_->solve ();
             dolfin::end ();
             
-            solution_.back () = timeSteppingProblem_->solution ();
+            tmpSolution = timeSteppingProblem_->solution ();
             
             // save solution in solution_ according to time step and store interval.
-            // Note that the current solution will always be the last element of solution_.
-            // If the current solution is not to be stored, on the next iteration solution_.back () will be used as 
-            // the previous iteration and then overwritten.
-            // If the current solution is to be stored, we push_back it, so that we have two copies of it in the
-            // vector and on the next iteration only the second one will be overwritten.
             if (storeInterval > 0 && timeStep % storeInterval == 0)
             {
                 dolfin::log (dolfin::DBG, "Saving time stepping problem solution in solutions vector...");
-                solution_.push_back (solution_.back ());
+                solution_.push_back (tmpSolution);
             }
             
             if (plotInterval > 0 && timeStep % plotInterval == 0)
             {
                 dolfin::log (dolfin::DBG, "Plotting time stepping problem solution...");
-                dolfin::plot (solution_.back ());
+                dolfin::plot (tmpSolution);
                 
                 if (pause)
                 {
@@ -356,12 +356,12 @@ namespace dcp
             dolfin::end ();
         }
         
-        // At this point, the solution on the last iteration will be already in solution_, automatically.
-        // We just need to make sure that it isn't in there twice
-        if (storeInterval > 0 && timeStep % storeInterval == 0)
+        // At this point, we just need to make sure that the solution on the last iteration was saved even though
+        // timeStep % storeInterval != 0 (but it must not be saved twice!)
+        if (!(storeInterval > 0 && timeStep % storeInterval == 0))
         {
-            dolfin::log (dolfin::DBG, "Removing time stepping problem solution (saved twice in solutions vector)...");
-            solution_.pop_back ();
+            dolfin::log (dolfin::DBG, "Saving last time step solution in solutions vector...");
+            solution_.push_back (tmpSolution);
         }
         
         dolfin::end ();

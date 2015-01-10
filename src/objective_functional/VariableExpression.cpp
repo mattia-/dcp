@@ -150,7 +150,10 @@ namespace dcp
 
         if (variable == variables_.end ())
         {
-            dolfin::error ("Cannot find variable \"%s\" in VariableExpression map", variableName.c_str ());
+            dolfin::dolfin_error ("dcp: VariableExpression.cpp",
+                                  "evaluateVariable", 
+                                  "Cannot find variable \"%s\" in VariableExpression map", 
+                                  variableName.c_str ());
         }
 
         (variable -> second) -> eval (values, x);

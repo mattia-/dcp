@@ -349,7 +349,10 @@ namespace dcp
         auto problemIterator = storedProblems_.find (name);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::error ("Problem \"%s\" not found in stored problems map", name.c_str ());
+            dolfin::dolfin_error ("dcp: CompositeProblem.cpp",
+                                  "operator[]", 
+                                  "Problem \"%s\" not found in stored problems map", 
+                                  name.c_str ());
         }
         return *(problemIterator->second);
     }
@@ -362,7 +365,10 @@ namespace dcp
         auto problemIterator = storedProblems_.find (name);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::error ("Problem \"%s\" not found in stored problems map", name.c_str ());
+            dolfin::dolfin_error ("dcp: CompositeProblem.cpp",
+                                  "operator[]", 
+                                  "Problem \"%s\" not found in stored problems map", 
+                                  name.c_str ());
         }
         return *(problemIterator->second);
     }
@@ -374,7 +380,10 @@ namespace dcp
     {
         if (position >= solveOrder_.size ())
         {
-            dolfin::error ("Input value \"%d\" is greater than problems vector size", position);
+            dolfin::dolfin_error ("dcp: CompositeProblem.cpp",
+                                  "operator[]",
+                                  "Input value \"%d\" is greater than problems vector size",
+                                  position);
         }
         return this->operator[] (solveOrder_ [position]);
     }
@@ -386,7 +395,10 @@ namespace dcp
     {
         if (position >= solveOrder_.size ())
         {
-            dolfin::error ("Input value \"%d\" is greater than problems vector size", position);
+            dolfin::dolfin_error ("dcp: CompositeProblem.cpp",
+                                  "operator[]",
+                                  "Input value \"%d\" is greater than problems vector size",
+                                  position);
         }
         return this->operator[] (solveOrder_ [position]);
     }
@@ -499,7 +511,10 @@ namespace dcp
         auto problemIterator = storedProblems_.find (problemName);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::error ("Problem \"%s\" not found in stored problems map", problemName.c_str ());
+            dolfin::dolfin_error ("dcp: CompositeProblem.cpp",
+                                  "solution",
+                                  "Problem \"%s\" not found in stored problems map", 
+                                  problemName.c_str ());
         }
         return (problemIterator->second)->solution ();
     }

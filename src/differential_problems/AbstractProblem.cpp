@@ -88,7 +88,10 @@ namespace dcp
         auto bcIterator = dirichletBCs_.find (bcName);
         if (bcIterator == dirichletBCs_.end ())
         {
-            dolfin::error ("Cannot find dirichletBC with name \"%s\" in map", bcName.c_str ());
+            dolfin::dolfin_error ("dcp: AbstractProblem.cpp",
+                                  "dirichletBC",
+                                  "Cannot find dirichletBC with name \"%s\" in map", 
+                                  bcName.c_str ());
         }
         return bcIterator -> second;
     }

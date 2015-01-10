@@ -903,8 +903,10 @@ namespace dcp
             }
             else
             {
-                dolfin::error ("Cannot clone nonlinear differential problem. Unknown clone method: \"%s\"",
-                               cloneMethod.c_str ());
+                dolfin::dolfin_error ("dcp: NonlinearProblem.h",
+                                      "clone",
+                                      "Cannot clone nonlinear differential problem. Unknown clone method: \"%s\"",
+                                      cloneMethod.c_str ());
             }
             //copy dirichlet boundary conditions
             dolfin::log (dolfin::DBG, "Copying Dirichlet boundary conditions...");

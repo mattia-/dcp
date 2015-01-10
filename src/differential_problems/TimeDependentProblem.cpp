@@ -419,8 +419,10 @@ namespace dcp
         }
         else
         {
-            dolfin::error ("Cannot clone linear differential problem. Unknown clone method: \"%s\"",
-                           cloneMethod.c_str ());
+            dolfin::dolfin_error ("dcp: TimeDependentProblem.cpp",
+                                  "clone",
+                                  "Cannot clone time dependent differential problem. Unknown clone method: \"%s\"",
+                                  cloneMethod.c_str ());
         }
         
         //copy dirichlet boundary conditions

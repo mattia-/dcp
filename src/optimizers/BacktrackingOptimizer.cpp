@@ -176,7 +176,10 @@ namespace dcp
         }
         else
         {
-            dolfin::error ("Unknown convergence criterion \"%s\"", convergenceCriterion.c_str ());
+            dolfin::dolfin_error ("BacktrackingOptimizer.cpp",
+                                  "apply",
+                                  "Unknown convergence criterion \"%s\"", 
+                                  convergenceCriterion.c_str ());
         }
         // ------------------------------------------------------------------------------------------------------- //
         // end of minimization loop setting
@@ -537,7 +540,10 @@ namespace dcp
         }
         else
         {
-            dolfin::error ("Unknown convergence criterion \"%s\"", convergenceCriterion.c_str ());
+            dolfin::dolfin_error ("BacktrackingOptimizer.cpp",
+                                  "print",
+                                  "Unknown convergence criterion \"%s\"", 
+                                  convergenceCriterion.c_str ());
         }
     }
     
@@ -553,7 +559,10 @@ namespace dcp
             OUTFILE.open (outputFileName);
             if (OUTFILE.fail ())
             {
-                dolfin::error ("Cannot open output file \"%s\"", outputFileName.c_str ());
+                dolfin::dolfin_error ("BacktrackingOptimizer.cpp",
+                                      "openOutputFile",
+                                      "Cannot open output file \"%s\"", 
+                                      outputFileName.c_str ());
             }
             
             if (convergenceCriterion == "both")
@@ -598,7 +607,11 @@ namespace dcp
             }
             else
             {
-                dolfin::error ("Unknown convergence criterion \"%s\"", convergenceCriterion.c_str ());
+                dolfin::dolfin_error ("BacktrackingOptimizer.cpp",
+                                      "openOutputFile",
+                                      "Unknown convergence criterion \"%s\"", 
+                                      convergenceCriterion.c_str ());
+                
             }
             return true;
         }
@@ -640,9 +653,12 @@ namespace dcp
                 }
                 else
                 {
-                    dolfin::error ("No form to compute dot products and norms for mesh cell type \"%s\" and control function rank %d", 
-                                   meshCellType.c_str (),
-                                   controlVariableRank);
+                    dolfin::dolfin_error ("BacktrackingOptimizer.cpp", 
+                                          "getDotProductComputer",
+                                          "No form to compute dot products and norms for mesh cell type \"%s\" and", 
+                                          "control function rank %d", 
+                                          meshCellType.c_str (),
+                                          controlVariableRank);
                 }
             }
 
@@ -664,9 +680,12 @@ namespace dcp
                 }
                 else
                 {
-                    dolfin::error ("No form to compute dot products and norms for mesh cell type \"%s\" and control function rank %d", 
-                                   meshCellType.c_str (),
-                                   controlVariableRank);
+                    dolfin::dolfin_error ("BacktrackingOptimizer.cpp", 
+                                          "getDotProductComputer",
+                                          "No form to compute dot products and norms for mesh cell type \"%s\" and", 
+                                          "control function rank %d", 
+                                          meshCellType.c_str (),
+                                          controlVariableRank);
                 }
             }
 
@@ -688,9 +707,12 @@ namespace dcp
                 }
                 else
                 {
-                    dolfin::error ("No form to compute dot products and norms for mesh cell type \"%s\" and control function rank %d", 
-                                   meshCellType.c_str (),
-                                   controlVariableRank);
+                    dolfin::dolfin_error ("BacktrackingOptimizer.cpp", 
+                                          "getDotProductComputer",
+                                          "No form to compute dot products and norms for mesh cell type \"%s\" and", 
+                                          "control function rank %d", 
+                                          meshCellType.c_str (),
+                                          controlVariableRank);
                 }
             }
         }

@@ -1043,8 +1043,10 @@ namespace dcp
             }
             else
             {
-                dolfin::error ("Cannot clone linear differential problem. Unknown clone method: \"%s\"",
-                               cloneMethod.c_str ());
+                dolfin::dolfin_error ("dcp: LinearProblem.h",
+                                      "clone",
+                                      "Cannot clone linear differential problem. Unknown clone method: \"%s\"",
+                                      cloneMethod.c_str ());
             }
             
             //copy dirichlet boundary conditions

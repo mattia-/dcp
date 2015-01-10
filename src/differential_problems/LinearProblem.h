@@ -937,10 +937,10 @@ namespace dcp
                 dolfin::dolfin_error ("dcp: LinearProblem.h", 
                                       "solve",
                                       "Unknown solve type \"%s\" requested",
-                                      type);
+                                      type.c_str ());
             }
             
-            dolfin::log (dolfin::DBG, "Solve type: %s", type);
+            dolfin::log (dolfin::DBG, "Solve type: %s", type.c_str ());
             
             update ();
             

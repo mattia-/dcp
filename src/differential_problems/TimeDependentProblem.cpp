@@ -234,10 +234,10 @@ namespace dcp
             dolfin::dolfin_error ("dcp: TimeDependentProblem.h", 
                                   "solve",
                                   "Unknown solve type \"%s\" requested",
-                                  type);
+                                  type.c_str ());
         }
 
-        dolfin::log (dolfin::DBG, "Solve type: %s", type);
+        dolfin::log (dolfin::DBG, "Solve type: %s", type.c_str ());
             
         if (std::regex_match (type, std::regex (".*clear.*")))
         {

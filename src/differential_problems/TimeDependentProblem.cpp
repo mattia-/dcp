@@ -43,6 +43,7 @@ namespace dcp
         solution_.emplace_back (dolfin::Function (timeSteppingProblem->functionSpace ()));
             
         dolfin::log (dolfin::DBG, "Setting up parameters...");
+        parameters.add ("problem_type", "time_dependent");
         parameters.add ("start_time", startTime);
         parameters.add ("dt", dt);
         parameters.add ("end_time", endTime);

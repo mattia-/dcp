@@ -87,16 +87,18 @@ int main (int argc, char* argv[])
     // =========================== COMPOSITE PROBLEM ============================== //
     // ============================================================================ //
     // define problems
-    dcp::NonlinearProblem <primal::ResidualForm, primal::JacobianForm> primalProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                                                                                      dolfin::reference_to_no_delete_pointer (V),
-                                                                                      "trial");
+    dcp::NonlinearProblem <primal::ResidualForm, primal::JacobianForm> 
+        primalProblem (dolfin::reference_to_no_delete_pointer (mesh), 
+                       dolfin::reference_to_no_delete_pointer (V),
+                       "trial");
 
-    dcp::LinearProblem <adjoint::BilinearForm, adjoint::LinearForm> adjointProblem (dolfin::reference_to_no_delete_pointer (mesh),
-                                                                                    dolfin::reference_to_no_delete_pointer (V));
+    dcp::LinearProblem <adjoint::BilinearForm, adjoint::LinearForm> 
+        adjointProblem (dolfin::reference_to_no_delete_pointer (mesh),
+                        dolfin::reference_to_no_delete_pointer (V));
 
     
     // create composite differential problem
-    dcp::CompositeProblem problems;
+    dcp::EquationSystem problems;
     problems.addProblem ("primal", primalProblem);
     problems.addProblem ("adjoint", adjointProblem);
     
@@ -214,9 +216,12 @@ int main (int argc, char* argv[])
     objective_functional::Form_J_u functionalVelocityComponent (mesh);
         
     // functional settings
-    functionalVelocityComponent.set_coefficient ("U", dolfin::reference_to_no_delete_pointer (targetSolution [0]));
-    functionalVelocityComponent.set_coefficient ("u", 
-                                                 dolfin::reference_to_no_delete_pointer (problems.solution("primal")[0]));
+    functionalVelocityComponent.set_coefficient 
+        ("U", 
+         dolfin::reference_to_no_delete_pointer (targetSolution [0]));
+    functionalVelocityComponent.set_coefficient 
+        ("u", 
+         dolfin::reference_to_no_delete_pointer (problems.solution("primal")[0]));
     
     functionalVelocityComponent.set_cell_domains (dolfin::reference_to_no_delete_pointer (meshCells));
     
@@ -226,8 +231,12 @@ int main (int argc, char* argv[])
     objective_functional::Form_J_p functionalPressureComponent (mesh);
         
     // functional settings
-    functionalPressureComponent.set_coefficient ("P", dolfin::reference_to_no_delete_pointer (targetSolution [1]));
-    functionalPressureComponent.set_coefficient ("p", dolfin::reference_to_no_delete_pointer (problems.solution("primal")[1]));
+    functionalPressureComponent.set_coefficient 
+        ("P", 
+         dolfin::reference_to_no_delete_pointer (targetSolution [1]));
+    functionalPressureComponent.set_coefficient 
+        ("p", 
+         dolfin::reference_to_no_delete_pointer (problems.solution("primal")[1]));
     
     functionalPressureComponent.set_cell_domains (dolfin::reference_to_no_delete_pointer (meshCells));
     
@@ -237,8 +246,12 @@ int main (int argc, char* argv[])
     objective_functional::Form_J_g functionalControlComponent (mesh);
         
     // functional settings
-    functionalControlComponent.set_coefficient ("sigma_1", dolfin::reference_to_no_delete_pointer (sigma_1));
-    functionalControlComponent.set_coefficient ("g", dolfin::reference_to_no_delete_pointer (controlDirichletBC));
+    functionalControlComponent.set_coefficient 
+        ("sigma_1", 
+         dolfin::reference_to_no_delete_pointer (sigma_1));
+    functionalControlComponent.set_coefficient 
+        ("g", 
+         dolfin::reference_to_no_delete_pointer (controlDirichletBC));
     
     functionalControlComponent.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer (meshFacets));
     
@@ -248,8 +261,12 @@ int main (int argc, char* argv[])
     objective_functional::Form_J_gDer functionalControlDerivativeComponent (mesh);
         
     // functional settings
-    functionalControlDerivativeComponent.set_coefficient ("sigma_2", dolfin::reference_to_no_delete_pointer (sigma_2));
-    functionalControlDerivativeComponent.set_coefficient ("g", dolfin::reference_to_no_delete_pointer (controlDirichletBC));
+    functionalControlDerivativeComponent.set_coefficient 
+        ("sigma_2", 
+         dolfin::reference_to_no_delete_pointer (sigma_2));
+    functionalControlDerivativeComponent.set_coefficient 
+        ("g", 
+         dolfin::reference_to_no_delete_pointer (controlDirichletBC));
     
     functionalControlDerivativeComponent.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer (meshFacets));
     
@@ -257,11 +274,18 @@ int main (int argc, char* argv[])
     // compute and print to file functional components
     std::ofstream componentsOutputStream ("functional_components.txt");
     componentsOutputStream << "INITIAL VALUES:" << std::endl;
-    componentsOutputStream << "Velocity_component = " << dolfin::assemble (functionalVelocityComponent) << std::endl;
-    componentsOutputStream << "Pressure_component = " << dolfin::assemble (functionalPressureComponent) << std::endl;
-    componentsOutputStream << "Control_component = " << dolfin::assemble (functionalControlComponent) << std::endl;
+    componentsOutputStream << "Velocity_component = " 
+                           << dolfin::assemble (functionalVelocityComponent) 
+                           << std::endl;
+    componentsOutputStream << "Pressure_component = " 
+                           << dolfin::assemble (functionalPressureComponent) 
+                           << std::endl;
+    componentsOutputStream << "Control_component = " 
+                           << dolfin::assemble (functionalControlComponent) 
+                           << std::endl;
     componentsOutputStream << "Control_derivative_component = " 
-                           << dolfin::assemble (functionalControlDerivativeComponent) << std::endl;
+                           << dolfin::assemble (functionalControlDerivativeComponent) 
+                           << std::endl;
     componentsOutputStream << std::endl;
 
     
@@ -276,7 +300,9 @@ int main (int argc, char* argv[])
     lift_drag::Form_Lift liftComputer (mesh);
         
     // functional settings
-    liftComputer.set_coefficient ("p", dolfin::reference_to_no_delete_pointer (problems.solution("primal")[1]));
+    liftComputer.set_coefficient 
+        ("p", 
+         dolfin::reference_to_no_delete_pointer (problems.solution("primal")[1]));
     liftComputer.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer (meshFacets));
     
     
@@ -286,14 +312,17 @@ int main (int argc, char* argv[])
     lift_drag::Form_Drag dragComputer (mesh);
         
     // functional settings
-    dragComputer.set_coefficient ("p", dolfin::reference_to_no_delete_pointer (problems.solution("primal")[1]));
+    dragComputer.set_coefficient 
+        ("p", 
+         dolfin::reference_to_no_delete_pointer (problems.solution("primal")[1]));
     dragComputer.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer (meshFacets));
     
 
     // ============================================================================== //
     // =============================== OPTIMIZATION  ================================ //
     // ============================================================================== //
-    problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[0], controlDirichletBC, primal_inflowBoundary), "x_inflow_BC");
+    problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[0], controlDirichletBC, primal_inflowBoundary), 
+                                       "x_inflow_BC");
     
     // define control value updater
     ValueUpdater updater;
@@ -390,18 +419,29 @@ int main (int argc, char* argv[])
     
     // compute and print to file functional components
     componentsOutputStream << "FINAL VALUES:" << std::endl;
-    componentsOutputStream << "Velocity_component = " << dolfin::assemble (functionalVelocityComponent) << std::endl;
-    componentsOutputStream << "Pressure_component = " << dolfin::assemble (functionalPressureComponent) << std::endl;
-    componentsOutputStream << "Control_component = " << dolfin::assemble (functionalControlComponent) << std::endl;
+    componentsOutputStream << "Velocity_component = " 
+                           << dolfin::assemble (functionalVelocityComponent) 
+                           << std::endl;
+    componentsOutputStream << "Pressure_component = " 
+                           << dolfin::assemble (functionalPressureComponent) 
+                           << std::endl;
+    componentsOutputStream << "Control_component = " 
+                           << dolfin::assemble (functionalControlComponent) 
+                           << std::endl;
     componentsOutputStream << "Control_derivative_component = " 
-                           << dolfin::assemble (functionalControlDerivativeComponent) << std::endl;
+                           << dolfin::assemble (functionalControlDerivativeComponent) 
+                           << std::endl;
     componentsOutputStream.close ();
     
 
     // compute and print to file lift and drag
     std::ofstream liftDragOutputStream ("reconstructed_lift_drag.txt");
-    liftDragOutputStream << "Lift = " << dolfin::assemble (liftComputer) << std::endl;
-    liftDragOutputStream << "Drag = " << dolfin::assemble (dragComputer) << std::endl;
+    liftDragOutputStream << "Lift = " 
+                         << dolfin::assemble (liftComputer) 
+                         << std::endl;
+    liftDragOutputStream << "Drag = " 
+                         << dolfin::assemble (dragComputer) 
+                         << std::endl;
     liftDragOutputStream.close ();
     return 0;
 }

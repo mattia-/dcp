@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_COMPOSITEPROBLEM_H_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_COMPOSITEPROBLEM_H_INCLUDE_GUARD
+#ifndef SRC_DIFFERENTIAL_PROBLEMS_EQUATIONSYSTEM_H_INCLUDE_GUARD
+#define SRC_DIFFERENTIAL_PROBLEMS_EQUATIONSYSTEM_H_INCLUDE_GUARD
 
 #include <differential_problems/AbstractProblem.h>
 #include <differential_problems/LinearProblem.h>
@@ -33,8 +33,8 @@
 
 namespace dcp
 {
-    /*! \class CompositeProblem CompositeProblem.h
-     *  \brief Class for multi-variable and multi-equation differential problem
+    /*! \class EquationSystem EquationSystem.h
+     *  \brief Class for multi-variable and multi-equation coupled system
      *  
      *  The class contains a \c std::map that associate a problem with its identifying name
      *  and a vector that stores the problem names in the order they should be solved.
@@ -42,40 +42,28 @@ namespace dcp
      *  \c dcp::AbstractProblem.
      *  The class also offers the possibility to link a problem's coefficient to another problem's
      *  solution through the use of a 
-     *  <tt> std::map<std::tuple <std::string, std::string, std::string>, std::pair <std::string, int>> </tt>
+     *  <tt> std::map<std::tuple <std::string, std::string, std::string>, std::pair <std::string, int>> </tt>.
+     *  This class only works for steady equation systems. For time dependent systems, see
+     *  \c dcp::TimeDependentEquationSystem
      */
-    class CompositeProblem
+    class EquationSystem
     {
         // ---------------------------------------------------------------------------------------------//  
 
         public:
             /******************* CONSTRUCTORS ******************/
             //! Default constructor 
-            CompositeProblem ();
-            
-            //! Copy constructor. Deleted, since it makes no sense for unique_ptr's
-            CompositeProblem (const CompositeProblem& rhs) = delete;
-            
-            //! Move constructor
-            CompositeProblem (CompositeProblem&& rhs) = default;
+            EquationSystem ();
             
             
             /******************* DESTRUCTOR *******************/
             //! Default destructor
-            ~CompositeProblem () = default;
-            
-
-            /******************** OPERATORS *********************/
-            //! Copy operator. Deleted since it makes no sense for unique_ptr's
-            CompositeProblem& operator= (const CompositeProblem& rhs) = delete;
-            
-            //! Move operator
-            CompositeProblem& operator= (CompositeProblem&& rhs) = default;
+            ~EquationSystem () = default;
             
 
             /******************** METHODS *********************/
-            //! Get composite problem size, i.e. the number of problems stored
-            std::size_t size ();
+            //! Get equation system size, i.e. the number of problems stored
+            virtual std::size_t size ();
             
             //! Add problem to the map of problems to be solved [1]
             /*!
@@ -85,31 +73,21 @@ namespace dcp
              *  The class will make a copy of the input problem calling the method \c clone().
              *  The problem's name is inserted at the end of \c solveOrder_
              */
-            void addProblem (const std::string& problemName, AbstractProblem& problem);
+            virtual void addProblem (const std::string& problemName, AbstractProblem& problem);
             
             //! Add problem to the map of problems to be solved [2]
             /*!
-             *  The call from main is something like:
-             *  \code
-             *  std::unique_ptr<dcp::AbstractProblem> foo = 
-             *      new dcp::LinearProblem<bilinear_form_type, linear_form_type> (mesh, V));
-             *  comp_diff_p.addProblem ("bar", &foo);
-             *  \endcode
              *  The parameters are:
              *  \param problemName the problem name
-             *  \param problem a unique pointer to a \c dcp::AbstractProblem. 
-             *  The class will take ownership of the concrete problem setting the input pointer to \c nullptr.
-             *  For example, referring to the snippet of code above, the class will contain (and have full ownership of)
-             *  the problem *foo and will set foo to nullptr, so that it cannot be used to modify the class private
-             *  members later on.
+             *  \param problem a shared pointer to a \c dcp::AbstractProblem. 
              *  The problem's name is inserted at the end of \c solveOrder_
              */
-            void addProblem (const std::string& problemName, 
-                             std::unique_ptr<AbstractProblem>& problem);
+            virtual void addProblem (const std::string& problemName, 
+                                     const std::shared_ptr<AbstractProblem> problem);
             
             //! Remove problem with the given name from the private member variables. A warning is issued if the name is 
             //! not found
-            void removeProblem (const std::string& problemName);
+            virtual void removeProblem (const std::string& problemName);
             
             //! Set solve order of the problems
             /*!
@@ -118,7 +96,7 @@ namespace dcp
              *  the input vector or on vectors' size. This means that, for example, the same problem can be 
              *  insterted more than once, if needed
              */
-            void reorderProblems (const std::vector<std::string>& solveOrder);
+            virtual void reorderProblems (const std::vector<std::string>& solveOrder);
             
             //! Adds link between problems' coefficient and solution []
             /*!
@@ -137,11 +115,11 @@ namespace dcp
              *  member variable \c problemsLinks_, it will be relinked using the \c std::pair passed as first argument if 
              *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
              */
-            void addLink (const std::string& linkFrom, 
-                          const std::string& linkedCoefficientName,
-                          const std::string& linkedCoefficientType, 
-                          const std::string& linkTo,
-                          const bool& forceRelinking = false);
+            virtual void addLink (const std::string& linkFrom, 
+                                  const std::string& linkedCoefficientName,
+                                  const std::string& linkedCoefficientType, 
+                                  const std::string& linkTo,
+                                  const bool& forceRelinking = false);
 
             //! Adds link between problems' coefficient and solution [2]
             /*!
@@ -162,12 +140,12 @@ namespace dcp
              *  member variable \c problemsLinks_, it will be relinked using the \c std::pair passed as first argument if 
              *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
              */
-            void addLink (const std::string& linkFrom, 
-                          const std::string& linkedCoefficientName,
-                          const std::string& linkedCoefficientType, 
-                          const std::string& linkTo,
-                          const int& linkToComponent,
-                          const bool& forceRelinking = false);
+            virtual void addLink (const std::string& linkFrom, 
+                                  const std::string& linkedCoefficientName,
+                                  const std::string& linkedCoefficientType, 
+                                  const std::string& linkTo,
+                                  const int& linkToComponent,
+                                  const bool& forceRelinking = false);
             
             //! Access problem with given name [1] (read only)
             /*!
@@ -175,7 +153,7 @@ namespace dcp
              *  error message and throws an exception through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
-            const dcp::AbstractProblem& operator[] (const std::string& name) const;
+            virtual const dcp::AbstractProblem& operator[] (const std::string& name) const;
             
             //! Access problem with given name [2] (read and write)
             /*!
@@ -183,7 +161,7 @@ namespace dcp
              *  error message and throws an exception through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
-            dcp::AbstractProblem& operator[] (const std::string& name);
+            virtual dcp::AbstractProblem& operator[] (const std::string& name);
             
             //! Access problem with given position in vector \c solveOrder_ [1] (read only)
             /*!
@@ -192,7 +170,7 @@ namespace dcp
              *  through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
-            const dcp::AbstractProblem& operator[] (const std::size_t& position) const;
+            virtual const dcp::AbstractProblem& operator[] (const std::size_t& position) const;
             
             //! Access problem with given position in vector \c solveOrder_ [2] (read and write)
             /*!
@@ -201,18 +179,18 @@ namespace dcp
              *  through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
-            dcp::AbstractProblem& operator[] (const std::size_t& position);
+            virtual dcp::AbstractProblem& operator[] (const std::size_t& position);
             
             //! Prints information on the problems: names list (in solution order) and links information.
             //! It uses \c dolfin::cout stream
-            void print ();
+            virtual void print ();
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_
             /*!
              *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
              *  member variable needsLinksScanning_. Default value is \c false
              */
-            void solve (const bool& forceRelinking = false);
+            virtual void solve (const bool& forceRelinking = false);
             
             //! Solve the problem corresponding to the name given [1]
             /*!
@@ -221,7 +199,7 @@ namespace dcp
              *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
              *  member variable needsLinksScanning_. Default value is \c false
              */
-            void solve (const std::string& problemName, const bool& forceRelinking = false);
+            virtual void solve (const std::string& problemName, const bool& forceRelinking = false);
             
             //! Solve the problem corresponding to the name given [2]
             /*!
@@ -233,7 +211,7 @@ namespace dcp
              *  best-matching implicit conversion for a parameter of type \c const \c char*. Using this method,
              *  the version of \c solve that takes a \c std::string is called as expected.
              */
-            void solve (const char* problemName, const bool& forceRelinking = false);
+            virtual void solve (const char* problemName, const bool& forceRelinking = false);
             
             //! Access solution of the problem identified by given name
             /*!
@@ -241,7 +219,7 @@ namespace dcp
              *  error message and throws an exception through the function \c dolfin::dolfin_error()
              *  \return a reference to the problems' solution
              */
-            const dolfin::Function& solution (const std::string& problemName) const;
+            virtual const dolfin::Function& solution (const std::string& problemName) const;
             
         // ---------------------------------------------------------------------------------------------//  
 
@@ -251,13 +229,13 @@ namespace dcp
              *  Being a protected member, this method is just called from library functions. 
              *  \param link a \c std::pair of the type contained by the protected member \c problemsLinks_
              */
-            void linkProblems (const std::pair <
-                                                std::tuple <std::string, std::string, std::string>, 
-                                                std::pair  <std::string, int>
-                                               >& link);
+            virtual void linkProblems (const std::pair <
+                                                        std::tuple <std::string, std::string, std::string>, 
+                                                        std::pair  <std::string, int>
+                                                       >& link);
             
             //! The stored problems
-            std::map <std::string, std::unique_ptr <dcp::AbstractProblem>> storedProblems_;
+            std::map <std::string, std::shared_ptr <dcp::AbstractProblem>> storedProblems_;
 
             //! The solution order of the problems
             std::vector <std::string> solveOrder_;

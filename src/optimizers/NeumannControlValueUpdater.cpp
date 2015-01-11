@@ -34,7 +34,7 @@ namespace dcp
 
 
     /************************* OPERATORS ********************/
-    void NeumannControlValueUpdater::operator() (dcp::CompositeProblem& compositeProblem, 
+    void NeumannControlValueUpdater::operator() (dcp::EquationSystem& compositeProblem, 
                                                  const std::shared_ptr <const dolfin::GenericFunction> coefficientValue) const
     {
         dcp::AbstractProblem& problem = compositeProblem [problemName_];

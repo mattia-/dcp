@@ -25,7 +25,7 @@
 #include <dolfin/function/Function.h>
 #include <dolfin/function/Expression.h>
 #include <objective_functional/AbstractObjectiveFunctional.h>
-#include <differential_problems/CompositeProblem.h>
+#include <differential_problems/EquationSystem.h>
 #include <functional>
 
 namespace dcp
@@ -82,12 +82,12 @@ namespace dcp
              *  \li the dolfin function that will contain the search direction after the function exits
              *  \li the dolfin function containing the gradient
              */
-            virtual void apply (dcp::CompositeProblem& problem,
+            virtual void apply (dcp::EquationSystem& problem,
                                 const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const std::function 
                                 <
-                                    void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
+                                    void (dcp::EquationSystem&, const dolfin::GenericFunction&)
                                 >& updater,
                                 const std::function
                                 <

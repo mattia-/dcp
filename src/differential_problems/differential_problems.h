@@ -23,7 +23,7 @@
 #include "LinearProblem.h"
 #include "NonlinearProblem.h"
 #include "TimeDependentProblem.h"
-#include "CompositeProblem.h"
+#include "EquationSystem.h"
 #include "SubdomainType.h"
 
 #endif

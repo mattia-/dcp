@@ -141,12 +141,12 @@ namespace dcp
              *  \li the dolfin function that will contain the search direction after the function exits
              *  \li the dolfin function containing the gradient
              */
-            virtual void apply (dcp::CompositeProblem& problem,
+            virtual void apply (dcp::EquationSystem& problem,
                                 const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const std::function 
                                 <
-                                    void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
+                                    void (dcp::EquationSystem&, const dolfin::GenericFunction&)
                                 >& updater,
                                 const std::function
                                 <
@@ -183,12 +183,12 @@ namespace dcp
              *  \li the dolfin function that will contain the search direction after the function exits
              *  \li the dolfin function containing the gradient
              */
-            virtual void apply (dcp::CompositeProblem& problem,
+            virtual void apply (dcp::EquationSystem& problem,
                                 const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const std::function 
                                 <
-                                    void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
+                                    void (dcp::EquationSystem&, const dolfin::GenericFunction&)
                                 >& updater,
                                 const std::function 
                                 <
@@ -239,11 +239,11 @@ namespace dcp
                                    dolfin::Function& controlVariable,
                                    const dolfin::Function& previousControlVariable,
                                    const dolfin::Function& searchDirection,
-                                   dcp::CompositeProblem& problem,
+                                   dcp::EquationSystem& problem,
                                    const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                    const std::function 
                                    <
-                                       void (dcp::CompositeProblem&, const dolfin::GenericFunction&)
+                                       void (dcp::EquationSystem&, const dolfin::GenericFunction&)
                                    >& updater);
             
             //! Function to print to file some values. It is mostly useful to avid code repetition inside this class

@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <differential_problems/CompositeProblem.h>
+#include <differential_problems/EquationSystem.h>
 #include <utility>
 #include <tuple>
 #include <dolfin.h>
@@ -27,45 +27,49 @@
 namespace dcp
 {
     /******************* CONSTRUCTORS ******************/
-    CompositeProblem::CompositeProblem () : 
+    EquationSystem::EquationSystem () : 
         storedProblems_ (),
         solveOrder_ (),
         problemsLinks_ ()
     { 
-        dolfin::log (dolfin::DBG, "CompositeProblem object created");
+        dolfin::log (dolfin::DBG, "EquationSystem object created");
     }
 
     
 
     /******************* METHODS *******************/
-    std::size_t CompositeProblem::size ()
+    std::size_t EquationSystem::size ()
     {
         return storedProblems_.size ();
     }
 
 
 
-    void CompositeProblem::addProblem (const std::string& problemName, 
-                                       AbstractProblem& problem)
+    void EquationSystem::addProblem (const std::string& problemName, 
+                                     AbstractProblem& problem)
     {
-        dolfin::begin (dolfin::DBG, "Inserting problem \"%s\" in composite differential problem...", problemName.c_str ());
+        dolfin::begin (dolfin::DBG, 
+                       "Inserting problem \"%s\" in composite differential problem...", 
+                       problemName.c_str ());
          
-        // create new problem object
-        dolfin::log (dolfin::DBG, "Creating new problem object...");
-        std::unique_ptr<dcp::AbstractProblem> clonedProblem (problem.clone ());
-        
-        // insert problem into storedProblems_ taking ownership
-        dolfin::log (dolfin::DBG, "Inserting problem in problems map with name \"%s\"...", problemName.c_str ());
-        auto result = storedProblems_.insert (std::make_pair (problemName, std::move (clonedProblem)));
+        // insert problem into storedProblems_ 
+        dolfin::log (dolfin::DBG, 
+                     "Inserting problem in problems map with name \"%s\"...", 
+                     problemName.c_str ());
+        auto result = storedProblems_.insert 
+            (std::make_pair (problemName, dolfin::reference_to_no_delete_pointer (problem)));
         
         // if problem was not inserted in list, issue a warning; else, add it also to the vector solveOrder_
         if (result.second == false)
         {
-            dolfin::warning ("Problem \"%s\" already exist in composite differential problem", problemName.c_str ());
+            dolfin::warning ("Problem \"%s\" already exist in composite differential problem", 
+                             problemName.c_str ());
         }
         else
         {
-            dolfin::log (dolfin::DBG, "Inserting problem in problem-names vector with name \"%s\"...", problemName.c_str ());
+            dolfin::log (dolfin::DBG, 
+                         "Inserting problem in problem-names vector with name \"%s\"...", 
+                         problemName.c_str ());
             solveOrder_.emplace_back (problemName);
         }
         dolfin::end ();
@@ -73,23 +77,30 @@ namespace dcp
     
     
 
-    void CompositeProblem::addProblem (const std::string& problemName, 
-                                       std::unique_ptr<AbstractProblem>& problem)
+    void EquationSystem::addProblem (const std::string& problemName, 
+                                     const std::shared_ptr<AbstractProblem> problem)
     {
-        dolfin::begin (dolfin::DBG, "Inserting problem \"%s\" in composite differential problem...", problemName.c_str ());
+        dolfin::begin (dolfin::DBG, 
+                       "Inserting problem \"%s\" in composite differential problem...", 
+                       problemName.c_str ());
         
-        // insert problem into storedProblems_ taking ownership
-        dolfin::log (dolfin::DBG, "Inserting problem in problems map with name \"%s\"...", problemName.c_str ());
-        auto result = storedProblems_.insert (std::make_pair (problemName, std::move (problem)));
+        // insert problem into storedProblems_ 
+        dolfin::log (dolfin::DBG, 
+                     "Inserting problem in problems map with name \"%s\"...", 
+                     problemName.c_str ());
+        auto result = storedProblems_.insert (std::make_pair (problemName, problem));
         
         // if problem was not inserted in list, issue a warning; else, add it also to the vector solveOrder_
         if (result.second == false)
         {
-            dolfin::warning ("Problem \"%s\" already exist in composite differential problem", problemName.c_str ());
+            dolfin::warning ("Problem \"%s\" already exist in composite differential problem", 
+                             problemName.c_str ());
         }
         else
         {
-            dolfin::log (dolfin::DBG, "Inserting problem in problem-names vector with name \"%s\"...", problemName.c_str ());
+            dolfin::log (dolfin::DBG, 
+                         "Inserting problem in problem-names vector with name \"%s\"...", 
+                         problemName.c_str ());
             solveOrder_.emplace_back (problemName);
         }
         dolfin::end ();
@@ -97,19 +108,24 @@ namespace dcp
 
 
 
-    void CompositeProblem::removeProblem (const std::string& problemName)
+    void EquationSystem::removeProblem (const std::string& problemName)
     {
-        dolfin::begin (dolfin::DBG, "Removing problem \"%s\" from composite differential problem...", problemName.c_str ());
+        dolfin::begin (dolfin::DBG, 
+                       "Removing problem \"%s\" from composite differential problem...", 
+                       problemName.c_str ());
         
         // delete problem from storedProblems_
-        dolfin::log (dolfin::DBG, "Removing problem \"%s\" from problems map...", problemName.c_str ());
+        dolfin::log (dolfin::DBG, 
+                     "Removing problem \"%s\" from problems map...", 
+                     problemName.c_str ());
         auto result = storedProblems_.erase (problemName);
         
-        // if problem was not inserted in list, issue a warning; else, add it also to the vector solveOrder_
+        // if problem was not inserted in list, issue a warning; else, erase it also from solveOrder_
         // remember that erase returns the number of elements removed, which in the case of a map is at most 1
         if (result < 1) 
         {
-            dolfin::warning ("Problem \"%s\" was not removed from composite differential problem. Maybe you used a wrong name?", 
+            dolfin::warning ("Problem \"%s\" was not removed from composite differential problem.",
+                             "Maybe you used a wrong name?",
                              problemName.c_str ());
         }
         else
@@ -118,7 +134,8 @@ namespace dcp
             // remove problemName from solveOrder_. Remember that we cannot be sure that such name is 
             // unique in vector and that problems are not in any kind of order.
             // std::find will return an iterator to the element if found and vector::end () if not found
-            dolfin::log (dolfin::DBG, "Removing every occurrence of problem \"%s\" from problem-names vector...", 
+            dolfin::log (dolfin::DBG, 
+                         "Removing every occurrence of problem \"%s\" from problem-names vector...", 
                          problemName.c_str ());
             int erasedCount = 0;
             auto problemPosition = find (solveOrder_.begin (), solveOrder_.end (), problemName);
@@ -128,21 +145,26 @@ namespace dcp
                 solveOrder_.erase (problemPosition);
                 problemPosition = find (solveOrder_.begin (), solveOrder_.end (), problemName);
             }
-            dolfin::log (dolfin::DBG, "Removed %d entries from problem-names vector", erasedCount);
+            dolfin::log (dolfin::DBG, 
+                         "Removed %d entries from problem-names vector", 
+                         erasedCount);
             
             // 2)
             // remove problemName from problemsLinks_.
             // We use an important statement from the c++ standard: 
             // When erasing from a map, iterators, pointers and references referring to elements removed by the 
             // function are invalidated. All other iterators, pointers and references keep their validity.
-            dolfin::log (dolfin::DBG, "Removing every occurrence of problem \"%s\" from links map...", 
+            dolfin::log (dolfin::DBG, 
+                         "Removing every occurrence of problem \"%s\" from links map...", 
                          problemName.c_str ());
             erasedCount = 0;
             auto linksIterator = problemsLinks_.begin (); // iterator pointing to the first element of the set
             while (linksIterator != problemsLinks_.end ())
             {
                 // delete element if problemName appears either as first or as fourth string in the map
-                if (std::get<0> (linksIterator->first) == problemName || std::get<0> (linksIterator->second) == problemName)
+                if (std::get<0> (linksIterator->first) == problemName 
+                    || 
+                    std::get<0> (linksIterator->second) == problemName)
                 {
                     auto auxIterator = linksIterator; // this will be used for the call to function erase
                     ++linksIterator;   // iterator incremented to point to next element. 
@@ -157,7 +179,9 @@ namespace dcp
                     ++linksIterator;
                 }
             }
-            dolfin::log (dolfin::DBG, "Removed %d entries from links map", erasedCount);
+            dolfin::log (dolfin::DBG, 
+                         "Removed %d entries from links map", 
+                         erasedCount);
             
             dolfin::end ();
         }
@@ -165,7 +189,7 @@ namespace dcp
 
 
 
-    void CompositeProblem::reorderProblems (const std::vector<std::string>& solveOrder)
+    void EquationSystem::reorderProblems (const std::vector<std::string>& solveOrder)
     {
         dolfin::log (dolfin::DBG, "Setting problems order...");
         solveOrder_ = solveOrder;
@@ -173,13 +197,14 @@ namespace dcp
 
 
 
-    void CompositeProblem::addLink (const std::string& linkFrom, 
-                                    const std::string& linkedCoefficientName,
-                                    const std::string& linkedCoefficientType, 
-                                    const std::string& linkTo,
-                                    const bool& forceRelinking)
+    void EquationSystem::addLink (const std::string& linkFrom, 
+                                  const std::string& linkedCoefficientName,
+                                  const std::string& linkedCoefficientType, 
+                                  const std::string& linkTo,
+                                  const bool& forceRelinking)
     {
-        dolfin::begin (dolfin::DBG, "Setting up link (%s, %s, %s) -> (%s, all solution components)...",
+        dolfin::begin (dolfin::DBG, 
+                       "Setting up link (%s, %s, %s) -> (%s, all solution components)...",
                        linkFrom.c_str (),
                        linkedCoefficientName.c_str (),
                        linkedCoefficientType.c_str (),
@@ -244,7 +269,8 @@ namespace dcp
         }
         else
         {
-            dolfin::warning ("link (%s, %s, %s) -> (%s, all solution components) not added. Key is already present in map",
+            dolfin::warning ("link (%s, %s, %s) -> (%s, all solution components) not added.",
+                             "Key is already present in map",
                              (std::get<0> (link.first)).c_str (),
                              (std::get<1> (link.first)).c_str (),
                              (std::get<2> (link.first)).c_str (),
@@ -255,14 +281,15 @@ namespace dcp
 
 
 
-    void CompositeProblem::addLink (const std::string& linkFrom, 
-                                    const std::string& linkedCoefficientName,
-                                    const std::string& linkedCoefficientType, 
-                                    const std::string& linkTo,
-                                    const int& linkToComponent,
-                                    const bool& forceRelinking)
+    void EquationSystem::addLink (const std::string& linkFrom, 
+                                  const std::string& linkedCoefficientName,
+                                  const std::string& linkedCoefficientType, 
+                                  const std::string& linkTo,
+                                  const int& linkToComponent,
+                                  const bool& forceRelinking)
     {
-        dolfin::begin (dolfin::DBG, "Setting up link (%s, %s, %s) -> (%s, component %d)...",
+        dolfin::begin (dolfin::DBG, 
+                       "Setting up link (%s, %s, %s) -> (%s, component %d)...",
                        linkFrom.c_str (),
                        linkedCoefficientName.c_str (),
                        linkedCoefficientType.c_str (),
@@ -331,7 +358,8 @@ namespace dcp
         }
         else
         {
-            dolfin::warning ("link (%s, %s, %s) -> (%s, component %d) not added. Key is already present in map",
+            dolfin::warning ("link (%s, %s, %s) -> (%s, component %d) not added.",
+                             "Key is already present in map",
                              (std::get<0> (link.first)).c_str (),
                              (std::get<1> (link.first)).c_str (),
                              (std::get<2> (link.first)).c_str (),
@@ -343,13 +371,12 @@ namespace dcp
             
 
 
-    const dcp::AbstractProblem& 
-    CompositeProblem::operator[] (const std::string& name) const
+    const dcp::AbstractProblem& EquationSystem::operator[] (const std::string& name) const
     {
         auto problemIterator = storedProblems_.find (name);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::dolfin_error ("dcp: CompositeProblem.cpp",
+            dolfin::dolfin_error ("dcp: EquationSystem.cpp",
                                   "operator[]", 
                                   "Problem \"%s\" not found in stored problems map", 
                                   name.c_str ());
@@ -359,13 +386,12 @@ namespace dcp
 
 
 
-    dcp::AbstractProblem& 
-    CompositeProblem::operator[] (const std::string& name)
+    dcp::AbstractProblem& EquationSystem::operator[] (const std::string& name)
     {
         auto problemIterator = storedProblems_.find (name);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::dolfin_error ("dcp: CompositeProblem.cpp",
+            dolfin::dolfin_error ("dcp: EquationSystem.cpp",
                                   "operator[]", 
                                   "Problem \"%s\" not found in stored problems map", 
                                   name.c_str ());
@@ -375,12 +401,11 @@ namespace dcp
 
 
 
-    const dcp::AbstractProblem& 
-    CompositeProblem::operator[] (const std::size_t& position) const
+    const dcp::AbstractProblem& EquationSystem::operator[] (const std::size_t& position) const
     {
         if (position >= solveOrder_.size ())
         {
-            dolfin::dolfin_error ("dcp: CompositeProblem.cpp",
+            dolfin::dolfin_error ("dcp: EquationSystem.cpp",
                                   "operator[]",
                                   "Input value \"%d\" is greater than problems vector size",
                                   position);
@@ -390,12 +415,11 @@ namespace dcp
 
 
 
-    dcp::AbstractProblem& 
-    CompositeProblem::operator[] (const std::size_t& position)
+    dcp::AbstractProblem& EquationSystem::operator[] (const std::size_t& position)
     {
         if (position >= solveOrder_.size ())
         {
-            dolfin::dolfin_error ("dcp: CompositeProblem.cpp",
+            dolfin::dolfin_error ("dcp: EquationSystem.cpp",
                                   "operator[]",
                                   "Input value \"%d\" is greater than problems vector size",
                                   position);
@@ -405,7 +429,7 @@ namespace dcp
 
 
 
-    void CompositeProblem::print ()
+    void EquationSystem::print ()
     {
         dolfin::cout << "Problems solve order:" << dolfin::endl;
         for (auto i : solveOrder_)
@@ -435,7 +459,7 @@ namespace dcp
 
 
 
-    void CompositeProblem::solve (const bool& forceRelinking)
+    void EquationSystem::solve (const bool& forceRelinking)
     {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving
@@ -451,7 +475,7 @@ namespace dcp
 
 
 
-    void CompositeProblem::solve (const std::string& problemName, const bool& forceRelinking)
+    void EquationSystem::solve (const std::string& problemName, const bool& forceRelinking)
     {
         dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
 
@@ -499,19 +523,19 @@ namespace dcp
 
 
 
-    void CompositeProblem::solve (const char* problemName, const bool& forceRelinking)
+    void EquationSystem::solve (const char* problemName, const bool& forceRelinking)
     {
         solve (std::string (problemName), forceRelinking);
     }
 
 
 
-    const dolfin::Function& CompositeProblem::solution (const std::string& problemName) const
+    const dolfin::Function& EquationSystem::solution (const std::string& problemName) const
     {
         auto problemIterator = storedProblems_.find (problemName);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::dolfin_error ("dcp: CompositeProblem.cpp",
+            dolfin::dolfin_error ("dcp: EquationSystem.cpp",
                                   "solution",
                                   "Problem \"%s\" not found in stored problems map", 
                                   problemName.c_str ());
@@ -522,10 +546,10 @@ namespace dcp
 
     
     /******************* PROTECTED METHODS *******************/
-    void CompositeProblem::linkProblems (const std::pair <
-                                                          std::tuple <std::string, std::string, std::string>, 
-                                                          std::pair  <std::string, int>
-                                                         >& link)
+    void EquationSystem::linkProblems (const std::pair <
+                                                        std::tuple <std::string, std::string, std::string>, 
+                                                        std::pair  <std::string, int>
+                                                       >& link)
     {
         if (std::get<1> (link.second) == -1)
         {
@@ -548,12 +572,15 @@ namespace dcp
         }
         
         // check if problem that needs linking exists
-        dolfin::log (dolfin::DBG, "Looking for problem \"%s\" in problems map...", (std::get<0> (link.first)).c_str ());
+        dolfin::log (dolfin::DBG, 
+                     "Looking for problem \"%s\" in problems map...", 
+                     (std::get<0> (link.first)).c_str ());
         auto problemIterator = storedProblems_.find (std::get<0> (link.first));
 
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::warning ("Problem \"%s\" not found in stored problems map", (std::get<0> (link.first)).c_str ());
+            dolfin::warning ("Problem \"%s\" not found in stored problems map", 
+                             (std::get<0> (link.first)).c_str ());
             dolfin::end ();
             return;
         }
@@ -577,7 +604,8 @@ namespace dcp
         if (std::get<1> (link.second) == -1)
         {
             dolfin::log (dolfin::DBG, 
-                         "Linking coefficient \"%s\" of type \"%s\" of problem \"%s\" to solution of problem \"%s\"...",
+                         "Linking coefficient \"%s\" of type \"%s\" of problem \"%s\"",
+                         "to solution of problem \"%s\"...",
                          (std::get<1> (link.first)).c_str (),
                          (std::get<2> (link.first)).c_str (),
                          (std::get<0> (link.first)).c_str (),
@@ -590,7 +618,8 @@ namespace dcp
         else
         {
             dolfin::log (dolfin::DBG, 
-                         "Linking coefficient \"%s\" of type \"%s\" of problem \"%s\" to component %d solution of problem \"%s\"...",
+                         "Linking coefficient \"%s\" of type \"%s\" of problem \"%s\"",
+                         "to component %d solution of problem \"%s\"...",
                          (std::get<1> (link.first)).c_str (),
                          (std::get<2> (link.first)).c_str (),
                          (std::get<0> (link.first)).c_str (),

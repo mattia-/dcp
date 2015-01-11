@@ -37,7 +37,7 @@ namespace dcp
 
 
     /************************* OPERATORS ********************/
-    void DirichletControlValueUpdater::operator() (dcp::CompositeProblem& compositeProblem, 
+    void DirichletControlValueUpdater::operator() (dcp::EquationSystem& compositeProblem, 
                                                    const dolfin::GenericFunction& dirichletBCValue) const
     {
         dcp::AbstractProblem& problem = compositeProblem [problemName_];

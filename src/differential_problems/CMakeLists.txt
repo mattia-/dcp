@@ -3,6 +3,7 @@ SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/LinearProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/NonlinearProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentProblem.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/AbstractEquationSystem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/EquationSystem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/SubdomainType.h
              ${CMAKE_CURRENT_SOURCE_DIR}/differential_problems.h)
@@ -10,7 +11,8 @@ SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractProblem.h
 # collect source files
 SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/EquationSystem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentProblem.cpp
-             ${CMAKE_CURRENT_SOURCE_DIR}/AbstractProblem.cpp)
+             ${CMAKE_CURRENT_SOURCE_DIR}/AbstractProblem.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/AbstractEquationSystem.cpp)
 
 # add files to shared library dependancies
 SET (CONTROL_PROBLEM_LIBRARY_SOURCES ${CONTROL_PROBLEM_LIBRARY_SOURCES} ${SOURCES} PARENT_SCOPE)

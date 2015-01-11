@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_EQUATIONSYSTEM_H_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_EQUATIONSYSTEM_H_INCLUDE_GUARD
+#ifndef SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTEQUATIONSYSTEM_H_INCLUDE_GUARD
+#define SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTEQUATIONSYSTEM_H_INCLUDE_GUARD
 
 #include <differential_problems/AbstractEquationSystem.h>
 #include <map>
@@ -31,37 +31,38 @@
 
 namespace dcp
 {
-    /*! \class EquationSystem EquationSystem.h
-     *  \brief Class for multi-variable and multi-equation coupled system
+    /*! \class TimeDependentEquationSystem TimeDependentEquationSystem.h
+     *  \brief Class for multi-variable and multi-equation coupled time dependent system
      *  
      *  This class derives from AbstractEquationSystem and expands its functionalities by defining the
-     *  solve method. This class only works for steady equation systems. For time dependent systems, 
-     *  see \c dcp::TimeDependentEquationSystem
+     *  solve method for time dependent systems.
      */
-    class EquationSystem : public dcp::AbstractEquationSystem
+    class TimeDependentEquationSystem : public dcp::AbstractEquationSystem
     {
         // ---------------------------------------------------------------------------------------------//  
 
         public:
             /******************* CONSTRUCTORS ******************/
             //! Default constructor 
-            EquationSystem ();
+            TimeDependentEquationSystem ();
             
             
             /******************* DESTRUCTOR *******************/
             //! Default destructor
-            virtual ~EquationSystem () = default;
+            virtual ~TimeDependentEquationSystem () = default;
             
 
             /******************** METHODS *********************/
-            //! Solve all the problems in the order specified by the private member \c solveOrder_
+            //! Solve all the problems in the order specified by the private member \c solveOrder_. 
+            //! The single problems will be solved calling the \c solve method with \c type argument equal to \c "step"
             /*!
              *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
              *  member variable needsLinksScanning_. Default value is \c false
              */
             virtual void solve (const bool& forceRelinking = false) override;
             
-            //! Solve the problem corresponding to the name given [1]
+            //! Solve the problem corresponding to the name given [1].
+            //! The problem will be solved calling the \c solve method with \c type argument equal to \c "step"
             /*!
              *  \param problemName a string identifying the problem to be solved. If no problem with that name
              *  is found, a warning is issued
@@ -71,6 +72,7 @@ namespace dcp
             virtual void solve (const std::string& problemName, const bool& forceRelinking = false) override;
             
             //! Solve the problem corresponding to the name given [2]
+            //! The problem will be solved calling the \c solve method with \c type argument equal to \c "step"
             /*!
              *  This method is provided only to allow calls like
              *  \code

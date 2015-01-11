@@ -21,8 +21,6 @@
 #define SRC_DIFFERENTIAL_PROBLEMS_ABSTRACTEQUATIONSYSTEM_H_INCLUDE_GUARD
 
 #include <differential_problems/AbstractProblem.h>
-//#include <differential_problems/LinearProblem.h>
-//#include <differential_problems/NonlinearProblem.h>
 #include <map>
 #include <tuple>
 #include <memory>
@@ -34,7 +32,7 @@
 namespace dcp
 {
     /*! \class AbstractEquationSystem AbstractEquationSystem.h
-     *  \brief Class for multi-variable and multi-equation coupled system
+     *  \brief Abstract class for multi-variable and multi-equation coupled system
      *  
      *  The class contains a \c std::map that associate a problem with its identifying name
      *  and a vector that stores the problem names in the order they should be solved.

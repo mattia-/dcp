@@ -205,7 +205,7 @@ namespace dcp
 
 
     /******************* METHODS *******************/
-    bool TimeDependentProblem::isEnded ()
+    bool TimeDependentProblem::isFinished ()
     {
         double endTime = parameters ["end_time"];
         return t_ >= endTime;

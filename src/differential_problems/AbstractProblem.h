@@ -211,6 +211,10 @@ namespace dcp
             //! as an empty funciton, so there is no need to override it if the derived class has no need for this
             //! method
             virtual void update ();
+            
+            // This method is here just because we need to call it in TimeDependentEquationSystem.
+            // TODO find a cleaner way to do this
+            virtual bool isFinished () {};
 
             /********************** METHODS ***********************/
 

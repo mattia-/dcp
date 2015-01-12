@@ -53,6 +53,14 @@ namespace dcp
             
 
             /******************** METHODS *********************/
+            //! Check if system time loop is finished. It basically calls the function \c isFinished() on every problem
+            //! stored in \c storedProblems_ and checks if the number of problems whose time loop has ended is equal 
+            //! to the size of \c storedProblems_
+            /*!
+             *  \return true if all problems' time loops have ended, false otherwise
+             */
+            virtual bool isFinished ();
+            
             //! Solve all the problems in the order specified by the private member \c solveOrder_. 
             //! The single problems will be solved calling the \c solve method with \c type argument equal to \c "step"
             /*!

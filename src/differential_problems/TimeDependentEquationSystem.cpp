@@ -36,15 +36,31 @@ namespace dcp
     
 
     /******************* METHODS *******************/
+    bool TimeDependentEquationSystem::isFinished ()
+    {
+        std::size_t nFinished = 0;
+        for (auto mapElement : storedProblems_)
+        {
+            nFinished += mapElement.second->isFinished ();
+        }
+        return (nFinished == storedProblems_.size ());
+    }
+    
+
+
     void TimeDependentEquationSystem::solve (const bool& forceRelinking)
     {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
-        // to the latter function the task of performing the actual parameters setting and solving
+        // to the latter function the task of performing the actual parameters setting and solving.
+        // The loop is repeated until isFinished() returns true, that is until all problems' time loops are ended
         dolfin::begin ("Solving problems...");
         
-        for (auto problem : solveOrder_)
+        while (isFinished () == 0)
         {
-            solve (problem, forceRelinking);
+            for (auto problem : solveOrder_)
+            {
+                solve (problem, forceRelinking);
+            }
         }
         
         dolfin::end ();

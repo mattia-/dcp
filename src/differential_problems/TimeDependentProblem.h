@@ -276,7 +276,7 @@ namespace dcp
              *  \return \c true if the time loop has ended, that is if \c t_ >= \c parameters["end_time"],
              *  \c false otherwise
              */
-            virtual bool isEnded ();
+            virtual bool isFinished ();
             
             //! Clear solutions vector
             /*!

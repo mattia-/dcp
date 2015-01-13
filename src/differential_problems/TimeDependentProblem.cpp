@@ -249,7 +249,8 @@ namespace dcp
         // ---- Problem settings ---- //
         dolfin::begin (dolfin::DBG, "Setting up time dependent problem...");
         
-        bool stepFlag = std::regex_match (type, std::regex (".*step.*"));
+        // flag to check if the solver must perform just one time step
+        bool oneStepRequested = std::regex_match (type, std::regex (".*step.*"));
         
         // get parameters' values
         double endTime = parameters ["end_time"];
@@ -287,23 +288,15 @@ namespace dcp
         // ---- Problem solution ---- //
         dolfin::begin (dolfin::DBG, "Solving time dependent problem...");
         
-        int timeStep = 0;
-        
-        // maxTimeSteps is used to check if the time loop should be ended at a certain timeStep.
-        // It is set by default to -1, so that the loop never stops because it has reached the maximum number
-        // of iteration. It is changed to 1, though, if stepFlag is true, that is if we only want to perform one
-        // time step. In this case the time loop must (and will) exit after the first iteration
-        int maxTimeSteps = -1;
-        if (stepFlag)
-        {
-            maxTimeSteps = 1;
-        }
         
         // function used to step through the time loop
         dolfin::Function tmpSolution = solution_.back ();
         
-        // start time loop
-        while (t_ < endTime + DOLFIN_EPS && timeStep != maxTimeSteps)
+        // start time loop. The loop variable oneTimeStep is true only if the solve type requested is "step" and
+        // the first step has already been peformed
+        int timeStep = 0;
+        bool timeStepFlag = false;
+        while (t_ < endTime + DOLFIN_EPS && timeStepFlag == false)
         {
             timeStep++;
             t_ += dt;
@@ -352,6 +345,11 @@ namespace dcp
                 {
                     dolfin::interactive ();
                 }
+            }
+            
+            if (oneStepRequested == true)
+            {
+                timeStepFlag = true;
             }
             
             dolfin::end ();

@@ -5,11 +5,11 @@ DCP
 
 DCP is a library for optimal control problems based on dolfin/FEniCS: http://fenicsproject.org/support/
 
-COMPILATION
+Compilation
 ===========   
 -) create a directory in which to build the code. In the following steps, it will be supposed that such directory is
-   called "build" and was created in the same directory as the one where this README file is   
-     $ mkdir build
+   called "build" and was created in the same directory as the one where this README file is::
+  mkdir build
 
 -) change directory   
      $ cd build

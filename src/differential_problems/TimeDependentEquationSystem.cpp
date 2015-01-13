@@ -18,6 +18,7 @@
  */ 
 
 #include <differential_problems/TimeDependentEquationSystem.h>
+#include <differential_problems/TimeDependentProblem.h>
 #include <utility>
 #include <tuple>
 #include <dolfin.h>
@@ -41,7 +42,8 @@ namespace dcp
         std::size_t nFinished = 0;
         for (auto mapElement : storedProblems_)
         {
-            nFinished += mapElement.second->isFinished ();
+            dcp::TimeDependentProblem& tmp = static_cast<dcp::TimeDependentProblem&> (*(mapElement.second));
+            nFinished += tmp.isFinished ();
         }
         return (nFinished == storedProblems_.size ());
     }

@@ -19,10 +19,13 @@ make
 
 
 various options can be passed to cmake:  
-* `C_COMPILER` and `CXX_COMPILER` : the C and C++ compiler to be used  
-* `CMAKE_BUILD_TYPE` : sets the compilation type, to allow for some optimization at compile time (see CMake documentation for more details)  
-* `LIB_INSTALL_DIR` : directory for the installation of the library. Default value: the directory `lib` in the root directory of the source tree  
-* `HEADER_INSTALL_DIR` : directory for the installation of the header files. Default value: the directory `include` in the root directory of the source tree  
+- `C_COMPILER` and `CXX_COMPILER` : the C and C++ compiler to be used  
+- `CMAKE_BUILD_TYPE` : sets the compilation type, to allow for some optimization at 
+compile time (see CMake documentation for more details)  
+- `LIB_INSTALL_DIR` : directory for the installation of the library. 
+Default value: the directory `lib` in the root directory of the source tree  
+- `HEADER_INSTALL_DIR` : directory for the installation of the header files. 
+Default value: the directory `include` in the root directory of the source tree  
 
 All option can be set from command line using the flag `-D`:
 
@@ -31,7 +34,8 @@ All option can be set from command line using the flag `-D`:
 cmake .. -DVARIABLE_NAME=VARIABLE_VALUE   
 ```
 
- CMake generated makefiles support parallel compilation through the flag `-j`. For example, to compile using 4 threads use the command:   
+CMake generated makefiles support parallel compilation through the flag `-j`. 
+For example, to compile using 4 threads use the command:   
 
 ```
 #!shell

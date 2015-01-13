@@ -39,7 +39,7 @@
 namespace dcp
 {
     /*! \class TimeDependentProblem TimeDependentProblem.h
-     *  \brief Class for linear differential problems.
+     *  \brief Class for time dependent differential problems.
      *
      *  This class represents problem of the form
      *  \f[
@@ -58,7 +58,7 @@ namespace dcp
      *  <tt> shared_ptr <dcp::AbstractProblem> </tt>
      */
 
-    class TimeDependentProblem : public AbstractProblem
+    class TimeDependentProblem : public dcp::AbstractProblem
     {
         // ---------------------------------------------------------------------------------------------//  
 
@@ -168,9 +168,27 @@ namespace dcp
 
             //! Get const reference to the current simulation time
             /*!
-             *  \return a const reference to the problem's current simulation time
+             *  \return a const reference to \c t_
              */
             virtual const double& time () const;
+            
+            //! Get a reference to the simulation start time
+            /*!
+             *  \return a reference to \c startTime_
+             */
+            virtual double& startTime ();
+            
+            //! Get a reference to the simulation time step
+            /*!
+             *  \return a reference to \c dt_
+             */
+            virtual double& dt ();
+            
+            //! Get a reference to the simulation end time
+            /*!
+             *  \return a reference to \c endTime_
+             */
+            virtual double& endTime ();
             
             //! Get const reference to the problem's time stepping problem
             /*! 
@@ -281,7 +299,8 @@ namespace dcp
             //! Clear solutions vector
             /*!
              *  This methos clears the protected member \c solution_ and creates a zero function as its first element,
-             *  as if the class had jusy been created.
+             *  as if the class had just been created. Protected member \c t_ will also be reset to 
+             *  <tt>parameters ["start_time"]</tt>
              */  
             virtual void clear ();
              
@@ -340,6 +359,27 @@ namespace dcp
             //! not reset after such function is called. It can be reset to the value of the parameter \c t0 
             //! calling the method \c clear
             double t_;
+            
+            //! The start time of the simulation
+            double startTime_;
+            
+            //! The time step of the simulation
+            double dt_;
+            
+            //! The end time of the simulation
+            double endTime_;
+            
+            //! Method to advance time value \c t_. It just performs the increment <tt>t += parameters ["dt"]</tt>.
+            //! This allows us to automatically have a backwards time dependent problem if \c dt is negative.
+            /*!
+             *  \param previousSolution the solution on the previous time step, to be used when setting the previous 
+             *  solution coefficient in the time stepping problem
+             */
+            virtual void advanceTime (const dolfin::Function& previousSolution);
+            
+            //! Method to print a warning if \c isFinished() returns \c true. It is just useful to make \c solve()
+            //! method clearer to read
+            virtual void printFinishedWarning ();
             
             // ---------------------------------------------------------------------------------------------//
 

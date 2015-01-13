@@ -59,7 +59,7 @@ namespace dcp
      */
 
     template <class T_BilinearForm_, class T_LinearForm_, class T_LinearSolverFactory_ = dcp::LinearSolverFactory>
-        class LinearProblem : public AbstractProblem
+        class LinearProblem : public dcp::AbstractProblem
         {
             // ---------------------------------------------------------------------------------------------//  
 

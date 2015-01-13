@@ -54,7 +54,7 @@ namespace dcp
      */
 
     template <class T_ResidualForm_, class T_JacobianForm_>
-        class NonlinearProblem : public AbstractProblem
+        class NonlinearProblem : public dcp::AbstractProblem
         {
             // ---------------------------------------------------------------------------------------------//  
 

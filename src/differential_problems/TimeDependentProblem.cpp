@@ -36,7 +36,10 @@ namespace dcp
                                                 const std::string& previousSolutionName) : 
             AbstractProblem (timeSteppingProblem->mesh (), timeSteppingProblem->functionSpace ()),
             timeSteppingProblem_ (timeSteppingProblem),
-            t_ (startTime)
+            t_ (startTime),
+            startTime_ (startTime),
+            dt_ (dt),
+            endTime_ (endTime)
     { 
         dolfin::begin (dolfin::DBG, "Building TimeDependentProblem...");
         
@@ -44,9 +47,6 @@ namespace dcp
             
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("problem_type", "time_dependent");
-        parameters.add ("start_time", startTime);
-        parameters.add ("dt", dt);
-        parameters.add ("end_time", endTime);
         parameters.add ("dt_name", dtName);
         parameters.add ("previous_solution_name", previousSolutionName);
         parameters.add ("store_interval", storeInterval);
@@ -122,6 +122,27 @@ namespace dcp
     const double& TimeDependentProblem::time () const
     {
         return t_;
+    }
+    
+
+
+    double& TimeDependentProblem::startTime ()
+    {
+        return startTime_;
+    }
+    
+
+
+    double& TimeDependentProblem::dt ()
+    {
+        return dt_;
+    }
+
+
+
+    double& TimeDependentProblem::endTime ()
+    {
+        return endTime_;
     }
     
 
@@ -207,8 +228,12 @@ namespace dcp
     /******************* METHODS *******************/
     bool TimeDependentProblem::isFinished ()
     {
-        double endTime = parameters ["end_time"];
-        return t_ >= endTime;
+        // get dt sign through double-use of ternary operator
+        int dtSign = (dt_ > 0) ? 1 : ((dt_ < 0) ? -1 : 0);
+        
+        // multiply both t_ and endTime_ by dtSign, so that it automatically takes into account the fact that the 
+        // problem might be backward in time
+        return (t_ * dtSign) >= (endTime_ * dtSign);
     }
     
 
@@ -216,7 +241,9 @@ namespace dcp
     void TimeDependentProblem::clear ()
     {
         solution_.clear ();
-        t_ = parameters ["start_time"];
+        solution_.emplace_back (dolfin::Function (timeSteppingProblem_->functionSpace ()));
+        
+        t_ = startTime_;
     }
     
 
@@ -238,6 +265,13 @@ namespace dcp
                                   "Unknown solve type \"%s\" requested",
                                   type.c_str ());
         }
+        
+        // check if we are already at the end of time loop
+        if (isFinished ())
+        {
+            printFinishedWarning ();
+            return;
+        }
 
         dolfin::log (dolfin::DBG, "Solve type: %s", type.c_str ());
             
@@ -253,29 +287,13 @@ namespace dcp
         bool oneStepRequested = std::regex_match (type, std::regex (".*step.*"));
         
         // get parameters' values
-        double endTime = parameters ["end_time"];
-        if (t_ >= endTime)
-        {
-            dolfin::warning ("No time iteration performed in solve() function. Protected paramter t >= end_time\n",
-                             "t = %f\n",
-                             "end_time = %f\n",
-                             t_,
-                             endTime);
-            
-            return;
-        }
-        
-        dolfin::Constant dt (parameters ["dt"]);
+        dolfin::Constant dt (dt_);
         std::string dtName = parameters ["dt_name"];
-        std::string previousSolutionName = parameters ["previous_solution_name"];
         std::vector<std::string> dtCoefficientTypes;
         parameters ("dt_coefficient_types").get_parameter_keys (dtCoefficientTypes);
-        std::vector<std::string> previousSolutionCoefficientTypes;
-        parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
         int storeInterval = parameters ["store_interval"];
         int plotInterval = parameters ["plot_interval"];
         bool pause = parameters ["pause"];
-        int timeSteppingSolutionComponent = parameters ["time_stepping_solution_component"];
         
         for (auto& i : dtCoefficientTypes)
         {
@@ -292,36 +310,24 @@ namespace dcp
         // function used to step through the time loop
         dolfin::Function tmpSolution = solution_.back ();
         
+        // plot initial solution
+        dolfin::plot (tmpSolution, "Initial solution");
+        if (pause)
+        {
+            dolfin::interactive ();
+        }
+        
         // start time loop. The loop variable oneTimeStep is true only if the solve type requested is "step" and
         // the first step has already been peformed
         int timeStep = 0;
         bool timeStepFlag = false;
-        while (t_ < endTime + DOLFIN_EPS && timeStepFlag == false)
+        while (!isFinished () && timeStepFlag == false)
         {
             timeStep++;
-            t_ += dt;
             
-            dolfin::begin (dolfin::INFO, "===== Time = %f s =====", t_);
-            dolfin::log (dolfin::DBG, "===== Timestep %d =====", timeStep);
+            dolfin::begin (dolfin::INFO, "===== Timestep %d =====", timeStep);
             
-            dolfin::log (dolfin::DBG, "Setting previous solution coefficients...");
-            for (auto& i : previousSolutionCoefficientTypes)
-            {
-                if (timeSteppingSolutionComponent >= 0)
-                {
-                    timeSteppingProblem_->setCoefficient 
-                        (i, 
-                         dolfin::reference_to_no_delete_pointer (tmpSolution [timeSteppingSolutionComponent]), 
-                         previousSolutionName);
-                }
-                else
-                {
-                    timeSteppingProblem_->setCoefficient 
-                        (i, 
-                         dolfin::reference_to_no_delete_pointer (tmpSolution), 
-                         previousSolutionName);
-                }
-            } 
+            advanceTime (tmpSolution);
             
             dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
             timeSteppingProblem_->solve ();
@@ -339,7 +345,7 @@ namespace dcp
             if (plotInterval > 0 && timeStep % plotInterval == 0)
             {
                 dolfin::log (dolfin::DBG, "Plotting time stepping problem solution...");
-                dolfin::plot (tmpSolution);
+                dolfin::plot (tmpSolution, "Time = " + std::to_string (t_));
                 
                 if (pause)
                 {
@@ -388,9 +394,9 @@ namespace dcp
             parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
             clonedProblem = 
                 new dcp::TimeDependentProblem (this->timeSteppingProblem_,
-                                               this->parameters ["start_time"],
-                                               this->parameters ["dt"],
-                                               this->parameters ["end_time"],
+                                               startTime_,
+                                               dt_,
+                                               endTime_,
                                                dtCoefficientTypes,
                                                previousSolutionCoefficientTypes,
                                                this->parameters ["store_interval"],
@@ -406,9 +412,9 @@ namespace dcp
             parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
             clonedProblem = 
                 new dcp::TimeDependentProblem (this->timeSteppingProblem_,
-                                               this->parameters ["start_time"],
-                                               this->parameters ["dt"],
-                                               this->parameters ["end_time"],
+                                               startTime_,
+                                               dt_,
+                                               endTime_,
                                                dtCoefficientTypes,
                                                previousSolutionCoefficientTypes,
                                                this->parameters ["store_interval"],
@@ -444,5 +450,51 @@ namespace dcp
         dolfin::end ();
         
         return clonedProblem;
+    }
+    
+
+
+    /******************* PROTECTED METHODS *******************/
+    void TimeDependentProblem::advanceTime (const dolfin::Function& previousSolution)
+    {
+        t_ += dt_;
+        
+        dolfin::log (dolfin::INFO, "TIME = %f s", t_);
+
+        std::string previousSolutionName = parameters ["previous_solution_name"];
+        std::vector<std::string> previousSolutionCoefficientTypes;
+        parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
+        int timeSteppingSolutionComponent = parameters ["time_stepping_solution_component"];
+        
+        dolfin::log (dolfin::DBG, "Setting previous solution coefficients...");
+        for (auto& i : previousSolutionCoefficientTypes)
+        {
+            if (timeSteppingSolutionComponent >= 0)
+            {
+                timeSteppingProblem_->setCoefficient 
+                    (i, 
+                     dolfin::reference_to_no_delete_pointer (previousSolution [timeSteppingSolutionComponent]), 
+                     previousSolutionName);
+            }
+            else
+            {
+                timeSteppingProblem_->setCoefficient 
+                    (i, 
+                     dolfin::reference_to_no_delete_pointer (previousSolution), 
+                     previousSolutionName);
+            }
+        } 
+    }
+    
+
+
+    void TimeDependentProblem::printFinishedWarning ()
+    {
+        dolfin::warning ("No time iteration performed in solve() function.",
+                         "Protected parameter already reached end time:\n",
+                         "t = %f\n",
+                         "end_time = %f\n",
+                         t_,
+                         endTime_);
     }
 }

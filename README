@@ -1,47 +1,55 @@
 Author: Mattia Tamellini, 2014  <mattia.tamellini@gmail.com>
 
-DCP
-===
-
+# DCP #
 DCP is a library for optimal control problems based on dolfin/FEniCS: http://fenicsproject.org/support/
 
-Compilation
-===========   
--) create a directory in which to build the code. In the following steps, it will be supposed that such directory is
-   called "build" and was created in the same directory as the one where this README file is::
+## Compilation ##
 
-  mkdir build
-
--) change directory   
-     $ cd build
-
--) launch cmake with the path to the root directory of the source tree. If the directory "build" was created where
-   this README file is:   
-     $ cmake ..
-   
-   various options can be passed to cmake:    
-       C_COMPILER and CXX_COMPILER: the C and C++ compiler to be used   
-       CMAKE_BUILD_TYPE: sets the compilation type, to allow for some optimization at compile time (see CMake documentation
-                         for more details)   
-       LIB_INSTALL_DIR: directory for the installation of the library. Default value: the directory "lib" in the root directory
-                       of the source tree   
-       HEADER_INSTALL_DIR: directory for the installation of the header files. Default value: the directory "include" 
-                          in the root directory of the source tree   
-
-   all option can be set from command line using the flag "-D":   
-     $ cmake .. -DVARIABLE_NAME=VARIABLE_VALUE   
-
--) compile   
-     $ make
-
-   the makefile supports parallel compilation through the flag "-j". For example, to compile using 4 threads use the command:   
-     $ make -j 4
-
- 
-2) =========== INSTALLATION ===============   
-  From the build directory, launch   
-     $ make install
+To build DCP, run
 
 
-3) =========== TEST ===============   
-  To run a test, go to the "test" directory and follow the instructions of the file README in there
+```
+#!shell
+
+mkdir build
+cd build
+cmake ..
+make
+```
+
+
+various options can be passed to cmake:  
+* `C_COMPILER` and `CXX_COMPILER` : the C and C++ compiler to be used  
+* `CMAKE_BUILD_TYPE` : sets the compilation type, to allow for some optimization at compile time (see CMake documentation for more details)  
+* `LIB_INSTALL_DIR` : directory for the installation of the library. Default value: the directory `lib` in the root directory of the source tree  
+* `HEADER_INSTALL_DIR` : directory for the installation of the header files. Default value: the directory `include` in the root directory of the source tree  
+
+All option can be set from command line using the flag `-D`:
+
+```
+#!shell
+cmake .. -DVARIABLE_NAME=VARIABLE_VALUE   
+```
+
+ CMake generated makefiles support parallel compilation through the flag `-j`. For example, to compile using 4 threads use the command:   
+
+```
+#!shell
+make -j 4
+```
+
+
+## Installation ##
+From the build directory, launch   
+
+```
+#!shell
+make install
+```
+
+
+
+
+Test
+-------   
+  To run a test, go to the `test` directory and follow the instructions of the file README in there

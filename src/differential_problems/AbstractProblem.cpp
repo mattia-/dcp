@@ -122,13 +122,15 @@ namespace dcp
             dirichletBCsCounter_++;
         }
         
-        dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
+        dolfin::log (dolfin::DBG, 
+                     "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
                      bcName.c_str ());
         auto result = dirichletBCs_.insert (std::make_pair (bcName, dirichletCondition));
         
         if (result.second == false)
         {
-            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map", bcName.c_str ());
+            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+                             bcName.c_str ());
         }
         
         return result.second;
@@ -146,13 +148,15 @@ namespace dcp
             dirichletBCsCounter_++;
         }
         
-        dolfin::log (dolfin::DBG, "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
+        dolfin::log (dolfin::DBG, 
+                     "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
                      bcName.c_str ());
         auto result = dirichletBCs_.insert (std::make_pair (bcName, dirichletCondition));
         
         if (result.second == false)
         {
-            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map", bcName.c_str ());
+            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map", 
+                             bcName.c_str ());
         }
         
         return result.second;
@@ -162,13 +166,15 @@ namespace dcp
 
     bool AbstractProblem::removeDirichletBC (const std::string& bcName)
     {
-        dolfin::log (dolfin::DBG, "Removing dirichlet boundary condition \"%s\" from boundary conditions map...", 
+        dolfin::log (dolfin::DBG, 
+                     "Removing dirichlet boundary condition \"%s\" from boundary conditions map...", 
                      bcName.c_str ());
         std::size_t nErasedElements = dirichletBCs_.erase (bcName);
         
         if (nErasedElements == 0)
         {
-            dolfin::warning ("Dirichlet boundary condition \"%s\" not found in map", bcName.c_str ());
+            dolfin::warning ("Dirichlet boundary condition \"%s\" not found in map", 
+                             bcName.c_str ());
         }
         
         return nErasedElements == 1? true : false;

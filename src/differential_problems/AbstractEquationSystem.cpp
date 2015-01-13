@@ -49,7 +49,7 @@ namespace dcp
                                              dcp::AbstractProblem& problem)
     {
         dolfin::begin (dolfin::DBG, 
-                       "Inserting problem \"%s\" in composite differential problem...", 
+                       "Inserting problem \"%s\" in equation system...", 
                        problemName.c_str ());
          
         // insert problem into storedProblems_ 
@@ -62,7 +62,7 @@ namespace dcp
         // if problem was not inserted in list, issue a warning; else, add it also to the vector solveOrder_
         if (result.second == false)
         {
-            dolfin::warning ("Problem \"%s\" already exist in composite differential problem", 
+            dolfin::warning ("Problem \"%s\" already exist in equation system", 
                              problemName.c_str ());
         }
         else
@@ -81,7 +81,7 @@ namespace dcp
                                              const std::shared_ptr<dcp::AbstractProblem> problem)
     {
         dolfin::begin (dolfin::DBG, 
-                       "Inserting problem \"%s\" in composite differential problem...", 
+                       "Inserting problem \"%s\" in equation system...", 
                        problemName.c_str ());
         
         // insert problem into storedProblems_ 
@@ -93,7 +93,7 @@ namespace dcp
         // if problem was not inserted in list, issue a warning; else, add it also to the vector solveOrder_
         if (result.second == false)
         {
-            dolfin::warning ("Problem \"%s\" already exist in composite differential problem", 
+            dolfin::warning ("Problem \"%s\" already exist in equation system", 
                              problemName.c_str ());
         }
         else
@@ -111,7 +111,7 @@ namespace dcp
     void AbstractEquationSystem::removeProblem (const std::string& problemName)
     {
         dolfin::begin (dolfin::DBG, 
-                       "Removing problem \"%s\" from composite differential problem...", 
+                       "Removing problem \"%s\" from equation system...", 
                        problemName.c_str ());
         
         // delete problem from storedProblems_
@@ -124,8 +124,7 @@ namespace dcp
         // remember that erase returns the number of elements removed, which in the case of a map is at most 1
         if (result < 1) 
         {
-            dolfin::warning ("Problem \"%s\" was not removed from composite differential problem.",
-                             "Maybe you used a wrong name?",
+            dolfin::warning ("Problem \"%s\" was not found in equation system. Maybe you used a wrong name?",
                              problemName.c_str ());
         }
         else
@@ -233,7 +232,7 @@ namespace dcp
         else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
         // current link and insert the new one
         {
-            dolfin::cout << "In composite control problem: erasing link:" << dolfin::endl;
+            dolfin::cout << "In equation system: erasing link:" << dolfin::endl;
             dolfin::cout << "\t(" 
                 << std::get<0> (linkPosition->first) 
                 << ", " 
@@ -269,8 +268,7 @@ namespace dcp
         }
         else
         {
-            dolfin::warning ("link (%s, %s, %s) -> (%s, all solution components) not added.",
-                             "Key is already present in map",
+            dolfin::warning ("link (%s, %s, %s) -> (%s, all solution components) not added. Key is already present in map",
                              (std::get<0> (link.first)).c_str (),
                              (std::get<1> (link.first)).c_str (),
                              (std::get<2> (link.first)).c_str (),
@@ -320,7 +318,7 @@ namespace dcp
         else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
         // current link and insert the new one
         {
-            dolfin::cout << "In composite control problem: erasing link:" << dolfin::endl;
+            dolfin::cout << "In equation system: erasing link:" << dolfin::endl;
             dolfin::cout << "\t(" 
                 << std::get<0> (linkPosition->first) 
                 << ", " 
@@ -358,8 +356,7 @@ namespace dcp
         }
         else
         {
-            dolfin::warning ("link (%s, %s, %s) -> (%s, component %d) not added.",
-                             "Key is already present in map",
+            dolfin::warning ("link (%s, %s, %s) -> (%s, component %d) not added. Key is already present in map",
                              (std::get<0> (link.first)).c_str (),
                              (std::get<1> (link.first)).c_str (),
                              (std::get<2> (link.first)).c_str (),
@@ -481,7 +478,9 @@ namespace dcp
 
         // get problem with given name from map. Variable problemIterator will be a
         // std::map <std::string, std::unique_ptr <dcp::AbstractProblem>::iterator
-        dolfin::log (dolfin::DBG, "Looking for problem \"%s\" in problems map...", problemName.c_str ());
+        dolfin::log (dolfin::DBG, 
+                     "Looking for problem \"%s\" in problems map...", 
+                     problemName.c_str ());
         auto problemIterator = storedProblems_.find (problemName);
 
         if (problemIterator == storedProblems_.end ())
@@ -604,8 +603,7 @@ namespace dcp
         if (std::get<1> (link.second) == -1)
         {
             dolfin::log (dolfin::DBG, 
-                         "Linking coefficient \"%s\" of type \"%s\" of problem \"%s\"",
-                         "to solution of problem \"%s\"...",
+                         "Linking coefficient \"%s\" of type \"%s\" of problem \"%s\" to solution of problem \"%s\"...",
                          (std::get<1> (link.first)).c_str (),
                          (std::get<2> (link.first)).c_str (),
                          (std::get<0> (link.first)).c_str (),
@@ -618,8 +616,7 @@ namespace dcp
         else
         {
             dolfin::log (dolfin::DBG, 
-                         "Linking coefficient \"%s\" of type \"%s\" of problem \"%s\"",
-                         "to component %d solution of problem \"%s\"...",
+                         "Linking coefficient \"%s\" of type \"%s\" of problem \"%s\" to component %d of solution of problem \"%s\"...",
                          (std::get<1> (link.first)).c_str (),
                          (std::get<2> (link.first)).c_str (),
                          (std::get<0> (link.first)).c_str (),

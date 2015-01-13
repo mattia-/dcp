@@ -490,11 +490,6 @@ namespace dcp
 
     void TimeDependentProblem::printFinishedWarning ()
     {
-        dolfin::warning ("No time iteration performed in solve() function.",
-                         "Protected parameter already reached end time:\n",
-                         "t = %f\n",
-                         "end_time = %f\n",
-                         t_,
-                         endTime_);
+        dolfin::warning ("No time iteration performed in solve() function. End time already reached.");
     }
 }

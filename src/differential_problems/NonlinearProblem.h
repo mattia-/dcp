@@ -674,8 +674,7 @@ namespace dcp
                 }
                 else
                 {
-                    dolfin::warning ("Cannot set initial guess in nonlinear differential problem. Input argument is \
-                                     neither a dolfin::Function nor a dolfin::Expression");
+                    dolfin::warning ("Cannot set initial guess in nonlinear differential problem. Input argument is neither a dolfin::Function nor a dolfin::Expression");
                 }
             }
             else

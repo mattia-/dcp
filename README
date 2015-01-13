@@ -9,6 +9,7 @@ Compilation
 ===========   
 -) create a directory in which to build the code. In the following steps, it will be supposed that such directory is
    called "build" and was created in the same directory as the one where this README file is::
+
   mkdir build
 
 -) change directory   

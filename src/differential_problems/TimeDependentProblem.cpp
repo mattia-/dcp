@@ -228,12 +228,7 @@ namespace dcp
     /******************* METHODS *******************/
     bool TimeDependentProblem::isFinished ()
     {
-        // get dt sign through double-use of ternary operator
-        int dtSign = (dt_ > 0) ? 1 : ((dt_ < 0) ? -1 : 0);
-        
-        // multiply both t_ and endTime_ by dtSign, so that it automatically takes into account the fact that the 
-        // problem might be backward in time
-        return (t_ * dtSign) >= (endTime_ * dtSign);
+        return (dt_ > 0) ? (t_ >= endTime_) : (t_ <= endTime_);
     }
     
 

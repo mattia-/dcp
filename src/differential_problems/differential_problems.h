@@ -24,6 +24,7 @@
 #include "NonlinearProblem.h"
 #include "TimeDependentProblem.h"
 #include "EquationSystem.h"
+#include "TimeDependentEquationSystem.h"
 #include "SubdomainType.h"
 
 #endif

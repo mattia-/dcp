@@ -1,5 +1,5 @@
 This collection of files sets up the case for a test nonlinear
-differential problem. We will use the stationary Navier-Stokes equations
+time dependent problem. We will use the Navier-Stokes equations
 to study the flow around a cylinder.
 
 Steps to launch the code:

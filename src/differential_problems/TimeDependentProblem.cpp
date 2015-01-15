@@ -347,11 +347,14 @@ namespace dcp
         // function used to step through the time loop
         dolfin::Function tmpSolution = solution_.back ();
         
-        // plot initial solution
-        dolfin::plot (tmpSolution, "Initial solution");
-        if (pause)
+        // plot initial solution (only if plotInterval > 0. If it is 0 the user wants no plot at all)
+        if (plotInterval > 0)
         {
-            dolfin::interactive ();
+            dolfin::plot (tmpSolution, "Initial solution");
+            if (pause)
+            {
+                dolfin::interactive ();
+            }
         }
         
         // start time loop. The loop variable oneTimeStep is true only if the solve type requested is "step" and

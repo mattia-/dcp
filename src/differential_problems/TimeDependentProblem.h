@@ -20,7 +20,6 @@
 #ifndef SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTPROBLEM_H_INCLUDE_GUARD
 #define SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTPROBLEM_H_INCLUDE_GUARD
 
-#include <dolfin/mesh/Mesh.h>
 #include <dolfin/mesh/MeshFunction.h>
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/la/LinearSolver.h>
@@ -133,7 +132,7 @@ namespace dcp
             /*! 
              *  \return a const reference to the problem's mesh
              */
-            virtual std::shared_ptr<dolfin::Mesh> mesh () const override;
+            virtual std::shared_ptr<const dolfin::Mesh> mesh () const override;
 
             //! Get problem's finite element space
             /*! 
@@ -246,7 +245,80 @@ namespace dcp
                                                    std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                    const dcp::SubdomainType& subdomainType) override;
 
-            //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c AbstractProblem
+            //! Add Dirichlet boundary condition to the problem [1]
+            //! Overrides method in \c AbstractProblem.
+            //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
+            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
+            /*!
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addDirichletBC (const dolfin::GenericFunction& condition, 
+                                         const dolfin::SubDomain& boundary,
+                                         std::string bcName = "") override;
+
+            //! Add Dirichlet boundary condition to the problem [2]
+            //! Overrides method in \c AbstractProblem.
+            //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
+            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
+            /*!
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
+             *  \param component the function space component on which the boundary condition should be imposed. 
+             *  For instance, this can be useful if we have a vector space and we want only the orizontal component to
+             *  have a fixed value
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addDirichletBC (const dolfin::GenericFunction& condition, 
+                                         const dolfin::SubDomain& boundary,
+                                         const std::size_t& component,
+                                         std::string bcName = "") override;
+
+            //! Add Dirichlet boundary condition to the problem [3]
+            //! Overrides method in \c AbstractProblem.
+            //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
+            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
+            /*!
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                         std::shared_ptr<const dolfin::SubDomain> boundary,
+                                         std::string bcName = "") override;
+
+            //! Add Dirichlet boundary condition to the problem [4]
+            //! Overrides method in \c AbstractProblem.
+            //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
+            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
+            /*!
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
+             *  \param component the function space component on which the boundary condition should be imposed. 
+             *  For instance, this can be useful if we have a vector space and we want only the orizontal component to
+             *  have a fixed value
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                         std::shared_ptr<const dolfin::SubDomain> boundary,
+                                         const std::size_t& component,
+                                         std::string bcName = "") override;
+
+            //! Add Dirichlet boundary condition to the problem [5]. 
+            //! Overrides method in \c AbstractProblem.
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
@@ -256,9 +328,11 @@ namespace dcp
              *  
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
-            virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, std::string bcName = "") override;
+            virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
+                                         std::string bcName = "") override;
 
-            //! Add Dirichlet boundary condition to the problem [2]. Overrides method in \c AbstractProblem
+            //! Add Dirichlet boundary condition to the problem [6]. 
+            //! Overrides method in \c AbstractProblem.
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
@@ -268,7 +342,8 @@ namespace dcp
              *  
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
-            virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, std::string bcName = "") override;
+            virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, 
+                                         std::string bcName = "") override;
 
             //! Remove Dirichlet boundary condition with given position. Overrides method in \c AbstractProblem
             //! This function removes the given Dirichlet boundary conditions from the protected member 

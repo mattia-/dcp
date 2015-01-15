@@ -34,7 +34,7 @@ namespace dcp
                                                 const int& plotInterval,
                                                 const std::string& dtName,
                                                 const std::string& previousSolutionName) : 
-            AbstractProblem (timeSteppingProblem->mesh (), timeSteppingProblem->functionSpace ()),
+            AbstractProblem (timeSteppingProblem->functionSpace ()),
             timeSteppingProblem_ (timeSteppingProblem),
             t_ (startTime),
             startTime_ (startTime),
@@ -77,7 +77,7 @@ namespace dcp
 
 
     /******************* GETTERS *******************/
-    std::shared_ptr<dolfin::Mesh> TimeDependentProblem::mesh () const
+    std::shared_ptr<const dolfin::Mesh> TimeDependentProblem::mesh () const
     {
         return timeSteppingProblem_ -> mesh ();
     }
@@ -197,14 +197,54 @@ namespace dcp
 
 
 
-    bool TimeDependentProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition, std::string bcName)
+    bool TimeDependentProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
+                                               const dolfin::SubDomain& boundary,
+                                               std::string bcName)
+    {
+        return timeSteppingProblem_->addDirichletBC (condition, boundary, bcName);
+    }
+    
+
+
+    bool TimeDependentProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
+                                               const dolfin::SubDomain& boundary, 
+                                               const std::size_t& component,
+                                               std::string bcName)
+    {
+        return timeSteppingProblem_->addDirichletBC (condition, boundary, component, bcName);
+    }
+    
+
+
+    bool TimeDependentProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                               std::shared_ptr<const dolfin::SubDomain> boundary,
+                                               std::string bcName)
+    {
+        return timeSteppingProblem_->addDirichletBC (condition, boundary, bcName);
+    }
+    
+
+
+    bool TimeDependentProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                               std::shared_ptr<const dolfin::SubDomain> boundary, 
+                                               const std::size_t& component,
+                                               std::string bcName)
+    {
+        return timeSteppingProblem_->addDirichletBC (condition, boundary, component, bcName);
+    }
+    
+
+
+    bool TimeDependentProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
+                                               std::string bcName)
     {
         return timeSteppingProblem_->addDirichletBC (dirichletCondition, bcName);
     }
 
 
 
-    bool TimeDependentProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition, std::string bcName)
+    bool TimeDependentProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition, 
+                                               std::string bcName)
     {
         return timeSteppingProblem_->addDirichletBC (dirichletCondition, bcName);
     }

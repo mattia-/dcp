@@ -128,15 +128,13 @@ int main (int argc, char* argv[])
 
     // define problem
     dcp::NonlinearProblem <primal::ResidualForm, primal::JacobianForm> 
-        navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                             dolfin::reference_to_no_delete_pointer (V),
-                             "trial");
+        navierStokesProblem (dolfin::reference_to_no_delete_pointer (V), "trial");
 
     // problem settings
     navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
     navierStokesProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
 
-    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], inflowDirichletBC, inflowBoundary));
+    navierStokesProblem.addDirichletBC (inflowDirichletBC, inflowBoundary, 0);
     navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, noSlipBoundary, "topological", false));
     navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], symmetryDirichletBC, gammaSD));
 

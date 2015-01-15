@@ -113,9 +113,7 @@ int main (int argc, char* argv[])
     double dt = 0.1;
     double T = 4;
     dcp::NonlinearProblem <navierstokes::ResidualForm, navierstokes::JacobianForm> 
-        timeSteppingProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                             dolfin::reference_to_no_delete_pointer (V),
-                             "trial");
+        timeSteppingProblem (dolfin::reference_to_no_delete_pointer (V), "trial");
     
     dcp::TimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (timeSteppingProblem),
                                                    t0,
@@ -138,7 +136,7 @@ int main (int argc, char* argv[])
     navierstokes::GammaSD gammaSD;
     navierstokes::NoSlipBoundary noSlipBoundary;
     
-    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], inflowDirichletBC, inflowBoundary));
+    navierStokesProblem.addDirichletBC (inflowDirichletBC, inflowBoundary, 0);
     navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, noSlipBoundary, "topological", false));
     navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], symmetryDirichletBC, gammaSD));
 

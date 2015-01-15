@@ -20,7 +20,6 @@
 #ifndef SRC_DIFFERENTIAL_PROBLEMS_NONLINEARPROBLEM_H_INCLUDE_GUARD
 #define SRC_DIFFERENTIAL_PROBLEMS_NONLINEARPROBLEM_H_INCLUDE_GUARD
 
-#include <dolfin/mesh/Mesh.h>
 #include <dolfin/mesh/MeshFunction.h>
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/fem/solve.h>
@@ -70,81 +69,69 @@ namespace dcp
 
                 //!  Constructor with shared pointers [1]
                 /*!
-                 *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
                  *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
                  *  \c dolfin::FunctionSpace
-                 *  \param residualFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the residual form 
-                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the jacobian form. Default value is the empty string, in which case \c residualFormSolutionName
-                 *  will be used for \c jacobianFormSolutionName
-                 *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
-                 *  The residual and jacobian form will be created too, calling the constructor which takes the function space
-                 *  as input.
+                 *  \param residualFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the residual form 
+                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the jacobian form. Default value is the empty string, in which case 
+                 *  \c residualFormSolutionName will be used for \c jacobianFormSolutionName
+                 *  The stored function space's ownership will be shared between the object and the input
+                 *  argument. The residual and jacobian form will be created too, calling the constructor which takes
+                 *  the function space as input.
                  */
-                NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                  const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                   const std::string& residualFormSolutionName,
                                   const std::string& jacobianFormSolutionName = "" );
                 
 
                 //! Constructor with references [1]
                 /*!
-                 *  \param mesh the problem mesh as a const \c dolfin::Mesh&
                  *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
-                 *  \param residualFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the residual form 
-                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the jacobian form. Default value is the empty string, in which case \c residualFormSolutionName
-                 *  will be used for \c jacobianFormSolutionName
-                 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
-                 *  initialized using the \c new operator and mesh's and functionSpace's copy constructor
-                 *  The residual and jacobian form will be created too, calling the constructor which takes the function space
-                 *  as input.
+                 *  \param residualFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the residual form 
+                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the jacobian form. Default value is the empty string, in which case \c
+                 *  residualFormSolutionName will be used for \c jacobianFormSolutionName
+                 *  The stored function space's ownership will be unique to the object, since the pointer is initialized
+                 *  using the \c new operator and functionSpace's copy constructor. The residual and jacobian form will
+                 *  be created too, calling the constructor which takes the function space as input.
                  */
-                NonlinearProblem (const dolfin::Mesh& mesh, 
-                                  const dolfin::FunctionSpace& functionSpace,
+                NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
                                   const std::string& residualFormSolutionName,
                                   const std::string& jacobianFormSolutionName = "" );
 
                 //! Constructor with rvalue references [1]
                 /*!
-                 *  \param mesh the problem mesh as a dolfin::Mesh&&
                  *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
-                 *  \param residualFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the residual form 
-                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the jacobian form. Default value is the empty string, in which case \c residualFormSolutionName
-                 *  will be used for \c jacobianFormSolutionName
-                 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
-                 *  initialized using the \c new operator and mesh's and functionSpace's move constructor
-                 *  The residual and jacobian form will be created too, calling the constructor which takes the function space
-                 *  as input.
+                 *  \param residualFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the residual form 
+                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the jacobian form. Default value is the empty string, in which case \c
+                 *  residualFormSolutionName will be used for \c jacobianFormSolutionName
+                 *  The stored function space's ownership will be unique to the object, since the pointer is initialized
+                 *  using the \c new operator and mesh's and functionSpace's move constructor. The residual and jacobian
+                 *  form will be created too, calling the constructor which takes the function space as input.
                  */
-                NonlinearProblem (dolfin::Mesh&& mesh, 
-                                  dolfin::FunctionSpace&& functionSpace,
+                NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
                                   const std::string& residualFormSolutionName,
                                   const std::string& jacobianFormSolutionName = "" );
 
                 
                 //!  Constructor with shared pointers [2]
                 /*!
-                 *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
-                 *  \param functionSpace the problem finite element space as a const \c std::shared_ptr 
-                 *  \c to dolfin::FunctionSpace
-                 *  \param residualForm a const reference to the problem's residual form
-                 *  \param jacobianForm a const reference to the problem's jacobian form
-                 *  \param residualFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the residual form 
-                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the jacobian form. Default value is the empty string, in which case \c residualFormSolutionName
-                 *  will be used for \c jacobianFormSolutionName
-                 *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
-                 *  The residual and jacobian form will be created too, calling the constructor which takes the function space
-                 *  as input.
+                 *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
+                 *  \c dolfin::FunctionSpace
+                 *  \param residualFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the residual form 
+                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the jacobian form. Default value is the empty string, in which case 
+                 *  \c residualFormSolutionName will be used for \c jacobianFormSolutionName
+                 *  The stored function space's ownership will be shared between the object and the input
+                 *  argument. The residual and jacobian form will be created too, calling the constructor which takes
+                 *  the function space as input.
                  */
-                NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                                  const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                   const T_ResidualForm& residualForm,
                                   const T_JacobianForm& jacobianForm,
                                   const std::string& residualFormSolutionName,
@@ -152,22 +139,17 @@ namespace dcp
 
                 //! Constructor with references [2]
                 /*!
-                 *  \param mesh the problem mesh as a const \c dolfin::Mesh&
                  *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
-                 *  \param residualForm a const reference to the problem's residual form
-                 *  \param jacobianForm a const reference to the problem's jacobian form
-                 *  \param residualFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the residual form 
-                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the jacobian form. Default value is the empty string, in which case 
-                 *  \c residualFormSolutionName will be used for \c jacobianFormSolutionName
-                 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
-                 *  initialized using the \c new operator and mesh's and functionSpace's copy constructor
-                 *  The residual and jacobian form will be created too, calling the constructor which takes the function space
-                 *  as input.
+                 *  \param residualFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the residual form 
+                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the jacobian form. Default value is the empty string, in which case \c
+                 *  residualFormSolutionName will be used for \c jacobianFormSolutionName
+                 *  The stored function space's ownership will be unique to the object, since the pointer is initialized
+                 *  using the \c new operator and functionSpace's copy constructor. The residual and jacobian form will
+                 *  be created too, calling the constructor which takes the function space as input.
                  */
-                NonlinearProblem (const dolfin::Mesh& mesh, 
-                                  const dolfin::FunctionSpace& functionSpace,
+                NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
                                   const T_ResidualForm& residualForm,
                                   const T_JacobianForm& jacobianForm,
                                   const std::string& residualFormSolutionName,
@@ -175,22 +157,17 @@ namespace dcp
 
                 //! Constructor with rvalue references [2]
                 /*!
-                 *  \param mesh the problem mesh as a \c dolfin::Mesh&&
-                 *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
-                 *  \param residualForm a rvalue reference to the problem's residual form
-                 *  \param jacobianForm a rvalue reference to the problem's jacobian form
-                 *  \param residualFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the residual form
-                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the problem
-                 *  solution in the jacobian form. Default value is the empty string, in which case 
-                 *  \c residualFormSolutionName will be used for \c jacobianFormSolutionName
-                 *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
-                 *  initialized using the \c new operator and mesh's and functionSpace's move constructor
-                 *  The residual and jacobian form will be created too, calling the constructor which takes the function space
-                 *  as input.
+                 *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
+                 *  \param residualFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the residual form 
+                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
+                 *  problem solution in the jacobian form. Default value is the empty string, in which case \c
+                 *  residualFormSolutionName will be used for \c jacobianFormSolutionName
+                 *  The stored function space's ownership will be unique to the object, since the pointer is initialized
+                 *  using the \c new operator and mesh's and functionSpace's move constructor. The residual and jacobian
+                 *  form will be created too, calling the constructor which takes the function space as input.
                  */
-                NonlinearProblem (dolfin::Mesh&& mesh, 
-                                  dolfin::FunctionSpace&& functionSpace,
+                NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
                                   T_ResidualForm&& residualForm,
                                   T_JacobianForm&& jacobianForm,
                                   const std::string& residualFormSolutionName,
@@ -329,11 +306,10 @@ namespace dcp
 
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                          const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
@@ -377,11 +353,10 @@ namespace dcp
 
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (const dolfin::Mesh& mesh, 
-                          const dolfin::FunctionSpace& functionSpace,
+        NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
@@ -425,11 +400,10 @@ namespace dcp
     
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (dolfin::Mesh&& mesh, 
-                          dolfin::FunctionSpace&& functionSpace,
+        NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
@@ -473,13 +447,12 @@ namespace dcp
 
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                          const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                           const T_ResidualForm& residualForm,
                           const T_JacobianForm& jacobianForm,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 
@@ -523,13 +496,12 @@ namespace dcp
 
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (const dolfin::Mesh& mesh, 
-                          const dolfin::FunctionSpace& functionSpace,
+        NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
                           const T_ResidualForm& residualForm,
                           const T_JacobianForm& jacobianForm,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 
@@ -573,13 +545,12 @@ namespace dcp
 
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (dolfin::Mesh&& mesh, 
-                          dolfin::FunctionSpace&& functionSpace,
+        NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
                           T_ResidualForm&& residualForm,
                           T_JacobianForm&& jacobianForm,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 
@@ -880,8 +851,7 @@ namespace dcp
             {
                 clonedProblem = 
                     new dcp::NonlinearProblem <T_ResidualForm, T_JacobianForm> 
-                        ( this->mesh_,
-                          this->functionSpace_,
+                        ( this->functionSpace_,
                           this->residualForm_, 
                           this->jacobianForm_,
                          (this->parameters) ["residual_form_solution_name"],
@@ -892,8 +862,7 @@ namespace dcp
             {
                 clonedProblem = 
                     new dcp::NonlinearProblem <T_ResidualForm, T_JacobianForm> 
-                        (*(this->mesh_),
-                         *(this->functionSpace_),
+                        (*(this->functionSpace_),
                            this->residualForm_, 
                            this->jacobianForm_,
                           (this->parameters) ["residual_form_solution_name"],

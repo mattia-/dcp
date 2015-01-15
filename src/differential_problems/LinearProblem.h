@@ -20,7 +20,6 @@
 #ifndef SRC_DIFFERENTIAL_PROBLEMS_LINEARPROBLEM_H_INCLUDE_GUARD
 #define SRC_DIFFERENTIAL_PROBLEMS_LINEARPROBLEM_H_INCLUDE_GUARD
 
-#include <dolfin/mesh/Mesh.h>
 #include <dolfin/mesh/MeshFunction.h>
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/la/LinearSolver.h>
@@ -76,7 +75,6 @@ namespace dcp
 
                 //!  Constructor with shared pointers [1]
                 /*!
-                 *  \param mesh the problem mesh as a <tt> const std::shared_ptr </tt> to \c dolfin::Mesh
                  *  \param functionSpace the problem finite element space as a <tt> const std::shared_ptr </tt> to 
                  *  \c dolfin::FunctionSpace
                  *  \param solverType the type of the solver. Default: \c lu_solver
@@ -84,12 +82,11 @@ namespace dcp
                  *  documentation, or use method \c list_<solverType>_methods). Default value: \c default
                  *  \param solverPreconditioner the preconditioner to be used. It is not used for \c lu_solvers. Default
                  *  value: \c default
-                 *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
-                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
+                 *  The stored function space's ownership will be shared between the object and the input argument. The
+                 *  bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                LinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                               const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                const std::string& solverType = "lu_solver",
                                const std::string& solverMethod = "default",
                                const std::string& solverPreconditioner = "default");
@@ -97,42 +94,36 @@ namespace dcp
 
                 //! Constructor with references [1]
                 /*!
-                 *  \param mesh the problem mesh as a <tt> const dolfin::Mesh& </tt>
                  *  \param functionSpace the problem finite element space as a <tt> const dolfin::FunctionSpace& </tt>
                  *  \param solverType the type of the solver. Default: \c lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
                  *  documentation, or use method \c list_<solverType>_methods). Default value: \c default
                  *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
                  *  value: \c default
-                 *  The stored mesh's and function space's ownership will be unique to the object, since the protected
-                 *  member variables are 
-                 *  initialized using the \c new operator and mesh's and functionSpace's copy constructor.
-                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
+                 *  The stored function space's ownership will be unique to the object, since the protected member
+                 *  variable is initialized using the \c new operator and functionSpace's copy constructor. The
+                 *  bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                LinearProblem (const dolfin::Mesh& mesh, 
-                               const dolfin::FunctionSpace& functionSpace,
+                LinearProblem (const dolfin::FunctionSpace& functionSpace,
                                const std::string& solverType = "lu_solver",
                                const std::string& solverMethod = "default",
                                const std::string& solverPreconditioner = "default");
 
                 //! Constructor with rvalue references [1]
                 /*!
-                 *  \param mesh the problem mesh as a \c dolfin::Mesh&&
                  *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
                  *  \param solverType the type of the solver. Default: \c lu_solver
                  *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
                  *  documentation, or use method \c list_<solverType>_methods). Default value: \c default
                  *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
                  *  value: \c default
-                 *  The stored mesh's and function space's ownership will be unique to the object, since the protected
-                 *  member variables are 
-                 *  initialized using the \c new operator and mesh's and functionSpace's move constructor
-                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-                 *  as input.
+                 *  The stored function space's ownership will be unique to the object, since the protected member
+                 *  variable is initialized using the \c new operator and functionSpace's move constructor. The bilinear
+                 *  and linear form will be created too, calling the constructor which takes the function space as
+                 *  input.
                  */
-                LinearProblem (dolfin::Mesh&& mesh, 
-                               dolfin::FunctionSpace&& functionSpace,
+                LinearProblem (dolfin::FunctionSpace&& functionSpace,
                                const std::string& solverType = "lu_solver",
                                const std::string& solverMethod = "default",
                                const std::string& solverPreconditioner = "default");
@@ -140,7 +131,6 @@ namespace dcp
 
                 //!  Constructor with shared pointers [2]
                 /*!
-                 *  \param mesh the problem mesh as a <tt> const std::shared_ptr </tt> to \c dolfin::Mesh
                  *  \param functionSpace the problem finite element space as a <tt>const std::shared_ptr </tt> to 
                  *  \c dolfin::FunctionSpace
                  *  \param bilinearForm a \c const reference to the problem's bilinear form
@@ -150,12 +140,11 @@ namespace dcp
                  *  documentation, or use method \c list_<solverType>_methods. Default value: \c default
                  *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
                  *  value: \c default
-                 *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
-                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
+                 *  The stored function space's ownership will be shared between the object and the input argument.  The
+                 *  bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  */
-                LinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                               const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                const T_BilinearForm& bilinearForm,
                                const T_LinearForm& linearForm,
                                const std::string& solverType = "lu_solver",
@@ -164,7 +153,6 @@ namespace dcp
 
                 //! Constructor with references [2]
                 /*!
-                 *  \param mesh the problem mesh as a <tt>const dolfin::Mesh& </tt>
                  *  \param functionSpace the problem finite element space as a <tt>const dolfin::FunctionSpace& </tt>
                  *  \param bilinearForm a \c const reference to the problem's bilinear form
                  *  \param linearForm a \c const reference to the problem's linear form
@@ -173,14 +161,12 @@ namespace dcp
                  *  documentation, or use method \c list_<solverType>_methods. Default value: \c default
                  *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
                  *  value: \c default
-                 *  The stored mesh's and function space's ownership will be unique to the object, since the protected
-                 *  member variables are 
-                 *  initialized using the \c new operator and mesh's and functionSpace's copy constructor
-                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-                 *  as input.
+                 *  The stored function space's ownership will be unique to the object, since the protected member
+                 *  variable is initialized using the \c new operator and functionSpace's copy constructor. The bilinear
+                 *  and linear form will be created too, calling the constructor which takes the function space as
+                 *  input.
                  */
-                LinearProblem (const dolfin::Mesh& mesh, 
-                               const dolfin::FunctionSpace& functionSpace,
+                LinearProblem (const dolfin::FunctionSpace& functionSpace,
                                const T_BilinearForm& bilinearForm,
                                const T_LinearForm& linearForm,
                                const std::string& solverType = "lu_solver",
@@ -189,7 +175,6 @@ namespace dcp
 
                 //! Constructor with rvalue references [2]
                 /*!
-                 *  \param mesh the problem mesh as a \c dolfin::Mesh&&
                  *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
                  *  \param bilinearForm a rvalue reference to the problem's bilinear form
                  *  \param linearForm a rvalue reference to the problem's linear form
@@ -198,14 +183,12 @@ namespace dcp
                  *  documentation, or use method \c list_<solverType>_methods. Default value: \c default
                  *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
                  *  value: \c default
-                 *  The stored mesh's and function space's ownership will be unique to the object, since the protected
-                 *  member variables are 
-                 *  initialized using the \c new operator and mesh's and functionSpace's move constructor
-                 *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-                 *  as input.
+                 *  The stored function space's ownership will be unique to the object, since the protected member
+                 *  variable is initialized using the \c new operator and functionSpace's move constructor The bilinear
+                 *  and linear form will be created too, calling the constructor which takes the function space as
+                 *  input.
                  */
-                LinearProblem (dolfin::Mesh&& mesh, 
-                               dolfin::FunctionSpace&& functionSpace,
+                LinearProblem (dolfin::FunctionSpace&& functionSpace,
                                T_BilinearForm&& bilinearForm,
                                T_LinearForm&& linearForm,
                                const std::string& solverType = "lu_solver",
@@ -290,37 +273,108 @@ namespace dcp
 
                 //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c AbstractProblem
                 /*!
-                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
-                 *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the problem
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to 
+                 *  \c false.
+                 *  \param condition the boundary condition to enforce
+                 *  \param boundary the boundary on which to enforce the condition
                  *  \param bcName the name identifying the boundary condition. If empty, 
                  *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
                  *  
                  *  \return boolean flag, with \c true representing success and \c false representing failure
                  */
-                virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, std::string bcName = "") override;
+                virtual bool addDirichletBC (const dolfin::GenericFunction& condition, 
+                                             const dolfin::SubDomain& boundary,
+                                             std::string bcName = "") override;
 
                 //! Add Dirichlet boundary condition to the problem [2]. Overrides method in \c AbstractProblem
                 /*!
-                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
-                 *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the problem
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to 
+                 *  \c false.
+                 *  \param condition the boundary condition to enforce
+                 *  \param boundary the boundary on which to enforce the condition
+                 *  \param component the function space component on which the boundary condition should be imposed. 
                  *  \param bcName the name identifying the boundary condition. If empty, 
                  *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
                  *  
                  *  \return boolean flag, with \c true representing success and \c false representing failure
                  */
-                virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, std::string bcName = "") override;
+                virtual bool addDirichletBC (const dolfin::GenericFunction& condition, 
+                                             const dolfin::SubDomain& boundary,
+                                             const std::size_t& component,
+                                             std::string bcName = "") override;
+
+                //! Add Dirichlet boundary condition to the problem [3]
+                /*!
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to 
+                 *  \c false.
+                 *  \param condition the boundary condition to enforce
+                 *  \param boundary the boundary on which to enforce the condition
+                 *  \param bcName the name identifying the boundary condition. If empty,
+                 *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+                 *  
+                 *  \return boolean flag, with \c true representing success and \c false representing failure
+                 */
+                virtual bool addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                             std::shared_ptr<const dolfin::SubDomain> boundary,
+                                             std::string bcName = "") override;
+
+                //! Add Dirichlet boundary condition to the problem [4]
+                /*!
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to 
+                 *  \c false.
+                 *  \param condition the boundary condition to enforce
+                 *  \param boundary the boundary on which to enforce the condition
+                 *  \param component the function space component on which the boundary condition should be imposed. 
+                 *  For instance, this can be useful if we have a vector space and we want only the orizontal component to
+                 *  have a fixed value
+                 *  \param bcName the name identifying the boundary condition. If empty,
+                 *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+                 *  
+                 *  \return boolean flag, with \c true representing success and \c false representing failure
+                 */
+                virtual bool addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                             std::shared_ptr<const dolfin::SubDomain> boundary,
+                                             const std::size_t& component,
+                                             std::string bcName = "") override;
+
+                //! Add Dirichlet boundary condition to the problem [5]. Overrides method in \c AbstractProblem
+                /*!
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
+                 *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the
+                 *  problem
+                 *  \param bcName the name identifying the boundary condition. If empty, 
+                 *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+                 *  
+                 *  \return boolean flag, with \c true representing success and \c false representing failure
+                 */
+                virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
+                                             std::string bcName = "") override;
+
+                //! Add Dirichlet boundary condition to the problem [6]. Overrides method in \c AbstractProblem
+                /*!
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
+                 *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the
+                 *  problem
+                 *  \param bcName the name identifying the boundary condition. If empty, 
+                 *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+                 *  
+                 *  \return boolean flag, with \c true representing success and \c false representing failure
+                 */
+                virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, 
+                                             std::string bcName = "") override;
 
                 //! Remove Dirichlet boundary condition with given position. Overrides method in \c AbstractProblem
                 /*!
-                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
+                 *  This method adds to the base class method the setting of parameter \c system_is_assembled to 
+                 *  \c false.
                  *  \param bcName name of the boundary condition to be removed.
                  *  
                  *  \return boolean flag, with \c true representing success and \c false representing failure
                  */
                 virtual bool removeDirichletBC (const std::string& bcName) override;
                 
-                //! Method to update class members. It checks for differences between desired and current solver parameters
-                //! and creates a new solver, setting also the proper parameters
+                //! Method to update class members. It checks for differences between desired and current solver
+                //! parameters and creates a new solver, setting also the proper parameters
                 virtual void update () override;
 
                 
@@ -409,12 +463,11 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                       const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                        const std::string& solverType,
                        const std::string& solverMethod,
                        const std::string& solverPreconditioner) :
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
@@ -450,12 +503,11 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (const dolfin::Mesh& mesh, 
-                       const dolfin::FunctionSpace& functionSpace,
+        LinearProblem (const dolfin::FunctionSpace& functionSpace,
                        const std::string& solverType,
                        const std::string& solverMethod,
                        const std::string& solverPreconditioner) :
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
@@ -491,12 +543,11 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (dolfin::Mesh&& mesh, 
-                       dolfin::FunctionSpace&& functionSpace,
+        LinearProblem (dolfin::FunctionSpace&& functionSpace,
                        const std::string& solverType,
                        const std::string& solverMethod,
                        const std::string& solverPreconditioner) :
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
@@ -532,14 +583,13 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                       const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                        const T_BilinearForm& bilinearForm,
                        const T_LinearForm& linearForm,
                        const std::string& solverType,
                        const std::string& solverMethod,
                        const std::string& solverPreconditioner) :
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
             solver_ (nullptr),
@@ -575,14 +625,13 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (const dolfin::Mesh& mesh, 
-                       const dolfin::FunctionSpace& functionSpace,
+        LinearProblem (const dolfin::FunctionSpace& functionSpace,
                        const T_BilinearForm& bilinearForm,
                        const T_LinearForm& linearForm,
                        const std::string& solverType,
                        const std::string& solverMethod,
                        const std::string& solverPreconditioner) :
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
             solver_ (nullptr),
@@ -618,14 +667,13 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (dolfin::Mesh&& mesh, 
-                       dolfin::FunctionSpace&& functionSpace,
+        LinearProblem (dolfin::FunctionSpace&& functionSpace,
                        T_BilinearForm&& bilinearForm,
                        T_LinearForm&& linearForm,
                        const std::string& solverType,
                        const std::string& solverMethod,
                        const std::string& solverPreconditioner) :
-            AbstractProblem (mesh, functionSpace),
+            AbstractProblem (functionSpace),
             bilinearForm_ (std::move (bilinearForm)),
             linearForm_ (std::move (linearForm)),
             solver_ (nullptr),
@@ -821,7 +869,105 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         bool LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        addDirichletBC (const dolfin::DirichletBC& dirichletCondition, std::string bcName)
+        addDirichletBC (const dolfin::GenericFunction& condition, 
+                        const dolfin::SubDomain& boundary,
+                        std::string bcName)
+        {
+            return addDirichletBC (dolfin::reference_to_no_delete_pointer (condition), 
+                                   dolfin::reference_to_no_delete_pointer (boundary),
+                                   bcName); 
+        }
+    
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        bool LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        addDirichletBC (const dolfin::GenericFunction& condition, 
+                        const dolfin::SubDomain& boundary,
+                        const std::size_t& component,
+                        std::string bcName)
+        {
+            return addDirichletBC (dolfin::reference_to_no_delete_pointer (condition), 
+                                   dolfin::reference_to_no_delete_pointer (boundary),
+                                   component,
+                                   bcName); 
+        }
+                    
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        bool LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                        std::shared_ptr<const dolfin::SubDomain> boundary,
+                        std::string bcName)
+        {
+            if (bcName.empty ())
+            {
+                bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
+                dirichletBCsCounter_++;
+            }
+
+            dolfin::log (dolfin::DBG, 
+                         "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
+                         bcName.c_str ());
+
+            auto result = dirichletBCs_.emplace 
+                (std::make_pair (bcName, dolfin::DirichletBC (functionSpace_, condition, boundary)));
+
+            if (result.second == false)
+            {
+                dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+                                 bcName.c_str ());
+            }
+            else
+            {
+                parameters ["system_is_assembled"] = false;
+            }
+
+            return result.second;
+        }
+    
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        bool LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                        std::shared_ptr<const dolfin::SubDomain> boundary,
+                        const std::size_t& component,
+                        std::string bcName)
+        {
+            if (bcName.empty ())
+            {
+                bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
+                dirichletBCsCounter_++;
+            }
+
+            dolfin::log (dolfin::DBG, 
+                         "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
+                         bcName.c_str ());
+
+            auto result = dirichletBCs_.emplace
+                (std::make_pair (bcName, dolfin::DirichletBC ((*functionSpace_) [component], condition, boundary)));
+
+            if (result.second == false)
+            {
+                dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+                                 bcName.c_str ());
+            }
+            else
+            {
+                parameters ["system_is_assembled"] = false;
+            }
+
+            return result.second;
+        }
+                    
+    
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        bool LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
+                        std::string bcName)
         {
             if (bcName.empty ())
             {
@@ -849,7 +995,8 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         bool LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        addDirichletBC (dolfin::DirichletBC&& dirichletCondition, std::string bcName)
+        addDirichletBC (dolfin::DirichletBC&& dirichletCondition, 
+                        std::string bcName)
         {
             if (bcName.empty ())
             {
@@ -1019,8 +1166,7 @@ namespace dcp
             {
                 clonedProblem = 
                     new dcp::LinearProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
-                    (this->mesh_,
-                     this->functionSpace_,
+                    (this->functionSpace_,
                      this->bilinearForm_, 
                      this->linearForm_,
                      this->parameters ["desired_solver_type"],
@@ -1032,8 +1178,7 @@ namespace dcp
             {
                 clonedProblem =
                     new dcp::LinearProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
-                    (*(this->mesh_),
-                     *(this->functionSpace_),
+                    (*(this->functionSpace_),
                        this->bilinearForm_, 
                        this->linearForm_,
                        this->parameters ["desired_solver_type"],

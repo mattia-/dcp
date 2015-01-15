@@ -59,9 +59,10 @@ int main (int argc, char* argv[])
     double t0 = 0;
     double dt = 0.1;
     double T = 4;
+    
     dcp::LinearProblem <convectiondiffusion::BilinearForm, convectiondiffusion::LinearForm>
-        timeSteppingProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                             dolfin::reference_to_no_delete_pointer (V));
+        timeSteppingProblem (dolfin::reference_to_no_delete_pointer (V));
+    
     dcp::TimeDependentProblem convectionDiffusionProblem (dolfin::reference_to_no_delete_pointer (timeSteppingProblem),
                                                           t0,
                                                           dt,
@@ -79,7 +80,7 @@ int main (int argc, char* argv[])
     std::cout << "Define the problem's Dirichlet boundary conditions..." << std::endl;
     convectiondiffusion::DirichletBoundary dirichletBoundary;
     dolfin::Constant dirichletValue (0.0);
-    convectionDiffusionProblem.addDirichletBC (dolfin::DirichletBC (V, dirichletValue, dirichletBoundary));
+    convectionDiffusionProblem.addDirichletBC (dirichletValue, dirichletBoundary);
     
     // set problem coefficients
     std::cout << "Set the problem's coefficients..." << std::endl;

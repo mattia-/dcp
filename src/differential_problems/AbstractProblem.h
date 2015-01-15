@@ -20,8 +20,8 @@
 #ifndef SRC_DIFFERENTIAL_PROBLEMS_ABSTRACTPROBLEM_H_INCLUDE_GUARD
 #define SRC_DIFFERENTIAL_PROBLEMS_ABSTRACTPROBLEM_H_INCLUDE_GUARD
 
-#include <dolfin/mesh/Mesh.h>
 #include <dolfin/mesh/MeshFunction.h>
+#include <dolfin/mesh/SubDomain.h>
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/function/Function.h>
 #include <dolfin/fem/DirichletBC.h>
@@ -49,42 +49,30 @@ namespace dcp
             //! Default constructor
             AbstractProblem () = delete;
 
-            //!  Constructor with shared pointers
+            //!  Constructor with shared pointer
             /*!
-             *  \param mesh the problem mesh as a const \c std::shared_ptr to \c dolfin::Mesh
              *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
              *  \c dolfin::FunctionSpace
-             *  The stored mesh's and function space's ownership will be shared between the object and the input argument.
-             *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-             *  as input.
+             *  The stored function space's ownership will be shared between the object and the input argument.
              */
-            AbstractProblem (const std::shared_ptr<dolfin::Mesh> mesh, 
-                             const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
+            AbstractProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
 
 
-            //! Constructor with references
+            //! Constructor with reference
             /*!
-             *  \param mesh the problem mesh as a const \c dolfin::Mesh&
              *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
-             *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
-             *  initialized using the \c new operator and mesh's and functionSpace's copy constructor
-             *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-             *  as input.
+             *  The stored function space's ownership will be unique to the object, since the pointer is 
+             *  initialized using the \c new operator and functionSpace's copy constructor.
              */
-            AbstractProblem (const dolfin::Mesh& mesh, 
-                             const dolfin::FunctionSpace& functionSpace);
+            AbstractProblem (const dolfin::FunctionSpace& functionSpace);
 
-            //! Constructor with rvalue references
+            //! Constructor with rvalue reference
             /*!
-             *  \param mesh the problem mesh as a \c dolfin::Mesh&&
              *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
-             *  The stored mesh's and function space's ownership will be unique to the object, since the pointers are 
+             *  The stored function space's ownership will be unique to the object, since the pointers are 
              *  initialized using the \c new operator and mesh's and functionSpace's move constructor
-             *  The bilinear and linear form will be created too, calling the constructor which takes the function space
-             *  as input.
              */
-            AbstractProblem (dolfin::Mesh&& mesh, 
-                             dolfin::FunctionSpace&& functionSpace);
+            AbstractProblem (dolfin::FunctionSpace&& functionSpace);
 
 
             /************************* DESTRUCTOR ********************/
@@ -100,7 +88,7 @@ namespace dcp
             /*! 
              *  \return a const reference to the problem's mesh
              */
-            virtual std::shared_ptr<dolfin::Mesh> mesh () const;
+            virtual std::shared_ptr<const dolfin::Mesh> mesh () const;
 
             //! Get problem's finite element space
             /*! 
@@ -133,8 +121,8 @@ namespace dcp
              *  This method is meant to be overridden in derived classes, so that we can have a uniform interface
              *  to set coefficients in all hierarchy.
              *  Parameters are:
-             *  \param coefficientType used to disambiguate between different member variables to choose which coefficient
-             *  to set
+             *  \param coefficientType used to disambiguate between different member variables to choose which 
+             *  coefficient to set
              *  \param coefficientValue value of the coefficient
              *  \param coefficientName string identifying the coefficient to set
              *  
@@ -149,8 +137,8 @@ namespace dcp
              *  This method is meant to be overridden in derived classes, so that we can have a uniform interface
              *  to set coefficients in all hierarchy.
              *  Parameters are:
-             *  \param coefficientType used to disambiguate between different member variables to choose which coefficient 
-             *  to set
+             *  \param coefficientType used to disambiguate between different member variables to choose which
+             *  coefficient to set
              *  \param coefficientValue value of the coefficient
              *  \param coefficientNumber integer identifying the coefficient to set
              *  
@@ -179,15 +167,76 @@ namespace dcp
 
             //! Add Dirichlet boundary condition to the problem [1]
             /*!
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addDirichletBC (const dolfin::GenericFunction& condition, 
+                                         const dolfin::SubDomain& boundary,
+                                         std::string bcName = "");
+
+            //! Add Dirichlet boundary condition to the problem [2]
+            /*!
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
+             *  \param component the function space component on which the boundary condition should be imposed. 
+             *  For instance, this can be useful if we have a vector space and we want only the orizontal component to
+             *  have a fixed value
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addDirichletBC (const dolfin::GenericFunction& condition, 
+                                         const dolfin::SubDomain& boundary,
+                                         const std::size_t& component,
+                                         std::string bcName = "");
+
+            //! Add Dirichlet boundary condition to the problem [3]
+            /*!
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                         std::shared_ptr<const dolfin::SubDomain> boundary,
+                                         std::string bcName = "");
+
+            //! Add Dirichlet boundary condition to the problem [4]
+            /*!
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
+             *  \param component the function space component on which the boundary condition should be imposed. 
+             *  For instance, this can be useful if we have a vector space and we want only the orizontal component to
+             *  have a fixed value
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                         std::shared_ptr<const dolfin::SubDomain> boundary,
+                                         const std::size_t& component,
+                                         std::string bcName = "");
+
+            //! Add Dirichlet boundary condition to the problem [5]
+            /*!
              *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the problem
              *  \param bcName the name identifying the boundary condition. If empty,
              *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
              *  
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
-            virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, std::string bcName = "");
+            virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
+                                         std::string bcName = "");
 
-            //! Add Dirichlet boundary condition to the problem [2]
+            //! Add Dirichlet boundary condition to the problem [6]
             /*!
              *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the problem
              *  \param bcName the name identifying the boundary condition. If empty, 
@@ -195,7 +244,8 @@ namespace dcp
              *  
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
-            virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, std::string bcName = "");
+            virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, 
+                                         std::string bcName = "");
 
             //! Remove Dirichlet boundary condition with given name
             /*!
@@ -240,13 +290,6 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//
 
         protected:
-            //! The problem mesh
-            /*! 
-             *  Stored as a \c std::shared_ptr because it may be common to more than 
-             *  one problem
-             */
-            std::shared_ptr<dolfin::Mesh> mesh_;
-
             //! The problem finite element space
             /*! 
              *  Stored as a \c std::shared_ptr because it may be common to more than 

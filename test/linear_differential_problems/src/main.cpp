@@ -55,8 +55,7 @@ int main (int argc, char* argv[])
     
     // define problem
     dolfin::info ("Define the problem...");
-    dcp::LinearProblem <poisson::BilinearForm, poisson::LinearForm> poissonProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                                                                                    dolfin::reference_to_no_delete_pointer (V));
+    dcp::LinearProblem <poisson::BilinearForm, poisson::LinearForm> poissonProblem (dolfin::reference_to_no_delete_pointer (V));
 
     // define coefficients
     dolfin::info ("Define the problem's coefficients...");
@@ -68,7 +67,7 @@ int main (int argc, char* argv[])
     // define dirichlet boundary conditions 
     dolfin::info ("Define the problem's Dirichlet boundary conditions...");
     poisson::DirichletBoundary dirichletBoundary;
-    poissonProblem.addDirichletBC (dolfin::DirichletBC (V, h, dirichletBoundary));
+    poissonProblem.addDirichletBC (h, dirichletBoundary);
     
     // define neumann boundary conditions 
     dolfin::info ("Define the problem's Neumann boundary conditions...");

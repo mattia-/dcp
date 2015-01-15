@@ -37,9 +37,6 @@ int main (int argc, char* argv[])
     // =========================== PROBLEM PARAMETERS ============================= //
     // ============================================================================ //
     // log level
-//    dolfin::set_log_level (dolfin::DBG);
-//    dolfin::set_log_level (dolfin::PROGRESS);
-//    dolfin::set_log_level (dolfin::WARNING);
 
     // define parameters and their default values
     dolfin::Parameters parameters ("main_parameters");
@@ -88,13 +85,10 @@ int main (int argc, char* argv[])
     // ============================================================================ //
     // define problems
     dcp::NonlinearProblem <primal::ResidualForm, primal::JacobianForm> 
-        primalProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                       dolfin::reference_to_no_delete_pointer (V),
-                       "trial");
+        primalProblem (dolfin::reference_to_no_delete_pointer (V), "trial");
 
     dcp::LinearProblem <adjoint::BilinearForm, adjoint::LinearForm> 
-        adjointProblem (dolfin::reference_to_no_delete_pointer (mesh),
-                        dolfin::reference_to_no_delete_pointer (V));
+        adjointProblem (dolfin::reference_to_no_delete_pointer (V));
 
     
     // create composite differential problem
@@ -132,7 +126,7 @@ int main (int argc, char* argv[])
     problems["primal"].setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
 
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], primal_yInflowDirichletBC, primal_inflowBoundary));
-    problems["primal"].addDirichletBC (dolfin::DirichletBC (*V[0], primal_noSlipCondition, primal_noSlipBoundary));
+    problems["primal"].addDirichletBC (primal_noSlipCondition, primal_noSlipBoundary, 0);
     problems["primal"].addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], primal_symmetryDirichletBC, primal_gammaSD));
 
 
@@ -141,7 +135,7 @@ int main (int argc, char* argv[])
     problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (targetSolution [0]), "U");
     problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (targetSolution [1]), "P");
 
-    problems["adjoint"].addDirichletBC (dolfin::DirichletBC (*V[0], adjoint_dirichletBC, adjoint_dirichletBoundary));
+    problems["adjoint"].addDirichletBC (adjoint_dirichletBC, adjoint_dirichletBoundary, 0);
 
     problems["adjoint"].setIntegrationSubdomains ("bilinear_form", 
                                                   dolfin::reference_to_no_delete_pointer (meshFacets),

@@ -26,10 +26,8 @@
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    AbstractProblem::AbstractProblem (const std::shared_ptr<dolfin::Mesh> mesh,
-                                      const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
+    AbstractProblem::AbstractProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
         parameters ("differential_problem_parameters"),
-        mesh_ (mesh),
         functionSpace_ (functionSpace),
         dirichletBCs_ (),
         solution_ (),
@@ -40,10 +38,8 @@ namespace dcp
 
 
 
-    AbstractProblem::AbstractProblem (const dolfin::Mesh& mesh,
-                                      const dolfin::FunctionSpace& functionSpace) : 
+    AbstractProblem::AbstractProblem (const dolfin::FunctionSpace& functionSpace) : 
         parameters ("differential_problem_parameters"),
-        mesh_ (new dolfin::Mesh (mesh)),
         functionSpace_ (new dolfin::FunctionSpace (functionSpace)),
         dirichletBCs_ (),
         solution_ (),
@@ -54,10 +50,8 @@ namespace dcp
 
 
 
-    AbstractProblem::AbstractProblem (dolfin::Mesh&& mesh, 
-                                      dolfin::FunctionSpace&& functionSpace) : 
+    AbstractProblem::AbstractProblem (dolfin::FunctionSpace&& functionSpace) : 
         parameters ("differential_problem_parameters"),
-        mesh_ (new dolfin::Mesh (std::move (mesh))),
         functionSpace_ (new dolfin::FunctionSpace (std::move (functionSpace))),
         dirichletBCs_ (),
         solution_ (),
@@ -69,9 +63,9 @@ namespace dcp
 
 
     /********************** GETTERS ***********************/
-    std::shared_ptr<dolfin::Mesh> AbstractProblem::mesh () const
+    std::shared_ptr<const dolfin::Mesh> AbstractProblem::mesh () const
     {
-        return mesh_;      
+        return functionSpace_ -> mesh ();      
     }
 
 
@@ -113,6 +107,87 @@ namespace dcp
 
 
     /********************** SETTERS ***********************/
+    bool AbstractProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
+                                          const dolfin::SubDomain& boundary,
+                                          std::string bcName)
+    {
+        return addDirichletBC (dolfin::reference_to_no_delete_pointer (condition), 
+                               dolfin::reference_to_no_delete_pointer (boundary),
+                               bcName); 
+    }
+    
+
+
+    bool AbstractProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
+                                          const dolfin::SubDomain& boundary, 
+                                          const std::size_t& component,
+                                          std::string bcName)
+    {
+        return addDirichletBC (dolfin::reference_to_no_delete_pointer (condition), 
+                               dolfin::reference_to_no_delete_pointer (boundary),
+                               component,
+                               bcName); 
+    }
+    
+
+
+    bool AbstractProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                          std::shared_ptr<const dolfin::SubDomain> boundary,
+                                          std::string bcName)
+    {
+        if (bcName.empty ())
+        {
+            bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
+            dirichletBCsCounter_++;
+        }
+        
+        dolfin::log (dolfin::DBG, 
+                     "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
+                     bcName.c_str ());
+        
+        auto result = dirichletBCs_.emplace 
+            (std::make_pair (bcName, dolfin::DirichletBC (functionSpace_, condition, boundary)));
+        
+        if (result.second == false)
+        {
+            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+                             bcName.c_str ());
+        }
+        
+        return result.second;
+    }
+
+    
+
+    bool AbstractProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                          std::shared_ptr<const dolfin::SubDomain> boundary,
+                                          const std::size_t& component,
+                                          std::string bcName)
+    {
+        if (bcName.empty ())
+        {
+            bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
+            dirichletBCsCounter_++;
+        }
+        
+        dolfin::log (dolfin::DBG, 
+                     "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
+                     bcName.c_str ());
+        
+        auto result = dirichletBCs_.emplace 
+            (std::make_pair (bcName, dolfin::DirichletBC ((*functionSpace_) [component], condition, boundary)));
+        
+        if (result.second == false)
+        {
+            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+                             bcName.c_str ());
+        }
+        
+        return result.second;
+    }
+
+    
+
     bool AbstractProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
                                           std::string bcName)
     {
@@ -125,6 +200,7 @@ namespace dcp
         dolfin::log (dolfin::DBG, 
                      "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
                      bcName.c_str ());
+        
         auto result = dirichletBCs_.insert (std::make_pair (bcName, dirichletCondition));
         
         if (result.second == false)
@@ -151,6 +227,7 @@ namespace dcp
         dolfin::log (dolfin::DBG, 
                      "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
                      bcName.c_str ());
+        
         auto result = dirichletBCs_.insert (std::make_pair (bcName, dirichletCondition));
         
         if (result.second == false)

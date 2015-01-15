@@ -109,9 +109,7 @@ int main (int argc, char* argv[])
     // define problem
     std::cout << "Define the problem..." << std::endl;
     dcp::NonlinearProblem <navierstokes::ResidualForm, navierstokes::JacobianForm> 
-        navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                             dolfin::reference_to_no_delete_pointer (V),
-                             "trial");
+        navierStokesProblem (dolfin::reference_to_no_delete_pointer (V), "trial");
     
     // define constant
     std::cout << "Define the problem's coefficients..." << std::endl;
@@ -126,7 +124,7 @@ int main (int argc, char* argv[])
     navierstokes::GammaSD gammaSD;
     navierstokes::NoSlipBoundary noSlipBoundary;
     
-    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], inflowDirichletBC, inflowBoundary));
+    navierStokesProblem.addDirichletBC (inflowDirichletBC, inflowBoundary, 0);
     navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, noSlipBoundary, "topological", false));
     navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], symmetryDirichletBC, gammaSD));
 

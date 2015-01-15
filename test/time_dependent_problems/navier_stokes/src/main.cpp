@@ -119,9 +119,8 @@ int main (int argc, char* argv[])
                                                    t0,
                                                    dt, 
                                                    T, 
-                                                   std::vector<std::string> ({"residual_form", "jacobian_form"}),
-                                                   std::vector<std::string> ({"residual_form"})
-                                                  );
+                                                   {"residual_form", "jacobian_form"},
+                                                   {"residual_form"});
          
     // define constant
     std::cout << "Define the problem's coefficients..." << std::endl;

@@ -67,8 +67,8 @@ int main (int argc, char* argv[])
                                                           t0,
                                                           dt,
                                                           T,
-                                                          std::vector<std::string> ({"bilinear_form"}),
-                                                          std::vector<std::string> ({"linear_form"}));
+                                                          {"bilinear_form"},
+                                                          {"linear_form"});
     
     
     // define coefficients

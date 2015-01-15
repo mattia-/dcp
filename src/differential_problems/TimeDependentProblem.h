@@ -31,6 +31,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <initializer_list>
 #include <differential_problems/AbstractProblem.h>
 #include <factories/LinearSolverFactory.h>
 #include <differential_problems/SubdomainType.h>
@@ -72,19 +73,19 @@ namespace dcp
              *  \param startTime the initial time for the simulation
              *  \param dt the length of the time step to be used
              *  \param endTime the final time for the simulation
-             *  \param dtCoefficientTypes a vector of strings containing the types of the forms in which 
+             *  \param dtCoefficientTypes an \c initializer_list of strings containing the types of the forms in which 
              *  the parameter whose name is stored in the member variable \c dtName should be set. 
              *  These strings will be used to call the function \c setCoefficient
              *  on the member variable \c timeSteppingProblem_, so they need to be suitable for that kind of problem.
              *  See the documentation of the function \c setCoefficient in the class \c LinearProblem a
              *  and \c NonlinearProblem for suitable values for this variable.
              *  The values contained in \c dtCoefficientTypes will be saved in the member variable \c parameters.
-             *  \param previousSolutionCoefficientTypes a vector of strings containing the types of the forms in which 
-             *  the parameter whose name is stored in the member variable\c previousSolutionName should be set. 
-             *  These strings will be used to call the function \c setCoefficient
-             *  on the member variable \c timeSteppingProblem_, so they need to be suitable for that kind of problem.
-             *  See the documentation of the function \c setCoefficient in the class \c LinearProblem a
-             *  and \c NonlinearProblem for suitable values for this variable.
+             *  \param previousSolutionCoefficientTypes an \c initializer_list of strings containing the types of the
+             *  forms in which the parameter whose name is stored in the member variable\c previousSolutionName should
+             *  be set.  These strings will be used to call the function \c setCoefficient on the member variable \c
+             *  timeSteppingProblem_, so they need to be suitable for that kind of problem.  See the documentation of
+             *  the function \c setCoefficient in the class \c LinearProblem a and \c NonlinearProblem for suitable
+             *  values for this variable.
              *  The values contained in \c previousSolutionCoefficientTypes will be saved in the member variable 
              *  \c parameters.
              *  \param storeInterval interval to be used for solution storing. The solution will be stored in the 
@@ -110,8 +111,8 @@ namespace dcp
                                   const double& startTime,
                                   const double& dt,
                                   const double& endTime,
-                                  const std::vector<std::string>& dtCoefficientTypes,
-                                  const std::vector<std::string>& previousSolutionCoefficientTypes,
+                                  std::initializer_list<std::string> dtCoefficientTypes,
+                                  std::initializer_list<std::string> previousSolutionCoefficientTypes,
                                   const int& storeInterval = 1,
                                   const int& plotInterval = 1,
                                   const std::string& dtName = "dt",

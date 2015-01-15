@@ -24,16 +24,18 @@
 namespace dcp
 {
     /******************* CONSTRUCTORS *******************/
-    TimeDependentProblem::TimeDependentProblem (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
-                                                const double& startTime,
-                                                const double& dt,
-                                                const double& endTime,
-                                                const std::vector<std::string>& dtCoefficientTypes,
-                                                const std::vector<std::string>& previousSolutionCoefficientTypes,
-                                                const int& storeInterval,
-                                                const int& plotInterval,
-                                                const std::string& dtName,
-                                                const std::string& previousSolutionName) : 
+    TimeDependentProblem::TimeDependentProblem 
+        (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
+         const double& startTime,
+         const double& dt,
+         const double& endTime,
+         std::initializer_list<std::string> dtCoefficientTypes,
+         std::initializer_list<std::string> previousSolutionCoefficientTypes,
+         const int& storeInterval,
+         const int& plotInterval,
+         const std::string& dtName,
+         const std::string& previousSolutionName) 
+        : 
             AbstractProblem (timeSteppingProblem->functionSpace ()),
             timeSteppingProblem_ (timeSteppingProblem),
             t_ (startTime),
@@ -423,17 +425,15 @@ namespace dcp
         dcp::TimeDependentProblem* clonedProblem = nullptr;
         if (cloneMethod == "shallow_clone")
         {
-            std::vector<std::string> dtCoefficientTypes;
-            parameters ("dt_coefficient_types").get_parameter_keys (dtCoefficientTypes);
-            std::vector<std::string> previousSolutionCoefficientTypes;
-            parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
+            // note that we pass an empty initializer_list to the constructor as dtCoefficientTypes and 
+            // previousSolutionCoefficientTypes, because they will be copied when the parameters are copied anyway
             clonedProblem = 
                 new dcp::TimeDependentProblem (this->timeSteppingProblem_,
                                                startTime_,
                                                dt_,
                                                endTime_,
-                                               dtCoefficientTypes,
-                                               previousSolutionCoefficientTypes,
+                                               {},
+                                               {},
                                                this->parameters ["store_interval"],
                                                this->parameters ["plot_interval"],
                                                this->parameters ["dt_name"],
@@ -441,17 +441,15 @@ namespace dcp
         }
         else if (cloneMethod == "deep_clone")
         {
-            std::vector<std::string> dtCoefficientTypes;
-            parameters ("dt_coefficient_types").get_parameter_keys (dtCoefficientTypes);
-            std::vector<std::string> previousSolutionCoefficientTypes;
-            parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
+            // note that we pass an empty initializer_list to the constructor as dtCoefficientTypes and 
+            // previousSolutionCoefficientTypes, because they will be copied when the parameters are copied anyway
             clonedProblem = 
                 new dcp::TimeDependentProblem (this->timeSteppingProblem_,
                                                startTime_,
                                                dt_,
                                                endTime_,
-                                               dtCoefficientTypes,
-                                               previousSolutionCoefficientTypes,
+                                               {},
+                                               {},
                                                this->parameters ["store_interval"],
                                                this->parameters ["plot_interval"],
                                                this->parameters ["dt_name"],

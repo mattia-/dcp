@@ -399,7 +399,11 @@ namespace dcp
              *  The initial value for the time loop will be whatever function is stored as the last element of 
              *  \c solution_ when the method is called. To change the initial value, use the method \c setInitialSolution.
              *  Note that the value of the solution on the intermediate time steps will be saved int the protected
-             *  member \c solutions_
+             *  member \c solutions_. The storing interval is given by <tt>parameters ["store_interval"]</tt>.
+             *  The solution will be plotted every \c plotInterval time steps. This value is read from
+             *  <tt>parameters ["plot_interval"]</tt>. To change the component of the solution that will be plotted 
+             *  set <tt>parameters ["plot_component"]</tt> accordingly. By default, this parameter is set to -1 
+             *  (a placeholder that stands for "all the components").
              *  
              *  \param type the solution type requested. Possible values are:
              *  \li \c "default" the entire time loop is performed

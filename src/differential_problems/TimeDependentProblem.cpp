@@ -53,6 +53,7 @@ namespace dcp
         parameters.add ("previous_solution_name", previousSolutionName);
         parameters.add ("store_interval", storeInterval);
         parameters.add ("plot_interval", plotInterval);
+        parameters.add ("plot_component", -1);
         parameters.add ("pause", false);
         parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("clone_method", "shallow_clone");
@@ -330,6 +331,7 @@ namespace dcp
         parameters ("dt_coefficient_types").get_parameter_keys (dtCoefficientTypes);
         int storeInterval = parameters ["store_interval"];
         int plotInterval = parameters ["plot_interval"];
+        int plotComponent = parameters ["plot_component"];
         bool pause = parameters ["pause"];
         
         for (auto& i : dtCoefficientTypes)
@@ -347,10 +349,12 @@ namespace dcp
         // function used to step through the time loop
         dolfin::Function tmpSolution = solution_.back ();
         
+        std::shared_ptr<dolfin::VTKPlotter> plotter;
+        
         // plot initial solution (only if plotInterval > 0. If it is 0 the user wants no plot at all)
         if (plotInterval > 0)
         {
-            dolfin::plot (tmpSolution, "Initial solution");
+            plotter = dolfin::plot (tmpSolution, "Initial solution");
             if (pause)
             {
                 dolfin::interactive ();
@@ -384,8 +388,21 @@ namespace dcp
             
             if (plotInterval > 0 && timeStep % plotInterval == 0)
             {
-                dolfin::log (dolfin::DBG, "Plotting time stepping problem solution...");
-                dolfin::plot (tmpSolution, "Time = " + std::to_string (t_));
+                if (plotComponent == -1)
+                {
+                    dolfin::log (dolfin::DBG, "Plotting time stepping problem solution...");
+                    plotter -> parameters ["title"] = std::string ("Time = " + std::to_string (t_));
+                    plotter -> plot (dolfin::reference_to_no_delete_pointer (tmpSolution));
+                }
+                else
+                {
+                    dolfin::log (dolfin::DBG, 
+                                 "Plotting time stepping problem solution, component %d...",
+                                 plotComponent);
+                    plotter -> parameters ["title"] = std::string ("Time = " + std::to_string (t_));
+                    plotter -> plot (dolfin::reference_to_no_delete_pointer (tmpSolution [plotComponent]));
+                                     
+                }
                 
                 if (pause)
                 {

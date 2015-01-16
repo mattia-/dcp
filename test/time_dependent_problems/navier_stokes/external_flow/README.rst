@@ -1,6 +1,6 @@
 This collection of files sets up the case for a test nonlinear
 time dependent problem. We will use the Navier-Stokes equations
-to study the flow around a cylinder.
+to study the 2D flow around a cylinder
 
 Steps to launch the code:
 

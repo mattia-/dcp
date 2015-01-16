@@ -28,7 +28,3 @@ lib
 # temporary files
 *.swp
 *~
-
-# mesh files
-*.msh
-*.unv

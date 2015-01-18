@@ -77,57 +77,104 @@ namespace dcp
                 /*!
                  *  \param functionSpace the problem finite element space as a <tt> const std::shared_ptr </tt> to 
                  *  \c dolfin::FunctionSpace
-                 *  \param solverType the type of the solver. Default: \c lu_solver
-                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods). Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for \c lu_solvers. Default
-                 *  value: \c default
                  *  The stored function space's ownership will be shared between the object and the input argument. The
                  *  bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
+                 *        \c solver_. Default value: \c "lu_solver"
+                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
+                 *        member \c solver_. Default value: \c "default"
+                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
+                 *        the protected member \c solver_. Default value: \c "default"
+                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
+                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "lu_solver"
+                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
+                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "default"
+                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
+                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
+                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
+                 *        the linear system when the \ solve method is called. Default value: \c false
+                 *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
+                 *        reassembled every time the \c solve method is called. Default value: \c false
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
-                LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-                               const std::string& solverType = "lu_solver",
-                               const std::string& solverMethod = "default",
-                               const std::string& solverPreconditioner = "default");
+                LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
 
 
                 //! Constructor with references [1]
                 /*!
                  *  \param functionSpace the problem finite element space as a <tt> const dolfin::FunctionSpace& </tt>
-                 *  \param solverType the type of the solver. Default: \c lu_solver
-                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods). Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
-                 *  value: \c default
                  *  The stored function space's ownership will be unique to the object, since the protected member
                  *  variable is initialized using the \c new operator and functionSpace's copy constructor. The
                  *  bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
+                 *        \c solver_. Default value: \c "lu_solver"
+                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
+                 *        member \c solver_. Default value: \c "default"
+                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
+                 *        the protected member \c solver_. Default value: \c "default"
+                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
+                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "lu_solver"
+                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
+                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "default"
+                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
+                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
+                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
+                 *        the linear system when the \ solve method is called. Default value: \c false
+                 *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
+                 *        reassembled every time the \c solve method is called. Default value: \c false
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
-                LinearProblem (const dolfin::FunctionSpace& functionSpace,
-                               const std::string& solverType = "lu_solver",
-                               const std::string& solverMethod = "default",
-                               const std::string& solverPreconditioner = "default");
+                LinearProblem (const dolfin::FunctionSpace& functionSpace);
 
                 //! Constructor with rvalue references [1]
                 /*!
                  *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
-                 *  \param solverType the type of the solver. Default: \c lu_solver
-                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods). Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
-                 *  value: \c default
                  *  The stored function space's ownership will be unique to the object, since the protected member
                  *  variable is initialized using the \c new operator and functionSpace's move constructor. The bilinear
                  *  and linear form will be created too, calling the constructor which takes the function space as
                  *  input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
+                 *        \c solver_. Default value: \c "lu_solver"
+                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
+                 *        member \c solver_. Default value: \c "default"
+                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
+                 *        the protected member \c solver_. Default value: \c "default"
+                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
+                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "lu_solver"
+                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
+                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "default"
+                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
+                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
+                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
+                 *        the linear system when the \ solve method is called. Default value: \c false
+                 *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
+                 *        reassembled every time the \c solve method is called. Default value: \c false
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
-                LinearProblem (dolfin::FunctionSpace&& functionSpace,
-                               const std::string& solverType = "lu_solver",
-                               const std::string& solverMethod = "default",
-                               const std::string& solverPreconditioner = "default");
-
+                LinearProblem (dolfin::FunctionSpace&& functionSpace);
 
                 //!  Constructor with shared pointers [2]
                 /*!
@@ -135,65 +182,113 @@ namespace dcp
                  *  \c dolfin::FunctionSpace
                  *  \param bilinearForm a \c const reference to the problem's bilinear form
                  *  \param linearForm a \c const reference to the problem's linear form
-                 *  \param solverType the type of the solver. Default: \c lu_solver
-                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods. Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
-                 *  value: \c default
                  *  The stored function space's ownership will be shared between the object and the input argument.  The
                  *  bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
+                 *        \c solver_. Default value: \c "lu_solver"
+                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
+                 *        member \c solver_. Default value: \c "default"
+                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
+                 *        the protected member \c solver_. Default value: \c "default"
+                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
+                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "lu_solver"
+                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
+                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "default"
+                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
+                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
+                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
+                 *        the linear system when the \ solve method is called. Default value: \c false
+                 *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
+                 *        reassembled every time the \c solve method is called. Default value: \c false
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                const T_BilinearForm& bilinearForm,
-                               const T_LinearForm& linearForm,
-                               const std::string& solverType = "lu_solver",
-                               const std::string& solverMethod = "default",
-                               const std::string& solverPreconditioner = "default");
+                               const T_LinearForm& linearForm);
 
                 //! Constructor with references [2]
                 /*!
                  *  \param functionSpace the problem finite element space as a <tt>const dolfin::FunctionSpace& </tt>
                  *  \param bilinearForm a \c const reference to the problem's bilinear form
                  *  \param linearForm a \c const reference to the problem's linear form
-                 *  \param solverType the type of the solver. Default: \c lu_solver
-                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods. Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
-                 *  value: \c default
                  *  The stored function space's ownership will be unique to the object, since the protected member
                  *  variable is initialized using the \c new operator and functionSpace's copy constructor. The bilinear
                  *  and linear form will be created too, calling the constructor which takes the function space as
                  *  input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
+                 *        \c solver_. Default value: \c "lu_solver"
+                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
+                 *        member \c solver_. Default value: \c "default"
+                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
+                 *        the protected member \c solver_. Default value: \c "default"
+                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
+                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "lu_solver"
+                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
+                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "default"
+                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
+                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
+                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
+                 *        the linear system when the \ solve method is called. Default value: \c false
+                 *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
+                 *        reassembled every time the \c solve method is called. Default value: \c false
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 LinearProblem (const dolfin::FunctionSpace& functionSpace,
                                const T_BilinearForm& bilinearForm,
-                               const T_LinearForm& linearForm,
-                               const std::string& solverType = "lu_solver",
-                               const std::string& solverMethod = "default",
-                               const std::string& solverPreconditioner = "default");
+                               const T_LinearForm& linearForm);
 
                 //! Constructor with rvalue references [2]
                 /*!
                  *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
                  *  \param bilinearForm a rvalue reference to the problem's bilinear form
                  *  \param linearForm a rvalue reference to the problem's linear form
-                 *  \param solverType the type of the solver. Default: \c lu_solver
-                 *  \param solverMethod the method of the solver. Possible values depend on the solver type (see dolfin
-                 *  documentation, or use method \c list_<solverType>_methods. Default value: \c default
-                 *  \param solverPreconditioner the preconditioner to be used. It is not used for lu solvers. Default
-                 *  value: \c default
                  *  The stored function space's ownership will be unique to the object, since the protected member
                  *  variable is initialized using the \c new operator and functionSpace's move constructor The bilinear
                  *  and linear form will be created too, calling the constructor which takes the function space as
                  *  input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
+                 *        \c solver_. Default value: \c "lu_solver"
+                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
+                 *        member \c solver_. Default value: \c "default"
+                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
+                 *        the protected member \c solver_. Default value: \c "default"
+                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
+                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "lu_solver"
+                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
+                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
+                 *        will be updated accordingly. Default value: \c "default"
+                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
+                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
+                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
+                 *        the linear system when the \ solve method is called. Default value: \c false
+                 *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
+                 *        reassembled every time the \c solve method is called. Default value: \c false
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 LinearProblem (dolfin::FunctionSpace&& functionSpace,
                                T_BilinearForm&& bilinearForm,
-                               T_LinearForm&& linearForm,
-                               const std::string& solverType = "lu_solver",
-                               const std::string& solverMethod = "default",
-                               const std::string& solverPreconditioner = "default");
+                               T_LinearForm&& linearForm);
 
                 /******************* DESTRUCTOR *******************/
 
@@ -458,15 +553,11 @@ namespace dcp
     // ==================================== IMPLEMENTATION ========================================== //
     // ============================================================================================== //
 
-
     /******************* CONSTRUCTORS *******************/
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-                       const std::string& solverType,
-                       const std::string& solverMethod,
-                       const std::string& solverPreconditioner) :
+        LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace) :
             AbstractProblem (functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
@@ -474,6 +565,51 @@ namespace dcp
             problemMatrix_ (new dolfin::Matrix),
             rhsVector_ ()
         { 
+            std::string solverType = "lu_solver";
+            std::string solverMethod = "default";
+            std::string solverPreconditioner = "default";
+
+            dolfin::begin (dolfin::DBG, "Building LinearProblem...");
+
+            solution_.emplace_back (dolfin::Function (*functionSpace_));
+
+            dolfin::log (dolfin::DBG, "Setting up parameters...");
+            parameters.add ("problem_type", "linear");
+            parameters.add ("current_solver_type", solverType);
+            parameters.add ("current_solver_method", solverMethod);
+            parameters.add ("current_solver_preconditioner", solverPreconditioner);
+            parameters.add ("desired_solver_type", solverType);
+            parameters.add ("desired_solver_method", solverMethod);
+            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("system_is_assembled", false);
+            parameters.add ("force_reassemble_system", false);  
+            parameters.add ("clone_method", "shallow_clone");
+
+            dolfin::begin (dolfin::DBG, "Creating solver...");
+            solver_ = createSolver ();
+            dolfin::end ();
+
+            dolfin::end ();
+
+            dolfin::log (dolfin::DBG, "LinearProblem object created");
+        }
+
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        LinearProblem (const dolfin::FunctionSpace& functionSpace) :
+            AbstractProblem (functionSpace),
+            bilinearForm_ (*functionSpace_, *functionSpace_),
+            linearForm_ (*functionSpace_),
+            solver_ (nullptr),
+            problemMatrix_ (new dolfin::Matrix),
+            rhsVector_ ()
+        { 
+            std::string solverType = "lu_solver";
+            std::string solverMethod = "default";
+            std::string solverPreconditioner = "default";
+
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
             solution_.emplace_back (dolfin::Function (*functionSpace_));
@@ -503,10 +639,7 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (const dolfin::FunctionSpace& functionSpace,
-                       const std::string& solverType,
-                       const std::string& solverMethod,
-                       const std::string& solverPreconditioner) :
+        LinearProblem (dolfin::FunctionSpace&& functionSpace) :
             AbstractProblem (functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
@@ -514,46 +647,10 @@ namespace dcp
             problemMatrix_ (new dolfin::Matrix),
             rhsVector_ ()
         { 
-            dolfin::begin (dolfin::DBG, "Building LinearProblem...");
-            
-            solution_.emplace_back (dolfin::Function (*functionSpace_));
-            
-            dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "linear");
-            parameters.add ("current_solver_type", solverType);
-            parameters.add ("current_solver_method", solverMethod);
-            parameters.add ("current_solver_preconditioner", solverPreconditioner);
-            parameters.add ("desired_solver_type", solverType);
-            parameters.add ("desired_solver_method", solverMethod);
-            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
-            parameters.add ("system_is_assembled", false);
-            parameters.add ("force_reassemble_system", false);  
-            parameters.add ("clone_method", "shallow_clone");
-            
-            dolfin::begin (dolfin::DBG, "Creating solver...");
-            solver_ = createSolver ();
-            dolfin::end ();
-            
-            dolfin::end ();
-            
-            dolfin::log (dolfin::DBG, "LinearProblem object created");
-        }
+            std::string solverType = "lu_solver";
+            std::string solverMethod = "default";
+            std::string solverPreconditioner = "default";
 
-
-
-    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (dolfin::FunctionSpace&& functionSpace,
-                       const std::string& solverType,
-                       const std::string& solverMethod,
-                       const std::string& solverPreconditioner) :
-            AbstractProblem (functionSpace),
-            bilinearForm_ (*functionSpace_, *functionSpace_),
-            linearForm_ (*functionSpace_),
-            solver_ (nullptr),
-            problemMatrix_ (new dolfin::Matrix),
-            rhsVector_ ()
-        { 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
             solution_.emplace_back (dolfin::Function (*functionSpace_));
@@ -585,10 +682,7 @@ namespace dcp
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                        const T_BilinearForm& bilinearForm,
-                       const T_LinearForm& linearForm,
-                       const std::string& solverType,
-                       const std::string& solverMethod,
-                       const std::string& solverPreconditioner) :
+                       const T_LinearForm& linearForm) :
             AbstractProblem (functionSpace),
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
@@ -596,6 +690,10 @@ namespace dcp
             problemMatrix_ (new dolfin::Matrix),
             rhsVector_ ()
         { 
+            std::string solverType = "lu_solver";
+            std::string solverMethod = "default";
+            std::string solverPreconditioner = "default";
+
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
             solution_.emplace_back (dolfin::Function (*functionSpace_));
@@ -627,10 +725,7 @@ namespace dcp
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (const dolfin::FunctionSpace& functionSpace,
                        const T_BilinearForm& bilinearForm,
-                       const T_LinearForm& linearForm,
-                       const std::string& solverType,
-                       const std::string& solverMethod,
-                       const std::string& solverPreconditioner) :
+                       const T_LinearForm& linearForm) :
             AbstractProblem (functionSpace),
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
@@ -638,6 +733,10 @@ namespace dcp
             problemMatrix_ (new dolfin::Matrix),
             rhsVector_ ()
         { 
+            std::string solverType = "lu_solver";
+            std::string solverMethod = "default";
+            std::string solverPreconditioner = "default";
+
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
             solution_.emplace_back (dolfin::Function (*functionSpace_));
@@ -669,10 +768,7 @@ namespace dcp
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (dolfin::FunctionSpace&& functionSpace,
                        T_BilinearForm&& bilinearForm,
-                       T_LinearForm&& linearForm,
-                       const std::string& solverType,
-                       const std::string& solverMethod,
-                       const std::string& solverPreconditioner) :
+                       T_LinearForm&& linearForm) :
             AbstractProblem (functionSpace),
             bilinearForm_ (std::move (bilinearForm)),
             linearForm_ (std::move (linearForm)),
@@ -680,6 +776,10 @@ namespace dcp
             problemMatrix_ (new dolfin::Matrix),
             rhsVector_ ()
         {
+            std::string solverType = "lu_solver";
+            std::string solverMethod = "default";
+            std::string solverPreconditioner = "default";
+
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
             solution_.emplace_back (dolfin::Function (*functionSpace_));
@@ -1057,9 +1157,9 @@ namespace dcp
             std::string currentSolverMethod = parameters ["current_solver_method"];
             std::string currentSolverPreconditioner = parameters ["current_solver_preconditioner"];
             
-            bool needsSolverUpdating = desiredSolverType != currentSolverType 
-                                       || desiredSolverMethod != currentSolverMethod 
-                                       || desiredSolverPreconditioner != currentSolverPreconditioner;
+            bool needsSolverUpdating = (desiredSolverType != currentSolverType)
+                                       || (desiredSolverMethod != currentSolverMethod) 
+                                       || (desiredSolverPreconditioner != currentSolverPreconditioner);
             
             if (needsSolverUpdating)
             {
@@ -1168,11 +1268,7 @@ namespace dcp
                     new dcp::LinearProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
                     (this->functionSpace_,
                      this->bilinearForm_, 
-                     this->linearForm_,
-                     this->parameters ["desired_solver_type"],
-                     this->parameters ["desired_solver_method"],
-                     this->parameters ["desired_solver_preconditioner"]
-                    );
+                     this->linearForm_);
             }
             else if (cloneMethod == "deep_clone")
             {
@@ -1180,11 +1276,7 @@ namespace dcp
                     new dcp::LinearProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
                     (*(this->functionSpace_),
                        this->bilinearForm_, 
-                       this->linearForm_,
-                       this->parameters ["desired_solver_type"],
-                       this->parameters ["desired_solver_method"],
-                       this->parameters ["desired_solver_preconditioner"]
-                    );
+                       this->linearForm_);
             }
             else
             {

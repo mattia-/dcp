@@ -89,6 +89,7 @@ int main (int argc, char* argv[])
 
     // solve problem
     convectionDiffusionProblem.setInitialSolution (convectiondiffusion::initialSolution ());
+    convectionDiffusionProblem.parameters ["plot_interval"] = 1;
     std::cout << "Solve the problem..." << std::endl;
     convectionDiffusionProblem.solve ();
   

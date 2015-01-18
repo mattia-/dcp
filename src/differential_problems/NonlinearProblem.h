@@ -79,6 +79,16 @@ namespace dcp
                  *  The stored function space's ownership will be shared between the object and the input
                  *  argument. The residual and jacobian form will be created too, calling the constructor which takes
                  *  the function space as input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
+                 *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
+                 *      - \c "residual_form_solution_name" (see input arguments)
+                 *      - \c "jacobian_form_solution_name" (see input arguments)
+                 *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
+                 *        parameters
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                   const std::string& residualFormSolutionName,
@@ -96,6 +106,16 @@ namespace dcp
                  *  The stored function space's ownership will be unique to the object, since the pointer is initialized
                  *  using the \c new operator and functionSpace's copy constructor. The residual and jacobian form will
                  *  be created too, calling the constructor which takes the function space as input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
+                 *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
+                 *      - \c "residual_form_solution_name" (see input arguments)
+                 *      - \c "jacobian_form_solution_name" (see input arguments)
+                 *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
+                 *        parameters
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
                                   const std::string& residualFormSolutionName,
@@ -112,6 +132,16 @@ namespace dcp
                  *  The stored function space's ownership will be unique to the object, since the pointer is initialized
                  *  using the \c new operator and mesh's and functionSpace's move constructor. The residual and jacobian
                  *  form will be created too, calling the constructor which takes the function space as input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
+                 *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
+                 *      - \c "residual_form_solution_name" (see input arguments)
+                 *      - \c "jacobian_form_solution_name" (see input arguments)
+                 *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
+                 *        parameters
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
                                   const std::string& residualFormSolutionName,
@@ -130,6 +160,16 @@ namespace dcp
                  *  The stored function space's ownership will be shared between the object and the input
                  *  argument. The residual and jacobian form will be created too, calling the constructor which takes
                  *  the function space as input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
+                 *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
+                 *      - \c "residual_form_solution_name" (see input arguments)
+                 *      - \c "jacobian_form_solution_name" (see input arguments)
+                 *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
+                 *        parameters
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                   const T_ResidualForm& residualForm,
@@ -148,6 +188,16 @@ namespace dcp
                  *  The stored function space's ownership will be unique to the object, since the pointer is initialized
                  *  using the \c new operator and functionSpace's copy constructor. The residual and jacobian form will
                  *  be created too, calling the constructor which takes the function space as input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
+                 *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
+                 *      - \c "residual_form_solution_name" (see input arguments)
+                 *      - \c "jacobian_form_solution_name" (see input arguments)
+                 *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
+                 *        parameters
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
                                   const T_ResidualForm& residualForm,
@@ -166,6 +216,16 @@ namespace dcp
                  *  The stored function space's ownership will be unique to the object, since the pointer is initialized
                  *  using the \c new operator and mesh's and functionSpace's move constructor. The residual and jacobian
                  *  form will be created too, calling the constructor which takes the function space as input.
+                 *  The constructors also sets the following parameters:
+                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
+                 *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
+                 *      - \c "residual_form_solution_name" (see input arguments)
+                 *      - \c "jacobian_form_solution_name" (see input arguments)
+                 *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
+                 *        parameters
+                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
                                   T_ResidualForm&& residualForm,
@@ -335,13 +395,17 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
-                jacobianForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                residualForm_.set_coefficient (residualFormSolutionName, 
+                                               dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (residualFormSolutionName, 
+                                               dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             else
             {
-                residualForm_.set_coefficient (residualFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                residualForm_.set_coefficient (residualFormSolutionName, 
+                                               dolfin::reference_to_no_delete_pointer (solution_.back ()));
+                jacobianForm_.set_coefficient (jacobianFormSolutionName, 
+                                               dolfin::reference_to_no_delete_pointer (solution_.back ()));
             }
             
             dolfin::end ();

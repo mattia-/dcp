@@ -32,9 +32,7 @@
 
 namespace dcp
 {
-    BacktrackingOptimizer::BacktrackingOptimizer (const double& gradientNormTolerance,
-                                                  const double& relativeIncrementTolerance,
-                                                  const std::string& convergenceCriterion) :
+    BacktrackingOptimizer::BacktrackingOptimizer ():
         AbstractOptimizer (),
         dotProductComputer_ ()
     {
@@ -42,9 +40,9 @@ namespace dcp
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("descent_method", "backtracking_gradient_method");
-        parameters.add ("gradient_norm_tolerance", gradientNormTolerance);
-        parameters.add ("relative_increment_tolerance", relativeIncrementTolerance);
-        parameters.add ("convergence_criterion", convergenceCriterion);
+        parameters.add ("gradient_norm_tolerance", 1e-6);
+        parameters.add ("relative_increment_tolerance", 1e-6);
+        parameters.add ("convergence_criterion", "both");
         parameters.add ("c_1", 1e-3);
         parameters.add ("alpha_0", 1.0);
         parameters.add ("rho", 0.5);

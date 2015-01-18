@@ -88,35 +88,51 @@ namespace dcp
              *  values for this variable.
              *  The values contained in \c previousSolutionCoefficientTypes will be saved in the member variable 
              *  \c parameters.
-             *  \param storeInterval interval to be used for solution storing. The solution will be stored in the 
-             *  private member \c solutions_ every  \c storeInterval time steps. A value less than or equal to 0
-             *  means that no intermediate-step solution will be saved. Default value: 1.
-             *  \param plotInterval interval to be used for solution plot. The solution will be plotted every 
-             *  \c plotInterval time steps. A value less than or equal to 0 means that no plot will pe performed.
-             *  Default value: 1.
-             *  \param dtName the name of the coefficient representing the time step in the ufl file describing the
-             *  problem. Default value: "dt"
-             *  \param previousSolutionName the name of the function representing the solution at the previous time step
-             *  in the ufl file describing the problem. Default value: "u_old"
-             *  Note that, during the time stepping process, the \c dolfin::Function stored in the protected member 
-             *  \c solution_ will be used to set the coefficient in the equation whose name is stored in 
-             *  \c previousSolutionName. If such \c dolfin::Function has more than one component (i.e. it is a vector
-             *  function) all of its component will be used by default. To change this behaviour, one needs to change
-             *  the value of the parameter "time_stepping_solution_component", in the public member \c parameters.
-             *  This parameter's default value is -1 (which is a placeholder that stands for "use all the solution's
-             *  components", but any negative integer will work), but it can be changed to any non-negative 
-             *  integer to indicate the specific component the time loop should use.
+             *  Note that, during the time stepping process, the \c dolfin::Function stored (maybe temporarily) 
+             *  in the protected member \c solution_ will be used to set the coefficient in the equation whose name is
+             *  stored in the parameter \c previous_solution_name.  If such \c dolfin::Function has more than one
+             *  component (i.e. it is a vector function) all of its components will be used by default. To change this
+             *  behaviour, one needs to change the value of the parameter \c time_stepping_solution_component.  This
+             *  parameter's default value is -1 (which is a placeholder that stands for "use all the solution's
+             *  components", but any negative integer will work), but it can be changed to any non-negative integer to
+             *  indicate the specific component the time loop should use.
+             *  The constructors also sets the following parameters:
+             *      - \c "problem_type" a string describing the problem. Default value: \c "time_dependent"
+             *      - \c "dt_name" the name of the variable representing the time step in the ufl file describing the
+             *        problem. Default value: "dt"
+             *      - \c "previous_solution_name" the name of the variable representing the solution at the previous time
+             *        step in the ufl file describing the problem. Default value: "u_old"
+             *      - \c "store_interval" the interval of time steps to store the solution. Basically, the solution will
+             *        be stored in \c solution_ every \c store_interval time steps. A value less than or equal to 0
+             *        means that the solution should never be stored. Default value: 1
+             *      - \c "plot_interval" the interval of time steps to plot the solution. Basically, the solution will
+             *        be plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
+             *        solution should never be plotted. Default value: 0
+             *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
+             *        A negative value stands for all the components. Default value: -1
+             *      - \c "time_stepping_solution_component" the component of the solution to be used when advancing the 
+             *        time loop (if the solution is vectorial). The function whose name is stored in the parameter
+             *        \c "previous_solution_name" will be set using only the component of \c solution_ set in this 
+             *        parameter. A negative value stands for all the components. Default value: -1
+             *      - \c "pause" if set to \c true, the time stepping loop will stop at each plot and waits for the user
+             *        to close the plot window before proceeding. Default value: \c false
+             *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+             *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+             *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
+             *      - \c "dt_coefficient_types" the form types in which the time step appears as a coefficient in the
+             *        ufl file describing the problem. These will be used to set the coefficient whose name is stored
+             *        in the parameter \c "dt_name" through a call to the method \c setCoefficient defined in the
+             *        \c AbstractProblem class. Examples of possible values are: \c "bilinear_form", \c "linear_form",
+             *        \c "residual_form", \c "jacobian_form".
+             *      - \c "dt_coefficient_types" (see input arguments documentation)
+             *      - \c "previous_solution_coefficient_types" (see input arguments documentation)
              */
             TimeDependentProblem (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
                                   const double& startTime,
                                   const double& dt,
                                   const double& endTime,
                                   std::initializer_list<std::string> dtCoefficientTypes,
-                                  std::initializer_list<std::string> previousSolutionCoefficientTypes,
-                                  const int& storeInterval = 1,
-                                  const int& plotInterval = 1,
-                                  const std::string& dtName = "dt",
-                                  const std::string& previousSolutionName = "u_old");
+                                  std::initializer_list<std::string> previousSolutionCoefficientTypes);
 
 
             /******************* DESTRUCTOR *******************/

@@ -93,6 +93,7 @@ int main (int argc, char* argv[])
     
     navierStokesProblem.parameters ["time_stepping_solution_component"] = 0;
     navierStokesProblem.parameters ["plot_component"] = 0;
+    navierStokesProblem.parameters ["plot_interval"] = 1;
     
     // plot mesh
     dolfin::plot (mesh, "Mesh");

@@ -74,30 +74,39 @@ namespace dcp
             /************************* CONSTRUCTORS ********************/
             //! Default constructor
             /*!
-             *  Input argument:
-             *  \param gradientNormTolerance the tolerance for convergence check on gradient (see third input parameter).
-             *  Default value: \c 1e-6
-             *  \param relativeIncrementTolerance the tolerance for convergence check on increment (see third input parameter)
-             *  Default value: \c 1e-6
-             *  \param convergenceCriterion 
-             *  sets the convergence criterion to stop the minimization algorithm.
-             *  Possible values are:
-             *  \li \c gradient: the minimization loop permanence condition is
-             *  \f$ \left| \left| \nabla J \right| \right| > \varepsilon_g \f$
-             *  where \f$ \varepsilon_g \f$ is set by the input variable \c gradientNormTolerance
-             *  \li \c increment: the minimization loop permanence condition is
-             *  \f$ \frac{\left| \left| \mathbf{u}_{k+1} - \mathbf{u}_k \right| \right|}
-             *           {\left| \left| \mathbf{u}_{k} \right| \right|} 
-             *           > \varepsilon_i \f$
-             *  where \f$ \varepsilon_i \f$ is set by the input variable \c relativeIncrementTolerance
-             *  \li \c both: both the above conditions are checked for the permanence in the minimization loop. That means
-             *  that the minimization algorithm will end when one of the two conditions is false
-             *  
-             *  Default value: \c both
+             *  The constructors also sets the following parameters:
+             *      - \c "descent_method" a name identifying this algorithm. Default value: \c backtracking_gradient_method
+             *      - \c "gradient_norm_tolerance" the tolerance for convergence check on gradient. Default value: \c 1e-6
+             *      - \c "relative_increment_tolerance" the tolerance for convergence check on increment.
+             *        Default value: \c 1e-6
+             *      - \c "convergence_criterion" sets the convergence criterion to stop the minimization algorithm.
+             *        Possible values are:
+             *           - \c \c "gradient": the minimization loop permanence condition is
+             *             \f$ \left| \left| \nabla J \right| \right| > \varepsilon_g \f$
+             *             where \f$ \varepsilon_g \f$ is set by the parameter \c gradient_norm_tolerance 
+             *           - \c \c "increment": the minimization loop permanence condition is
+             *             \f$ \frac{\left| \left| \mathbf{u}_{k+1} - \mathbf{u}_k \right| \right|}
+             *                       {\left| \left| \mathbf{u}_{k} \right| \right|} 
+             *                       > \varepsilon_i \f$
+             *             where \f$ \varepsilon_i \f$ is set by the parameter \c relative_increment_tolerance
+             *           - \c \c "both": both the above conditions are checked for the permanence in the minimization 
+             *             loop. That means that the minimization algorithm will end when one of the two conditions is 
+             *             false. 
+             *        Default value: \c both
+             *      - \c "c_1" the value of the parameter \c c_1 in the backtracking algorithm (see class documentation).
+             *        Default value: 1e-3
+             *      - \c "alpha" the value of the parameter \c alpha in the backtracking algorithm (see class 
+             *        documentation). Default value: 1.0
+             *      - \c "rho" the value of the parameter \c rho in the backtracking algorithm (see class documentation).
+             *        Default value: 0.5
+             *      - \c "max_minimization_iterations" the maximum number of iteration for the minimization loop.
+             *        Default value: 100
+             *      - \c "max_backtracking_iterations" the maximum number of iteration for the backtracking loop.
+             *        Default value: 20
+             *      - \c "output_file_name" the name of the output file to write results to. 
+             *        Default value: empty (which means that output will be written to terminal only).
              */
-            BacktrackingOptimizer (const double& gradientNormTolerance = 1e-6,
-                                   const double& relativeIncrementTolerance = 1e-6,
-                                   const std::string& convergenceCriterion = "both");
+            BacktrackingOptimizer ();
             
             /************************* DESTRUCTOR ********************/
             //! Destructor

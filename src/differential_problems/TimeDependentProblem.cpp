@@ -30,11 +30,7 @@ namespace dcp
          const double& dt,
          const double& endTime,
          std::initializer_list<std::string> dtCoefficientTypes,
-         std::initializer_list<std::string> previousSolutionCoefficientTypes,
-         const int& storeInterval,
-         const int& plotInterval,
-         const std::string& dtName,
-         const std::string& previousSolutionName) 
+         std::initializer_list<std::string> previousSolutionCoefficientTypes)
         : 
             AbstractProblem (timeSteppingProblem->functionSpace ()),
             timeSteppingProblem_ (timeSteppingProblem),
@@ -46,16 +42,16 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Building TimeDependentProblem...");
         
         solution_.emplace_back (dolfin::Function (timeSteppingProblem->functionSpace ()));
-            
+        
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("problem_type", "time_dependent");
-        parameters.add ("dt_name", dtName);
-        parameters.add ("previous_solution_name", previousSolutionName);
-        parameters.add ("store_interval", storeInterval);
-        parameters.add ("plot_interval", plotInterval);
+        parameters.add ("dt_name", "dt");
+        parameters.add ("previous_solution_name", "u_old");
+        parameters.add ("store_interval", 1);
+        parameters.add ("plot_interval", 0);
         parameters.add ("plot_component", -1);
-        parameters.add ("pause", false);
         parameters.add ("time_stepping_solution_component", -1);
+        parameters.add ("pause", false);
         parameters.add ("clone_method", "shallow_clone");
         
         dolfin::Parameters dtCoefficientTypesParameter ("dt_coefficient_types");
@@ -448,32 +444,14 @@ namespace dcp
             // note that we pass an empty initializer_list to the constructor as dtCoefficientTypes and 
             // previousSolutionCoefficientTypes, because they will be copied when the parameters are copied anyway
             clonedProblem = 
-                new dcp::TimeDependentProblem (this->timeSteppingProblem_,
-                                               startTime_,
-                                               dt_,
-                                               endTime_,
-                                               {},
-                                               {},
-                                               this->parameters ["store_interval"],
-                                               this->parameters ["plot_interval"],
-                                               this->parameters ["dt_name"],
-                                               this->parameters ["previous_solution_name"]);
+                new dcp::TimeDependentProblem (this->timeSteppingProblem_, startTime_, dt_, endTime_, {}, {});
         }
         else if (cloneMethod == "deep_clone")
         {
             // note that we pass an empty initializer_list to the constructor as dtCoefficientTypes and 
             // previousSolutionCoefficientTypes, because they will be copied when the parameters are copied anyway
             clonedProblem = 
-                new dcp::TimeDependentProblem (this->timeSteppingProblem_,
-                                               startTime_,
-                                               dt_,
-                                               endTime_,
-                                               {},
-                                               {},
-                                               this->parameters ["store_interval"],
-                                               this->parameters ["plot_interval"],
-                                               this->parameters ["dt_name"],
-                                               this->parameters ["previous_solution_name"]);
+                new dcp::TimeDependentProblem (this->timeSteppingProblem_, startTime_, dt_, endTime_, {}, {});
         }
         else
         {

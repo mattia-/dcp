@@ -477,6 +477,44 @@ namespace dcp
             //! method clearer to read
             virtual void printFinishedWarning ();
             
+            //! Method to store the solution. 
+            /*!
+             *  \param solution the solution to be stored
+             *  \param timeStep the current time step
+             *  \param storeInterval the store interval (see constructor documentation)
+            */
+            void storeSolution (const dolfin::Function& solution, 
+                                const int& timeStep, 
+                                const int& storeInterval);
+            
+            //! Method to store the solution on the last time step. 
+            /*!
+             *  \param solution the solution to be stored
+             *  \param timeStep the current time step
+             *  \param storeInterval the store interval (see constructor documentation)
+            */
+            void storeLastStepSolution (const dolfin::Function& solution, 
+                                        const int& timeStep, 
+                                        const int& storeInterval);
+            
+            //! Method to plot the solution. 
+            /*!
+             *  \param solution the solution to be plotted
+             *  \param timeStep the current time step
+             *  \param plotInterval the plot interval (see constructor documentation)
+             *  \param plotComponent the component of the solution to be plotted (see constructor documentation)
+             *  \param pause boolean flag, true if the function should wait after plotting
+             *  \param plotter the plotter to be used
+             *  \param isFirstPlot boolean flag, true if no plot has been performed
+            */
+            void plotSolution (const dolfin::Function& solution, 
+                               const int& timeStep, 
+                               const int& plotInterval, 
+                               const int& plotComponent,
+                               const bool& pause,
+                               std::shared_ptr<dolfin::VTKPlotter>& plotter,
+                               bool& isFirstPlot);
+
             // ---------------------------------------------------------------------------------------------//
 
         private:

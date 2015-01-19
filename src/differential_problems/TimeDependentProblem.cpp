@@ -353,7 +353,10 @@ namespace dcp
         {
             timeStep++;
             
-            dolfin::begin (dolfin::INFO, "===== Timestep %d =====", timeStep);
+            if (oneStepRequested == false)
+            {
+                dolfin::begin (dolfin::INFO, "===== Timestep %d =====", timeStep);
+            }
             
             advanceTime (tmpSolution);
             

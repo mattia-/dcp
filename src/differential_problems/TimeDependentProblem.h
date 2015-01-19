@@ -28,6 +28,7 @@
 #include <dolfin/la/Vector.h>
 #include <dolfin/log/dolfin_log.h>
 #include <dolfin/parameter/Parameters.h>
+#include <dolfin/plot/VTKPlotter.h>
 #include <vector>
 #include <string>
 #include <memory>
@@ -108,17 +109,12 @@ namespace dcp
              *      - \c "plot_interval" the interval of time steps to plot the solution. Basically, the solution will
              *        be plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
              *        solution should never be plotted. Default value: 0
-             *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
-             *        A negative value stands for all the components. Default value: -1
              *      - \c "time_stepping_solution_component" the component of the solution to be used when advancing the 
              *        time loop (if the solution is vectorial). The function whose name is stored in the parameter
              *        \c "previous_solution_name" will be set using only the component of \c solution_ set in this 
              *        parameter. A negative value stands for all the components. Default value: -1
              *      - \c "pause" if set to \c true, the time stepping loop will stop at each plot and waits for the user
              *        to close the plot window before proceeding. Default value: \c false
-             *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-             *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-             *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
              *      - \c "dt_coefficient_types" the form types in which the time step appears as a coefficient in the
              *        ufl file describing the problem. These will be used to set the coefficient whose name is stored
              *        in the parameter \c "dt_name" through a call to the method \c setCoefficient defined in the
@@ -429,6 +425,11 @@ namespace dcp
              */
             virtual void solve (const std::string& type = "default") override;
 
+            //! Plot method. Overrides the one in \c dcp::AbstractProblem to take into account the fact that 
+            //! \c solution_ is now a vector with size greater than one). It uses the value of the parameter \c pause
+            //! to decide wethere to stop at each plot or not
+            void plotSolution () override;
+            
             //! Clone method. Overrides method in \c AbstractProblem
             /*!
              *  It uses the parameter \c clone_method to decide which type of cloning to perform.
@@ -497,23 +498,21 @@ namespace dcp
                                         const int& timeStep, 
                                         const int& storeInterval);
             
-            //! Method to plot the solution. 
+            //! Method to plot the solution, used inside the time loop and thus kept protected. It overloads the 
+            //! plot method in \c dcp::AbstractProblem, which is still usable (and actually overridden in this class
+            //! to take into account the fact that \c solution_ is now a vector with size greater than one)
             /*!
              *  \param solution the solution to be plotted
              *  \param timeStep the current time step
              *  \param plotInterval the plot interval (see constructor documentation)
              *  \param plotComponent the component of the solution to be plotted (see constructor documentation)
              *  \param pause boolean flag, true if the function should wait after plotting
-             *  \param plotter the plotter to be used
-             *  \param isFirstPlot boolean flag, true if no plot has been performed
             */
-            void plotSolution (const dolfin::Function& solution, 
+            void plotSolution (dolfin::Function& solution, 
                                const int& timeStep, 
                                const int& plotInterval, 
                                const int& plotComponent,
-                               const bool& pause,
-                               std::shared_ptr<dolfin::VTKPlotter>& plotter,
-                               bool& isFirstPlot);
+                               const bool& pause);
 
             // ---------------------------------------------------------------------------------------------//
 

@@ -26,6 +26,8 @@
 #include <dolfin/function/Function.h>
 #include <dolfin/fem/DirichletBC.h>
 #include <dolfin/parameter/Parameters.h>
+#include <dolfin/plot/plot.h>
+#include <dolfin/plot/VTKPlotter.h>
 #include <differential_problems/SubdomainType.h>
 #include <map>
 #include <string>
@@ -54,6 +56,12 @@ namespace dcp
              *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
              *  \c dolfin::FunctionSpace
              *  The stored function space's ownership will be shared between the object and the input argument.
+             *  The constructors also sets the following parameters:
+             *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
+             *        A negative value stands for all the components. Default value: -1
+             *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+             *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+             *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
              */
             AbstractProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
 
@@ -63,6 +71,12 @@ namespace dcp
              *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
              *  The stored function space's ownership will be unique to the object, since the pointer is 
              *  initialized using the \c new operator and functionSpace's copy constructor.
+             *  The constructors also sets the following parameters:
+             *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
+             *        A negative value stands for all the components. Default value: -1
+             *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+             *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+             *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
              */
             AbstractProblem (const dolfin::FunctionSpace& functionSpace);
 
@@ -71,6 +85,12 @@ namespace dcp
              *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
              *  The stored function space's ownership will be unique to the object, since the pointers are 
              *  initialized using the \c new operator and mesh's and functionSpace's move constructor
+             *  The constructors also sets the following parameters:
+             *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
+             *        A negative value stands for all the components. Default value: -1
+             *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
+             *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
+             *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
              */
             AbstractProblem (dolfin::FunctionSpace&& functionSpace);
 
@@ -275,7 +295,10 @@ namespace dcp
              */
             virtual void solve (const std::string& type = "default") = 0;
             
-            //! Clone method [1]
+            //! Method to plot the solution
+            virtual void plotSolution ();
+            
+            //! Clone method
             /*!
              *  \return a pointer to a \c dcp::AbstractProblem containing a copy of the object on 
              *  which it is called. 
@@ -308,6 +331,9 @@ namespace dcp
             //! name for insertion of dirichlet bcs if the input argument \c bcName to \c addDirichletBC() is
             //! left empty
             int dirichletBCsCounter_;
+            
+            //! The plotter for the solution of the problem
+            std::shared_ptr<dolfin::VTKPlotter> solutionPlotter_;
 
             // ---------------------------------------------------------------------------------------------//
 

@@ -49,10 +49,8 @@ namespace dcp
         parameters.add ("previous_solution_name", "u_old");
         parameters.add ("store_interval", 1);
         parameters.add ("plot_interval", 0);
-        parameters.add ("plot_component", -1);
         parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("pause", false);
-        parameters.add ("clone_method", "shallow_clone");
         
         dolfin::Parameters dtCoefficientTypesParameter ("dt_coefficient_types");
         for (auto& i : dtCoefficientTypes)
@@ -351,7 +349,6 @@ namespace dcp
         // the first step has already been peformed
         int timeStep = 0;
         bool timeStepFlag = false;
-        bool isFirstPlot = true;
         while (!isFinished () && timeStepFlag == false)
         {
             timeStep++;
@@ -370,7 +367,7 @@ namespace dcp
             storeSolution (tmpSolution, timeStep, storeInterval);
             
             // plot solution according to time step and plot interval
-            plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause, plotter, isFirstPlot);
+            plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause);
             
             if (oneStepRequested == true)
             {
@@ -383,6 +380,59 @@ namespace dcp
         // At this point, we just need to make sure that the solution on the last iteration was saved even though
         // timeStep % storeInterval != 0 (but it must not be saved twice!)
         storeLastStepSolution (tmpSolution, timeStep, storeInterval);
+        
+        dolfin::end ();
+    }
+    
+    
+
+    void TimeDependentProblem::plotSolution ()
+    {
+        bool pause = parameters ["pause"];
+        int plotComponent = parameters ["plot_component"];
+        
+        // auxiliary variable, to enhance readability
+        std::shared_ptr<dolfin::Function> functionToPlot;
+        
+        dolfin::begin (dolfin::DBG, "Plotting...");
+        
+        for (auto& timeStepSolution : solution_)
+        {
+            // get right function to plot
+            if (plotComponent == -1)
+            {
+                functionToPlot = dolfin::reference_to_no_delete_pointer (timeStepSolution);
+                dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, all components...");
+            }
+            else
+            {
+                functionToPlot = dolfin::reference_to_no_delete_pointer (timeStepSolution [plotComponent]);
+                dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, component %d...", plotComponent);
+            }
+
+            // actual plotting
+            if (solutionPlotter_ == nullptr)
+            {
+                dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
+                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_));
+            }
+            else if (! solutionPlotter_ -> is_compatible (functionToPlot))
+            {
+                dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
+                dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
+                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_));
+            }
+            else 
+            {
+                solutionPlotter_ -> parameters ["title"] = std::string ("Time = " + std::to_string (t_));
+                solutionPlotter_ -> plot (functionToPlot);
+            }
+
+            if (pause)
+            {
+                dolfin::interactive ();
+            }
+        }
         
         dolfin::end ();
     }
@@ -514,58 +564,55 @@ namespace dcp
 
     
 
-    void TimeDependentProblem::plotSolution (const dolfin::Function& solution, 
+    void TimeDependentProblem::plotSolution (dolfin::Function& solution, 
                                              const int& timeStep, 
                                              const int& plotInterval, 
                                              const int& plotComponent,
-                                             const bool& pause,
-                                             std::shared_ptr<dolfin::VTKPlotter>& plotter,
-                                             bool& isFirstPlot)
+                                             const bool& pause)
     {
         if (plotInterval > 0 && timeStep % plotInterval == 0)
         {
+            dolfin::begin (dolfin::DBG, "Plotting...");
+
+            // auxiliary variable, to enhance readability
+            std::shared_ptr<dolfin::Function> functionToPlot;
+        
+            // get right function to plot
             if (plotComponent == -1)
             {
-                if (isFirstPlot)
-                {
-                    dolfin::log (dolfin::DBG, "Plotting time stepping problem solution...");
-                    plotter = dolfin::plot (solution, "Time = " + std::to_string (t_));
-                    isFirstPlot = false;
-                }
-                else
-                {
-                    dolfin::log (dolfin::DBG, "Plotting time stepping problem solution...");
-                    plotter -> parameters ["title"] = std::string ("Time = " + std::to_string (t_));
-                    plotter -> plot (dolfin::reference_to_no_delete_pointer (solution));
-                }
+                functionToPlot = dolfin::reference_to_no_delete_pointer (solution);
+                dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, all components...");
             }
             else
             {
-                if (isFirstPlot)
-                {
-                    dolfin::log (dolfin::DBG, 
-                                 "Plotting time stepping problem solution, component %d...",
-                                 plotComponent);
-                    plotter = dolfin::plot (dolfin::reference_to_no_delete_pointer (solution [plotComponent]),
-                                            "Time = " + std::to_string (t_));
-                    isFirstPlot = false;
+                functionToPlot = dolfin::reference_to_no_delete_pointer (solution [plotComponent]);
+                dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, component %d...", plotComponent);
+            }
 
-                }
-                else
-                {
-                    dolfin::log (dolfin::DBG, 
-                                 "Plotting time stepping problem solution, component %d...",
-                                 plotComponent);
-                    plotter -> parameters ["title"] = std::string ("Time = " + std::to_string (t_));
-                    plotter -> plot (dolfin::reference_to_no_delete_pointer (solution [plotComponent]));
-                }
-
+            // actual plotting
+            if (solutionPlotter_ == nullptr)
+            {
+                dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
+                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_));
+            }
+            else if (! solutionPlotter_ -> is_compatible (functionToPlot))
+            {
+                dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
+                dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
+                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_));
+            }
+            else 
+            {
+                solutionPlotter_ -> parameters ["title"] = std::string ("Time = " + std::to_string (t_));
+                solutionPlotter_ -> plot (functionToPlot);
             }
 
             if (pause)
             {
                 dolfin::interactive ();
             }
+
+            dolfin::end ();
         }
     }
 }

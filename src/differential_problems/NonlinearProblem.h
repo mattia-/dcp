@@ -86,9 +86,6 @@ namespace dcp
                  *      - \c "jacobian_form_solution_name" (see input arguments)
                  *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
                  *        parameters
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                   const std::string& residualFormSolutionName,
@@ -113,9 +110,6 @@ namespace dcp
                  *      - \c "jacobian_form_solution_name" (see input arguments)
                  *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
                  *        parameters
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
                                   const std::string& residualFormSolutionName,
@@ -139,9 +133,6 @@ namespace dcp
                  *      - \c "jacobian_form_solution_name" (see input arguments)
                  *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
                  *        parameters
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
                                   const std::string& residualFormSolutionName,
@@ -167,9 +158,6 @@ namespace dcp
                  *      - \c "jacobian_form_solution_name" (see input arguments)
                  *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
                  *        parameters
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                   const T_ResidualForm& residualForm,
@@ -195,9 +183,6 @@ namespace dcp
                  *      - \c "jacobian_form_solution_name" (see input arguments)
                  *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
                  *        parameters
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
                                   const T_ResidualForm& residualForm,
@@ -223,9 +208,6 @@ namespace dcp
                  *      - \c "jacobian_form_solution_name" (see input arguments)
                  *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
                  *        parameters
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
                                   T_ResidualForm&& residualForm,
@@ -390,7 +372,6 @@ namespace dcp
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
-            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
@@ -441,7 +422,6 @@ namespace dcp
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
-            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
@@ -488,7 +468,6 @@ namespace dcp
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
-            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
@@ -537,7 +516,6 @@ namespace dcp
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
-            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
@@ -586,7 +564,6 @@ namespace dcp
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
-            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
@@ -635,7 +612,6 @@ namespace dcp
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
-            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             

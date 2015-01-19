@@ -31,8 +31,18 @@ namespace dcp
         functionSpace_ (functionSpace),
         dirichletBCs_ (),
         solution_ (),
-        dirichletBCsCounter_ (0)
+        dirichletBCsCounter_ (0),
+        solutionPlotter_ ()
     { 
+
+        dolfin::begin (dolfin::DBG, "Building AbstractProblem...");
+        
+        dolfin::log (dolfin::DBG, "Setting up parameters...");
+        parameters.add ("plot_component", -1);
+        parameters.add ("clone_method", "shallow_clone");
+            
+        dolfin::end ();
+        
         dolfin::log (dolfin::DBG, "AbstractProblem object created");
     }
 
@@ -43,7 +53,8 @@ namespace dcp
         functionSpace_ (new dolfin::FunctionSpace (functionSpace)),
         dirichletBCs_ (),
         solution_ (),
-        dirichletBCsCounter_ (0)
+        dirichletBCsCounter_ (0),
+        solutionPlotter_ ()
     { 
         dolfin::log (dolfin::DBG, "AbstractProblem object created"); 
     }
@@ -55,7 +66,8 @@ namespace dcp
         functionSpace_ (new dolfin::FunctionSpace (std::move (functionSpace))),
         dirichletBCs_ (),
         solution_ (),
-        dirichletBCsCounter_ (0)
+        dirichletBCsCounter_ (0),
+        solutionPlotter_ ()
     { 
         dolfin::log (dolfin::DBG, "AbstractProblem object created"); 
     }
@@ -262,5 +274,49 @@ namespace dcp
     void AbstractProblem::update ()
     {
 
+    }
+    
+    
+
+    /********************** METHODS ***********************/
+    void AbstractProblem::plotSolution ()
+    {
+        dolfin::begin (dolfin::DBG, "Plotting...");
+        int plotComponent = parameters ["plot_component"];
+        
+        // auxiliary variable, to enhance readability
+        std::shared_ptr<dolfin::Function> functionToPlot;
+        
+        // get right function to plot
+        if (plotComponent == -1)
+        {
+            functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ());
+            dolfin::log (dolfin::DBG, "Plotting problem solution, all components...");
+        }
+        else
+        {
+            functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back () [plotComponent]);
+            dolfin::log (dolfin::DBG, "Plotting problem solution, component %d...", plotComponent);
+        }
+        
+        // actual plotting
+        if (solutionPlotter_ == nullptr)
+        {
+            dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
+            solutionPlotter_ = dolfin::plot (functionToPlot, "Solution");
+        }
+        else if (! solutionPlotter_ -> is_compatible (functionToPlot))
+        {
+            dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
+            dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
+            solutionPlotter_ = dolfin::plot (functionToPlot, "Solution");
+        }
+        else 
+        {
+            solutionPlotter_ -> parameters ["title"] = "Solution";
+            solutionPlotter_ -> plot (functionToPlot);
+        }
+        
+        dolfin::end ();
     }
 }

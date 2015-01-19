@@ -101,9 +101,6 @@ namespace dcp
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
                  *        reassembled every time the \c solve method is called. Default value: \c false
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
 
@@ -136,9 +133,6 @@ namespace dcp
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
                  *        reassembled every time the \c solve method is called. Default value: \c false
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 LinearProblem (const dolfin::FunctionSpace& functionSpace);
 
@@ -170,9 +164,6 @@ namespace dcp
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
                  *        reassembled every time the \c solve method is called. Default value: \c false
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 LinearProblem (dolfin::FunctionSpace&& functionSpace);
 
@@ -206,9 +197,6 @@ namespace dcp
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
                  *        reassembled every time the \c solve method is called. Default value: \c false
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                                const T_BilinearForm& bilinearForm,
@@ -244,9 +232,6 @@ namespace dcp
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
                  *        reassembled every time the \c solve method is called. Default value: \c false
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 LinearProblem (const dolfin::FunctionSpace& functionSpace,
                                const T_BilinearForm& bilinearForm,
@@ -282,9 +267,6 @@ namespace dcp
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
                  *        reassembled every time the \c solve method is called. Default value: \c false
-                 *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-                 *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-                 *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
                  */
                 LinearProblem (dolfin::FunctionSpace&& functionSpace,
                                T_BilinearForm&& bilinearForm,
@@ -583,7 +565,6 @@ namespace dcp
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
-            parameters.add ("clone_method", "shallow_clone");
 
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -624,7 +605,6 @@ namespace dcp
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
-            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -665,7 +645,6 @@ namespace dcp
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);
-            parameters.add ("clone_method", "shallow_clone");
         
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -708,7 +687,6 @@ namespace dcp
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);
-            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -751,7 +729,6 @@ namespace dcp
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
-            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();
@@ -794,7 +771,6 @@ namespace dcp
             parameters.add ("desired_solver_preconditioner", solverPreconditioner);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
-            parameters.add ("clone_method", "shallow_clone");
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver ();

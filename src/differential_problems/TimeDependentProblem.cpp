@@ -376,8 +376,12 @@ namespace dcp
             {
                 timeStepFlag = true;
             }
-            
-            dolfin::end ();
+             
+            // dolfin::end matching dolfin::begin inside if statement
+            if (oneStepRequested == false)
+            {
+                dolfin::end ();
+            }
         }
         
         // At this point, we just need to make sure that the solution on the last iteration was saved even though

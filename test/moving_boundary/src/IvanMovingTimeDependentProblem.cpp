@@ -17,13 +17,15 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <differential_problems/TimeDependentProblem.h>
+#include "IvanMovingTimeDependentProblem.h"
+#include "geometry.h"
 #include <dolfin/log/dolfin_log.h>
+#include <time.h>
 
-namespace dcp
+namespace Ivan
 {
     /******************* CONSTRUCTORS *******************/
-    TimeDependentProblem::TimeDependentProblem 
+    MovingTimeDependentProblem::MovingTimeDependentProblem 
             (const std::shared_ptr<dolfin::Mesh> mesh, 
              const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
              const double& startTime,
@@ -38,9 +40,12 @@ namespace dcp
              const std::string& previousSolutionName) : 
         dcp::AbstractProblem (mesh, functionSpace),
         timeSteppingProblem_ (timeSteppingProblem),
-        solutions_ ()
+        solutions_ (),
+        meshManager_ (std::shared_ptr<dolfin::ALE>(new dolfin::ALE()),functionSpace),
+//TODO :        displacement_ (std::shared_ptr<dolfin::GenericFunction> (new geometry::MapTgamma()))
+        displacement_ (std::shared_ptr<geometry::MapTgamma> (new geometry::MapTgamma()))
     { 
-        dolfin::begin (dolfin::DBG, "Building TimeDependentProblem...");
+        dolfin::begin (dolfin::DBG, "Building MovingTimeDependentProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("start_time", startTime);
@@ -70,12 +75,12 @@ namespace dcp
         
         dolfin::end ();
         
-        dolfin::log (dolfin::DBG, "TimeDependentProblem object created");
+        dolfin::log (dolfin::DBG, "MovingTimeDependentProblem object created");
     }
 
 
 
-    TimeDependentProblem::TimeDependentProblem 
+    MovingTimeDependentProblem::MovingTimeDependentProblem 
             (const dolfin::Mesh& mesh, 
              const dolfin::FunctionSpace& functionSpace,
              const double& startTime,
@@ -90,9 +95,12 @@ namespace dcp
              const std::string& previousSolutionName) : 
         dcp::AbstractProblem (mesh, functionSpace),
         timeSteppingProblem_ (timeSteppingProblem),
-        solutions_ ()
+        solutions_ (),
+        meshManager_ (std::shared_ptr<dolfin::ALE>(new dolfin::ALE()),std::shared_ptr<dolfin::FunctionSpace>(new dolfin::FunctionSpace(functionSpace))),
+//        displacement_ (std::shared_ptr<dolfin::GenericFunction> (new geometry::MapTgamma()))
+        displacement_ (std::shared_ptr<geometry::MapTgamma> (new geometry::MapTgamma()))
     { 
-        dolfin::begin (dolfin::DBG, "Building TimeDependentProblem...");
+        dolfin::begin (dolfin::DBG, "Building MovingTimeDependentProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("start_time", startTime);
@@ -122,12 +130,12 @@ namespace dcp
         
         dolfin::end ();
         
-        dolfin::log (dolfin::DBG, "TimeDependentProblem object created");
+        dolfin::log (dolfin::DBG, "MovingTimeDependentProblem object created");
     }
 
 
 
-    TimeDependentProblem::TimeDependentProblem 
+    MovingTimeDependentProblem::MovingTimeDependentProblem 
             (dolfin::Mesh&& mesh, 
              dolfin::FunctionSpace&& functionSpace,
              const double& startTime,
@@ -142,9 +150,12 @@ namespace dcp
              const std::string& previousSolutionName) : 
         dcp::AbstractProblem (mesh, functionSpace),
         timeSteppingProblem_ (timeSteppingProblem),
-        solutions_ ()
+        solutions_ (),
+        meshManager_ (std::shared_ptr<dolfin::ALE>(new dolfin::ALE()),std::shared_ptr<dolfin::FunctionSpace>(&functionSpace)),
+//        displacement_ (std::shared_ptr<dolfin::GenericFunction> (new geometry::MapTgamma()))
+        displacement_ (std::shared_ptr<geometry::MapTgamma> (new geometry::MapTgamma()))
     { 
-        dolfin::begin (dolfin::DBG, "Building TimeDependentProblem...");
+        dolfin::begin (dolfin::DBG, "Building MovingTimeDependentProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("start_time", startTime);
@@ -174,27 +185,27 @@ namespace dcp
         
         dolfin::end ();
         
-        dolfin::log (dolfin::DBG, "TimeDependentProblem object created");
+        dolfin::log (dolfin::DBG, "MovingTimeDependentProblem object created");
     }
 
 
 
     /******************* GETTERS *******************/
-    dcp::AbstractProblem& TimeDependentProblem::timeSteppingProblem ()
+    dcp::AbstractProblem& MovingTimeDependentProblem::timeSteppingProblem ()
     {
         return *timeSteppingProblem_;
     }
 
     
 
-    const dolfin::Function& TimeDependentProblem::solution () const
+    const dolfin::Function& MovingTimeDependentProblem::solution () const
     {
         return solution_;
     }
 
     
 
-    const std::vector<dolfin::Function>& TimeDependentProblem::solutionsVector () const
+    const std::vector<dolfin::Function>& MovingTimeDependentProblem::solutionsVector () const
     {
         return solutions_;
     }
@@ -202,7 +213,7 @@ namespace dcp
 
 
     /******************* SETTERS *******************/
-    void TimeDependentProblem::
+    void MovingTimeDependentProblem::
     setTimeSteppingProblem (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem)
     {
         timeSteppingProblem_ = timeSteppingProblem;
@@ -210,7 +221,7 @@ namespace dcp
 
     
 
-    void TimeDependentProblem::
+    void MovingTimeDependentProblem::
     setInitialSolution (const dolfin::Function& initialSolution)
     {
         solution_ = initialSolution;
@@ -218,7 +229,7 @@ namespace dcp
 
     
 
-    void TimeDependentProblem::
+    void MovingTimeDependentProblem::
     setInitialSolution (const dolfin::Expression& initialSolution)
     {
         solution_ = initialSolution;
@@ -226,7 +237,7 @@ namespace dcp
    
 
 
-    void TimeDependentProblem::
+    void MovingTimeDependentProblem::
     setCoefficient (const std::string& coefficientType, 
                     const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                     const std::string& coefficientName)
@@ -236,7 +247,7 @@ namespace dcp
 
 
 
-    void TimeDependentProblem::
+    void MovingTimeDependentProblem::
     setCoefficient (const std::string& coefficientType,
                     const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                     const std::size_t& coefficientNumber)
@@ -246,7 +257,7 @@ namespace dcp
 
 
 
-    void TimeDependentProblem::
+    void MovingTimeDependentProblem::
     setIntegrationSubdomains (const std::string& formType,
                               std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                               const dcp::SubdomainType& subdomainType)
@@ -256,7 +267,7 @@ namespace dcp
 
 
 
-    bool TimeDependentProblem::
+    bool MovingTimeDependentProblem::
     addDirichletBC (const dolfin::DirichletBC& dirichletCondition, std::string bcName)
     {
         return timeSteppingProblem_->addDirichletBC (dirichletCondition, bcName);
@@ -264,7 +275,7 @@ namespace dcp
 
 
 
-    bool TimeDependentProblem::
+    bool MovingTimeDependentProblem::
     addDirichletBC (dolfin::DirichletBC&& dirichletCondition, std::string bcName)
     {
         return timeSteppingProblem_->addDirichletBC (dirichletCondition, bcName);
@@ -272,7 +283,7 @@ namespace dcp
 
 
 
-    bool TimeDependentProblem::
+    bool MovingTimeDependentProblem::
     removeDirichletBC (const std::string& bcName)
     {
         return timeSteppingProblem_->removeDirichletBC (bcName);
@@ -280,7 +291,7 @@ namespace dcp
 
 
 
-    void TimeDependentProblem::
+    void MovingTimeDependentProblem::
     update ()
     {
         timeSteppingProblem_->update ();
@@ -289,7 +300,7 @@ namespace dcp
 
 
     /******************* METHODS *******************/
-    void TimeDependentProblem::
+    void Ivan::MovingTimeDependentProblem::
     solve () 
     {
         // ---- Problem settings ---- //
@@ -324,6 +335,7 @@ namespace dcp
         
         double t = parameters ["start_time"];
         int timeStep = 0;
+        displacement_->initTime(t);
         
         // save initial solution in member vector
         solutions_.push_back (solution_);
@@ -375,8 +387,13 @@ namespace dcp
                     dolfin::interactive ();
                 }
             }
+
+            displacement_->setTime(t);
+            meshManager_.moveMesh(*displacement_);
             
             dolfin::end ();
+
+            sleep(1);
         }
         
         // save final solution in member vector if it has not been saved already
@@ -391,7 +408,7 @@ namespace dcp
 
 
 
-    TimeDependentProblem* TimeDependentProblem::
+    MovingTimeDependentProblem* MovingTimeDependentProblem::
     clone () const
     {
         dolfin::begin (dolfin::DBG, "Cloning object...");
@@ -399,10 +416,10 @@ namespace dcp
         std::string cloneMethod = parameters ["clone_method"];
         
         dolfin::log (dolfin::DBG, "Clone method: %s", cloneMethod.c_str ());
-        dolfin::log (dolfin::DBG, "Creating new object of type TimeDependentProblem...");
+        dolfin::log (dolfin::DBG, "Creating new object of type MovingTimeDependentProblem...");
         
         // create new object
-        TimeDependentProblem* clonedProblem = nullptr;
+        MovingTimeDependentProblem* clonedProblem = nullptr;
         if (cloneMethod == "shallow_clone")
         {
             std::vector<std::string> dtCoefficientTypes;
@@ -410,7 +427,7 @@ namespace dcp
             std::vector<std::string> previousSolutionCoefficientTypes;
             parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
             clonedProblem = 
-                new TimeDependentProblem (this->mesh_,
+                new MovingTimeDependentProblem (this->mesh_,
                                                            this->functionSpace_,
                                                            this->parameters ["start_time"],
                                                            this->parameters ["dt"],
@@ -430,7 +447,7 @@ namespace dcp
             std::vector<std::string> previousSolutionCoefficientTypes;
             parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
             clonedProblem = 
-                new TimeDependentProblem (*(this->mesh_),
+                new MovingTimeDependentProblem (*(this->mesh_),
                                                            *(this->functionSpace_),
                                                            this->parameters ["start_time"],
                                                            this->parameters ["dt"],

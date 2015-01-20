@@ -108,6 +108,19 @@ namespace dcp
              */
             virtual const dolfin::FunctionSpace& functionSpace () const;
 
+            //! Get problem's finite element space (non const)
+            /*! 
+             *  This method is used to access the problem's function space in a non const way,
+             *  so that it can be modified from outside
+             *  \return a const \c std::shared_ptr to the (non const) problem's function space
+             *
+             *  TODO: maybe class friendship could help not to have non const getters
+             *
+             *  NB : if this method is set to const, the compiler says that it cannot be overloaded
+             *       (by the const-reference method above)
+             */
+            virtual const std::shared_ptr<dolfin::FunctionSpace> functionSpace ();
+
             //! Get const reference to the problem's dirichlet boundary condition with given name
             /*! 
              *  \param bcName the name identifying the boundary condition

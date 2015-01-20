@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTPROBLEM_H_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTPROBLEM_H_INCLUDE_GUARD
+#ifndef IVAN_MOVING_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTPROBLEM_H_INCLUDE_GUARD
+#define IVAN_MOVING_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTPROBLEM_H_INCLUDE_GUARD
 
 #include <dolfin/mesh/Mesh.h>
 #include <dolfin/mesh/MeshFunction.h>
@@ -35,10 +35,11 @@
 #include <differential_problems/AbstractProblem.h>
 #include <factories/LinearSolverFactory.h>
 #include <differential_problems/SubdomainType.h>
+#include "geometry.h"
 
-namespace dcp
+namespace Ivan
 {
-    /*! \class TimeDependentProblem TimeDependentProblem.h
+    /*! \class MovingTimeDependentProblem MovingTimeDependentProblem.h
      *  \brief Class for linear differential problems.
      *
      *  This class represents problem of the form
@@ -58,14 +59,14 @@ namespace dcp
      *  <tt> shared_ptr <dcp::AbstractProblem> </tt>
      */
 
-    class TimeDependentProblem : public dcp::AbstractProblem
+    class MovingTimeDependentProblem : public dcp::AbstractProblem
     {
         // ---------------------------------------------------------------------------------------------//  
 
         public:
             /******************* CONSTRUCTORS *******************/
             //! Default constructor is deleted. The class is not default constructable.
-            TimeDependentProblem () = delete;
+            MovingTimeDependentProblem () = delete;
 
             //!  Constructor with shared pointers
             /*!
@@ -110,7 +111,7 @@ namespace dcp
              *  components", but any negative integer will work), but it can be changed to any non-negative 
              *  integer to indicate the specific component the time loop should use.
              */
-            TimeDependentProblem 
+            MovingTimeDependentProblem 
                 (const std::shared_ptr<dolfin::Mesh> mesh, 
                  const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                  const double& startTime,
@@ -166,7 +167,7 @@ namespace dcp
              *  components", but any negative integer will work), but it can be changed to any non-negative 
              *  integer to indicate the specific component the time loop should use.
              */
-            TimeDependentProblem 
+            MovingTimeDependentProblem 
                 (const dolfin::Mesh& mesh, 
                  const dolfin::FunctionSpace& functionSpace,
                  const double& startTime,
@@ -223,7 +224,7 @@ namespace dcp
              *  components", but any negative integer will work), but it can be changed to any non-negative 
              *  integer to indicate the specific component the time loop should use.
              */
-            TimeDependentProblem 
+            MovingTimeDependentProblem 
                 (dolfin::Mesh&& mesh, 
                  dolfin::FunctionSpace&& functionSpace,
                  const double& startTime,
@@ -244,7 +245,7 @@ namespace dcp
              *  Default destructor, since members of the class are trivially 
              *  destructible.
              */
-            virtual ~TimeDependentProblem () {};
+            virtual ~MovingTimeDependentProblem () {};
 
             
             /******************* GETTERS *******************/
@@ -387,7 +388,7 @@ namespace dcp
              *  
              *  \return a pointer to the cloned object
              */
-            virtual TimeDependentProblem* clone () const;
+            virtual MovingTimeDependentProblem* clone () const;
 
             // ---------------------------------------------------------------------------------------------//
 
@@ -399,6 +400,14 @@ namespace dcp
             //! time steps. Note that the value of the variable \c storeInterval is saved in the 
             //! public member \c parameters
             std::vector <dolfin::Function> solutions_;
+
+            //! The mesh manager
+            geometry::MeshManager<dolfin::ALE,dolfin::FunctionSpace> meshManager_;
+
+            //! The displacement function
+            // TODO : std::shared_ptr<dolfin::GenericFunction> displacement_;
+            std::shared_ptr<geometry::MapTgamma> displacement_;
+
             // ---------------------------------------------------------------------------------------------//
 
         private:

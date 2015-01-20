@@ -83,6 +83,13 @@ namespace dcp
 
 
 
+    const std::shared_ptr<dolfin::FunctionSpace> AbstractProblem::functionSpace()
+    {
+        return this->functionSpace_;
+    }
+
+
+
     const dolfin::DirichletBC& AbstractProblem::dirichletBC (const std::string& bcName) const
     {
         auto bcIterator = dirichletBCs_.find (bcName);

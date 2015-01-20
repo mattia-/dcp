@@ -146,7 +146,7 @@ namespace dcp
             //! Access problem with given name [1] (read only)
             /*!
              *  \param name name of the problem to be accessed. If the name is not found, the function prints an
-             *  error message and throws an exception through the function \c dolfin::dolfin_error()
+             *  error message through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
             virtual const dcp::AbstractProblem& operator[] (const std::string& name) const;
@@ -154,7 +154,7 @@ namespace dcp
             //! Access problem with given name [2] (read and write)
             /*!
              *  \param name name of the problem to be accessed. If the name is not found, the function prints an
-             *  error message and throws an exception through the function \c dolfin::dolfin_error()
+             *  error message through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
             virtual dcp::AbstractProblem& operator[] (const std::string& name);
@@ -162,7 +162,7 @@ namespace dcp
             //! Access problem with given position in vector \c solveOrder_ [1] (read only)
             /*!
              *  \param position position of the problem to be accessed in the private member vector \c solveOrder_. 
-             *  If \c position is greater than vector size, the function prints an error message and throws an exception 
+             *  If \c position is greater than vector size, the function prints an error message 
              *  through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
@@ -171,7 +171,7 @@ namespace dcp
             //! Access problem with given position in vector \c solveOrder_ [2] (read and write)
             /*!
              *  \param position position of the problem to be accessed in the private member vector \c solveOrder_. 
-             *  If \c position is greater than vector size, the function prints an error message and throws an exception 
+             *  If \c position is greater than vector size, the function prints an error message 
              *  through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
@@ -212,7 +212,7 @@ namespace dcp
             //! Access solution of the problem identified by given name
             /*!
              *  \param problemName name of the problem to be accessed. If the name is not found, the function prints an
-             *  error message and throws an exception through the function \c dolfin::dolfin_error()
+             *  error message through the function \c dolfin::dolfin_error()
              *  \return a reference to the problems' solution
              */
             virtual const dolfin::Function& solution (const std::string& problemName) const;

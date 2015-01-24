@@ -57,12 +57,19 @@ namespace dcp
         // The loop is repeated until isFinished() returns true, that is until all problems' time loops are ended
         dolfin::begin ("Solving problems...");
         
+        int iterationCounter = 0;
         while (isFinished () == 0)
         {
+            iterationCounter++;
+            dolfin::log (dolfin::INFO, "=====================================");
+            dolfin::log (dolfin::INFO, "TIME DEPENDENT SYSTEM ITERATION: %d", iterationCounter);
+            dolfin::begin (dolfin::INFO, "=====================================");
             for (auto problem : solveOrder_)
             {
                 solve (problem, forceRelinking);
             }
+            dolfin::log (dolfin::INFO, "");
+            dolfin::end ();
         }
         
         dolfin::end ();

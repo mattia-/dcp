@@ -34,11 +34,11 @@ namespace dcp
         dirichletBCsCounter_ (0),
         solutionPlotter_ ()
     { 
-
         dolfin::begin (dolfin::DBG, "Building AbstractProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("plot_component", -1);
+        parameters.add ("plot_title", "Solution");
         parameters.add ("clone_method", "shallow_clone");
             
         dolfin::end ();
@@ -56,7 +56,16 @@ namespace dcp
         dirichletBCsCounter_ (0),
         solutionPlotter_ ()
     { 
-        dolfin::log (dolfin::DBG, "AbstractProblem object created"); 
+        dolfin::begin (dolfin::DBG, "Building AbstractProblem...");
+        
+        dolfin::log (dolfin::DBG, "Setting up parameters...");
+        parameters.add ("plot_component", -1);
+        parameters.add ("plot_title", "Solution");
+        parameters.add ("clone_method", "shallow_clone");
+            
+        dolfin::end ();
+        
+        dolfin::log (dolfin::DBG, "AbstractProblem object created");
     }
 
 
@@ -69,7 +78,16 @@ namespace dcp
         dirichletBCsCounter_ (0),
         solutionPlotter_ ()
     { 
-        dolfin::log (dolfin::DBG, "AbstractProblem object created"); 
+        dolfin::begin (dolfin::DBG, "Building AbstractProblem...");
+        
+        dolfin::log (dolfin::DBG, "Setting up parameters...");
+        parameters.add ("plot_component", -1);
+        parameters.add ("plot_title", "Solution");
+        parameters.add ("clone_method", "shallow_clone");
+            
+        dolfin::end ();
+        
+        dolfin::log (dolfin::DBG, "AbstractProblem object created");
     }
 
 
@@ -303,17 +321,17 @@ namespace dcp
         if (solutionPlotter_ == nullptr)
         {
             dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
-            solutionPlotter_ = dolfin::plot (functionToPlot, "Solution");
+            solutionPlotter_ = dolfin::plot (functionToPlot, parameters ["plot_title"]);
         }
         else if (! solutionPlotter_ -> is_compatible (functionToPlot))
         {
             dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
             dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
-            solutionPlotter_ = dolfin::plot (functionToPlot, "Solution");
+            solutionPlotter_ = dolfin::plot (functionToPlot, parameters ["plot_title"]);
         }
         else 
         {
-            solutionPlotter_ -> parameters ["title"] = "Solution";
+            solutionPlotter_ -> parameters ["title"] = parameters ["plot_title"];
             solutionPlotter_ -> plot (functionToPlot);
         }
         

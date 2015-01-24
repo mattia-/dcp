@@ -1,0 +1,27 @@
+# first step of the Chorin-Temam splitting method
+
+# domain type
+cell = triangle
+
+# function space
+V = VectorElement ("Lagrange", cell, 2)
+Q = FiniteElement ("Lagrange", cell, 1)
+
+# coefficients
+nu = Constant (cell)
+dt = Constant (cell)
+u_old = Coefficient (V)
+p_old = Coefficient (Q)
+
+# test and trial function
+u_star = TrialFunction (V)
+v = TestFunction (V)
+
+# prediction equation:
+# lhs
+a = inner (u_star, v) * dx  \
+    + dt * nu * inner (grad (u_star), grad (v)) * dx \
+    + dt * inner (dot (grad (u_star), u_old), v) * dx
+
+# rhs
+L = inner (u_old, v) * dx - dt * inner (grad (p_old), v) * dx

@@ -115,13 +115,15 @@ namespace dcp
              *        parameter. A negative value stands for all the components. Default value: -1
              *      - \c "pause" if set to \c true, the time stepping loop will stop at each plot and waits for the user
              *        to close the plot window before proceeding. Default value: \c false
-             *      - \c "dt_coefficient_types" the form types in which the time step appears as a coefficient in the
-             *        ufl file describing the problem. These will be used to set the coefficient whose name is stored
-             *        in the parameter \c "dt_name" through a call to the method \c setCoefficient defined in the
-             *        \c AbstractProblem class. Examples of possible values are: \c "bilinear_form", \c "linear_form",
-             *        \c "residual_form", \c "jacobian_form".
              *      - \c "dt_coefficient_types" (see input arguments documentation)
              *      - \c "previous_solution_coefficient_types" (see input arguments documentation)
+             *      - \c "previous_solution_is_set_externally" a boolean flag, if set to \c true the problem will not
+             *        set the coefficient whose name is stored in the parameter \c "previous_solution_name" at every
+             *        time step but will assume that it has already been set externally, for example with a link in
+             *        a \c dcp::TimeDependentEquationSystem. Default value: \c false
+             *  Furthermore, the constructor modifies the parameter \c plot_title and sets its default value to the
+             *  empty string, so that by default the plot title contains only the value of the current time when the 
+             *  plot is called.
              */
             TimeDependentProblem (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
                                   const double& startTime,
@@ -427,7 +429,8 @@ namespace dcp
 
             //! Plot method. Overrides the one in \c dcp::AbstractProblem to take into account the fact that 
             //! \c solution_ is now a vector with size greater than one). It uses the value of the parameter \c pause
-            //! to decide wethere to stop at each plot or not
+            //! to decide whether to stop at each plot or not and the value of the parameter \c plot_title to set
+            //! the plot title (\c plot_title will actually be added to the time, which is always plotted in the title)
             void plotSolution () override;
             
             //! Clone method. Overrides method in \c AbstractProblem

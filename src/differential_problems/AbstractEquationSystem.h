@@ -57,10 +57,19 @@ namespace dcp
             virtual ~AbstractEquationSystem () = default;
             
 
-            /******************** METHODS *********************/
+            /******************** GETTERS *********************/
             //! Get equation system size, i.e. the number of problems stored
-            virtual std::size_t size ();
+            virtual const std::size_t size () const;
             
+            //! Get names of problems stored in the protected map \c storedProblems_
+            /*!
+             *  \return a vector containing all the problems names. Move semantic is 
+             *  used in returning the vector, so no unnecessary copy is performed.
+             */
+            virtual const std::vector<std::string> problemsNames () const;
+            
+
+            /******************** METHODS *********************/
             //! Add problem to the map of problems to be solved [1]
             /*!
              *  The parameters are:

@@ -51,6 +51,7 @@ namespace dcp
         parameters.add ("plot_interval", 0);
         parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("pause", false);
+        parameters.add ("previous_solution_is_set_externally", false);
         
         dolfin::Parameters dtCoefficientTypesParameter ("dt_coefficient_types");
         for (auto& i : dtCoefficientTypes)
@@ -66,6 +67,8 @@ namespace dcp
         }
         parameters.add (previousSolutionCoefficientTypesParameter);
         
+        parameters ["plot_title"] = "";
+
         dolfin::end ();
         
         dolfin::log (dolfin::DBG, "TimeDependentProblem object created");
@@ -397,6 +400,13 @@ namespace dcp
     {
         bool pause = parameters ["pause"];
         int plotComponent = parameters ["plot_component"];
+        std::string plotTitle = parameters ["plot_title"];
+        
+        // if plotTitle is not empty, we need to prepend ", " so that the plot title is readable
+        if (!plotTitle.empty ())
+        {
+            plotTitle = ", " + plotTitle;
+        }
         
         // auxiliary variable, to enhance readability
         std::shared_ptr<dolfin::Function> functionToPlot;
@@ -421,17 +431,17 @@ namespace dcp
             if (solutionPlotter_ == nullptr)
             {
                 dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
-                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_));
+                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_) + plotTitle);
             }
             else if (! solutionPlotter_ -> is_compatible (functionToPlot))
             {
                 dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
                 dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
-                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_));
+                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_) + plotTitle);
             }
             else 
             {
-                solutionPlotter_ -> parameters ["title"] = std::string ("Time = " + std::to_string (t_));
+                solutionPlotter_ -> parameters ["title"] = std::string ("Time = " + std::to_string (t_) + plotTitle);
                 solutionPlotter_ -> plot (functionToPlot);
             }
 
@@ -516,24 +526,32 @@ namespace dcp
         parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
         int timeSteppingSolutionComponent = parameters ["time_stepping_solution_component"];
         
-        dolfin::log (dolfin::DBG, "Setting previous solution coefficients...");
-        for (auto& i : previousSolutionCoefficientTypes)
+        bool previousSolutionIsSetExternally = parameters ["previous_solution_is_set_externally"];
+        if (previousSolutionIsSetExternally == false)
         {
-            if (timeSteppingSolutionComponent >= 0)
+            dolfin::log (dolfin::DBG, "Setting previous solution coefficients...");
+            for (auto& i : previousSolutionCoefficientTypes)
             {
-                timeSteppingProblem_->setCoefficient 
-                    (i, 
-                     dolfin::reference_to_no_delete_pointer (previousSolution [timeSteppingSolutionComponent]), 
-                     previousSolutionName);
-            }
-            else
-            {
-                timeSteppingProblem_->setCoefficient 
-                    (i, 
-                     dolfin::reference_to_no_delete_pointer (previousSolution), 
-                     previousSolutionName);
-            }
-        } 
+                if (timeSteppingSolutionComponent >= 0)
+                {
+                    timeSteppingProblem_->setCoefficient 
+                        (i, 
+                         dolfin::reference_to_no_delete_pointer (previousSolution [timeSteppingSolutionComponent]), 
+                         previousSolutionName);
+                }
+                else
+                {
+                    timeSteppingProblem_->setCoefficient 
+                        (i, 
+                         dolfin::reference_to_no_delete_pointer (previousSolution), 
+                         previousSolutionName);
+                }
+            } 
+        }
+        else
+        {
+            dolfin::log (dolfin::DBG, "Skipping previous solution setting loop since it is set externally.");
+        }
     }
     
 
@@ -583,7 +601,15 @@ namespace dcp
 
             // auxiliary variable, to enhance readability
             std::shared_ptr<dolfin::Function> functionToPlot;
-        
+            
+            std::string plotTitle = parameters ["plot_title"];
+
+            // if plotTitle is not empty, we need to prepend ", " so that the plot title is readable
+            if (!plotTitle.empty ())
+            {
+                plotTitle = ", " + plotTitle;
+            }
+
             // get right function to plot
             if (plotComponent == -1)
             {
@@ -600,17 +626,17 @@ namespace dcp
             if (solutionPlotter_ == nullptr)
             {
                 dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
-                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_));
+                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_) + plotTitle);
             }
             else if (! solutionPlotter_ -> is_compatible (functionToPlot))
             {
                 dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
                 dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
-                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_));
+                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_) + plotTitle);
             }
             else 
             {
-                solutionPlotter_ -> parameters ["title"] = std::string ("Time = " + std::to_string (t_));
+                solutionPlotter_ -> parameters ["title"] = std::string ("Time = " + std::to_string (t_) + plotTitle);
                 solutionPlotter_ -> plot (functionToPlot);
             }
 

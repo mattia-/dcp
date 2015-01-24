@@ -59,6 +59,7 @@ namespace dcp
              *  The constructors also sets the following parameters:
              *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
              *        A negative value stands for all the components. Default value: -1
+             *      - \c "plot_title" the title of the plot. Default value: "Solution"
              *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
              *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
@@ -74,6 +75,7 @@ namespace dcp
              *  The constructors also sets the following parameters:
              *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
              *        A negative value stands for all the components. Default value: -1
+             *      - \c "plot_title" the title of the plot. Default value: "Solution"
              *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
              *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
@@ -88,6 +90,7 @@ namespace dcp
              *  The constructors also sets the following parameters:
              *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
              *        A negative value stands for all the components. Default value: -1
+             *      - \c "plot_title" the title of the plot. Default value: "Solution"
              *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
              *        object, the latter copies the actual objects. Default value: \c "shallow_clone"

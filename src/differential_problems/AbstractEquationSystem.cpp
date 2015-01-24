@@ -37,14 +37,31 @@ namespace dcp
 
     
 
-    /******************* METHODS *******************/
-    std::size_t AbstractEquationSystem::size ()
+    /******************** GETTERS *********************/
+    const std::size_t AbstractEquationSystem::size () const
     {
         return storedProblems_.size ();
     }
 
 
 
+    const std::vector<std::string> AbstractEquationSystem::problemsNames () const
+    {
+        std::vector<std::string> names (storedProblems_.size ());
+        int counter = 0;
+        
+        for (auto& problem : storedProblems_)
+        {
+            names [counter] = problem.first;
+            counter++;
+        }
+        
+        return names;
+    }
+    
+
+
+    /******************* METHODS *******************/
     void AbstractEquationSystem::addProblem (const std::string& problemName, 
                                              dcp::AbstractProblem& problem)
     {

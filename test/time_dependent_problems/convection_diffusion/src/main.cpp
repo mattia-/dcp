@@ -21,7 +21,7 @@
 #include <string>
 #include <dolfin.h>
 #include <mshr.h>
-#include <differential_problems/differential_problems.h>
+#include <dcp/differential_problems/differential_problems.h>
 #include "convectiondiffusion.h"
 
 namespace convectiondiffusion

@@ -142,6 +142,8 @@ namespace dcp
                 //!  Constructor with shared pointers [2]
                 /*!
                  *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
+                 *  \param residualForm a \c const reference to the problem's residual form
+                 *  \param jacobianForm a \c const reference to the problem's jacobian form
                  *  \c dolfin::FunctionSpace
                  *  \param residualFormSolutionName a string that identifies the name of the function representing the
                  *  problem solution in the residual form 
@@ -168,6 +170,8 @@ namespace dcp
                 //! Constructor with references [2]
                 /*!
                  *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
+                 *  \param residualForm a \c const reference to the problem's residual form
+                 *  \param jacobianForm a \c const reference to the problem's jacobian form
                  *  \param residualFormSolutionName a string that identifies the name of the function representing the
                  *  problem solution in the residual form 
                  *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
@@ -193,6 +197,8 @@ namespace dcp
                 //! Constructor with rvalue references [2]
                 /*!
                  *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
+                 *  \param residualForm a \c const reference to the problem's residual form
+                 *  \param jacobianForm a \c const reference to the problem's jacobian form
                  *  \param residualFormSolutionName a string that identifies the name of the function representing the
                  *  problem solution in the residual form 
                  *  \param jacobianFormSolutionName a string that identifies the name of the function representing the

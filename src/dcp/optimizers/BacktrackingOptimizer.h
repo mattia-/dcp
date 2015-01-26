@@ -258,6 +258,7 @@ namespace dcp
             //! Function to print to file some values. It is mostly useful to avid code repetition inside this class
             /*! 
              *  Input parameters:
+             *  \param iteration the current iteration when the function is called
              *  \param OUTSTREAM the stream to print to
              *  \param functionalValue the value of the functional
              *  \param alpha the backtracking parameter

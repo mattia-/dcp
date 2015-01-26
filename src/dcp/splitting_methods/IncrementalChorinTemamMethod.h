@@ -32,7 +32,7 @@ namespace dcp
      *  The splitting method assumes that the rhs external forcing term is zero.
      *  If a non-zero external forcing is needed, set it through the method \c
      *  setCoefficient.  The four problems in which the Navier-Stokes equations
-     *  are split are called \c"prediction_problem", \c "correction_problem",
+     *  are split are called \c "prediction_problem", \c "correction_problem",
      *  \c "velocity_projection_problem" and \c "pressure_update_problem"
      *  These problems must be passed to the class through the template arguments.
      *  The  projection problem in which the new velocity is computed is already

@@ -100,9 +100,9 @@ namespace dcp
                  *  \param endTime the final time for the simulation
                  *  \param nu the kinematic viscosity
                  *  \param previousVelocityName the name of the coefficient representing the velocity at the previous
-                 *  time step in the ufl file describing the predicion problem. Default: \c "u_old"
+                 *  time step in the ufl file describing the prediction problem. Default: \c "u_old"
                  *  \param previousPressureName the name of the coefficient representing the pressure at the previous
-                 *  time step in the ufl file describing the predicion problem. Default: \c "u_old"
+                 *  time step in the ufl file describing the prediction problem. Default: \c "u_old"
                  *  \param intermediateVelocityName the name of the coefficient representing the intermediate velocity
                  *  computed in the first step of the Chorin-Temam method in the ufl files describing the correction and
                  *  projection problems. Default: \c "u_star"

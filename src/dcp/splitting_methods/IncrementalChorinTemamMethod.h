@@ -35,9 +35,6 @@ namespace dcp
      *  are split are called \c "prediction_problem", \c "correction_problem",
      *  \c "velocity_projection_problem" and \c "pressure_update_problem"
      *  These problems must be passed to the class through the template arguments.
-     *  The  projection problem in which the new velocity is computed is already
-     *  implemented in the library, since they are not affected by the boundary
-     *  conditions.
      *  The templates arguments are:
      *      - \c T_PredictionBilinearForm the bilinear form of the prediction
      *        problem

@@ -34,9 +34,7 @@ namespace dcp
      *  setCoefficient.  The three problems in which the Navier-Stokes equations
      *  are split are called \c "prediction_problem", \c "correction_problem"
      *  and \c "projection_problem". These  problems must be passed to the
-     *  class through the template arguments. The projection problem in which
-     *  the new velocity is computed is already implemented in the library,
-     *  since they are not affected by the boundary conditions.
+     *  class through the template arguments. 
      *  The templates arguments are:
      *      - \c T_PredictionBilinearForm the bilinear form of the prediction
      *        problem

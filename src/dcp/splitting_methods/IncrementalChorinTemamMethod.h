@@ -49,8 +49,9 @@ namespace dcp
      *      - \c T_VelocityProjectionLinearForm the linear form of the velocity
      *        projection problem
      *      - \c T_PressureUpdateBilinearForm the bilinear form of the pressure
-     *        projection  problem
-     *      - \c T_PressureUpdateLinearForm the linear form of the pressure
+     *        update problem
+     *      - \c T_PressureUpdateLinearForm the linear form of the pressure 
+     *        update problem
      *
      *  The incremental Chorin-Temam problem is supposed to be in the following form:
      *  \f[

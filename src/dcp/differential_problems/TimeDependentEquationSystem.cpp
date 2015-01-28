@@ -37,6 +37,183 @@ namespace dcp
     
 
     /******************* METHODS *******************/
+    void TimeDependentEquationSystem::addLinkToPreviousSolution (const std::string& linkFrom, 
+                                                                 const std::string& linkedCoefficientName,
+                                                                 const std::string& linkedCoefficientType, 
+                                                                 const std::string& linkTo,
+                                                                 const int& nStepsBack,
+                                                                 const bool& forceRelinking)
+    {
+        dolfin::begin (dolfin::DBG, 
+                       "Setting up link (%s, %s, %s) -> (%s, all solution components, %d time steps back)...",
+                       linkFrom.c_str (),
+                       linkedCoefficientName.c_str (),
+                       linkedCoefficientType.c_str (),
+                       linkTo.c_str (),
+                       nStepsBack);
+        
+        // create pair containing the link information passed as input arguments.
+        auto link = std::make_pair (std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType), 
+                                    std::make_tuple (linkTo, -1, nStepsBack));
+
+        // search for map key in linksToPreviousSolutions_. 
+        auto linkPosition = linksToPreviousSolutions_.find (link.first);
+
+        if (linkPosition == linksToPreviousSolutions_.end ()) // if key not found in map, insert link
+        {
+            dolfin::log (dolfin::DBG, "Inserting link in links to previous solutions map...");
+            linksToPreviousSolutions_.insert (link);
+            
+            // perform linking
+            linkProblemToPreviousSolution (link);
+        }
+        else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
+        // current link and insert the new one
+        {
+            dolfin::cout << "In equation system: erasing link:" << dolfin::endl;
+            dolfin::cout << "\t(" 
+                << std::get<0> (linkPosition->first) 
+                << ", " 
+                << std::get<1> (linkPosition->first) 
+                << ", " 
+                << std::get<2> (linkPosition->first) 
+                << ") -> (" 
+                << std::get<0> (linkPosition->second)
+                << ", "
+                << std::string (std::get<1> (linkPosition->second) == -1 ? 
+                                "all solution components, " : 
+                                "component " + std::to_string (std::get<1> (linkPosition->second)) + ", ")
+                << std::get<2> (linkPosition->second)
+                << " time steps back)"
+                << dolfin::endl;
+
+            linksToPreviousSolutions_.erase (linkPosition);
+
+            dolfin::cout << "and inserting link: " << dolfin::endl;
+            dolfin::cout << "\t(" 
+                << std::get<0> (link.first)
+                << ", " 
+                << std::get<1> (link.first)
+                << ", " 
+                << std::get<2> (link.first)
+                << ") -> (" 
+                << std::get<0> (link.second)
+                << ", all solution components, " 
+                << std::get<2> (link.second)
+                << " time steps back)"
+                << dolfin::endl;
+
+            linksToPreviousSolutions_.insert (link);
+            
+            // perform linking
+            linkProblemToPreviousSolution (link);
+        }
+        else
+        {
+            dolfin::warning 
+                ("link (%s, %s, %s) -> (%s, all solution components, %d time steps back) not added. Key is already present in map",
+                 linkFrom.c_str (),
+                 linkedCoefficientName.c_str (),
+                 linkedCoefficientType.c_str (),
+                 linkTo.c_str (),
+                 nStepsBack);
+        }
+        dolfin::end ();
+    }
+
+
+
+    void TimeDependentEquationSystem::addLinkToPreviousSolution (const std::string& linkFrom, 
+                                                                 const std::string& linkedCoefficientName,
+                                                                 const std::string& linkedCoefficientType, 
+                                                                 const std::string& linkTo,
+                                                                 const int& linkToComponent,
+                                                                 const int& nStepsBack,
+                                                                 const bool& forceRelinking) 
+    {
+        dolfin::begin (dolfin::DBG, 
+                       "Setting up link (%s, %s, %s) -> (%s, component %d, %d time steps back)...",
+                       linkFrom.c_str (),
+                       linkedCoefficientName.c_str (),
+                       linkedCoefficientType.c_str (),
+                       linkTo.c_str (),
+                       linkToComponent,
+                       nStepsBack);
+        
+        // create pair containing the link information passed as input arguments.
+        auto link = std::make_pair (std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType), 
+                                    std::make_tuple (linkTo, linkToComponent, nStepsBack));
+
+        // search for map key in linksToPreviousSolutions_. 
+        auto linkPosition = linksToPreviousSolutions_.find (link.first);
+
+        if (linkPosition == linksToPreviousSolutions_.end ()) // if key not found in map, insert link
+        {
+            dolfin::log (dolfin::DBG, "Inserting link in links map...");
+            linksToPreviousSolutions_.insert (link);
+            
+            // perform linking
+            linkProblemToPreviousSolution (link);
+        }
+        else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
+        // current link and insert the new one
+        {
+            dolfin::cout << "In equation system: erasing link:" << dolfin::endl;
+            dolfin::cout << "\t(" 
+                << std::get<0> (linkPosition->first) 
+                << ", " 
+                << std::get<1> (linkPosition->first) 
+                << ", " 
+                << std::get<2> (linkPosition->first) 
+                << ") -> (" 
+                << std::get<0> (linkPosition->second)
+                << ", "
+                << std::string (std::get<1> (linkPosition->second) == -1 ? 
+                                "all solution components, " : 
+                                "component " + std::to_string (std::get<1> (linkPosition->second)) + ", ")
+                << std::get<2> (linkPosition->second)
+                << " time steps back)"
+                << dolfin::endl;
+
+            linksToPreviousSolutions_.erase (linkPosition);
+
+            dolfin::cout << "and inserting link: " << dolfin::endl;
+            dolfin::cout << "\t(" 
+                << std::get<0> (link.first)
+                << ", " 
+                << std::get<1> (link.first)
+                << ", " 
+                << std::get<2> (link.first)
+                << ") -> (" 
+                << std::get<0> (link.second)
+                << ", component " 
+                << std::get<1> (link.second)
+                << ", "
+                << std::get<2> (link.second)
+                << " time steps back)"
+                << dolfin::endl;
+
+            linksToPreviousSolutions_.insert (link);
+            
+            // perform linking
+            linkProblemToPreviousSolution (link);
+        }
+        else
+        {
+            dolfin::warning 
+                ("link (%s, %s, %s) -> (%s, component %d, %d time steps back) not added. Key is already present in map",
+                 linkFrom.c_str (),
+                 linkedCoefficientName.c_str (),
+                 linkedCoefficientType.c_str (),
+                 linkTo.c_str (),
+                 linkToComponent,
+                 nStepsBack);
+        }
+        dolfin::end ();
+    }
+            
+
+
     bool TimeDependentEquationSystem::isFinished ()
     {
         std::size_t nFinished = 0;
@@ -112,6 +289,18 @@ namespace dcp
                 ++linksIterator;
             }
             
+            auto previousSolutionsLinksIterator = linksToPreviousSolutions_.begin ();
+            while (previousSolutionsLinksIterator != linksToPreviousSolutions_.end () 
+                   && 
+                   std::get<0> (previousSolutionsLinksIterator->first) <= problemName)
+            {
+                if (std::get<0> (previousSolutionsLinksIterator->first) == problemName)
+                {
+                    linkProblemToPreviousSolution (*previousSolutionsLinksIterator);
+                }
+                ++previousSolutionsLinksIterator;
+            }
+            
             dolfin::end ();
         }
 
@@ -128,5 +317,119 @@ namespace dcp
     void TimeDependentEquationSystem::solve (const char* problemName, const bool& forceRelinking)
     {
         solve (std::string (problemName), forceRelinking);
+    }
+    
+
+
+    /******************* PROTECTED METHODS *******************/
+    void TimeDependentEquationSystem::linkProblemToPreviousSolution (const PreviousSolutionLink& link)
+    {
+        if (std::get<1> (link.second) == -1)
+        {
+            dolfin::begin (dolfin::DBG, 
+                           "Considering link: (%s, %s, %s) -> (%s, all solution componentes, %d time steps back)...",
+                           (std::get<0> (link.first)).c_str (),
+                           (std::get<1> (link.first)).c_str (),
+                           (std::get<2> (link.first)).c_str (),
+                           (std::get<0> (link.second)).c_str (),
+                            std::get<2> (link.second));
+        }
+        else
+        {
+            dolfin::begin (dolfin::DBG, 
+                           "Considering link: (%s, %s, %s) -> (%s, component %d, %d time steps back)...",
+                           (std::get<0> (link.first)).c_str (),
+                           (std::get<1> (link.first)).c_str (),
+                           (std::get<2> (link.first)).c_str (),
+                           (std::get<0> (link.second)).c_str (),
+                            std::get<1> (link.second),
+                            std::get<2> (link.second));
+        }
+        
+        // check if problem that needs linking exists
+        dolfin::log (dolfin::DBG, 
+                     "Looking for problem \"%s\" in problems map...", 
+                     (std::get<0> (link.first)).c_str ());
+        auto problemIterator = storedProblems_.find (std::get<0> (link.first));
+
+        if (problemIterator == storedProblems_.end ())
+        {
+            dolfin::warning ("Problem \"%s\" not found in stored problems map", 
+                             (std::get<0> (link.first)).c_str ());
+            dolfin::end ();
+            return;
+        }
+
+        dcp::AbstractProblem& problem = *(problemIterator->second);
+
+        // check if target problem of the link exists
+        dolfin::log (dolfin::DBG, "Looking for link target in problems map...");
+        auto targetProblemIterator = storedProblems_.find (std::get<0> (link.second));
+        if (targetProblemIterator == storedProblems_.end ())
+        {
+            dolfin::warning ("Cannot link problem \"%s\". No such problem found in stored problems map",
+                             (std::get<0> (link.first)).c_str ());
+            dolfin::end ();
+            return;
+        }
+
+        // unlike in AbstractEquationSystem, we use a reference to TimeDependentProblem (i.e. the derived class).
+        // Two reasons for this:
+        // 1) we need to call solutionsVector
+        // 2) if it is not a TimeDependentProblem, the whole method does not make sense
+        dcp::TimeDependentProblem& targetProblem = 
+            static_cast<dcp::TimeDependentProblem&> (*(targetProblemIterator->second));
+
+        if (std::get<1> (link.second) == -1)
+        {
+            dolfin::log 
+                (dolfin::DBG, 
+                 "Linking coefficient \"%s\" of type \"%s\" of problem \"%s\" to solution of problem \"%s\" from %d time steps back...",
+                 (std::get<1> (link.first)).c_str (),
+                 (std::get<2> (link.first)).c_str (),
+                 (std::get<0> (link.first)).c_str (),
+                 (std::get<0> (link.second)).c_str (),
+                  std::get<2> (link.second));
+            
+            // get target problem solution vector
+            const std::vector<dolfin::Function>& targetProblemSolutionsVector = targetProblem.solutionsVector ();  
+            
+            // get target function, by going back from the last element of nStepsBack steps. 
+            // NB: we use operator+ to traverse the vector backwards, since rbegin is a REVERSE iterator
+            int nStepsBack = std::get<2> (link.second);
+            const dolfin::Function& targetFunction = *(targetProblemSolutionsVector.rbegin() + nStepsBack);
+
+            problem.setCoefficient (std::get<2> (link.first), 
+                                    dolfin::reference_to_no_delete_pointer (targetFunction),
+                                    std::get<1> (link.first));
+        }
+        else
+        {
+            dolfin::log 
+                (dolfin::DBG, 
+                 "Linking coefficient \"%s\" of type \"%s\" of problem \"%s\" to component %d of solution of problem \"%s\" from %d time steps back...",
+                 (std::get<1> (link.first)).c_str (),
+                 (std::get<2> (link.first)).c_str (),
+                 (std::get<0> (link.first)).c_str (),
+                 std::get<1> (link.second),
+                 (std::get<0> (link.second)).c_str (),
+                 std::get<2> (link.second));
+
+            // get target problem solution vector
+            const std::vector<dolfin::Function>& targetProblemSolutionsVector = targetProblem.solutionsVector ();  
+            
+            // get target function, by going back from the last element of nStepsBack steps. 
+            // NB: we use operator+ to traverse the vector backwards, since rbegin is a REVERSE iterator
+            int nStepsBack = std::get<2> (link.second);
+            const dolfin::Function& targetFunction = *(targetProblemSolutionsVector.rbegin() + nStepsBack);
+
+            int component = std::get<1> (link.second);
+            problem.setCoefficient (std::get<2> (link.first), 
+                                    dolfin::reference_to_no_delete_pointer (targetFunction [component]),
+                                    std::get<1> (link.first));
+
+        }
+        
+        dolfin::end ();
     }
 }

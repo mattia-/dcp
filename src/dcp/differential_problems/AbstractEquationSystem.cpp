@@ -286,10 +286,10 @@ namespace dcp
         else
         {
             dolfin::warning ("link (%s, %s, %s) -> (%s, all solution components) not added. Key is already present in map",
-                             (std::get<0> (link.first)).c_str (),
-                             (std::get<1> (link.first)).c_str (),
-                             (std::get<2> (link.first)).c_str (),
-                             (std::get<0> (link.second)).c_str ());
+                             linkFrom.c_str (),
+                             linkedCoefficientName.c_str (),
+                             linkedCoefficientType.c_str (),
+                             linkTo.c_str ());
         }
         dolfin::end ();
     }
@@ -374,11 +374,11 @@ namespace dcp
         else
         {
             dolfin::warning ("link (%s, %s, %s) -> (%s, component %d) not added. Key is already present in map",
-                             (std::get<0> (link.first)).c_str (),
-                             (std::get<1> (link.first)).c_str (),
-                             (std::get<2> (link.first)).c_str (),
-                             (std::get<0> (link.second)).c_str (),
-                              std::get<1> (link.second));
+                             linkFrom.c_str (),
+                             linkedCoefficientName.c_str (),
+                             linkedCoefficientType.c_str (),
+                             linkTo.c_str (),
+                             linkToComponent);
         }
         dolfin::end ();
     }
@@ -473,79 +473,6 @@ namespace dcp
 
 
 
-    void AbstractEquationSystem::solve (const bool& forceRelinking)
-    {
-        // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
-        // to the latter function the task of performing the actual parameters setting and solving
-        dolfin::begin ("Solving problems...");
-        
-        for (auto problem : solveOrder_)
-        {
-            solve (problem, forceRelinking);
-        }
-        
-        dolfin::end ();
-    }
-
-
-
-    void AbstractEquationSystem::solve (const std::string& problemName, const bool& forceRelinking)
-    {
-        dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
-
-        // get problem with given name from map. Variable problemIterator will be a
-        // std::map <std::string, std::unique_ptr <dcp::AbstractProblem>::iterator
-        dolfin::log (dolfin::DBG, 
-                     "Looking for problem \"%s\" in problems map...", 
-                     problemName.c_str ());
-        auto problemIterator = storedProblems_.find (problemName);
-
-        if (problemIterator == storedProblems_.end ())
-        {
-            dolfin::warning ("Problem \"%s\" not found in stored problems map", problemName.c_str ());
-            return;
-        }
-
-        dcp::AbstractProblem& problem = *(problemIterator->second);
-
-        // 1)
-        // if forceRelinking is true, loop over problemsLinks_. 
-        // Remember it is a map. Elements in it are order according to the default
-        // lexicographical ordering
-        if (forceRelinking == true)
-        {
-            dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
-
-            auto linksIterator = problemsLinks_.begin ();
-            while (linksIterator != problemsLinks_.end () && std::get<0> (linksIterator->first) <= problemName)
-            {
-                if (std::get<0> (linksIterator->first) == problemName)
-                {
-                    linkProblems (*linksIterator);
-                }
-                ++linksIterator;
-            }
-            
-            dolfin::end ();
-        }
-
-        // 2)
-        // solve problem
-        dolfin::log (dolfin::PROGRESS, "Calling solve method on problem...");
-        problem.solve ();
-        
-        dolfin::end ();
-    }
-
-
-
-    void AbstractEquationSystem::solve (const char* problemName, const bool& forceRelinking)
-    {
-        solve (std::string (problemName), forceRelinking);
-    }
-
-
-
     const dolfin::Function& AbstractEquationSystem::solution (const std::string& problemName) const
     {
         auto problemIterator = storedProblems_.find (problemName);
@@ -562,10 +489,7 @@ namespace dcp
 
     
     /******************* PROTECTED METHODS *******************/
-    void AbstractEquationSystem::linkProblems (const std::pair <
-                                                                std::tuple <std::string, std::string, std::string>, 
-                                                                std::pair  <std::string, int>
-                                                               >& link)
+    void AbstractEquationSystem::linkProblems (const Link& link)
     {
         if (std::get<1> (link.second) == -1)
         {

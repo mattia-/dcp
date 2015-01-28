@@ -47,6 +47,12 @@ namespace dcp
         // ---------------------------------------------------------------------------------------------//  
 
         public:
+            /******************* TYPEDEFS **********************/
+            typedef std::tuple <std::string, std::string, std::string> LinkKey;
+            typedef std::pair <std::string, int> LinkValue;
+            typedef std::pair <LinkKey, LinkValue> Link;
+            
+
             /******************* CONSTRUCTORS ******************/
             //! Default constructor 
             AbstractEquationSystem ();
@@ -103,7 +109,7 @@ namespace dcp
              */
             virtual void reorderProblems (const std::vector<std::string>& solveOrder);
             
-            //! Adds link between problems' coefficient and solution []
+            //! Adds link between problems' coefficient and solution [1]
             /*!
              *  This function will add to the stored map \c problemsLinks_ a \c std::pair created on the input arguments
              *  and perform the actual linking calling \c linkProblems
@@ -115,10 +121,10 @@ namespace dcp
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
-             *  \param forceRelinking boolean value (default \c false). If the pair (problem name - coefficient) 
-             *  identified by the first and the second string in the first argument already appears in the protected 
-             *  member variable \c problemsLinks_, it will be relinked using the \c std::pair passed as first argument if 
-             *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
+             *  \param forceRelinking boolean value (default \c false). If the tuple identifying the coefficient already
+             *  appears in the protected member variable \c problemsLinks_, it will be relinked using the \c std::pair
+             *  passed as first argument if \c forceRelinking is true, and not relinked if it is false (but issuing a
+             *  warning in this case)
              */
             virtual void addLink (const std::string& linkFrom, 
                                   const std::string& linkedCoefficientName,
@@ -140,10 +146,11 @@ namespace dcp
              *  existence of such problem
              *  \param linkToComponent identifies the component of the solution of the problem indentified by \c linkTo
              *  that should be used as coefficient in the problem identified by \c linkFrom
-             *  \param forceRelinking boolean value (default \c false). If the pair (problem name, coefficient) 
-             *  identified by the first and the second string in the first argument already appears in the protected 
-             *  member variable \c problemsLinks_, it will be relinked using the \c std::pair passed as first argument if 
              *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
+             *  \param forceRelinking boolean value (default \c false). If the tuple identifying the coefficient already
+             *  appears in the protected member variable \c problemsLinks_, it will be relinked using the \c std::pair
+             *  passed as first argument if \c forceRelinking is true, and not relinked if it is false (but issuing a
+             *  warning in this case)
              */
             virtual void addLink (const std::string& linkFrom, 
                                   const std::string& linkedCoefficientName,
@@ -234,10 +241,7 @@ namespace dcp
              *  Being a protected member, this method is just called from library functions. 
              *  \param link a \c std::pair of the type contained by the protected member \c problemsLinks_
              */
-            virtual void linkProblems (const std::pair <
-                                                        std::tuple <std::string, std::string, std::string>, 
-                                                        std::pair  <std::string, int>
-                                                       >& link);
+            virtual void linkProblems (const Link& link);
             
             //! The stored problems
             std::map <std::string, std::shared_ptr <dcp::AbstractProblem>> storedProblems_;
@@ -256,12 +260,12 @@ namespace dcp
              *  \li the fourth \c string contains the name of the problem whose solution should be used to set the 
              *  coefficient identified by the first three strings
              *  \li finally, the last field, which is an \c int, defines which component of the solution of the problem
-             *  identified by the fourth \c string should be used in the link. If the whole solution should be used, \c -1
-             *  is used as a placeholder
+             *  identified by the fourth \c string should be used in the link. If the whole solution should be used, 
+             *  \c -1 is used as a placeholder
              *  A map guarantees that no tuple (problem, coefficient type, coefficient name) 
              *  is linked twice against possibly different problems
              */
-            std::map <std::tuple <std::string, std::string, std::string>, std::pair <std::string, int>> problemsLinks_;
+            std::map <LinkKey, LinkValue> problemsLinks_;
             
         // ---------------------------------------------------------------------------------------------//  
 

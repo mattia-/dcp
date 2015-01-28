@@ -42,6 +42,11 @@ namespace dcp
         // ---------------------------------------------------------------------------------------------//  
 
         public:
+            /******************* TYPEDEFS **********************/
+            typedef std::tuple <std::string, int, int> PreviousSolutionLinkValue;
+            typedef std::pair <LinkKey, PreviousSolutionLinkValue> PreviousSolutionLink;
+            
+
             /******************* CONSTRUCTORS ******************/
             //! Default constructor 
             TimeDependentEquationSystem ();
@@ -53,6 +58,59 @@ namespace dcp
             
 
             /******************** METHODS *********************/
+            //! Adds link between problems' coefficient and solution at a previous time step [1]
+            /*!
+             *  This function will add to the stored map \c linksToPreviousSolutions_ a \c std::pair created on the
+             *  input arguments and perform the actual linking calling \c linkProblemToPreviousSolution.
+             *  \param linkFrom identifies the problem whose parameter (passed as second argument to the function) 
+             *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
+             *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
+             *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
+             *  \c setCoefficient (see \c dcp::AbstractProblem documentation for more details)
+             *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
+             *  identified by the second and the first arguments respectively. No check is performed on the
+             *  existence of such problem
+             *  \param nStepsBack the number of steps back we should go to to find the right solution for the link
+             *  \param forceRelinking boolean value (default \c false). If the tuple identifying the coefficient already
+             *  appears in the protected member variable \c problemsLinks_, it will be relinked using the \c std::pair
+             *  passed as first argument if \c forceRelinking is true, and not relinked if it is false (but issuing a
+             *  warning in this case)
+             */
+            virtual void addLinkToPreviousSolution (const std::string& linkfrom, 
+                                                    const std::string& linkedcoefficientname,
+                                                    const std::string& linkedcoefficienttype, 
+                                                    const std::string& linkto,
+                                                    const int& nStepsBack,
+                                                    const bool& forceRelinking = false);
+
+            //! Adds link between problems' coefficient and solution at a previous time step [2]
+            /*!
+             *  This function will add to the stored map \c linksToPreviousSolutions_ a \c std::pair created on the
+             *  input arguments and perform the actual linking calling \c linkProblemToPreviousSolution.
+             *  \param linkFrom identifies the problem whose parameter (passed as second argument to the function) 
+             *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
+             *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
+             *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
+             *  \c setCoefficient (see \c dcp::AbstractProblem documentation for more details)
+             *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
+             *  identified by the second and the first arguments respectively. No check is performed on the
+             *  existence of such problem
+             *  \param nStepsBack the number of steps back we should go to to find the right solution for the link
+             *  \param linkToComponent identifies the component of the solution of the problem indentified by \c linkTo
+             *  that should be used as coefficient in the problem identified by \c linkFrom
+             *  \param forceRelinking boolean value (default \c false). If the tuple identifying the coefficient already
+             *  appears in the protected member variable \c problemsLinks_, it will be relinked using the \c std::pair
+             *  passed as first argument if \c forceRelinking is true, and not relinked if it is false (but issuing a
+             *  warning in this case)
+             */
+            virtual void addLinkToPreviousSolution (const std::string& linkfrom, 
+                                                    const std::string& linkedcoefficientname,
+                                                    const std::string& linkedcoefficienttype, 
+                                                    const std::string& linkto,
+                                                    const int& linkToComponent,
+                                                    const int& nStepsBack,
+                                                    const bool& forceRelinking = false);
+            
             //! Check if system time loop is finished. It basically calls the function \c isFinished() on every problem
             //! stored in \c storedProblems_ and checks if the number of problems whose time loop has ended is equal 
             //! to the size of \c storedProblems_
@@ -95,6 +153,37 @@ namespace dcp
         // ---------------------------------------------------------------------------------------------//  
 
         protected:
+            //! Performs the actual linking to previous solutions
+            /*!
+             *  Being a protected member, this method is just called from library functions. 
+             *  \param link a \c std::pair of the type contained by the protected member \c linksToPreviousSolutions_
+             */
+            virtual void linkProblemToPreviousSolution (const PreviousSolutionLink& link);
+            
+            //! The map of the old solutions needed for the system
+            /*!
+             *  A system may need to have access to old solutions of the single time dependent problems which it is made 
+             *  of.
+             *  For example one may need to use not only the last solution computed but also the solution at the previous 
+             *  time steps, or the solution from two time steps ago. This is what this map is for.
+             *  Thhis map associates a <tt> std::tuple<std::string, std::string, std::string></tt> 
+             *  and a <tt>std::pair <std::string, int></tt>, where:
+             *  \li the first \c string contains the name of the problem whose coefficient should be linked against 
+             *  some other problem's solution
+             *  \li the second \c string contains the type of such coefficient, in a form that can be passed to
+             *  \c dcp::AbstractProblem::setCoefficients
+             *  \li the third \c string contains the name of said coefficient in the problem
+             *  \li the fourth \c string contains the name of the problem whose solution should be used to set the 
+             *  coefficient identified by the first three strings
+             *  \li the fifth field, which is an \c int, defines which component of the solution of the problem
+             *  identified by the fourth \c string should be used in the link. If the whole solution should be used, 
+             *  \c -1 is used as a placeholder
+             *  \li finally, the last field, which is an \c int, defines the number of timesteps we should go back to to 
+             *  find the function we want to link to (that is, if such \c int is equal to 0 the solution at the current
+             *  timestep is used, if -1 the solution at the previous timestep, if -2 the soltion two timesteps ago and
+             *  so on) 
+             */
+            std::map <LinkKey, PreviousSolutionLinkValue> linksToPreviousSolutions_;
     };
 }
 

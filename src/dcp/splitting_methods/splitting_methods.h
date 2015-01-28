@@ -24,5 +24,6 @@
 #include "NavierStokesSplittingMethod.h"
 #include "ChorinTemamMethod.h"
 #include "IncrementalChorinTemamMethod.h"
+#include "GuermondSalgadoMethod.h"
 
 #endif

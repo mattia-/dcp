@@ -22,6 +22,7 @@
 
 #include "dcp/differential_problems/differential_problems.h"
 #include "dcp/factories/factories.h"
+#include "dcp/expressions/expressions.h"
 #include "dcp/objective_functional/objective_functional.h"
 #include "dcp/optimizers/optimizers.h"
 #include "dcp/splitting_methods/splitting_methods.h"

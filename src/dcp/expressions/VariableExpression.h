@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OBJECTIVE_FUNCTIONAL_VARIABLEEXPRESSION_H_INCLUDE_GUARD
-#define SRC_OBJECTIVE_FUNCTIONAL_VARIABLEEXPRESSION_H_INCLUDE_GUARD
+#ifndef SRC_EXPRESSIONS_VARIABLEEXPRESSION_H_INCLUDE_GUARD
+#define SRC_EXPRESSIONS_VARIABLEEXPRESSION_H_INCLUDE_GUARD
 
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Expression.h>
@@ -49,16 +49,16 @@ namespace dcp
             //! Default constructor. Create scalar expression
             VariableExpression () = default;
             
-            //! Create vector-valued expression with given dimension. This will call the appropriate \c dolfin::Expression 
-            //! constructor
+            //! Create vector-valued expression with given dimension. This will call the appropriate 
+            //! \c dolfin::Expression constructor
             /*
              *  Input arguments:
              *  \param dim dimension of the vector-valued expression
              */         
             explicit VariableExpression (std::size_t dim);
 
-            //! Create matrix-valued expression with given dimensions. This will call the appropriate \c dolfin::Expression
-            //! constructor
+            //! Create matrix-valued expression with given dimensions. This will call the appropriate 
+            //! \c dolfin::Expression constructor
             /*!
              *  Input arguments:
              *  \param dim0 dimension (rows)
@@ -181,7 +181,9 @@ namespace dcp
              *  \param x the coordinates of the point
              *  \param cell the cell which contains the given point
              */
-            virtual void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x, const ufc::cell& cell) const;
+            virtual void eval (dolfin::Array<double>& values, 
+                               const dolfin::Array<double>& x, 
+                               const ufc::cell& cell) const override;
 
             //! Evaluate at given point in given cell. Overrides method in \c dolfin::Expression
             /*!
@@ -189,7 +191,7 @@ namespace dcp
              *  \param values array that will contain the evaluated function at the given point
              *  \param x the coordinates of the point
              */
-            virtual void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const;
+            virtual void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override;
 
             //! Evaluate variable identified by given name at given point
             /*!

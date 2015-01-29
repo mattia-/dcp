@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/objective_functional/VariableExpression.h>
+#include <dcp/expressions/VariableExpression.h>
 #include <utility>
 #include <memory>
 

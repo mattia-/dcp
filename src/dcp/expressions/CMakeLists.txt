@@ -1,10 +1,11 @@
 # collect header files
-SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractObjectiveFunctional.h
-             ${CMAKE_CURRENT_SOURCE_DIR}/ObjectiveFunctional.h
-             ${CMAKE_CURRENT_SOURCE_DIR}/objective_functional.h)
+SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/VariableExpression.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentExpression.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/expressions.h)
 
 # collect source files
-SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/AbstractObjectiveFunctional.cpp)
+SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/VariableExpression.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentExpression.cpp)
 
 # add files to shared library dependancies
 SET (CONTROL_PROBLEM_LIBRARY_SOURCES ${CONTROL_PROBLEM_LIBRARY_SOURCES} ${SOURCES} PARENT_SCOPE)

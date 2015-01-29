@@ -27,7 +27,7 @@
 #include <string>
 #include <memory>
 #include <dcp/differential_problems/SubdomainType.h>
-#include <dcp/objective_functional/VariableExpression.h>
+#include <dcp/expressions/VariableExpression.h>
 #include <dcp/objective_functional/AbstractObjectiveFunctional.h>
 
 namespace dcp

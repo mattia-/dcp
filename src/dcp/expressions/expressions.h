@@ -17,9 +17,11 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OBJECTIVE_FUNCTIONAL_OBJECTIVE_FUNCTIONAL_H_INCLUDE_GUARD
-#define SRC_OBJECTIVE_FUNCTIONAL_OBJECTIVE_FUNCTIONAL_H_INCLUDE_GUARD
+#ifndef SRC_EXPRESSIONS_EXPRESSIONS_H_INCLUDE_GUARD
+#define SRC_EXPRESSIONS_EXPRESSIONS_H_INCLUDE_GUARD
 
-#include "ObjectiveFunctional.h"
+#include "VariableExpression.h"
+#include "TimeDependentExpression.h"
 
 #endif
+

@@ -178,8 +178,13 @@ namespace dcp
             /*!
              *  \return a const reference to the problem's solutions vector
              */
-            virtual const std::vector<dolfin::Function>& solutionsVector () const;  
-
+            virtual const std::vector<dolfin::Function>& solutions () const;  
+            
+            //! Get a vector containing all the solutions stored during the simulations along with the times at which
+            //! those solutions were stored
+            virtual const std::vector<std::pair <double, std::shared_ptr<const dolfin::Function>> > 
+            solutionsWithTimes () const;  
+            
             //! Get const reference to the current simulation time
             /*!
              *  \return a const reference to \c t_
@@ -413,7 +418,7 @@ namespace dcp
              *  The initial value for the time loop will be whatever function is stored as the last element of 
              *  \c solution_ when the method is called. To change the initial value, use the method \c setInitialSolution.
              *  Note that the value of the solution on the intermediate time steps will be saved int the protected
-             *  member \c solutions_. The storing interval is given by <tt>parameters ["store_interval"]</tt>.
+             *  member \c solution_. The storing interval is given by <tt>parameters ["store_interval"]</tt>.
              *  The solution will be plotted every \c plotInterval time steps. This value is read from
              *  <tt>parameters ["plot_interval"]</tt>. To change the component of the solution that will be plotted 
              *  set <tt>parameters ["plot_component"]</tt> accordingly. By default, this parameter is set to -1 
@@ -454,6 +459,10 @@ namespace dcp
         protected:
             //! The problem to be solved on each time step
             std::shared_ptr <dcp::AbstractProblem> timeSteppingProblem_;
+            
+            //! Vector to save the times on which the solution is stored. This way we can return a vector of pairs
+            //! <time, solution> in the protected member \c solutionsVector
+            std::vector <double> solutionStoringTimes_;
             
             //! The time during the simulation. It takes into account also previous calls to \c solve since it is
             //! not reset after such function is called. It can be reset to the value of the parameter \c t0 

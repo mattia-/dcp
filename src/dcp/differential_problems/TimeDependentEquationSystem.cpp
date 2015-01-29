@@ -392,7 +392,7 @@ namespace dcp
                   std::get<2> (link.second));
             
             // get target problem solution vector
-            const std::vector<dolfin::Function>& targetProblemSolutionsVector = targetProblem.solutionsVector ();  
+            const std::vector<dolfin::Function>& targetProblemSolutionsVector = targetProblem.solutions ();  
             
             // get target function, by going back from the last element of nStepsBack steps. 
             // NB: we use operator+ to traverse the vector backwards, since rbegin is a REVERSE iterator
@@ -416,7 +416,7 @@ namespace dcp
                  std::get<2> (link.second));
 
             // get target problem solution vector
-            const std::vector<dolfin::Function>& targetProblemSolutionsVector = targetProblem.solutionsVector ();  
+            const std::vector<dolfin::Function>& targetProblemSolutionsVector = targetProblem.solutions ();  
             
             // get target function, by going back from the last element of nStepsBack steps. 
             // NB: we use operator+ to traverse the vector backwards, since rbegin is a REVERSE iterator

@@ -34,6 +34,7 @@ namespace dcp
         : 
             AbstractProblem (timeSteppingProblem->functionSpace ()),
             timeSteppingProblem_ (timeSteppingProblem),
+            solutionStoringTimes_ (),
             t_ (startTime),
             startTime_ (startTime),
             dt_ (dt),
@@ -112,9 +113,26 @@ namespace dcp
 
 
 
-    const std::vector<dolfin::Function>& TimeDependentProblem::solutionsVector () const
+    const std::vector<dolfin::Function>& TimeDependentProblem::solutions () const
     {
         return solution_;
+    }
+    
+
+
+    const std::vector<std::pair <double, std::shared_ptr<const dolfin::Function>> > 
+    TimeDependentProblem::solutionsWithTimes () const
+    {
+        std::vector<std::pair <double, std::shared_ptr<const dolfin::Function>> > solutionsVector; 
+        for (std::size_t i = 0; i < solution_.size (); ++i)
+        {
+            double time = solutionStoringTimes_ [i];
+            std::shared_ptr<const dolfin::Function> solution (dolfin::reference_to_no_delete_pointer (solution_ [i]));            
+            auto solutionTimePair = std::make_pair (time, solution);
+            solutionsVector.push_back (solutionTimePair);
+        }
+        
+        return solutionsVector;
     }
     
 
@@ -277,6 +295,8 @@ namespace dcp
     {
         solution_.clear ();
         solution_.emplace_back (dolfin::Function (timeSteppingProblem_->functionSpace ()));
+        
+        solutionStoringTimes_.clear ();
         
         t_ = startTime_;
     }
@@ -571,6 +591,7 @@ namespace dcp
         {
             dolfin::log (dolfin::DBG, "Saving time stepping problem solution in solutions vector...");
             solution_.push_back (solution);
+            solutionStoringTimes_.push_back (t_);
         }
     } 
     
@@ -584,6 +605,7 @@ namespace dcp
         {
             dolfin::log (dolfin::DBG, "Saving last time step solution in solutions vector...");
             solution_.push_back (solution);
+            solutionStoringTimes_.push_back (t_);
         }
     }
 

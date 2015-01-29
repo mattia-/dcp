@@ -33,9 +33,11 @@
 #include <string>
 #include <memory>
 #include <initializer_list>
+#include <map>
 #include <dcp/differential_problems/AbstractProblem.h>
 #include <dcp/factories/LinearSolverFactory.h>
 #include <dcp/differential_problems/SubdomainType.h>
+#include <dcp/expressions/TimeDependentExpression.h>
 
 namespace dcp
 {
@@ -377,6 +379,31 @@ namespace dcp
              */
             virtual bool removeDirichletBC (const std::string& bcName) override;
             
+            //! Add an entry to the protected member map \c timeDependentCoefficients_.
+            /*
+             *  \param coefficientName the name to identify the coefficient. It will be used in the protected method
+             *  \c setTimeDependentCoefficients(), so it must be the same as the name used in the ufl file
+             *  \param coefficientType the type of the coefficient, in a form that will make sense once passed to the
+             *  method \c setCoefficient() (that is for example \c "linear_form", \c "bilinear_form" and so on)
+             *  \param expression the time dependent expression, whose \c eval() method will be used when setting the
+             *  coefficient in \c setTimeDependentCoefficients()
+             *  
+             *  \return \c true if the coefficient was inserted in the map, \c false otherwise
+             */
+            virtual bool addTimeDependentCoefficient (const std::string& coefficientName, 
+                                                      const std::string& coefficientType,
+                                                      const dcp::TimeDependentExpression& expression);
+            
+            //! Remove the selected element from the protected member map \c timeDependentCoefficients_
+            /*!
+             *  \param coefficientName the name of the coefficient to remove
+             *  \param coefficientType the type of the coefficient to remove
+             *  
+             *  \return \c true if the coefficient was removed from the map, \c false otherwise
+             */
+            virtual bool removeTimeDependentCoefficient (const std::string& coefficientName,
+                                                         const std::string& coefficientType);
+            
             //! Method to update class members. 
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c update function 
             //! (which may be an empty function)
@@ -460,6 +487,15 @@ namespace dcp
             //! The problem to be solved on each time step
             std::shared_ptr <dcp::AbstractProblem> timeSteppingProblem_;
             
+            //! A map containing the time dependent expressions needed for the time dependent problem
+            /*!
+             *  If for example a problem had an external force that depends on time, its corresponding coefficient in
+             *  the time stepping problem would need to be reset when the time parameter changes. 
+             *  The coefficient is identified by a \c pair containing its name and its type and is associated in the map
+             *  to a \c dcp::TimeDependentExpression .
+             */
+            std::map <std::pair <std::string, std::string>, dcp::TimeDependentExpression> timeDependentCoefficients_;
+            
             //! Vector to save the times on which the solution is stored. This way we can return a vector of pairs
             //! <time, solution> in the protected member \c solutionsVector
             std::vector <double> solutionStoringTimes_;
@@ -485,6 +521,13 @@ namespace dcp
              *  solution coefficient in the time stepping problem
              */
             virtual void advanceTime (const dolfin::Function& previousSolution);
+            
+            //! Method to set the time dependent coefficients at every step of the solve loop
+            /*
+             *  For each \c element in \c timeDependentCoefficients_ , it will set the coefficient time using \c t_ and
+             *  calling \c setCoefficient()
+             */
+            virtual void setTimeDependentCoefficients ();
             
             //! Method to print a warning if \c isFinished() returns \c true. It is just useful to make \c solve()
             //! method clearer to read

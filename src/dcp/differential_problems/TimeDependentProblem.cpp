@@ -34,6 +34,7 @@ namespace dcp
         : 
             AbstractProblem (timeSteppingProblem->functionSpace ()),
             timeSteppingProblem_ (timeSteppingProblem),
+            timeDependentCoefficients_ (),
             solutionStoringTimes_ (),
             t_ (startTime),
             startTime_ (startTime),
@@ -276,6 +277,50 @@ namespace dcp
 
 
 
+    bool TimeDependentProblem::addTimeDependentCoefficient (const std::string& coefficientName, 
+                                                            const std::string& coefficientType,
+                                                            const dcp::TimeDependentExpression& expression)
+    {
+        dolfin::log (dolfin::DBG, 
+                       "Inserting time dependent coefficient in map with name \"%s\" and type \"%s\"...",
+                       coefficientName.c_str (),
+                       coefficientType.c_str ());
+       
+        auto coefficientID = std::make_pair (coefficientName, coefficientType);
+        auto result = timeDependentCoefficients_.insert (std::make_pair (coefficientID, expression));
+        
+        if (result.second == false)
+        {
+            dolfin::warning ("Time dependent coefficient not inserted because key already in map");
+        }
+        
+        return result.second;
+    }
+
+
+
+    bool TimeDependentProblem::removeTimeDependentCoefficient (const std::string& coefficientName,
+                                                               const std::string& coefficientType)
+    {
+        dolfin::log (dolfin::DBG, 
+                       "Removing time dependent coefficient with name \"%s\" and type \"%s\" from map...",
+                       coefficientName.c_str (),
+                       coefficientType.c_str ());
+       
+        auto coefficientID = std::make_pair (coefficientName, coefficientType);
+        
+        std::size_t nErasedElements = timeDependentCoefficients_.erase (coefficientID);
+        
+        if (nErasedElements == 0)
+        {
+            dolfin::warning ("Time dependent coefficient not removed: it was not found in map");
+        }
+        
+        return nErasedElements == 1? true : false;
+    }
+            
+
+
     void TimeDependentProblem::update ()
     {
         timeSteppingProblem_->update ();
@@ -382,6 +427,8 @@ namespace dcp
             }
             
             advanceTime (tmpSolution);
+            
+            setTimeDependentCoefficients ();
             
             dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
             timeSteppingProblem_->solve ();
@@ -574,6 +621,33 @@ namespace dcp
         }
     }
     
+
+
+    void TimeDependentProblem::setTimeDependentCoefficients ()
+    {
+        dolfin::begin (dolfin::DBG, "Setting time dependent coefficients...");
+        
+        for (auto& coefficientPair : timeDependentCoefficients_)
+        {
+            dcp::TimeDependentExpression& expression = coefficientPair.second;
+            std::string coefficientName = std::get<0> (coefficientPair.first);
+            std::string coefficientType = std::get<1> (coefficientPair.first);
+            dolfin::log (dolfin::DBG, 
+                         "Coefficient: name \"%s\", type \"%s\"", 
+                         coefficientName.c_str (),
+                         coefficientType.c_str ());
+            
+            dolfin::log (dolfin::DBG, "Setting time in time dependent expression...");
+            expression.t () = t_;
+            
+            timeSteppingProblem_->setCoefficient (coefficientType, 
+                                                  dolfin::reference_to_no_delete_pointer (expression), 
+                                                  coefficientName);
+        }
+        
+        dolfin::end ();
+    }
+            
 
 
     void TimeDependentProblem::printFinishedWarning ()

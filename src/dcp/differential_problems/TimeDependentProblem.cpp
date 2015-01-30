@@ -287,7 +287,8 @@ namespace dcp
                        coefficientType.c_str ());
        
         auto coefficientID = std::make_pair (coefficientName, coefficientType);
-        auto result = timeDependentCoefficients_.insert (std::make_pair (coefficientID, expression));
+        std::shared_ptr<dcp::TimeDependentExpression> expressionPointer (new dcp::TimeDependentExpression (expression));
+        auto result = timeDependentCoefficients_.insert (std::make_pair (coefficientID, expressionPointer));
         
         if (result.second == false)
         {
@@ -629,20 +630,20 @@ namespace dcp
         
         for (auto& coefficientPair : timeDependentCoefficients_)
         {
-            dcp::TimeDependentExpression& expression = coefficientPair.second;
+            std::shared_ptr <dcp::TimeDependentExpression> expression (coefficientPair.second);
             std::string coefficientName = std::get<0> (coefficientPair.first);
             std::string coefficientType = std::get<1> (coefficientPair.first);
-            dolfin::log (dolfin::DBG, 
+            dolfin::begin (dolfin::DBG, 
                          "Coefficient: name \"%s\", type \"%s\"", 
                          coefficientName.c_str (),
                          coefficientType.c_str ());
             
             dolfin::log (dolfin::DBG, "Setting time in time dependent expression...");
-            expression.setTime (t_);
+            expression->setTime (t_);
             
-            timeSteppingProblem_->setCoefficient (coefficientType, 
-                                                  dolfin::reference_to_no_delete_pointer (expression), 
-                                                  coefficientName);
+            timeSteppingProblem_->setCoefficient (coefficientType, expression, coefficientName);
+            
+            dolfin::end ();
         }
         
         dolfin::end ();

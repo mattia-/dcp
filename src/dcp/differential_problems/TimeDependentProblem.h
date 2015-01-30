@@ -492,9 +492,11 @@ namespace dcp
              *  If for example a problem had an external force that depends on time, its corresponding coefficient in
              *  the time stepping problem would need to be reset at every step, since the time parameter changes. 
              *  The coefficient is identified by a \c pair containing its name and its type and is associated in the map
-             *  to a \c dcp::TimeDependentExpression .
+             *  to a pointer to \c dcp::TimeDependentExpression (the use of the pointer is necessary to call the 
+             *  \c eval() function defined in the user-defined class derived from \c dcp::TimeDependentExpression )
              */
-            std::map <std::pair <std::string, std::string>, dcp::TimeDependentExpression> timeDependentCoefficients_;
+            std::map <std::pair <std::string, std::string>, std::shared_ptr <dcp::TimeDependentExpression> > 
+                timeDependentCoefficients_;
             
             //! Vector to save the times on which the solution is stored. This way we can return a vector of pairs
             //! <time, solution> in the protected member \c solutionsVector

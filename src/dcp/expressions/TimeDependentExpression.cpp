@@ -134,9 +134,9 @@ namespace dcp
 
     void TimeDependentExpression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
     {
-        dolfin::dolfin_error("TimeDependentExpression.cpp",
-                             "evaluate expression",
-                             "Missing eval() function (must be overloaded)");
+        dolfin::dolfin_error ("dcp: TimeDependentExpression.cpp",
+                              "evaluate expression",
+                              "Missing eval() function (must be overloaded)");
     }
 
 

@@ -135,9 +135,9 @@ namespace dcp
 
     void VariableExpression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
     {
-        dolfin::dolfin_error("VariableExpression.cpp",
-                             "evaluate expression",
-                             "Missing eval() function (must be overloaded)");
+        dolfin::dolfin_error ("dcp: VariableExpression.cpp",
+                              "evaluate expression",
+                              "Missing eval() function (must be overloaded)");
     }
 
 

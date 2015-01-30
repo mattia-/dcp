@@ -174,7 +174,7 @@ namespace dcp
         }
         else
         {
-            dolfin::dolfin_error ("BacktrackingOptimizer.cpp",
+            dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp",
                                   "apply",
                                   "Unknown convergence criterion \"%s\"", 
                                   convergenceCriterion.c_str ());
@@ -538,7 +538,7 @@ namespace dcp
         }
         else
         {
-            dolfin::dolfin_error ("BacktrackingOptimizer.cpp",
+            dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp",
                                   "print",
                                   "Unknown convergence criterion \"%s\"", 
                                   convergenceCriterion.c_str ());
@@ -557,7 +557,7 @@ namespace dcp
             OUTFILE.open (outputFileName);
             if (OUTFILE.fail ())
             {
-                dolfin::dolfin_error ("BacktrackingOptimizer.cpp",
+                dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp",
                                       "openOutputFile",
                                       "Cannot open output file \"%s\"", 
                                       outputFileName.c_str ());
@@ -605,7 +605,7 @@ namespace dcp
             }
             else
             {
-                dolfin::dolfin_error ("BacktrackingOptimizer.cpp",
+                dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp",
                                       "openOutputFile",
                                       "Unknown convergence criterion \"%s\"", 
                                       convergenceCriterion.c_str ());
@@ -651,7 +651,7 @@ namespace dcp
                 }
                 else
                 {
-                    dolfin::dolfin_error ("BacktrackingOptimizer.cpp", 
+                    dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp", 
                                           "getDotProductComputer",
                                           "No form to compute dot products and norms for mesh cell type \"%s\" and", 
                                           "control function rank %d", 
@@ -678,7 +678,7 @@ namespace dcp
                 }
                 else
                 {
-                    dolfin::dolfin_error ("BacktrackingOptimizer.cpp", 
+                    dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp", 
                                           "getDotProductComputer",
                                           "No form to compute dot products and norms for mesh cell type \"%s\" and", 
                                           "control function rank %d", 
@@ -705,7 +705,7 @@ namespace dcp
                 }
                 else
                 {
-                    dolfin::dolfin_error ("BacktrackingOptimizer.cpp", 
+                    dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp", 
                                           "getDotProductComputer",
                                           "No form to compute dot products and norms for mesh cell type \"%s\" and", 
                                           "control function rank %d", 

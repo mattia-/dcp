@@ -51,7 +51,7 @@ namespace dcp
             /*!
              *  \param t the time
              */
-            TimeDependentExpression (const double& t = 0);
+            TimeDependentExpression (const double& t);
             
             //! Create vector-valued expression with given dimension. This will call the appropriate 
             //! \c dolfin::Expression constructor
@@ -60,7 +60,7 @@ namespace dcp
              *  \param dim dimension of the vector-valued expression
              *  \param t the time
              */         
-            explicit TimeDependentExpression (std::size_t dim, const double& t = 0);
+            explicit TimeDependentExpression (std::size_t dim, const double& t);
 
             //! Create matrix-valued expression with given dimensions. This will call the appropriate 
             //! \c dolfin::Expression constructor
@@ -70,7 +70,7 @@ namespace dcp
              *  \param dim1 dimension (columns)
              *  \param t the time
              */          
-            TimeDependentExpression (std::size_t dim0, std::size_t dim1, const double& t = 0);
+            TimeDependentExpression (std::size_t dim0, std::size_t dim1, const double& t);
 
             //! Create tensor-valued expression with given shape. This will call the appropriate \c dolfin::Expression
             //! constructor
@@ -79,7 +79,7 @@ namespace dcp
              *  \param value_shape shape of expression
              *  \param t the time
              */          
-            explicit TimeDependentExpression (std::vector<std::size_t> value_shape, const double& t = 0);
+            explicit TimeDependentExpression (std::vector<std::size_t> value_shape, const double& t);
 
             //! Constructor from \c std::map
             /*!
@@ -90,7 +90,7 @@ namespace dcp
              */
             TimeDependentExpression 
                 (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                 const double& t = 0);
+                 const double& t);
             
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -103,7 +103,7 @@ namespace dcp
             explicit TimeDependentExpression 
                 (std::size_t dim,
                  const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables, 
-                 const double& t = 0);
+                 const double& t);
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -118,7 +118,7 @@ namespace dcp
                 (std::size_t dim0, 
                  std::size_t dim1,
                  const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables, 
-                 const double& t = 0);
+                 const double& t);
 
             //! Create tensor-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -131,7 +131,7 @@ namespace dcp
             explicit TimeDependentExpression
                 (std::vector<std::size_t> value_shape,
                  const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables, 
-                 const double& t = 0);
+                 const double& t);
 
             //! Default copy constructor
             /*!
@@ -158,11 +158,13 @@ namespace dcp
 
 
             /******************* GETTERS *******************/
-            //! Get a reference to the current time stored in the class. 
-            double& t ();
-            
-            //! Get a reference to the current time stored in the class, const version
+            //! Get a const reference to the current time stored in the class
             const double& t () const;
+
+
+            /******************* SETTERS *******************/
+            //! Set the current time
+            void setTime (const double& t);
 
             
             /******************* METHODS *******************/

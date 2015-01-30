@@ -110,17 +110,18 @@ namespace dcp
     
 
     /******************* GETTERS *******************/
-    double& TimeDependentExpression::t ()
-    {
-        return t_;
-    }
-
-    
-
     const double& TimeDependentExpression::t () const
     {
         return t_;
     }
+    
+
+
+    /******************* SETTERS *******************/
+    void TimeDependentExpression::setTime (const double& t)
+    {
+        t_ = t;
+    } 
 
             
             

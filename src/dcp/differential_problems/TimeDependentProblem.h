@@ -490,7 +490,7 @@ namespace dcp
             //! A map containing the time dependent expressions needed for the time dependent problem
             /*!
              *  If for example a problem had an external force that depends on time, its corresponding coefficient in
-             *  the time stepping problem would need to be reset when the time parameter changes. 
+             *  the time stepping problem would need to be reset at every step, since the time parameter changes. 
              *  The coefficient is identified by a \c pair containing its name and its type and is associated in the map
              *  to a \c dcp::TimeDependentExpression .
              */

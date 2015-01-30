@@ -291,7 +291,7 @@ namespace dcp
         
         if (result.second == false)
         {
-            dolfin::warning ("Time dependent coefficient not inserted because key already in map");
+            dolfin::warning ("Time dependent coefficient not inserted because key is already present in map");
         }
         
         return result.second;
@@ -313,7 +313,7 @@ namespace dcp
         
         if (nErasedElements == 0)
         {
-            dolfin::warning ("Time dependent coefficient not removed: it was not found in map");
+            dolfin::warning ("Time dependent coefficient not removed: key was not found in map");
         }
         
         return nErasedElements == 1? true : false;
@@ -638,7 +638,7 @@ namespace dcp
                          coefficientType.c_str ());
             
             dolfin::log (dolfin::DBG, "Setting time in time dependent expression...");
-            expression.t () = t_;
+            expression.setTime (t_);
             
             timeSteppingProblem_->setCoefficient (coefficientType, 
                                                   dolfin::reference_to_no_delete_pointer (expression), 

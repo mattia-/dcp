@@ -386,13 +386,15 @@ namespace dcp
              *  \param coefficientType the type of the coefficient, in a form that will make sense once passed to the
              *  method \c setCoefficient() (that is for example \c "linear_form", \c "bilinear_form" and so on)
              *  \param expression the time dependent expression, whose \c eval() method will be used when setting the
-             *  coefficient in \c setTimeDependentCoefficients()
+             *  coefficient in \c setTimeDependentCoefficients(). We use a \c shared_ptr because there is no other way 
+             *  to call the right \c eval() (unless we forced the user to override a possible \c clone() method in the
+             *  class derived from \c dcp::TimeDependentExpression
              *  
              *  \return \c true if the coefficient was inserted in the map, \c false otherwise
              */
             virtual bool addTimeDependentCoefficient (const std::string& coefficientName, 
                                                       const std::string& coefficientType,
-                                                      const dcp::TimeDependentExpression& expression);
+                                                      std::shared_ptr<dcp::TimeDependentExpression> expression);
             
             //! Remove the selected element from the protected member map \c timeDependentCoefficients_
             /*!

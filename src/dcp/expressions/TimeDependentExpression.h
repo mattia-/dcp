@@ -39,8 +39,11 @@ namespace dcp
      *  expressions and functions. In general, a concrete class will need to be
      *  defined as deriving from this one and the method \c eval() will have to be overridden with a user-defined
      *  expression, much like what happens with \c dolfin::Expression itself. 
-     *  The time parameter is stored in the protected member \c time_ and can be accessed through the method
-     *  \c t() 
+     *  The time parameter is stored in the protected member \c t_ and can be accessed through the methods
+     *  \c t() and \c setTime(). Remember that the constructor does not accept the time as input argument because that
+     *  would force the user to implement a constructor of his own when he derives from this class to implement the
+     *  \c eval() method, so \c t_ will be default-constructed. Before using the class (and all of those that derive 
+     *  from it), the method \c setTime() must be called if \c t_ should be different from 0.
      */
     class TimeDependentExpression : public dcp::VariableExpression
     {
@@ -48,19 +51,15 @@ namespace dcp
         public:
             /******************* CONSTRUCTORS *******************/
             //! Default constructor. Create scalar expression
-            /*!
-             *  \param t the time
-             */
-            TimeDependentExpression (const double& t);
+            TimeDependentExpression ();
             
             //! Create vector-valued expression with given dimension. This will call the appropriate 
             //! \c dolfin::Expression constructor
             /*
              *  Input arguments:
              *  \param dim dimension of the vector-valued expression
-             *  \param t the time
              */         
-            explicit TimeDependentExpression (std::size_t dim, const double& t);
+            explicit TimeDependentExpression (std::size_t dim);
 
             //! Create matrix-valued expression with given dimensions. This will call the appropriate 
             //! \c dolfin::Expression constructor
@@ -68,29 +67,25 @@ namespace dcp
              *  Input arguments:
              *  \param dim0 dimension (rows)
              *  \param dim1 dimension (columns)
-             *  \param t the time
              */          
-            TimeDependentExpression (std::size_t dim0, std::size_t dim1, const double& t);
+            TimeDependentExpression (std::size_t dim0, std::size_t dim1);
 
             //! Create tensor-valued expression with given shape. This will call the appropriate \c dolfin::Expression
             //! constructor
             /*!
              *  Input arguments:
              *  \param value_shape shape of expression
-             *  \param t the time
              */          
-            explicit TimeDependentExpression (std::vector<std::size_t> value_shape, const double& t);
+            explicit TimeDependentExpression (std::vector<std::size_t> value_shape);
 
             //! Constructor from \c std::map
             /*!
              *  Uses \c map passed as input to create the protected member \c variables_
              *  Input arguments:
              *  \param variables map used to initialize the protected member \c variables_
-             *  \param t the time
              */
             TimeDependentExpression 
-                (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                 const double& t);
+                (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
             
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -98,12 +93,10 @@ namespace dcp
              *  Input arguments:
              *  \param dim dimension of the vector-valued expression
              *  \param variables map used to initialize the protected member \c variables_
-             *  \param t the time
              */         
             explicit TimeDependentExpression 
                 (std::size_t dim,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables, 
-                 const double& t);
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -112,13 +105,11 @@ namespace dcp
              *  \param dim0 dimension (rows)
              *  \param dim1 dimension (columns)
              *  \param variables map used to initialize the protected member \c variables_
-             *  \param t the time
              */         
             TimeDependentExpression 
                 (std::size_t dim0, 
                  std::size_t dim1,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables, 
-                 const double& t);
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
 
             //! Create tensor-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -126,12 +117,10 @@ namespace dcp
              *  Input arguments:
              *  \param value_shape shape of expression
              *  \param variables map used to initialize the protected member \c variables_
-             *  \param t the time
              */         
             explicit TimeDependentExpression
                 (std::vector<std::size_t> value_shape,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables, 
-                 const double& t);
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
 
             //! Default copy constructor
             /*!

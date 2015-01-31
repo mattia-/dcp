@@ -227,6 +227,64 @@ namespace dcp
     
 
 
+    const dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::string& name) const
+    {
+        auto problemIterator = storedProblems_.find (name);
+        if (problemIterator == storedProblems_.end ())
+        {
+            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                  "operator[]", 
+                                  "Problem \"%s\" not found in stored problems map", 
+                                  name.c_str ());
+        }
+        return *(std::dynamic_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
+    }
+
+
+
+    dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::string& name)
+    {
+        auto problemIterator = storedProblems_.find (name);
+        if (problemIterator == storedProblems_.end ())
+        {
+            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                  "operator[]", 
+                                  "Problem \"%s\" not found in stored problems map", 
+                                  name.c_str ());
+        }
+        return *(std::dynamic_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
+    }
+
+
+
+    const dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::size_t& position) const
+    {
+        if (position >= solveOrder_.size ())
+        {
+            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                  "operator[]",
+                                  "Input value \"%d\" is greater than problems vector size",
+                                  position);
+        }
+        return this->operator[] (solveOrder_ [position]);
+    }
+
+
+
+    dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::size_t& position)
+    {
+        if (position >= solveOrder_.size ())
+        {
+            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                  "operator[]",
+                                  "Input value \"%d\" is greater than problems vector size",
+                                  position);
+        }
+        return this->operator[] (solveOrder_ [position]);
+    }
+
+
+
     void TimeDependentEquationSystem::solve (const bool& forceRelinking)
     {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating

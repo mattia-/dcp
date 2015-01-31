@@ -35,6 +35,7 @@ namespace dcp
     { 
         dolfin::begin (dolfin::DBG, "Building NavierStokesSplittingMethod...");
         
+        parameters.add ("splitting_method_type", "navier_stokes_splitting_method");
         dolfin::end ();
         
         dolfin::log (dolfin::DBG, "NavierStokesSplittingMethod object created");
@@ -46,5 +47,34 @@ namespace dcp
     NavierStokesSplittingMethod::~NavierStokesSplittingMethod ()
     {
         
+    }
+    
+
+
+    /********************** GETTERS ***********************/
+    const dcp::TimeDependentEquationSystem& NavierStokesSplittingMethod::system () const
+    {
+        return *(std::dynamic_pointer_cast<dcp::TimeDependentEquationSystem> (differentialSystem_));
+    }
+
+
+
+    dcp::TimeDependentEquationSystem& NavierStokesSplittingMethod::system ()
+    {
+        return *(std::dynamic_pointer_cast<dcp::TimeDependentEquationSystem> (differentialSystem_));
+    }
+
+
+    
+    const dcp::TimeDependentProblem& NavierStokesSplittingMethod::problem (const std::string& name) const
+    {
+        return (*(std::dynamic_pointer_cast<dcp::TimeDependentEquationSystem> (differentialSystem_))) [name];
+    }
+    
+
+
+    dcp::TimeDependentProblem& NavierStokesSplittingMethod::problem (const std::string& name)
+    {
+        return (*(std::dynamic_pointer_cast<dcp::TimeDependentEquationSystem> (differentialSystem_))) [name];
     }
 }

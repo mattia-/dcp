@@ -21,6 +21,7 @@
 #define SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTEQUATIONSYSTEM_H_INCLUDE_GUARD
 
 #include <dcp/differential_problems/AbstractEquationSystem.h>
+#include <dcp/differential_problems/TimeDependentProblem.h>
 #include <map>
 #include <tuple>
 #include <memory>
@@ -118,6 +119,52 @@ namespace dcp
              *  \return true if all problems' time loops have ended, false otherwise
              */
             virtual bool isFinished ();
+            
+            //! Access problem with given name [1] (read only). 
+            //! Overrides method in base class \c dcp::AbstractEquationSystem. In this overridden method we return a
+            //! reference to \c dcp::TimeDependentProblem since any problem inserted in a time dependent system will
+            //! surely be a time dependent problem
+            /*!
+             *  \param name name of the problem to be accessed. If the name is not found, the function prints an
+             *  error message through the function \c dolfin::dolfin_error()
+             *  \return a reference to the problem
+             */
+            virtual const dcp::TimeDependentProblem& operator[] (const std::string& name) const override;
+            
+            //! Access problem with given name [2] (read and write)
+            /*!
+            //! Overrides method in base class \c dcp::AbstractEquationSystem. In this overridden method we return a
+            //! reference to \c dcp::TimeDependentProblem since any problem inserted in a time dependent system will
+            //! surely be a time dependent problem
+             *  \param name name of the problem to be accessed. If the name is not found, the function prints an
+             *  error message through the function \c dolfin::dolfin_error()
+             *  \return a reference to the problem
+             */
+            virtual dcp::TimeDependentProblem& operator[] (const std::string& name) override;
+            
+            //! Access problem with given position in vector \c solveOrder_ [1] (read only)
+            //! Overrides method in base class \c dcp::AbstractEquationSystem. In this overridden method we return a
+            //! reference to \c dcp::TimeDependentProblem since any problem inserted in a time dependent system will
+            //! surely be a time dependent problem
+            /*!
+             *  \param position position of the problem to be accessed in the private member vector \c solveOrder_. 
+             *  If \c position is greater than vector size, the function prints an error message 
+             *  through the function \c dolfin::dolfin_error()
+             *  \return a reference to the problem
+             */
+            virtual const dcp::TimeDependentProblem& operator[] (const std::size_t& position) const override;
+            
+            //! Access problem with given position in vector \c solveOrder_ [2] (read and write)
+            //! Overrides method in base class \c dcp::AbstractEquationSystem. In this overridden method we return a
+            //! reference to \c dcp::TimeDependentProblem since any problem inserted in a time dependent system will
+            //! surely be a time dependent problem
+            /*!
+             *  \param position position of the problem to be accessed in the private member vector \c solveOrder_. 
+             *  If \c position is greater than vector size, the function prints an error message 
+             *  through the function \c dolfin::dolfin_error()
+             *  \return a reference to the problem
+             */
+            virtual dcp::TimeDependentProblem& operator[] (const std::size_t& position) override;
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_. 
             //! The single problems will be solved calling the \c solve method with \c type argument equal to \c "step"

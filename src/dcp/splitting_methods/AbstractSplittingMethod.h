@@ -83,7 +83,7 @@ namespace dcp
              *  
              *  \return a reference to the problem
              */
-            virtual const dcp::AbstractProblem& operator[] (const std::string& name) const;
+            virtual const dcp::AbstractProblem& problem (const std::string& name) const;
             
             //! Access problem in \c differentialSystem_ with given name [2] (read and write)
             /*!
@@ -91,7 +91,7 @@ namespace dcp
              *  
              *  \return a reference to the problem
              */
-            virtual dcp::AbstractProblem& operator[] (const std::string& name);
+            virtual dcp::AbstractProblem& problem (const std::string& name);
             
             
             /********************** SETTERS ***********************/

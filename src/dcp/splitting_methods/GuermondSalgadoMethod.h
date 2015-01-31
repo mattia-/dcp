@@ -253,8 +253,9 @@ namespace dcp
 
         dolfin::begin (dolfin::DBG, "Building GuermondSalgadoMethod...");
 
+        parameters ["splitting_method_type"] = "guermond_salgado";
+        
         dolfin::log (dolfin::DBG, "Creating the time stepping linear problems...");
-
 
         // define the problems
         // 1) density problem
@@ -450,8 +451,9 @@ namespace dcp
 
         dolfin::begin (dolfin::DBG, "Building GuermondSalgadoMethod...");
 
+        parameters ["splitting_method_type"] = "guermond_salgado";
+        
         dolfin::log (dolfin::DBG, "Creating the time stepping linear problems...");
-
 
         // define the problems
         // 1) density problem

@@ -155,10 +155,10 @@ int main (int argc, char* argv[])
     chorinTemamMethod.addDirichletBC ("correction_problem", symmetryDirichletBC, gammaSD);
     chorinTemamMethod.addDirichletBC ("correction_problem", symmetryDirichletBC, outflowBoundary);
     
-    for (auto& i : chorinTemamMethod.system ().problemsNames ())
+    for (auto& name : chorinTemamMethod.system ().problemsNames ())
     {
-        chorinTemamMethod [i].parameters ["plot_interval"] = 1;
-        chorinTemamMethod [i].parameters ["plot_title"] = i;
+        chorinTemamMethod.problem (name).parameters ["plot_interval"] = 1;
+        chorinTemamMethod.problem (name).parameters ["plot_title"] = name;
     }
     
     // plots

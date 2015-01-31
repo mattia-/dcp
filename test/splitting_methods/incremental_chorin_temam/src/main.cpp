@@ -92,10 +92,10 @@ int main (int argc, char* argv[])
     incrementalChorinTemamMethod.addDirichletBC ("prediction_problem", movingLidVelocity, movingLid);
     incrementalChorinTemamMethod.addDirichletBC ("prediction_problem", noSlipDirichletBC, fixedWalls);
 
-    for (auto& i : incrementalChorinTemamMethod.system ().problemsNames ())
+    for (auto& name : incrementalChorinTemamMethod.system ().problemsNames ())
     {
-        incrementalChorinTemamMethod [i].parameters ["plot_interval"] = 1;
-        incrementalChorinTemamMethod [i].parameters ["plot_title"] = i;
+        incrementalChorinTemamMethod.problem (name).parameters ["plot_interval"] = 1;
+        incrementalChorinTemamMethod.problem (name).parameters ["plot_title"] = name;
     }
     
     // plots

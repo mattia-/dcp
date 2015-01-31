@@ -199,6 +199,7 @@ namespace dcp
 
         dolfin::begin (dolfin::DBG, "Building ChorinTemamMethod...");
 
+        parameters ["splitting_method_type"] = "chorin_temam";
 
         dolfin::log (dolfin::DBG, "Creating the time stepping linear problems...");
 
@@ -336,6 +337,7 @@ namespace dcp
 
         dolfin::begin (dolfin::DBG, "Building ChorinTemamMethod...");
 
+        parameters ["splitting_method_type"] = "chorin_temam";
 
         dolfin::log (dolfin::DBG, "Creating the time stepping linear problems...");
 

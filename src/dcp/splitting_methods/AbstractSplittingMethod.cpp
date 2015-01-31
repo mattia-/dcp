@@ -68,14 +68,14 @@ namespace dcp
 
 
     
-    const dcp::AbstractProblem& AbstractSplittingMethod::operator[] (const std::string& name) const
+    const dcp::AbstractProblem& AbstractSplittingMethod::problem (const std::string& name) const
     {
         return (*differentialSystem_) [name];
     }
     
 
 
-    dcp::AbstractProblem& AbstractSplittingMethod::operator[] (const std::string& name)
+    dcp::AbstractProblem& AbstractSplittingMethod::problem (const std::string& name)
     {
         return (*differentialSystem_) [name];
     }

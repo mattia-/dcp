@@ -84,10 +84,9 @@ namespace dcp
                 /************************* CONSTRUCTORS ********************/
                 //!  Constructor
                 /*!
-                 *  \param functionSpaces the function spaces of the various differential problems that will be stored
-                 *  in the protected member \c differentialSystem_. The first element in the initializer list passed
-                 *  should be the velocity function space, the second one the pressure function space and the
-                 *  third the density function space
+                 *  \param densityFunctionSpace the density function space
+                 *  \param velocityFunctionSpace the velocity function space
+                 *  \param pressureFunctionSpace the pressure function space
                  *  \param startTime the initial time for the simulation
                  *  \param dt the time step
                  *  \param endTime the final time for the simulation
@@ -115,7 +114,9 @@ namespace dcp
                  *  \param dtName the name of the coefficient representing the time step in the ufl files describing the
                  *  problems. Default: \c "dt"   
                  */
-                GuermondSalgadoMethod (std::initializer_list<dolfin::FunctionSpace> functionSpaces,
+                GuermondSalgadoMethod (const dolfin::FunctionSpace& densityFunctionSpace,
+                                       const dolfin::FunctionSpace& velocityFunctionSpace,
+                                       const dolfin::FunctionSpace& pressureFunctionSpace,
                                        const double& startTime,
                                        const double& dt,
                                        const double& endTime,
@@ -137,10 +138,9 @@ namespace dcp
                  *  \c setCoefficient() on the system contained therein (which can be obtained with the method 
                  *  \c system() ).
                  *  
-                 *  \param functionSpaces the function spaces of the various differential problems that will be stored
-                 *  in the protected member \c differentialSystem_. The first element in the initializer list passed
-                 *  should be the velocity function space, the second one the pressure function space and the
-                 *  third the density function space
+                 *  \param densityFunctionSpace the density function space
+                 *  \param velocityFunctionSpace the velocity function space
+                 *  \param pressureFunctionSpace the pressure function space
                  *  \param startTime the initial time for the simulation
                  *  \param dt the time step
                  *  \param endTime the final time for the simulation
@@ -171,7 +171,9 @@ namespace dcp
                  *  \param dtName the name of the coefficient representing the time step in the ufl files describing the
                  *  problems. Default: \c "dt"   
                  */
-                GuermondSalgadoMethod (std::initializer_list<dolfin::FunctionSpace> functionSpaces,
+                GuermondSalgadoMethod (const dolfin::FunctionSpace& densityFunctionSpace,
+                                       const dolfin::FunctionSpace& velocityFunctionSpace,
+                                       const dolfin::FunctionSpace& pressureFunctionSpace,
                                        const double& startTime,
                                        const double& dt,
                                        const double& endTime,
@@ -199,9 +201,9 @@ namespace dcp
                 // ---------------------------------------------------------------------------------------------//
 
             protected:
-                //! The density function space. It is just a pointer to the third element of \c functionSpaces_, which
-                //! is inherited from \c dcP::AbstractSplittingMethod.
-                const std::shared_ptr<dolfin::FunctionSpace> densityFunctionSpace_;
+                //! The density function space. It is just a reference to the element pointed by the third element of 
+                //! \c functionSpaces_, which is inherited from \c dcp::AbstractSplittingMethod.
+                const dolfin::FunctionSpace& densityFunctionSpace_;
                 
                 // ---------------------------------------------------------------------------------------------//
 
@@ -232,7 +234,9 @@ namespace dcp
                               T_PressureCorrectionLinearForm,
                               T_PressureUpdateBilinearForm,
                               T_PressureUpdateLinearForm>::
-        GuermondSalgadoMethod (std::initializer_list<dolfin::FunctionSpace> functionSpaces,
+        GuermondSalgadoMethod (const dolfin::FunctionSpace& densityFunctionSpace,
+                               const dolfin::FunctionSpace& velocityFunctionSpace,
+                               const dolfin::FunctionSpace& pressureFunctionSpace,
                                const double& startTime,
                                const double& dt,
                                const double& endTime,
@@ -245,10 +249,14 @@ namespace dcp
                                const std::string& previousDensityName,
                                const std::string& pressureIncrementName,
                                const std::string& previousPressureIncrementName,
-                               const std::string& dtName)
-            :
-                NavierStokesSplittingMethod (functionSpaces),
-                densityFunctionSpace_ (functionSpaces_ [2])
+                               const std::string& dtName) :
+                NavierStokesSplittingMethod 
+                    (std::vector<std::shared_ptr <dolfin::FunctionSpace>> 
+                         {std::shared_ptr<dolfin::FunctionSpace> (new dolfin::FunctionSpace (velocityFunctionSpace)), 
+                          std::shared_ptr<dolfin::FunctionSpace> (new dolfin::FunctionSpace (pressureFunctionSpace)),
+                          std::shared_ptr<dolfin::FunctionSpace> (new dolfin::FunctionSpace (densityFunctionSpace))}
+                    ),
+                densityFunctionSpace_ (*(functionSpaces_ [2]))
     {
 
         dolfin::begin (dolfin::DBG, "Building GuermondSalgadoMethod...");
@@ -428,7 +436,9 @@ namespace dcp
                               T_PressureCorrectionLinearForm,
                               T_PressureUpdateBilinearForm,
                               T_PressureUpdateLinearForm>::
-        GuermondSalgadoMethod (std::initializer_list<dolfin::FunctionSpace> functionSpaces,
+        GuermondSalgadoMethod (const dolfin::FunctionSpace& densityFunctionSpace,
+                               const dolfin::FunctionSpace& velocityFunctionSpace,
+                               const dolfin::FunctionSpace& pressureFunctionSpace,
                                const double& startTime,
                                const double& dt,
                                const double& endTime,
@@ -443,10 +453,14 @@ namespace dcp
                                const std::string& pressureIncrementName,
                                const std::string& previousPressureIncrementName,
                                const std::string& externalForceName,
-                               const std::string& dtName)
-            :
-                NavierStokesSplittingMethod (functionSpaces),
-                densityFunctionSpace_ (functionSpaces_ [2])
+                               const std::string& dtName) :
+                NavierStokesSplittingMethod 
+                    (std::vector<std::shared_ptr <dolfin::FunctionSpace>> 
+                         {std::shared_ptr<dolfin::FunctionSpace> (new dolfin::FunctionSpace (velocityFunctionSpace)), 
+                          std::shared_ptr<dolfin::FunctionSpace> (new dolfin::FunctionSpace (pressureFunctionSpace)),
+                          std::shared_ptr<dolfin::FunctionSpace> (new dolfin::FunctionSpace (densityFunctionSpace))}
+                    ),
+                densityFunctionSpace_ (*(functionSpaces_ [2]))
     {
 
         dolfin::begin (dolfin::DBG, "Building GuermondSalgadoMethod...");

@@ -90,9 +90,8 @@ namespace dcp
                 /************************* CONSTRUCTORS ********************/
                 //!  Constructor
                 /*!
-                 *  \param functionSpaces the function spaces of the various differential problems that will be stored
-                 *  in the protected member \c differentialSystem_. The first element in the initializer list passed
-                 *  should be the velocity function space, the second one the pressure function space
+                 *  \param velocityFunctionSpace the velocity function space
+                 *  \param pressureFunctionSpace the pressure function space
                  *  \param startTime the initial time for the simulation
                  *  \param dt the time step
                  *  \param endTime the final time for the simulation
@@ -110,7 +109,8 @@ namespace dcp
                  *  \param dtName the name of the coefficient representing the time step in the ufl files describing the
                  *  problems. Default: \c "dt"   
                  */
-                IncrementalChorinTemamMethod (std::initializer_list<dolfin::FunctionSpace> functionSpaces,
+                IncrementalChorinTemamMethod (const dolfin::FunctionSpace& velocityFunctionSpace,
+                                              const dolfin::FunctionSpace& pressureFunctionSpace,
                                               const double& startTime,
                                               const double& dt,
                                               const double& endTime,
@@ -128,6 +128,8 @@ namespace dcp
                  *  \c setCoefficient() on the system contained therein (which can be obtained with the method 
                  *  \c system() ).
                  *  
+                 *  \param velocityFunctionSpace the velocity function space
+                 *  \param pressureFunctionSpace the pressure function space
                  *  \param functionSpaces the function spaces of the various differential problems that will be stored
                  *  in the protected member \c differentialSystem_. The first element in the initializer list passed
                  *  should be the velocity function space, the second one the pressure function space
@@ -151,7 +153,8 @@ namespace dcp
                  *  \param dtName the name of the coefficient representing the time step in the ufl files describing the
                  *  problems. Default: \c "dt"   
                  */
-                IncrementalChorinTemamMethod (std::initializer_list<dolfin::FunctionSpace> functionSpaces,
+                IncrementalChorinTemamMethod (const dolfin::FunctionSpace& velocityFunctionSpace,
+                                              const dolfin::FunctionSpace& pressureFunctionSpace,
                                               const double& startTime,
                                               const double& dt,
                                               const double& endTime,
@@ -205,7 +208,8 @@ namespace dcp
                                      T_VelocityProjectionLinearForm,
                                      T_PressureUpdateBilinearForm,
                                      T_PressureUpdateLinearForm>::
-        IncrementalChorinTemamMethod (std::initializer_list<dolfin::FunctionSpace> functionSpaces,
+        IncrementalChorinTemamMethod (const dolfin::FunctionSpace& velocityFunctionSpace,
+                                      const dolfin::FunctionSpace& pressureFunctionSpace,                                 
                                       const double& startTime,
                                       const double& dt,
                                       const double& endTime,
@@ -214,9 +218,12 @@ namespace dcp
                                       const std::string& previousPressureName,
                                       const std::string& intermediateVelocityName,
                                       const std::string& pressureIncrementName,
-                                      const std::string& dtName)
-            :
-                NavierStokesSplittingMethod (functionSpaces)
+                                      const std::string& dtName) :
+                NavierStokesSplittingMethod 
+                    (std::vector<std::shared_ptr <dolfin::FunctionSpace>> 
+                         {std::shared_ptr <dolfin::FunctionSpace> (new dolfin::FunctionSpace (velocityFunctionSpace)), 
+                          std::shared_ptr <dolfin::FunctionSpace> (new dolfin::FunctionSpace (pressureFunctionSpace))}
+                    )
     {
 
         dolfin::begin (dolfin::DBG, "Building IncrementalChorinTemamMethod...");
@@ -393,7 +400,8 @@ namespace dcp
                                      T_VelocityProjectionLinearForm,
                                      T_PressureUpdateBilinearForm,
                                      T_PressureUpdateLinearForm>::
-        IncrementalChorinTemamMethod (std::initializer_list<dolfin::FunctionSpace> functionSpaces,
+        IncrementalChorinTemamMethod (const dolfin::FunctionSpace& velocityFunctionSpace,
+                                      const dolfin::FunctionSpace& pressureFunctionSpace,                                 
                                       const double& startTime,
                                       const double& dt,
                                       const double& endTime,
@@ -404,9 +412,12 @@ namespace dcp
                                       const std::string& intermediateVelocityName,
                                       const std::string& pressureIncrementName,
                                       const std::string& externalForceName,
-                                      const std::string& dtName)
-            :
-                NavierStokesSplittingMethod (functionSpaces)
+                                      const std::string& dtName) :
+                NavierStokesSplittingMethod 
+                    (std::vector<std::shared_ptr <dolfin::FunctionSpace>> 
+                         {std::shared_ptr <dolfin::FunctionSpace> (new dolfin::FunctionSpace (velocityFunctionSpace)), 
+                          std::shared_ptr <dolfin::FunctionSpace> (new dolfin::FunctionSpace (pressureFunctionSpace))}
+                    )
     {
 
         dolfin::begin (dolfin::DBG, "Building IncrementalChorinTemamMethod...");

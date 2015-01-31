@@ -80,7 +80,7 @@ int main (int argc, char* argv[])
                                        velocity_projection::LinearForm,
                                        pressure_update::BilinearForm,
                                        pressure_update::LinearForm>
-        incrementalChorinTemamMethod ({V, Q}, t0, dt, T, nu);
+        incrementalChorinTemamMethod (V, Q, t0, dt, T, nu);
 
 
     // define dirichlet boundary conditions

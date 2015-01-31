@@ -44,11 +44,10 @@ namespace dcp
             //!  Constructor 
             /*!
              *  \param functionSpaces the function spaces of the various differential problems that will be stored in 
-             *  the protected member \c differentialSystem_. The first element in the initializer list passed should be
-             *  the velocity function space, the second one the pressure function space
+             *  the protected member \c differentialSystem_. The first element in the vector passed should be a pointer
+             *  to the velocity function space, the second one a pointer to the pressure function space
              */
-            NavierStokesSplittingMethod (std::initializer_list<dolfin::FunctionSpace> functionSpaces);
-
+            NavierStokesSplittingMethod (const std::vector<std::shared_ptr <dolfin::FunctionSpace>> functionSpaces);
             
             /************************* DESTRUCTOR ********************/
             //! Destructor
@@ -96,13 +95,13 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//
 
         protected:
-            //! The velocity function space. It is just a pointer to the first element of \c functionSpaces_, which
-            //! is inherited from \c dcP::AbstractSplittingMethod
-            const std::shared_ptr<dolfin::FunctionSpace> velocityFunctionSpace_;
+            //! The velocity function space. It is just a reference to the object pointed by the first element of 
+            //! \c functionSpaces_, which is inherited from \c dcP::AbstractSplittingMethod
+            const dolfin::FunctionSpace& velocityFunctionSpace_;
             
-            //! The pressure function space. It is just a pointer to the second element of \c functionSpaces_, which
-            //! is inherited from \c dcP::AbstractSplittingMethod
-            const std::shared_ptr<dolfin::FunctionSpace> pressureFunctionSpace_;
+            //! The pressure function space. It is just a reference to the object pointed by the second element of 
+            //! \c functionSpaces_, which is inherited from \c dcP::AbstractSplittingMethod
+            const dolfin::FunctionSpace& pressureFunctionSpace_;
             
 
             // ---------------------------------------------------------------------------------------------//

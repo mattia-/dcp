@@ -27,11 +27,10 @@ namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
     NavierStokesSplittingMethod::NavierStokesSplittingMethod 
-        (std::initializer_list<dolfin::FunctionSpace> functionSpaces) 
-        :
-        AbstractSplittingMethod (functionSpaces),
-        velocityFunctionSpace_ (functionSpaces_ [0]),
-        pressureFunctionSpace_ (functionSpaces_ [1])
+        (const std::vector<std::shared_ptr <dolfin::FunctionSpace>> functionSpaces) :
+            AbstractSplittingMethod (functionSpaces),
+            velocityFunctionSpace_ (*(functionSpaces_ [0])),
+            pressureFunctionSpace_ (*(functionSpaces_ [1]))
     { 
         dolfin::begin (dolfin::DBG, "Building NavierStokesSplittingMethod...");
         

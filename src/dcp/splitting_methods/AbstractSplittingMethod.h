@@ -50,7 +50,7 @@ namespace dcp
              *  \param functionSpaces the function spaces of the various differential problems that will be stored in 
              *  the protected member \c differentialSystem_
              */
-            AbstractSplittingMethod (std::initializer_list<dolfin::FunctionSpace> functionSpaces);
+            AbstractSplittingMethod (const std::vector<std::shared_ptr <dolfin::FunctionSpace>> functionSpaces);
 
             /************************* DESTRUCTOR ********************/
             //! Destructor

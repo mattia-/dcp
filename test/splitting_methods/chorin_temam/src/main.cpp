@@ -136,7 +136,7 @@ int main (int argc, char* argv[])
                             correction::LinearForm,
                             projection::BilinearForm,
                             projection::LinearForm>
-        chorinTemamMethod ({V, Q}, t0, dt, T, nu);                                
+        chorinTemamMethod (V, Q, t0, dt, T, nu);                                
     
     
     // define dirichlet boundary conditions

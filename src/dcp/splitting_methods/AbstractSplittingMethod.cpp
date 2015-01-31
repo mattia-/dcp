@@ -26,18 +26,14 @@
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    AbstractSplittingMethod::AbstractSplittingMethod (std::initializer_list<dolfin::FunctionSpace> functionSpaces) :
-        parameters ("splitting_method_parameters"),
-        functionSpaces_ (),
-        differentialSystem_ (nullptr)
+    AbstractSplittingMethod::AbstractSplittingMethod 
+        (const std::vector<std::shared_ptr <dolfin::FunctionSpace>> functionSpaces) :
+            parameters ("splitting_method_parameters"),
+            functionSpaces_ (functionSpaces),
+            differentialSystem_ (nullptr)
     { 
         dolfin::begin (dolfin::DBG, "Building AbstractSplittingMethod...");
         
-        for (auto& functionSpace : functionSpaces)
-        {
-            functionSpaces_.push_back (dolfin::reference_to_no_delete_pointer (const_cast<dolfin::FunctionSpace&> (functionSpace)));
-        }
-            
         dolfin::end ();
         
         dolfin::log (dolfin::DBG, "AbstractSplittingMethod object created");

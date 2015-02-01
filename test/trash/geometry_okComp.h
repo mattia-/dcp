@@ -23,11 +23,9 @@
 #define __GEOMETRY_H
 
 #include <dolfin.h>
-//#include "poisson.h"
+#include "poisson.h"
 
 namespace geometry {
-
-bool timeNOTcount(true);
 
 class MapTgamma : public dolfin::Expression
 {
@@ -49,10 +47,8 @@ public:
   void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
   {
     values[0] = 0;
-if (timeNOTcount)
-    values[1] = x[1]*gammaDisplacement_(x[0]);// + (1.0-x[1])*(1.0-gammaDisplacement_(x[0]));
-else
     values[1] = x[1]*gamma_(x[0],count);
+//t    values[1] = x[1]*gammaDisplacement_(x[0]);
   }
 
   std::size_t value_rank() const
@@ -67,7 +63,6 @@ else
 
   // !!! new methods
 
-//c {
   void update_count()
   {
     count++;
@@ -77,10 +72,8 @@ else
   {
     MapTgamma::count = 0;
   }
-//c }
 
-//t {
-  void setTime(double t)
+/*//t  void setTime(double t)
   {
     tOld_ = tNew_;
     tNew_ = t;
@@ -91,57 +84,41 @@ else
     tOld_ = t;
     tNew_ = t;
   }
-//t }
+*///t
 
 /*  void set_gamma(double (*gamma)(double,int))
   {
     gamma_ = gamma;
   }
 */
-  void printTimes()
-  {
-    std::cerr << "tOld = " << tOld_ << "  tNew = " << tNew_ << std::endl;
-  }
 
 private:
 
-//c
   int count;
-//t {
-  double tNew_;
-  double tOld_;
-//t }
+//t  double tNew_;
+//t  double tOld_;
   double const PI = 3.14159265359;
 
-/*  double gamma_(double x) const
+  double gamma_(double x) const
   {
     return 0.2*sin(PI*x);
   }
-*/
 
-//c {
-/*  double gamma_(double x, int param) const
+  double gamma_(double x, int param) const
   {
     return 0.2*(sin(param*PI*x)-sin((param-1)*PI*x))/(1+0.2*sin((param-1)*PI*x));
-  }*/
-//c {
+  }
 
-//t {
-  double gamma_ (double x, double t) const
+/*//t  double gamma_ (double x, double t) const
   {
-//    return t/4.0*0.2*sin(3*PI*x);
-//    return 50*x*x*(1-x)*(1-x)*(x-0.3)*(x-0.7)*(t-1)*(t-3)*(1+t/2);
-    //return 75*x*x*(1-x)*(1-x)*(x-0.3)*(x-0.7)*t*(2-t)*(4-t)/(1+t);
-    if (t==0)
-      return 0;
-    return 200*(-(x-t-0.5)*(x-t-0.5)*(x-t-1.0)*(x-t-1.0))*(x>=t+0.5 ? 1 : 0)*(x<=t+1.0 ? 1 : 0);
+    return t/4.0*0.2*sin(3*PI*x);
   }
 
   double gammaDisplacement_ (double x) const
   {
-    return (gamma_(x,tNew_)-gamma_(x,tOld_))/(1+gamma_(x,tOld_));
+    return gamma_(x,tNew_)-gamma_(x,tOld_);
   }
-//t }
+*///t
 
 }; // end of class gamma
 
@@ -225,23 +202,18 @@ class MeshManager
     // !!! servono altri costruttori?
 
     const T_FunctionSpace& functionSpace();
-    const dolfin::Mesh& mesh();
 
     void moveMesh (const dolfin::GenericFunction& displacement);
-//move//    std::shared_ptr<dolfin::MeshDisplacement> moveMesh (const dolfin::GenericFunction& boundaryDisplacement);
  
-  protected:
-
-    void setMeshAll (std::shared_ptr<dolfin::FunctionSpace> functionSpace, std::shared_ptr<dolfin::Mesh> mesh);
+  private:
 
     T_MeshMover meshMover_;
     std::shared_ptr<T_FunctionSpace> functionSpace_;
     std::shared_ptr<dolfin::Mesh> mesh_;
     std::shared_ptr<const dolfin::FiniteElement> element_;
     std::shared_ptr<const dolfin::GenericDofMap> dofmap_;
-/*    std::vector<std::shared_ptr<dolfin::FiniteElement> > subElements_;
+    std::vector<std::shared_ptr<dolfin::FiniteElement> > subElements_;
     std::vector<std::shared_ptr<dolfin::GenericDofMap> > subDofmaps_;
-*/
 
 };
 
@@ -253,9 +225,9 @@ MeshManager<T_MeshMover,T_FunctionSpace>::MeshManager(const std::shared_ptr<T_Me
   functionSpace_ (functionSpace),
   mesh_ (new dolfin::Mesh(*functionSpace->mesh())),
   element_ (new dolfin::FiniteElement(*functionSpace->element())),
-  dofmap_ (functionSpace->dofmap()->copy())
-/*  subElements_ (2,nullptr),
-  subDofmaps_ (2,nullptr) */
+  dofmap_ (functionSpace->dofmap()->copy()),
+  subElements_ (2,nullptr),
+  subDofmaps_ (2,nullptr)
   //dofmap_ (new dolfin::DofMap(std::shared_ptr<const ufc::dofmap>(new const poisson_dofmap_1), *mesh_))
   //dofmap_ (new dolfin::DofMap(*functionSpace->dofmap(),*mesh_))
   //dofmap_ (new const dolfin::DofMap(static_cast<const dolfin::DofMap&>(*functionSpace->dofmap())))
@@ -270,9 +242,9 @@ MeshManager<T_MeshMover,T_FunctionSpace>::MeshManager (const T_MeshMover& meshMo
   functionSpace_ (&functionSpace),
   mesh_ (new dolfin::Mesh(*functionSpace.mesh())),
   element_ (new const dolfin::FiniteElement(*functionSpace->element())),
-  dofmap_ (functionSpace->dofmap()->copy())
-/*  subElements_ (2,nullptr),
-  subDofmaps_ (2,nullptr) */
+  dofmap_ (functionSpace->dofmap()->copy()),
+  subElements_ (2,nullptr),
+  subDofmaps_ (2,nullptr)
   //dofmap_ (new const dolfin::DofMap(static_cast<const dolfin::DofMap&>(*functionSpace->dofmap())))
   {
     //dolfin::DofMapBuilder::build(*dofmap_,*mesh_,nullptr);
@@ -284,73 +256,31 @@ const T_FunctionSpace& MeshManager<T_MeshMover,T_FunctionSpace>::functionSpace()
   {
     return *functionSpace_;
   }
-template <class T_MeshMover, class T_FunctionSpace>
-const dolfin::Mesh& MeshManager<T_MeshMover,T_FunctionSpace>::mesh()
-  {
-    return *mesh_;
-  }
 
 template<class T_MeshMover, class T_FunctionSpace>
 void MeshManager<T_MeshMover,T_FunctionSpace>::moveMesh (const dolfin::GenericFunction& displacement)
 {
-  //  std::cout << "muovo la mesh di " << functionSpace_->str(true) << std::endl;
-  //  std::cout << element_->value_rank() << " " << element_->value_dimension(1) << " " << element_->space_dimension() << " " << element_->num_sub_elements() << " " << element_->signature() << std::endl;
+  std::cout << "muovo la mesh di " << functionSpace_->str(false) << std::endl;
   meshMover_.move (*mesh_, displacement);
-  //  *functionSpace_ = T_FunctionSpace(mesh_,element_,dofmap_);
-  /*  for (int i=0; i!=2; i++)
+  *functionSpace_ = T_FunctionSpace(mesh_,element_,dofmap_);
+//  for (auto iter=functionSpace_->component().begin(); iter != functionSpace_->component().end(); iter++)
+//  {
+//    auto comp((*functionSpace_)[*iter]);
+  for (int i=0; i!=2; i++)
   {
-  //    std::cerr << "componente " << *iter << "  " << comp->str(false) << std::endl;
-  std::cerr << "componente " << i << "  " << (*functionSpace_)[i]->str(true) << std::endl;
-  std::string title("mesh della componente "); title += std::to_string(i);
-  dolfin::plot(*(*functionSpace_)[i]->mesh(),title.c_str());
-  dolfin::interactive();
-  // sistema le componenti
-  subElements_[i] = std::shared_ptr<dolfin::FiniteElement> (new dolfin::FiniteElement(*(*functionSpace_)[i]->element()));
-  subDofmaps_[i]  = std::shared_ptr<dolfin::GenericDofMap>((*functionSpace_)[i]->dofmap()->copy());
-  std::cout << subElements_[i]->value_rank() << " " << subElements_[i]->value_dimension(1) << " " << subElements_[i]->space_dimension() << " " << subElements_[i]->num_sub_elements() << " " << subElements_[i]->signature() << std::endl;
-  (*(*functionSpace_)[i]) = T_FunctionSpace(mesh_,subElements_[i],subDofmaps_[i]);
-  title += " dopo";
-  dolfin::plot(*(*functionSpace_)[i]->mesh(),title.c_str());
-  dolfin::interactive();
+//    std::cerr << "componente " << *iter << "  " << comp->str(false) << std::endl;
+    std::cerr << "componente " << i << "  " << (*functionSpace_)[i]->str(false) << std::endl;
+    std::string title("mesh della componente "); title += std::to_string(i);
+    dolfin::plot(*(*functionSpace_)[i]->mesh(),title.c_str());
+    dolfin::interactive();
+    // sistema le componenti
+    subElements_[i] = std::shared_ptr<dolfin::FiniteElement> (new dolfin::FiniteElement(*(*functionSpace_)[i]->element()));
+    subDofmaps_[i]  = std::shared_ptr<dolfin::GenericDofMap>((*functionSpace_)[i]->dofmap()->copy());
+    (*(*functionSpace_)[i]) = T_FunctionSpace(mesh_,subElements_[i],subDofmaps_[i]);
+    title += " dopo";
+    dolfin::plot(*(*functionSpace_)[i]->mesh(),title.c_str());
+    dolfin::interactive();
   }
-  */
-  setMeshAll(functionSpace_, mesh_);
-  // TODO forse questo casino dei subspace e' eliminabile, se T_FunctionSpace potesse essere diverso da dolfin::FunctionSpace,
-  // pero' servirebbe che AbstractProblem fosse templatizzato sul tipo di functionSpace_, cosi' da poter creare un getter che
-  // restituisca un puntatore / una referenza (non const) al tipo "vero" del function space
-  // (non ne sono certo, ma  *functionSpace_=T_FunctionSpace(mesh_,element_,dofmap_);  dovrebbe funzionare)
-}
-
-//move//  template<class T_MeshMover, class T_FunctionSpace>
-//move//  std::shared_ptr<dolfin::MeshDisplacement> MeshManager<T_MeshMover,T_FunctionSpace>::moveMesh (const dolfin::GenericFunction& boundaryDisplacement)
-//move//  {
-//move//    dolfin::Mesh tmpMesh(*mesh_);
-//move//    meshMover_.move(tmpMesh,boundaryDisplacement);
-//move//  //  tmpMesh.move(boundaryDisplacement);
-//move//  dolfin::plot(tmpMesh,"tmpMesh");
-//move//  dolfin::interactive();
-//move//  
-//move//    std::shared_ptr<dolfin::MeshDisplacement> displacement (new dolfin::MeshDisplacement(*(meshMover_.move(*mesh_,tmpMesh))));
-//move//  dolfin::plot(*mesh_,"mesh_");
-//move//  dolfin::interactive();
-//move//    setMeshAll(functionSpace_,mesh_);
-//move//  
-//move//    return displacement;
-//move//  }
-
-template<class T_MeshMover, class T_FunctionSpace>
-void MeshManager<T_MeshMover,T_FunctionSpace>::setMeshAll (std::shared_ptr<dolfin::FunctionSpace> functionSpace, std::shared_ptr<dolfin::Mesh> mesh)
-{
-
-  for (std::size_t i=0; i!=functionSpace->element()->num_sub_elements(); i++)
-  {
-    setMeshAll ((*functionSpace)[i], mesh);
-  }
-  *functionSpace = dolfin::FunctionSpace(mesh,functionSpace->element(),functionSpace->dofmap());
-//  std::shared_ptr<dolfin::Mesh> pMesh (std::const_pointer_cast<dolfin::Mesh> (functionSpace->mesh()));
-//  *pMesh = *mesh;
-
-//  functionSpace.reset (new T_FunctionSpace(*mesh));
 
 }
 

@@ -22,39 +22,29 @@
 #include <dolfin.h>
 //#include <mshr.h>
 #include <differential_problems/differential_problems.h>
-#include "MovingTimeDependentProblem.h"
-#include "convectiondiffusion.h"
+#include "IvanMovingTimeDependentProblem.h"
+#include "navierstokesTime.h"
 #include "geometry.h"
-#include "MovingTimeDependentProblem.cpp"
+#include "IvanMovingTimeDependentProblem.cpp"
+//#include "IvanNonlinearProblem.h"
 
-bool mydebug = false;
+//bool mydebug = false;
 
-namespace convectiondiffusion
+namespace navierstokes
 {
-/*    class DirichletBoundary : public dolfin::SubDomain
+    class LeftBoundary : public dolfin::SubDomain
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return on_boundary;
-        }
+            return (dolfin::near (x[0], 0) && on_boundary);
+        } 
     };
     
-    class initialSolution : public dolfin::Expression
-    {
-        void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
-        {
-            values[0] = exp (-((x[0] - 1) * (x[0] - 1) + (x[1] - 3) * (x[1] - 3)) / 0.2);
-        }
-    };
-}*/
-
-    class LateralBoundary : public dolfin::SubDomain
+    class RightBoundary : public dolfin::SubDomain
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return (dolfin::near (x[0], 0) && on_boundary)
-                   ||
-                   (dolfin::near (x[0], 1) && on_boundary);
+            return (dolfin::near (x[0], 1) && on_boundary);
         } 
     };
     
@@ -96,11 +86,31 @@ namespace convectiondiffusion
         }
 */  };
 
+/*    class Inflow : public dolfin::Expression
+    {
+        void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+        {
+          values[0] = 0;
+          values[1] = 1-x[1];
+        }
+        std::size_t value_rank() const
+        {
+          return 1;
+        }
+        std::size_t value_dimension(uint i) const
+        {
+          return 2;
+        }
+        
+    };
+*/
+
     class InitialSolution : public dolfin::Expression
     {
         void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
         {
-          values[0] = x[0];
+          values[0] = 0;
+          values[1] = 0;
         }
     };
 
@@ -108,6 +118,7 @@ namespace convectiondiffusion
 
 int main (int argc, char* argv[])
 {
+        dolfin::set_log_level (dolfin::DBG);
     // create mesh and finite element space 
     std::cout << "Create mesh and finite element space..." << std::endl;
 /*    mshr::Rectangle rectangle (dolfin::Point (0.0, 0.0), dolfin::Point (10.0, 7.0));
@@ -117,60 +128,62 @@ int main (int argc, char* argv[])
 */
     dolfin::UnitSquareMesh mesh (10, 10);
     
-    convectiondiffusion::FunctionSpace V (mesh);
+    navierstokes::FunctionSpace V (mesh);
     
     // define problem
     double t0 = 0;
     double dt = 0.1;
     double T = 4;
     std::cout << "Define the problem..." << std::endl;
-    Ivan::MovingTimeDependentProblem convectionDiffusionProblem (dolfin::reference_to_no_delete_pointer (mesh), 
+    Ivan::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh), 
                                                           dolfin::reference_to_no_delete_pointer (V),
                                                           t0,
                                                           dt,
                                                           T,
-                                                          std::vector<std::string> ({"bilinear_form"}),
-                                                          std::vector<std::string> ({"linear_form"}));
+                                                          std::vector<std::string> ({"residual_form","jacobian_form"}),
+                                                          std::vector<std::string> ({"residual_form"}));
     
-    dcp::LinearProblem <convectiondiffusion::BilinearForm, convectiondiffusion::LinearForm>
+    dcp::NonlinearProblem <navierstokes::ResidualForm, navierstokes::JacobianForm>
         timeSteppingProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                             dolfin::reference_to_no_delete_pointer (V));
+                             dolfin::reference_to_no_delete_pointer (V),
+                             "trial");
     
-    convectionDiffusionProblem.setTimeSteppingProblem (dolfin::reference_to_no_delete_pointer (timeSteppingProblem));
+    navierStokesProblem.setTimeSteppingProblem (dolfin::reference_to_no_delete_pointer (timeSteppingProblem));
 
     // define mesh manager
-    geometry::MeshManager<dolfin::ALE,dolfin::FunctionSpace> meshManager(std::shared_ptr<dolfin::ALE>(new dolfin::ALE()),convectionDiffusionProblem.functionSpace());
+    geometry::MeshManager<dolfin::ALE,dolfin::FunctionSpace> meshManager(std::shared_ptr<dolfin::ALE>(new dolfin::ALE()),navierStokesProblem.functionSpace());
 
     // define coefficients
     std::cout << "Define the problem's coefficients..." << std::endl;
-    dolfin::Constant k (0.01);
-    dolfin::Constant b (0.0, -0.25); 
+    dolfin::Constant nu (1e-1);
 
-    // define dirichlet boundary conditions 
+    dolfin::Constant inflowDirichletBC (1.0, 0.0);
+//    navierstokes::Inflow inflowDirichletBC;
+    dolfin::Constant symmetryDirichletBC (0.0);
+    dolfin::Constant noSlipDirichletBC (0.0, 0.0);
+    // define dirichlet boundary conditions
     std::cout << "Define the problem's Dirichlet boundary conditions..." << std::endl;
-//    convectiondiffusion::DirichletBoundary dirichletBoundary;
-/*    convectiondiffusion::BottomBoundary bottomBoundary;
-    dolfin::Constant bottomValue (0.0);
-    convectionDiffusionProblem.addDirichletBC (dolfin::DirichletBC (V, bottomValue, bottomBoundary));
-*/    convectiondiffusion::LateralBoundary lateralBoundary;
-    dolfin::Constant lateralValue (0.0);
-    convectionDiffusionProblem.addDirichletBC (dolfin::DirichletBC (V, lateralValue, lateralBoundary));
-    convectiondiffusion::TopBoundary topBoundary;
-    dolfin::Constant topValue (10.0);
-    convectionDiffusionProblem.addDirichletBC (dolfin::DirichletBC (V, topValue, topBoundary));
+    navierstokes::LeftBoundary inflowBoundary;
+    navierstokes::RightBoundary gammaSD;
+    navierstokes::TopBoundary noSlipBoundaryTop;
+    navierstokes::BottomBoundary noSlipBoundaryBottom;
+    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], inflowDirichletBC, inflowBoundary));
+    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, noSlipBoundaryTop, "topological", false));
+    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, noSlipBoundaryBottom, "topological", false));
+    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], symmetryDirichletBC, gammaSD));
     
-    // set problem coefficients
+    // problem settings
     std::cout << "Set the problem's coefficients..." << std::endl;
-    convectionDiffusionProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (k), "k");
-    convectionDiffusionProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (b), "b");
+    navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
+    navierStokesProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
 
     // solve problem
-//    convectionDiffusionProblem.setInitialSolution (convectiondiffusion::initialSolution ());
-    //dolfin::Function initialsolution(V);
-    convectiondiffusion::InitialSolution initialsolution;
-    convectionDiffusionProblem.setInitialSolution (initialsolution);
+//    navierStokesProblem.setInitialSolution (navierstokes::initialSolution ());
+    //dolfin::Function initialSolution(V);
+//    navierstokes::InitialSolution initialSolution;
+//    navierStokesProblem.setInitialSolution (initialSolution);
     std::cout << "Solve the problem..." << std::endl;
-    convectionDiffusionProblem.solve ();
+    navierStokesProblem.solve ();
   
     // plots
     dolfin::plot (mesh);

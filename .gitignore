@@ -32,3 +32,6 @@ lib
 # mesh files
 *.msh
 *.unv
+
+# temp directories
+temp

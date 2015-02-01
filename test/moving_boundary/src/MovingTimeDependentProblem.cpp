@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include "IvanMovingTimeDependentProblem.h"
+#include "MovingTimeDependentProblem.h"
 #include "geometry.h"
 #include <dolfin/log/dolfin_log.h>
 #include <time.h>
@@ -340,11 +340,37 @@ namespace Ivan
         // save initial solution in member vector
         solutions_.push_back (solution_);
         
+        dolfin::FunctionSpace Vw (* (*functionSpace_)[0]->collapse());
+dolfin::File solutionFile("poiseuille.pvd");
         while (t < endTime + DOLFIN_EPS)
         {
+//            displacement_->printTimes();
             timeStep++;
             t += dt;
-            
+            displacement_->setTime(t);
+
+//            displacement_->printTimes();
+/*std::cerr << functionSpace_->element()->signature() << std::endl;
+std::cerr << (*functionSpace_)[0]->element()->signature() << std::endl;
+//            dolfin::FunctionSpace fs (true ? (*((*functionSpace_)[0]->collapse())) : (*(*functionSpace_)[0]) );
+            dolfin::Function displacementFunction (functionSpace_);
+            displacementFunction = *displacement_;
+dolfin::plot(* displacementFunction.function_space()->mesh());
+dolfin::plot(*displacement_, * displacementFunction.function_space()->mesh());
+dolfin::plot(displacementFunction);
+dolfin::interactive();
+            timeSteppingProblem_->setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (displacementFunction[0]), "w");
+            timeSteppingProblem_->setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (displacementFunction[0]), "w");
+            //this->setCoefficient ("jacobian_form", displacementFunction, "w");
+*/
+            Vw = dolfin::FunctionSpace (meshManager_.functionSpace().mesh(),Vw.element(),Vw.dofmap());
+            dolfin::Function w (Vw);
+            w = *displacement_;
+//            w = dolfin::Constant (0,0);
+            timeSteppingProblem_->setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (w), "w");
+            timeSteppingProblem_->setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (w), "w");
+std::cerr << "   OK   " << std::endl;
+
             dolfin::begin (dolfin::INFO, "===== Time = %f s, timestep %d =====", t, timeStep);
             
             for (auto& i : previousSolutionCoefficientTypes)
@@ -370,6 +396,7 @@ namespace Ivan
             dolfin::end ();
             
             solution_ = timeSteppingProblem_->solution ();
+solutionFile << solution_;
             
             if (storeInterval > 0 && timeStep % storeInterval == 0)
             {
@@ -380,7 +407,17 @@ namespace Ivan
             if (plotInterval > 0 && timeStep % plotInterval == 0)
             {
                 dolfin::log (dolfin::DBG, "Plotting time stepping problem solution...");
-                dolfin::plot (solution_);
+                dolfin::Parameters vParameters,pParameters;
+                vParameters.add("title","velocity at t = "+std::to_string(t)); vParameters.add("wireframe",true);
+                pParameters.add("title","pressure at t = "+std::to_string(t)); pParameters.add("wireframe",true);
+/*                dolfin::plot (solution_[0], vParameters);
+                dolfin::plot (solution_[1], pParameters);
+                dolfin::plot (* solution_.function_space()->mesh(),"la mesh");
+                dolfin::plot (* meshManager_.functionSpace().mesh(),"altra mesh");
+                dolfin::plot (meshManager_.mesh(),"vera mesh");
+                dolfin::interactive();
+                if (timeStep>3)
+                   exit(0); */ 
                 
                 if (pause)
                 {
@@ -388,8 +425,10 @@ namespace Ivan
                 }
             }
 
-            displacement_->setTime(t);
             meshManager_.moveMesh(*displacement_);
+//            displacement_->setTime(t);
+//move//            displacement_ = std::shared_ptr<dolfin::MeshDisplacement> (new dolfin::MeshDisplacement(*(meshManager_.moveMesh(*displacement_))));
+//move//            actualDisplacement_.reset (&(*(meshManager_.moveMesh(*displacement_))));
             
             dolfin::end ();
 

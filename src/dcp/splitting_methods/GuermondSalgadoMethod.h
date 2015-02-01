@@ -386,6 +386,11 @@ namespace dcp
                                                           "bilinear_form", 
                                                           "density_problem",
                                                           1);
+        guermondSalgadoSystem->addLinkToPreviousSolution ("velocity_problem", 
+                                                          previousDensityName, 
+                                                          "linear_form", 
+                                                          "density_problem",
+                                                          1);
         guermondSalgadoSystem->addLink ("pressure_correction_problem", 
                                         velocityName, 
                                         "linear_form", 
@@ -554,7 +559,7 @@ namespace dcp
 
 
         // define the system
-        dolfin::begin ("Creating time dependent Guermond-Salgado system...");
+        dolfin::begin (dolfin::DBG, "Creating time dependent Guermond-Salgado system...");
 
         // 0) create the object
         std::shared_ptr<dcp::TimeDependentEquationSystem> guermondSalgadoSystem (new dcp::TimeDependentEquationSystem);

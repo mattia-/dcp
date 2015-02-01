@@ -148,12 +148,12 @@ namespace dcp
 
             /******************* GETTERS *******************/
             //! Get a const reference to the current time stored in the class
-            const double& t () const;
+            const double& time () const;
 
 
             /******************* SETTERS *******************/
             //! Set the current time
-            void setTime (const double& t);
+            void setTime (const double& time);
 
             
             /******************* METHODS *******************/
@@ -194,6 +194,8 @@ namespace dcp
             //! The time at which the time dependent expression should be evaluated
             double t_;
             
+            //! Just a reference to the time variable \c t_ for ease of use in the derived classes
+            const double& t;
     };
 }
 

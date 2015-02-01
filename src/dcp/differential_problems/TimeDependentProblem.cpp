@@ -44,6 +44,7 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Building TimeDependentProblem...");
         
         solution_.emplace_back (dolfin::Function (timeSteppingProblem->functionSpace ()));
+        solutionStoringTimes_.push_back (startTime);
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("problem_type", "time_dependent");
@@ -342,6 +343,7 @@ namespace dcp
         solution_.emplace_back (dolfin::Function (timeSteppingProblem_->functionSpace ()));
         
         solutionStoringTimes_.clear ();
+        solutionStoringTimes_.push_back (startTime_);
         
         t_ = startTime_;
     }

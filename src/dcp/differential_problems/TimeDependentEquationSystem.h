@@ -77,10 +77,10 @@ namespace dcp
              *  passed as first argument if \c forceRelinking is true, and not relinked if it is false (but issuing a
              *  warning in this case)
              */
-            virtual void addLinkToPreviousSolution (const std::string& linkfrom, 
-                                                    const std::string& linkedcoefficientname,
-                                                    const std::string& linkedcoefficienttype, 
-                                                    const std::string& linkto,
+            virtual void addLinkToPreviousSolution (const std::string& linkFrom, 
+                                                    const std::string& linkedCoefficientName,
+                                                    const std::string& linkedCoefficientType, 
+                                                    const std::string& linkTo,
                                                     const int& nStepsBack,
                                                     const bool& forceRelinking = false);
 
@@ -104,10 +104,10 @@ namespace dcp
              *  passed as first argument if \c forceRelinking is true, and not relinked if it is false (but issuing a
              *  warning in this case)
              */
-            virtual void addLinkToPreviousSolution (const std::string& linkfrom, 
-                                                    const std::string& linkedcoefficientname,
-                                                    const std::string& linkedcoefficienttype, 
-                                                    const std::string& linkto,
+            virtual void addLinkToPreviousSolution (const std::string& linkFrom, 
+                                                    const std::string& linkedCoefficientName,
+                                                    const std::string& linkedCoefficientType, 
+                                                    const std::string& linkTo,
                                                     const int& linkToComponent,
                                                     const int& nStepsBack,
                                                     const bool& forceRelinking = false);

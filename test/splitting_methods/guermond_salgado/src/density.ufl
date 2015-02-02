@@ -1,0 +1,32 @@
+# first step of the Guermond-Salgado splitting method
+
+# domain type
+cell = triangle
+h_K = Circumradius (cell)
+
+# function spaces
+V = VectorElement ("Lagrange", cell, 2)
+R = FiniteElement ("Lagrange", cell, 2)
+
+# coefficients
+dt = Constant (cell)
+u_old = Coefficient (V)
+rho_old = Coefficient (R)
+
+# stabilization parameter
+epsilon = 1e-6
+delta = h_K / (sqrt(15) * sqrt (dot (u_old, u_old)) + epsilon)
+
+# test and trial function
+rho = TrialFunction (R)
+r = TestFunction (R)
+
+# density equation:
+# lhs
+a = 1 / dt * inner (rho, r) * dx \
+    + inner (div (rho * u_old), r) * dx \
+    - 0.5 * inner (rho * div (u_old), r) * dx \
+    + delta * inner (dot (u_old, grad (rho)), dot (u_old, grad (r))) * dx
+
+# rhs
+L = 1 / dt * inner (rho_old, r) * dx

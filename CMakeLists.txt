@@ -24,12 +24,15 @@ PROJECT (${PROJECT_NAME})
 #    Proceed, but this may cause problems")
 #ENDIF (NOT CMAKE_COMPILER_IS_GNUCC)
 
-# add compilation flags
-SET (CMAKE_CXX_FLAGS "-Wall -std=c++11")
-
-# packages needed
+# get packages needed by dcp
+# dolfin
 FIND_PACKAGE (DOLFIN REQUIRED)
+INCLUDE (${DOLFIN_USE_FILE})
+# doxygen
 FIND_PACKAGE (Doxygen)
+
+# add compilation flags
+SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 # add target for Doxygen documentation
 IF(DOXYGEN_FOUND)
@@ -41,12 +44,7 @@ IF(DOXYGEN_FOUND)
         )
 endif(DOXYGEN_FOUND)
 
-# add dolfin specific compiler options
-ADD_DEFINITIONS (${DOLFIN_CXX_DEFINITIONS})
-
-# add directories to -I compiler option
-INCLUDE_DIRECTORIES (${DOLFIN_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES (SYSTEM ${DOLFIN_3RD_PARTY_INCLUDE_DIRS})
+# add dcp specific directories to -I compiler option
 INCLUDE_DIRECTORIES (SYSTEM src/)
 
 # no option rpath when building/installing/...

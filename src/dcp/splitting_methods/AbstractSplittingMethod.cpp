@@ -79,12 +79,29 @@ namespace dcp
 
 
     /********************** SETTERS ***********************/
+    void AbstractSplittingMethod::setInitialSolution (const std::string& problemName, 
+                                                      const dolfin::Function& initialSolution)
+    {
+        (*differentialSystem_) [problemName].setInitialSolution (initialSolution);
+    }
+
+    
+
+    void AbstractSplittingMethod::setInitialSolution (const std::string& problemName, 
+                                                      const dolfin::Expression& initialSolution)
+    {
+
+        (*differentialSystem_) [problemName].setInitialSolution (initialSolution);
+    }
+    
+
+
     void AbstractSplittingMethod::setCoefficient (const std::string& problemName,
                                                   const std::string& coefficientType, 
                                                   const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                                   const std::string& coefficientName)
     {
-        return (*differentialSystem_) [problemName].setCoefficient (coefficientType, coefficientValue, coefficientName);
+        (*differentialSystem_) [problemName].setCoefficient (coefficientType, coefficientValue, coefficientName);
     }
     
 
@@ -94,7 +111,7 @@ namespace dcp
                                                   const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                                   const std::size_t& coefficientNumber)
     {
-        return (*differentialSystem_) [problemName].setCoefficient (coefficientType, coefficientValue, coefficientNumber);
+        (*differentialSystem_) [problemName].setCoefficient (coefficientType, coefficientValue, coefficientNumber);
     }
     
 
@@ -105,7 +122,7 @@ namespace dcp
          std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
          const dcp::SubdomainType& subdomainType)
     {
-        return (*differentialSystem_) [problemName].setIntegrationSubdomains (formType, meshFunction, subdomainType);
+        (*differentialSystem_) [problemName].setIntegrationSubdomains (formType, meshFunction, subdomainType);
     }
     
 

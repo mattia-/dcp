@@ -25,7 +25,7 @@
 #include <initializer_list>
 #include <string>
 #include <dcp/differential_problems/SubdomainType.h>
-#include <dcp/differential_problems/AbstractEquationSystem.h>
+#include <dcp/differential_problems/TimeDependentEquationSystem.h>
 
 
 namespace dcp
@@ -35,7 +35,10 @@ namespace dcp
      *  differential problems. 
      *         
      *  This class contains the basic interface for a splitting method to 
-     *  solve a system of differential problems. 
+     *  solve a system of time dependent differential problems. If a system
+     *  of time independent problem is to be solved through a splitting method,
+     *  use the class \c dcp::EquationSystem (you need to write the ufl files 
+     *  representing the splitting anyway).
      *  It is an abstract class, it only provides the basic interface to 
      *  all splitting methods.
      */ 
@@ -95,6 +98,20 @@ namespace dcp
             
             
             /********************** SETTERS ***********************/
+            //! Set initial solution of the problem with the given name [1]
+            /*!
+             *  \param problemName the name of the problem whose initial solution should be set
+             *  \param initialSolution the initial solution itself
+             */
+            virtual void setInitialSolution (const std::string& problemName, const dolfin::Function& initialSolution); 
+            
+            //! Set initial solution of the problem with the given name [2]
+            /*!
+             *  \param problemName the name of the problem whose initial solution should be set
+             *  \param initialSolution the initial solution itself
+             */
+            virtual void setInitialSolution (const std::string& problemName, const dolfin::Expression& initialSolution); 
+            
             //! Set problem coefficients [1]
             /*!
              *  Parameters are:
@@ -273,8 +290,8 @@ namespace dcp
              */
             std::vector<std::shared_ptr<dolfin::FunctionSpace> > functionSpaces_;
 
-            //! The system of differential problems
-            std::shared_ptr<dcp::AbstractEquationSystem> differentialSystem_;
+            //! The system of time dependent differential problems.
+            std::shared_ptr<dcp::TimeDependentEquationSystem> differentialSystem_;
             
             // ---------------------------------------------------------------------------------------------//
 

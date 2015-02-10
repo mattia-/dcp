@@ -31,14 +31,6 @@
 
 namespace navierstokes
 {
-    class InitialRho : public dolfin::Expression
-    {
-        void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override
-        {
-            values[0] = sin (x[0]);
-        }
-    };
-    
     // the external force is divided into two parts: f = f1 * rho + f2
     // this is because rho is a solution, and there is no way to link it
     // to a TimeDependentExpression
@@ -120,11 +112,9 @@ int main (int argc, char* argv[])
     density::FunctionSpace R (mesh);
     velocity::FunctionSpace V (mesh);
     pressure_correction::FunctionSpace Q (mesh);
-
+    
     // define constant
     std::cout << "Define the coefficients..." << std::endl;
-//    dolfin::Constant initialRho (1);
-    navierstokes::InitialRho initialRho;
     dolfin::Constant mu (1e-1);
     dolfin::Constant chi (1);
     dolfin::Constant noSlipDirichletBC (0.0, 0.0);
@@ -132,6 +122,14 @@ int main (int argc, char* argv[])
     double dt = 0.1;
     double T = 0.2; //10;
     
+    // exact solution
+    exact_solutions::Rho exactRho; 
+    exactRho.setTime (t0);
+    exact_solutions::U exactU; 
+    exactU.setTime (t0);
+    exact_solutions::P exactP; 
+    exactP.setTime (t0);
+
     // define the problems
     std::cout << "Define the problem..." << std::endl;
     dcp::GuermondSalgadoMethod <density::BilinearForm,
@@ -142,7 +140,13 @@ int main (int argc, char* argv[])
                                 pressure_correction::LinearForm,
                                 pressure_update::BilinearForm,
                                 pressure_update::LinearForm>
-        guermondSalgadoMethod (R, V, Q, t0, dt, T, mu, chi, initialRho);
+        guermondSalgadoMethod (R, V, Q, t0, dt, T, mu, chi);
+    
+    // set initial solutions
+    guermondSalgadoMethod.setInitialSolution ("density_problem", exactRho);
+    guermondSalgadoMethod.setInitialSolution ("velocity_problem", exactU);
+    guermondSalgadoMethod.setInitialSolution ("pressure_update_problem", exactP);
+    guermondSalgadoMethod.setInitialSolution ("pressure_correction_problem", exactP);
     
     
     // define dirichlet boundary conditions
@@ -183,11 +187,6 @@ int main (int argc, char* argv[])
     // ------------- //
     // compute error //
     // ------------- //
-    
-    // exact solution
-    exact_solutions::Rho exactRho; 
-    exact_solutions::U exactU; 
-    exact_solutions::P exactP; 
     
     // computed solution
     auto computedRho = guermondSalgadoMethod.problem ("density_problem").solutionsWithTimes ();

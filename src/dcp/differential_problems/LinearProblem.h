@@ -987,8 +987,7 @@ namespace dcp
                          "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
                          bcName.c_str ());
 
-            auto result = dirichletBCs_.emplace 
-                (std::make_pair (bcName, dolfin::DirichletBC (functionSpace_, condition, boundary)));
+            auto result = dirichletBCs_.emplace (bcName, dolfin::DirichletBC (functionSpace_, condition, boundary));
 
             if (result.second == false)
             {
@@ -1023,7 +1022,7 @@ namespace dcp
                          bcName.c_str ());
 
             auto result = dirichletBCs_.emplace
-                (std::make_pair (bcName, dolfin::DirichletBC ((*functionSpace_) [component], condition, boundary)));
+                (bcName, dolfin::DirichletBC ((*functionSpace_) [component], condition, boundary));
 
             if (result.second == false)
             {
@@ -1268,7 +1267,7 @@ namespace dcp
             {
                 clonedProblem->addDirichletBC (i.second, i.first);
             }
-            
+
             // clear parameters set of newly created object so that it can be populated by the parameters of the object
             // being created. Set "system_is_assembled" to false, though, because in order for it to work the newly
             // created problem will have to reassemble matrix and rhs vector

@@ -323,7 +323,7 @@ namespace dcp
              */
             std::shared_ptr<dolfin::FunctionSpace> functionSpace_;
 
-            //! The Dirichlet's boundary conditions vector
+            //! The Dirichlet's boundary conditions. The map associates the bc's name to the bc itself
             std::map<std::string, dolfin::DirichletBC> dirichletBCs_;
 
             //! Solution of the differential problem. It is declared as a vector sot that it may contain the solution 

@@ -53,11 +53,13 @@ namespace dcp
             ~DefaultEvaluator () = default;
 
             /******************* METHODS *******************/
+            //! Call operator for \c dcp::Expression default evaluator
+            void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x);
+            
             //! Call operator for \c dcp::VariableExpression default evaluator
             void operator() (dolfin::Array<double>& values, 
                              const dolfin::Array<double>& x, 
                              const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables);
-            
             
             //! Call operator for \c dcp::TimeDependentExpression default evaluator
             void operator() (dolfin::Array<double>& values, 

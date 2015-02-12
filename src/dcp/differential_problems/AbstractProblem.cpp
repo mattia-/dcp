@@ -175,8 +175,7 @@ namespace dcp
                      "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
                      bcName.c_str ());
         
-        auto result = dirichletBCs_.emplace 
-            (std::make_pair (bcName, dolfin::DirichletBC (functionSpace_, condition, boundary)));
+        auto result = dirichletBCs_.emplace (bcName, dolfin::DirichletBC (functionSpace_, condition, boundary));
         
         if (result.second == false)
         {
@@ -205,7 +204,7 @@ namespace dcp
                      bcName.c_str ());
         
         auto result = dirichletBCs_.emplace 
-            (std::make_pair (bcName, dolfin::DirichletBC ((*functionSpace_) [component], condition, boundary)));
+            (bcName, dolfin::DirichletBC ((*functionSpace_) [component], condition, boundary));
         
         if (result.second == false)
         {
@@ -247,8 +246,7 @@ namespace dcp
     bool AbstractProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition,
                                           std::string bcName)
     {
-        std::string bcName_ (bcName);
-        if (bcName_.empty ())
+        if (bcName.empty ())
         {
             bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
             dirichletBCsCounter_++;

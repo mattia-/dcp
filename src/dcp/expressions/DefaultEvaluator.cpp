@@ -22,6 +22,16 @@
 namespace dcp
 {
     /******************* METHODS *******************/
+    void DefaultEvaluator::operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x)
+    {
+        dolfin::dolfin_error 
+            ("dcp: Expression.cpp --> dcp::DefaultEvaluator",
+             "evaluate expression",
+             "Missing eval() function: you must either derive from dcp::Expression and override the eval() method or pass a functor to the constructor");
+    }
+    
+
+
     void DefaultEvaluator::operator() 
         (dolfin::Array<double>& values, 
          const dolfin::Array<double>& x, 

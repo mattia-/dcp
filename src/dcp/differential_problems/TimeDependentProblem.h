@@ -34,10 +34,12 @@
 #include <memory>
 #include <initializer_list>
 #include <map>
+#include <tuple>
 #include <dcp/differential_problems/AbstractProblem.h>
 #include <dcp/factories/LinearSolverFactory.h>
 #include <dcp/differential_problems/SubdomainType.h>
 #include <dcp/expressions/TimeDependentExpression.h>
+#include <dcp/subdomains/Subdomain.h>
 
 namespace dcp
 {
@@ -66,6 +68,14 @@ namespace dcp
         // ---------------------------------------------------------------------------------------------//  
 
         public:
+            /******************* TYPEDEFS **********************/
+            typedef std::pair <std::string, std::string>            TimeDependentCoefficientKey;
+            typedef std::shared_ptr <dcp::TimeDependentExpression>  TimeDependentCoefficientValue;
+            typedef std::string                                     TimeDependentDirichletBCKey;
+            typedef std::tuple <dcp::TimeDependentExpression::Evaluator, dcp::Subdomain::Evaluator, int> 
+                    TimeDependentDirichletBCValue;
+
+
             /******************* CONSTRUCTORS *******************/
             //! Default constructor is deleted. The class is not default constructable.
             TimeDependentProblem () = delete;
@@ -157,7 +167,10 @@ namespace dcp
              */
             virtual std::shared_ptr<dolfin::FunctionSpace> functionSpace () const override;
 
-            //! Get const reference to the problem's dirichlet boundary condition with given name
+            //! Get const reference to the problem's dirichlet boundary condition with given name.
+            //! Note that time dependent Dirichlet BC can be found in this map along with "stationary" BCs. 
+            //! When a time dependent Dirichlet BC is retrieved through this method, its time value will be the last 
+            //! set during the solve process.
             /*! 
              *  \param bcName the name identifying the boundary condition
              *  \return a const reference to the problem's dirichletBC identified by \c bcName
@@ -165,6 +178,9 @@ namespace dcp
             virtual const dolfin::DirichletBC& dirichletBC (const std::string& bcName) const override;
 
             //! Get const reference to the problem's dirichlet boundary conditions map
+            //! Note that time dependent Dirichlet BC can be found in this map along with "stationary" BCs. 
+            //! When a time dependent Dirichlet BC is retrieved through this method, its time value will be the last 
+            //! set during the solve process.
             /*! 
              *  \return a const reference to the problem's \c dirichletBC map
              */
@@ -344,7 +360,8 @@ namespace dcp
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
-             *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the problem
+             *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the 
+             *  problem
              *  \param bcName the name identifying the boundary condition. If empty, 
              *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
              *  
@@ -358,7 +375,8 @@ namespace dcp
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
-             *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the problem
+             *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the 
+             *  problem
              *  \param bcName the name identifying the boundary condition. If empty, 
              *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
              *  
@@ -378,6 +396,55 @@ namespace dcp
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
             virtual bool removeDirichletBC (const std::string& bcName) override;
+            
+            //! Add time dependend Dirichlet boundary condition to the problem [1]
+            /*! 
+             *  This function adds the two object defining the time dependent expression (passed as input arguments) to 
+             *  \c timeDependentDirichletBCs_ and sets the time dependent Dirichlet boundary condition for the 
+             *  protected member \c timeSteppingProblem_.
+             *
+             *  \param condition the callable object defining the boundary condition to enforce
+             *  \param boundary the callable object defining the boundary on which to enforce the condition
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            bool addTimeDependentDirichletBC (const dcp::TimeDependentExpression::Evaluator& condition, 
+                                              const dcp::Subdomain::Evaluator& boundary,
+                                              std::string bcName = "");
+
+            //! Add time dependend Dirichlet boundary condition to the problem [2]
+            /*! 
+             *  This function adds the two object defining the time dependent expression (passed as input arguments) to 
+             *  \c timeDependentDirichletBCs_ and sets the time dependent Dirichlet boundary condition for the 
+             *  protected member \c timeSteppingProblem_.
+             *
+             *  \param condition the callable object defining the boundary condition to enforce
+             *  \param boundary the callable object defining the boundary on which to enforce the condition
+             *  \param component the function space component on which the boundary condition should be imposed. 
+             *  For instance, this can be useful if we have a vector space and we want only the orizontal component to
+             *  have a fixed value
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            bool addTimeDependentDirichletBC (const dcp::TimeDependentExpression::Evaluator& condition, 
+                                              const dcp::Subdomain::Evaluator& boundary,
+                                              const std::size_t& component,
+                                              std::string bcName = "");
+
+            //! Remove time dependent Dirichlet boundary condition with given name. 
+            //! This function removes the given Dirichlet boundary conditions from the protected member 
+            //! \c timeSteppingProblem_.
+            /*!
+             *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
+             *  \param bcName name of the boundary condition to be removed.
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool removeTimeDependentDirichletBC (const std::string& bcName);
             
             //! Add an entry to the protected member map \c timeDependentCoefficients_.
             /*
@@ -423,8 +490,8 @@ namespace dcp
             //! Clear solutions vector
             /*!
              *  This methos clears the protected member \c solution_ and creates a zero function as its first element,
-             *  as if the class had just been created. Protected member \c t_ will also be reset to 
-             *  <tt>parameters ["start_time"]</tt>
+             *  as if the class had just been created. Protected member \c t_ will be reset to \c startTime_.
+             *  Finally, the time value in time dependent Dirichlet BCs will be reset to \c startTime_ as well.
              */  
             virtual void clear ();
              
@@ -497,9 +564,13 @@ namespace dcp
              *  to a pointer to \c dcp::TimeDependentExpression (the use of the pointer is necessary to call the 
              *  \c eval() function defined in the user-defined class derived from \c dcp::TimeDependentExpression )
              */
-            std::map <std::pair <std::string, std::string>, std::shared_ptr <dcp::TimeDependentExpression> > 
-                timeDependentCoefficients_;
+            std::map <TimeDependentCoefficientKey, TimeDependentCoefficientValue> timeDependentCoefficients_;
             
+            //! The time dependent Dirichlet's boundary conditions. The map associates the bc's name to the tuple 
+            //! <time dependent expression, boundary, solution component> identifying the condition itself. 
+            //! If the condition should be enforced on all the function space components, \c -1 is used as a placeholder
+            std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue> timeDependentDirichletBCs_;
+
             //! Vector to save the times on which the solution is stored. This way we can return a vector of pairs
             //! <time, solution> in the protected member \c solutionsVector
             std::vector <double> solutionStoringTimes_;
@@ -518,7 +589,12 @@ namespace dcp
             //! The end time of the simulation
             double endTime_;
             
-            //! Method to advance time value \c t_. It just performs the increment <tt>t += parameters ["dt"]</tt>.
+            //! Counter of time dependent dirichletBC inserted in the protected member map. It is used to create a 
+            //! unique name for insertion of dirichlet bcs if the input argument \c bcName to 
+            //! \c addTimeDependentDirichletBC() is left empty
+            int timeDependentDirichletBCsCounter_;
+            
+            //! Advance time value \c t_. It just performs the increment <tt>t += parameters ["dt"]</tt>.
             //! This allows us to automatically have a backwards time dependent problem if \c dt is negative.
             /*!
              *  \param previousSolution the solution on the previous time step, to be used when setting the previous 
@@ -526,18 +602,43 @@ namespace dcp
              */
             virtual void advanceTime (const dolfin::Function& previousSolution);
             
-            //! Method to set the time dependent coefficients at every step of the solve loop
+            //! Set the time dependent coefficients at every step of the solve loop
             /*
-             *  For each \c element in \c timeDependentCoefficients_ , it will set the coefficient time using \c t_ and
-             *  calling \c setCoefficient()
+             *  For each \c element in \c timeDependentCoefficients_ , it will set the coefficient's time using \c t_ 
+             *  and call \c setCoefficient()
              */
             virtual void setTimeDependentCoefficients ();
+            
+            //! Set the time dependent Dirichlet boundary conditions at every step of the solve loop
+            /*
+             *  For each \c element in \c timeDependentDirichletBCs_ , it will set the boundary condition's time 
+             *  using \c t_ and update the bc stored in timeSteppingProblem_ calling \c removeDirichletBC() and
+             *  \c addDirichletBC() on \c timeSteppingProblem_ itself. Note that we have to do this since 
+             *  \c addDirichletBC() always stores a *COPY* of the \c dolfin::DirichletBC object it takes as input
+             *  (and we chose to do so in order to allow the use of temporary objects when adding Dirichlet BCs to
+             *  the problem), so we cannot store a reference to the \c timeDependentDirichletBCs_ object in
+             *  \c dirichletBCs_ and just change its time value. Also, this would prevent the ability to perform
+             *  other operations in on \c timeSteppingProblem_ when modifying its Dirichlet BCs (and this is bad for
+             *  example if \c timeSteppingProblem_ is a \c dcp::LinearProblem, since we need to reassemble the system
+             *  in this case - see the documentation for \c dcp::LinearProblem , and in particular the role of
+             *  the parameter \c "system_is_assembled" )
+             */
+            virtual void setTimeDependentDirichletBCs ();
+            
+            //! Reset the time dependent Dirichlet boundary condition pointed by the given iterator
+            /*!
+             *  This method removes the Dirichlet boundary condition from \c timeSteppingProblem_ 
+             *  and replaces it with a new one with the same name but value updated to the new value of \c t_
+             *  \param bcIterator the iterator pointing to the bc that should be replaced
+             */
+            virtual void resetTimeDependentDirichletBC 
+                (std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue>::iterator bcIterator);
             
             //! Method to print a warning if \c isFinished() returns \c true. It is just useful to make \c solve()
             //! method clearer to read
             virtual void printFinishedWarning ();
             
-            //! Method to store the solution. 
+            //! Store the solution. 
             /*!
              *  \param solution the solution to be stored
              *  \param timeStep the current time step
@@ -547,7 +648,7 @@ namespace dcp
                                 const int& timeStep, 
                                 const int& storeInterval);
             
-            //! Method to store the solution on the last time step. 
+            //! Store the solution on the last time step. 
             /*!
              *  \param solution the solution to be stored
              *  \param timeStep the current time step
@@ -557,7 +658,7 @@ namespace dcp
                                         const int& timeStep, 
                                         const int& storeInterval);
             
-            //! Method to plot the solution, used inside the time loop and thus kept protected. It overloads the 
+            //! Plot the solution, used inside the time loop and thus kept protected. It overloads the 
             //! plot method in \c dcp::AbstractProblem, which is still usable (and actually overridden in this class
             //! to take into account the fact that \c solution_ is now a vector with size greater than one)
             /*!

@@ -489,7 +489,7 @@ namespace dcp
 
     
     /******************* PROTECTED METHODS *******************/
-    void AbstractEquationSystem::linkProblems (const Link& link)
+    void AbstractEquationSystem::linkProblems (const dcp::AbstractEquationSystem::Link& link)
     {
         if (std::get<1> (link.second) == -1)
         {

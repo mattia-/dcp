@@ -17,13 +17,10 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_EXPRESSIONS_EXPRESSIONS_H_INCLUDE_GUARD
-#define SRC_EXPRESSIONS_EXPRESSIONS_H_INCLUDE_GUARD
+#ifndef SRC_SUBDOMAINS_SUBDOMAINS_H_INCLUDE_GUARD
+#define SRC_SUBDOMAINS_SUBDOMAINS_H_INCLUDE_GUARD
 
-#include "DefaultEvaluator.h"
-#include "Expression.h"
-#include "TimeDependentExpression.h"
-#include "VariableExpression.h"
+#include "Subdomain.h"
 
 #endif
 

@@ -22,7 +22,6 @@
 #include <dolfin.h>
 #include <mshr.h>
 #include <dcp/differential_problems/differential_problems.h>
-#include <dcp/expressions/expressions.h>
 #include "convectiondiffusion.h"
 
 namespace convectiondiffusion
@@ -35,12 +34,10 @@ namespace convectiondiffusion
         }
     };
     
-    class InitialSolution
+    class InitialSolution : public dolfin::Expression
     {
         public:
-            void operator() (dolfin::Array<double>& values, 
-                             const dolfin::Array<double>& x, 
-                             const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables)
+            void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
             {
                 values[0] = exp (-((x[0] - 1) * (x[0] - 1) + (x[1] - 3) * (x[1] - 3)) / 0.2);
             }
@@ -92,7 +89,7 @@ int main (int argc, char* argv[])
     convectionDiffusionProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (b), "b");
 
     // solve problem
-    convectionDiffusionProblem.setInitialSolution (dcp::VariableExpression (convectiondiffusion::InitialSolution ()));
+    convectionDiffusionProblem.setInitialSolution (convectiondiffusion::InitialSolution ());
     convectionDiffusionProblem.parameters ["plot_interval"] = 1;
     std::cout << "Solve the problem..." << std::endl;
     convectionDiffusionProblem.solve ();

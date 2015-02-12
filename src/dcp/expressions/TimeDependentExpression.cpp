@@ -24,20 +24,23 @@
 namespace dcp
 {
     /******************* CONSTRUCTORS *******************/
-    TimeDependentExpression::TimeDependentExpression () : 
+    TimeDependentExpression::TimeDependentExpression (const dcp::TimeDependentExpression::Evaluator& evaluator) : 
         VariableExpression (),
         t_ (),
-        t (t_)
+        t (t_),
+        evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "TimeDependentExpression object created");
     }
     
 
 
-    TimeDependentExpression::TimeDependentExpression (std::size_t dim) : 
+    TimeDependentExpression::TimeDependentExpression (std::size_t dim, 
+                                                      const dcp::TimeDependentExpression::Evaluator& evaluator) : 
         VariableExpression (dim),
         t_ (),
-        t (t_)
+        t (t_),
+        evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "TimeDependentExpression object created");
     }
@@ -45,53 +48,66 @@ namespace dcp
 
 
 
-    TimeDependentExpression::TimeDependentExpression (std::size_t dim0, std::size_t dim1) : 
+    TimeDependentExpression::TimeDependentExpression (std::size_t dim0, 
+                                                      std::size_t dim1,
+                                                      const dcp::TimeDependentExpression::Evaluator& evaluator) : 
         VariableExpression (dim0, dim1),
         t_ (),
-        t (t_)
+        t (t_),
+        evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "TimeDependentExpression object created");
     }
     
 
 
-    TimeDependentExpression::TimeDependentExpression (std::vector<std::size_t> value_shape) : 
+    TimeDependentExpression::TimeDependentExpression (std::vector<std::size_t> value_shape,
+                                                      const dcp::TimeDependentExpression::Evaluator& evaluator) : 
         VariableExpression (value_shape),
         t_ (),
-        t (t_)
+        t (t_),
+        evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "TimeDependentExpression object created");
     }
 
     
 
-    TimeDependentExpression::
-    TimeDependentExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables) :
-        VariableExpression (),
+    TimeDependentExpression::TimeDependentExpression 
+        (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+         const dcp::TimeDependentExpression::Evaluator& evaluator) 
+        : 
+        VariableExpression (variables),
         t_ (),
-        t (t_)
+        t (t_),
+        evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "TimeDependentExpression object created");
     }
         
            
 
-    TimeDependentExpression::
-    TimeDependentExpression (std::size_t dim,
-                             const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables) :
-        VariableExpression (dim),
+    TimeDependentExpression::TimeDependentExpression 
+        (std::size_t dim,
+         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+         const dcp::TimeDependentExpression::Evaluator& evaluator) 
+        : 
+        VariableExpression (dim, variables),
         t_ (),
-        t (t_)
+        t (t_),
+        evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "TimeDependentExpression object created");
     }
 
     
 
-    TimeDependentExpression::
-    TimeDependentExpression (std::size_t dim0, 
-                             std::size_t dim1,
-                             const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables) :
+    TimeDependentExpression::TimeDependentExpression 
+        (std::size_t dim0, 
+         std::size_t dim1,
+         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+         const dcp::TimeDependentExpression::Evaluator& evaluator)
+        :
         VariableExpression (dim0, dim1, variables),
         t_ (),
         t (t_)
@@ -101,12 +117,15 @@ namespace dcp
 
     
 
-    TimeDependentExpression::
-    TimeDependentExpression (std::vector<std::size_t> value_shape,
-                             const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables) :
+    TimeDependentExpression::TimeDependentExpression 
+        (std::vector<std::size_t> value_shape,
+         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+         const dcp::TimeDependentExpression::Evaluator& evaluator)
+        :
         VariableExpression (value_shape, variables),
         t_ (),
-        t (t_)
+        t (t_),
+        evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "TimeDependentExpression object created");
     }
@@ -142,9 +161,7 @@ namespace dcp
 
     void TimeDependentExpression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
     {
-        dolfin::dolfin_error ("dcp: TimeDependentExpression.cpp",
-                              "evaluate expression",
-                              "Missing eval() function (must be overloaded)");
+        evaluator_ (values, x, t_, variables_);
     }
 
 

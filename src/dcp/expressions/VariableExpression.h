@@ -27,6 +27,8 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <functional>
+#include <dcp/expressions/DefaultEvaluator.h>
 
 namespace dcp
 {
@@ -34,28 +36,50 @@ namespace dcp
      *  \brief Class for expressions containing variable members, such as \c dolfin::Functions and other 
      *  \c dolfin::Expression s
      *  
-     *  This class represents an expression (that is a function defined in terms of its cooridnates instead of 
+     *  This class represents an expression (that is a function defined in terms of its coordinates instead of 
      *  its value in the mesh nodes) which can also depend on the value of other expressions and functions. 
      *  It derives from \c dolfin::Expression and it extends its funcionalities by introducing a map that stores
-     *  the variable functions to be used by the \c eval() function. In general, a concrete class will need to be
-     *  defined as deriving from this one and the method \c eval() will have to be overridden with a user-defined
-     *  expression, much like what happens with \c dolfin::Expression itself
+     *  the variable functions to be used by the \c eval() function. 
+     *  This class can be used in two ways:
+     *  1) it can be derived from, exactly like one does for <tt>\c dolfin::Expression></tt>: concrete class will need 
+     *  to be defined as deriving from this one and the method \c eval() will have to be overridden with a user-defined
+     *  expression
+     *  2) it can be constructed directly, passing a \c std::functional to the constructor. This functional will be 
+     *  called when the \c eval() method is called. Note that if no functional is passed to the constructor, a default
+     *  one will be used (see constructor documentation), so that if an object of type \c dcp::VariableExpression is
+     *  built without setting the protected member functional the behaviour is the same as what happens when a 
+     *  \c dolfin::Expression is built (that is, the \c eval() method will issue an error)
      */
     class VariableExpression : public dolfin::Expression
     {
         // ---------------------------------------------------------------------------------------------//  
         public:
+            typedef std::function <void (dolfin::Array<double>&, 
+                                         const dolfin::Array<double>&, 
+                                         const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >&)
+                                  >
+                    Evaluator;
+            
             /******************* CONSTRUCTORS *******************/
-            //! Default constructor. Create scalar expression
-            VariableExpression () = default;
+            //! Default constructor. Create scalar expression. 
+            /*
+             *  Input arguments
+             *  \param evaluator the evaluator to be used when calling the \c eval() method. If no evaluator is passed,
+             *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
+             *  the same as the normal <tt>dolfin::Expression</tt>s)
+             */
+            VariableExpression (const Evaluator& evaluator = dcp::DefaultEvaluator ());
             
             //! Create vector-valued expression with given dimension. This will call the appropriate 
             //! \c dolfin::Expression constructor
             /*
              *  Input arguments:
              *  \param dim dimension of the vector-valued expression
+             *  \param evaluator the evaluator to be used when calling the \c eval() method. If no evaluator is passed,
+             *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
+             *  the same as the normal <tt>dolfin::Expression</tt>s)
              */         
-            explicit VariableExpression (std::size_t dim);
+            explicit VariableExpression (std::size_t dim, const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create matrix-valued expression with given dimensions. This will call the appropriate 
             //! \c dolfin::Expression constructor
@@ -63,24 +87,35 @@ namespace dcp
              *  Input arguments:
              *  \param dim0 dimension (rows)
              *  \param dim1 dimension (columns)
+             *  \param evaluator the evaluator to be used when calling the \c eval() method. If no evaluator is passed,
+             *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
+             *  the same as the normal <tt>dolfin::Expression</tt>s)
              */          
-            VariableExpression (std::size_t dim0, std::size_t dim1);
+            VariableExpression (std::size_t dim0, std::size_t dim1, const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create tensor-valued expression with given shape. This will call the appropriate \c dolfin::Expression
             //! constructor
             /*!
              *  Input arguments:
              *  \param value_shape shape of expression
+             *  \param evaluator the evaluator to be used when calling the \c eval() method. If no evaluator is passed,
+             *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
+             *  the same as the normal <tt>dolfin::Expression</tt>s)
              */          
-            explicit VariableExpression (std::vector<std::size_t> value_shape);
+            explicit VariableExpression (std::vector<std::size_t> value_shape, 
+                                         const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Constructor from \c std::map
             /*!
              *  Uses \c map passed as input to create the protected member \c variables_
              *  Input arguments:
              *  \param variables map used to initialize the protected member \c variables_
+             *  \param evaluator the evaluator to be used when calling the \c eval() method. If no evaluator is passed,
+             *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
+             *  the same as the normal <tt>dolfin::Expression</tt>s)
              */
-            VariableExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
+            VariableExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                                const Evaluator& evaluator = dcp::DefaultEvaluator ());
             
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -88,9 +123,14 @@ namespace dcp
              *  Input arguments:
              *  \param dim dimension of the vector-valued expression
              *  \param variables map used to initialize the protected member \c variables_
+             *  \param evaluator the evaluator to be used when calling the \c eval() method. If no evaluator is passed,
+             *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
+             *  the same as the normal <tt>dolfin::Expression</tt>s)
              */         
-            explicit VariableExpression (std::size_t dim,
-                                         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
+            explicit VariableExpression 
+                (std::size_t dim,
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -99,10 +139,16 @@ namespace dcp
              *  \param dim0 dimension (rows)
              *  \param dim1 dimension (columns)
              *  \param variables map used to initialize the protected member \c variables_
+             *  \param evaluator the evaluator to be used when calling the \c eval() method. If no evaluator is passed,
+             *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
+             *  the same as the normal <tt>dolfin::Expression</tt>s)
              */         
-            VariableExpression (std::size_t dim0, 
-                                std::size_t dim1,
-                                const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
+            VariableExpression 
+                (std::size_t dim0, 
+                 std::size_t dim1,
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const Evaluator& evaluator = dcp::DefaultEvaluator ());
+                 
 
             //! Create tensor-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -110,9 +156,14 @@ namespace dcp
              *  Input arguments:
              *  \param value_shape shape of expression
              *  \param variables map used to initialize the protected member \c variables_
+             *  \param evaluator the evaluator to be used when calling the \c eval() method. If no evaluator is passed,
+             *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
+             *  the same as the normal <tt>dolfin::Expression</tt>s)
              */         
-            explicit VariableExpression (std::vector<std::size_t> value_shape,
-                                         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
+            explicit VariableExpression 
+                (std::vector<std::size_t> value_shape,
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Default copy constructor
             /*!
@@ -208,6 +259,13 @@ namespace dcp
         protected:
             //! The map that associates variables' names and values
             std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> > variables_;
+
+
+        // ---------------------------------------------------------------------------------------------//  
+        private:
+            //! The evaluator to use when the \c eval() method is called. Made private so that it cannot be used in
+            //! derived classes, since it would make no sense. Derived classes should define their own evaluator
+            Evaluator evaluator_;
     };
 }
 

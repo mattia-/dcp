@@ -25,75 +25,69 @@ namespace dcp
 {
     /******************* CONSTRUCTORS *******************/
     VariableExpression::VariableExpression (const dcp::VariableExpression::Evaluator& evaluator) :
-        Expression (),
-        variables_ (),
+        dcp::Expression (),
         evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "VariableExpression object created");
     }
-    
+
 
 
     VariableExpression::VariableExpression (std::size_t dim, 
                                             const dcp::VariableExpression::Evaluator& evaluator) :
-        Expression (dim),
-        variables_ (),
+        dcp::Expression (dim),
         evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "VariableExpression object created");
     }
-    
+
 
 
 
     VariableExpression::VariableExpression (std::size_t dim0, std::size_t dim1, 
                                             const dcp::VariableExpression::Evaluator& evaluator) :
-        Expression (dim0, dim1),
-        variables_ (),
+        dcp::Expression (dim0, dim1),
         evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "VariableExpression object created");
     }
-    
+
 
 
     VariableExpression::VariableExpression (std::vector<std::size_t> value_shape, 
                                             const dcp::VariableExpression::Evaluator& evaluator) :
-        Expression (value_shape),
-        variables_ (),
+        dcp::Expression (value_shape),
         evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "VariableExpression object created");
     }
 
-    
+
 
     VariableExpression::VariableExpression 
         (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
          const dcp::VariableExpression::Evaluator& evaluator) 
         : 
-        Expression (),
-        variables_ (variables),
-        evaluator_ (evaluator)
+            dcp::Expression (variables),
+            evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "VariableExpression object created");
     }
-        
-           
+
+
 
     VariableExpression:: VariableExpression 
         (std::size_t dim,
          const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
          const dcp::VariableExpression::Evaluator& evaluator) 
         :
-        Expression (dim), 
-        variables_ (variables),
-        evaluator_ (evaluator)
+            dcp::Expression (dim, variables), 
+            evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "VariableExpression object created");
     }
 
-    
+
 
     VariableExpression:: VariableExpression 
         (std::size_t dim0, 
@@ -101,66 +95,28 @@ namespace dcp
          const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
          const dcp::VariableExpression::Evaluator& evaluator) 
         : 
-        Expression (dim0, dim1),
-        variables_ (variables),
-        evaluator_ (evaluator)
+            dcp::Expression (dim0, dim1, variables),
+            evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "VariableExpression object created");
     }
 
-    
+
 
     VariableExpression:: VariableExpression 
         (std::vector<std::size_t> value_shape,
          const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
          const dcp::VariableExpression::Evaluator& evaluator) 
         : 
-        Expression (value_shape),
-        variables_ (variables),
-        evaluator_ (evaluator)
+            dcp::Expression (value_shape, variables),
+            evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "VariableExpression object created");
     }
 
-    
 
-    /******************* SETTERS *******************/
-    void VariableExpression::setCoefficient (const std::string& variableName, 
-                                             const std::shared_ptr <const dolfin::GenericFunction> value)
-    {
-        dolfin::log (dolfin::DBG, "Inserting variable in map...");
-        
-        variables_ [variableName] = value;
-    }
-
-
-    
-    /******************* GETTERS *******************/
-    const dolfin::Function& VariableExpression::function (const std::string& variableName) const
-    {
-        auto variable = variables_.find (variableName);
-        return *(std::dynamic_pointer_cast<const dolfin::Function> (variable -> second));
-    }
-
-    
-
-    const dolfin::Expression& VariableExpression::expression (const std::string& variableName) const
-    {
-        auto variable = variables_.find (variableName);
-        return *(std::dynamic_pointer_cast<const dolfin::Expression> (variable -> second));
-    }
-        
-    
 
     /******************* METHODS *******************/
-    void VariableExpression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x, const ufc::cell& cell) const
-    {
-        // Redirect to simple eval
-        eval(values, x); 
-    }
-
-
-
     void VariableExpression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
     {
         evaluator_ (values, x, variables_);
@@ -168,20 +124,8 @@ namespace dcp
 
 
 
-    void VariableExpression::evaluateVariable (const std::string& variableName,
-                                               dolfin::Array<double>& values,
-                                               const dolfin::Array<double>& x) const
+    dcp::VariableExpression* VariableExpression::clone () const
     {
-        auto variable = variables_.find (variableName);
-
-        if (variable == variables_.end ())
-        {
-            dolfin::dolfin_error ("dcp: VariableExpression.cpp",
-                                  "evaluateVariable", 
-                                  "Cannot find variable \"%s\" in VariableExpression map", 
-                                  variableName.c_str ());
-        }
-
-        (variable -> second) -> eval (values, x);
+        return new dcp::VariableExpression (*this);
     }
 }

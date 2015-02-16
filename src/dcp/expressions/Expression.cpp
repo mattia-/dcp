@@ -25,53 +25,96 @@ namespace dcp
 {
     /******************* CONSTRUCTORS *******************/
     Expression::Expression (const dcp::Expression::Evaluator& evaluator) :
-        dolfin::Expression (),
+        dcp::GenericExpression (),
         evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "Expression object created");
     }
-    
+
 
 
     Expression::Expression (std::size_t dim, const dcp::Expression::Evaluator& evaluator) :
-        dolfin::Expression (dim),
+        dcp::GenericExpression (dim),
         evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "Expression object created");
     }
-    
+
 
 
 
     Expression::Expression (std::size_t dim0, std::size_t dim1, const dcp::Expression::Evaluator& evaluator) :
-        dolfin::Expression (dim0, dim1),
+        dcp::GenericExpression (dim0, dim1),
         evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "Expression object created");
     }
-    
+
 
 
     Expression::Expression (std::vector<std::size_t> value_shape, const dcp::Expression::Evaluator& evaluator) :
-        dolfin::Expression (value_shape),
+        dcp::GenericExpression (value_shape),
         evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "Expression object created");
     }
-        
-    
 
-    /******************* METHODS *******************/
-    void Expression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x, const ufc::cell& cell) const
+
+
+    Expression::Expression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                            const dcp::Expression::Evaluator& evaluator) :
+        dcp::GenericExpression (variables),
+        evaluator_ (evaluator)
     {
-        // Redirect to simple eval
-        eval(values, x); 
+        dolfin::log (dolfin::DBG, "Expression object created");
     }
 
 
 
+    Expression:: Expression (std::size_t dim,
+                             const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                             const dcp::Expression::Evaluator& evaluator) :
+        dcp::GenericExpression (dim, variables), 
+        evaluator_ (evaluator)
+    {
+        dolfin::log (dolfin::DBG, "Expression object created");
+    }
+
+
+
+    Expression:: Expression (std::size_t dim0, 
+                             std::size_t dim1,
+                             const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                             const dcp::Expression::Evaluator& evaluator) : 
+        dcp::GenericExpression (dim0, dim1, variables),
+        evaluator_ (evaluator)
+    {
+        dolfin::log (dolfin::DBG, "Expression object created");
+    }
+
+
+
+    Expression:: Expression (std::vector<std::size_t> value_shape,
+                             const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                             const dcp::Expression::Evaluator& evaluator) : 
+        dcp::GenericExpression (value_shape, variables),
+        evaluator_ (evaluator)
+    {
+        dolfin::log (dolfin::DBG, "Expression object created");
+    }
+
+
+
+    /******************* METHODS *******************/
     void Expression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
     {
         evaluator_ (values, x);
+    }
+
+
+
+    dcp::Expression* Expression::clone () const
+    {
+        return new dcp::Expression (*this);
     }
 }

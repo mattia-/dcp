@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_EXPRESSIONS_EXPRESSION_H_INCLUDE_GUARD
-#define SRC_EXPRESSIONS_EXPRESSION_H_INCLUDE_GUARD
+#ifndef SRC_EXPRESSIONS_TIMEDEPENDENTVARIABLEEXPRESSION_H_INCLUDE_GUARD
+#define SRC_EXPRESSIONS_TIMEDEPENDENTVARIABLEEXPRESSION_H_INCLUDE_GUARD
 
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Expression.h>
@@ -27,34 +27,40 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <functional>
 #include <dcp/expressions/GenericExpression.h>
+#include <dcp/expressions/TimeDependentExpression.h>
 #include <dcp/expressions/DefaultEvaluator.h>
 
 namespace dcp
 {
-    /*! class Expression Expression.h
-     *  \brief Class for expression definition.
+    /*! class TimeDependentVariableExpression TimeDependentVariableExpression.h
+     *  \brief Class for expressions depending both on time and on other expressions.
      *  
-     *  This class offers an alernative to the dolfin way to define expressions. 
-     *  It can be used in two ways:
+     *  This class represents an expression which can depend on a time parameter as well as the value of other 
+     *  expressions and functions. 
+     *  This class can be used in two ways:
      *  1) it can be derived from, exactly like one does for <tt>\c dolfin::Expression></tt>: concrete class will need 
      *  to be defined as deriving from this one and the method \c eval() will have to be overridden with a user-defined
-     *  expression. 
+     *  expression
      *  2) it can be constructed directly, passing a \c std::functional to the constructor. This functional will be 
      *  called when the \c eval() method is called. Note that if no functional is passed to the constructor, a default
-     *  one will be used (see constructor documentation), so that if an object of type \c dcp::Expression is
+     *  one will be used (see constructor documentation), so that if an object of type \c dcp::VariableExpression is
      *  built without setting the protected member functional the behaviour is the same as what happens when a 
-     *  \c dolfin::Expression is built (that is, the \c eval() method will issue an error).
+     *  \c dolfin::Expression is built (that is, the \c eval() method will issue an error). 
      *  The former method is provided for ease of use, but the latter one should be preferred. In particular, note that
      *  if you choose to use the first method, you will probably want to override the \c clone() method as well in
      *  the derived class.
      */
-    class Expression : public dcp::GenericExpression
+    class TimeDependentVariableExpression : public dcp::TimeDependentExpression
     {
         // ---------------------------------------------------------------------------------------------//  
         public:
-            typedef std::function <void (dolfin::Array<double>&, const dolfin::Array<double>&)> Evaluator;
+            typedef std::function <void (dolfin::Array<double>&, 
+                                         const dolfin::Array<double>&, 
+                                         const double&,
+                                         const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >&)
+                >
+                Evaluator;
 
             /******************* CONSTRUCTORS *******************/
             //! Default constructor. Create scalar expression. 
@@ -64,7 +70,7 @@ namespace dcp
              *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */
-            Expression (const Evaluator& evaluator = dcp::DefaultEvaluator ());
+            TimeDependentVariableExpression (const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create vector-valued expression with given dimension. This will call the appropriate 
             //! \c dolfin::Expression constructor
@@ -75,7 +81,7 @@ namespace dcp
              *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */         
-            explicit Expression (std::size_t dim, const Evaluator& evaluator = dcp::DefaultEvaluator ());
+            explicit TimeDependentVariableExpression (std::size_t dim, const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create matrix-valued expression with given dimensions. This will call the appropriate 
             //! \c dolfin::Expression constructor
@@ -87,7 +93,7 @@ namespace dcp
              *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */          
-            Expression (std::size_t dim0, std::size_t dim1, const Evaluator& evaluator = dcp::DefaultEvaluator ());
+            TimeDependentVariableExpression (std::size_t dim0, std::size_t dim1, const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create tensor-valued expression with given shape. This will call the appropriate \c dolfin::Expression
             //! constructor
@@ -98,8 +104,8 @@ namespace dcp
              *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */          
-            explicit Expression (std::vector<std::size_t> value_shape, 
-                                 const Evaluator& evaluator = dcp::DefaultEvaluator ());
+            explicit TimeDependentVariableExpression (std::vector<std::size_t> value_shape, 
+                                                      const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Constructor from \c std::map
             /*!
@@ -110,8 +116,8 @@ namespace dcp
              *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */
-            Expression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                        const Evaluator& evaluator = dcp::DefaultEvaluator ());
+            TimeDependentVariableExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                                             const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -123,9 +129,10 @@ namespace dcp
              *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */         
-            explicit Expression (std::size_t dim,
-                                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                                 const Evaluator& evaluator = dcp::DefaultEvaluator ());
+            explicit TimeDependentVariableExpression 
+                (std::size_t dim,
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -138,10 +145,11 @@ namespace dcp
              *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */         
-            Expression (std::size_t dim0, 
-                        std::size_t dim1,
-                        const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                        const Evaluator& evaluator = dcp::DefaultEvaluator ());
+            TimeDependentVariableExpression 
+                (std::size_t dim0, 
+                 std::size_t dim1,
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
 
             //! Create tensor-valued expression with given dimension and given map. This will call the appropriate 
@@ -154,23 +162,24 @@ namespace dcp
              *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */         
-            explicit Expression (std::vector<std::size_t> value_shape,
-                                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                                 const Evaluator& evaluator = dcp::DefaultEvaluator ());
-
+            explicit TimeDependentVariableExpression 
+                (std::vector<std::size_t> value_shape,
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const Evaluator& evaluator = dcp::DefaultEvaluator ());
+            //
             //! Default copy constructor
             /*!
              *  Input arguments:
              *  \param expression object to be copied
              */
-            Expression (const Expression& expression) = default;
+            TimeDependentVariableExpression (const TimeDependentVariableExpression& expression) = default;
 
             //! Default move constructor
             /*!
              *  Input arguments:
              *  \param expression object to be moved
              */
-            Expression (Expression&& expression) = default;
+            TimeDependentVariableExpression (TimeDependentVariableExpression&& expression) = default;
 
 
             /******************* DESTRUCTOR *******************/
@@ -179,11 +188,11 @@ namespace dcp
              *  Default destructor, since members of the class are trivially 
              *  destructible.
              */
-            virtual ~Expression () {};
+            virtual ~TimeDependentVariableExpression () {};
 
 
             /******************* METHODS *******************/
-            //! Evaluate at given point in given cell
+            //! Evaluate at given point in given cell. Overrides method in \c dcp::VariableExpression
             /*!
              *  Input arguments are:
              *  \param values array that will contain the evaluated function at the given point
@@ -195,7 +204,7 @@ namespace dcp
             /*!
              *  \return a pointer to the cloned object
              */
-            virtual dcp::Expression* clone () const override;
+            virtual dcp::TimeDependentVariableExpression* clone () const override;
 
             // ---------------------------------------------------------------------------------------------//  
         protected:

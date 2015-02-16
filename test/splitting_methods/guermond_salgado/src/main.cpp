@@ -23,6 +23,8 @@
 #include <mshr.h>
 #include <dcp/differential_problems/differential_problems.h>
 #include <dcp/splitting_methods/splitting_methods.h>
+#include <dcp/expressions/expressions.h>
+#include <dcp/subdomains/subdomains.h>
 #include "density.h"
 #include "velocity.h"
 #include "pressure_correction.h"
@@ -60,43 +62,44 @@ namespace navierstokes
     }; 
     
     
-    class NoSlipBoundary : public dolfin::SubDomain
+    class DirichletBoundaryEvaluator
     { 
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return on_boundary;
-        }
+        public:
+            bool operator() (const dolfin::Array<double>& x, bool on_boundary)
+            {
+                return on_boundary;
+            }
     }; 
 }
 
 namespace exact_solutions
 {
-    class Rho : public dcp::TimeDependentExpression
-    {
-        void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override
-        {
-            values[0] = 2 + x[0] * cos (sin (t)) + x[1] * sin (sin (t));
-        }
-    };
-    
-    class U : public dcp::TimeDependentExpression 
+    class RhoEvaluator
     {
         public:
-            U () : TimeDependentExpression (2) { }
-            
-            void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override
+            void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
+            {
+                values[0] = 2 + x[0] * cos (sin (t)) + x[1] * sin (sin (t));
+            }
+    };
+    
+    class UEvaluator
+    {
+        public:
+            void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
             {
                 values[0] = -x[1] * cos (t);
                 values[1] =  x[0] * cos (t);
             }
     };
     
-    class P : public dcp::TimeDependentExpression
+    class PEvaluator
     {
-        void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override
-        {
-            values[0] = sin (x[0]) * sin (x[1]) * sin (t);
-        }
+        public:
+            void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
+            {
+                values[0] = sin (x[0]) * sin (x[1]) * sin (t);
+            }
     };
 }
 
@@ -117,17 +120,16 @@ int main (int argc, char* argv[])
     std::cout << "Define the coefficients..." << std::endl;
     dolfin::Constant mu (1e-1);
     dolfin::Constant chi (1);
-    dolfin::Constant noSlipDirichletBC (0.0, 0.0);
     double t0 = 0.0;
     double dt = 0.1;
-    double T = 0.2; //10;
+    double T = 10;
     
     // exact solution
-    exact_solutions::Rho exactRho; 
+    dcp::TimeDependentExpression exactRho ((exact_solutions::RhoEvaluator ()));
     exactRho.setTime (t0);
-    exact_solutions::U exactU; 
+    dcp::TimeDependentExpression exactU (2, exact_solutions::UEvaluator ());
     exactU.setTime (t0);
-    exact_solutions::P exactP; 
+    dcp::TimeDependentExpression exactP ((exact_solutions::PEvaluator ()));
     exactP.setTime (t0);
 
     // define the problems
@@ -151,10 +153,10 @@ int main (int argc, char* argv[])
     
     // define dirichlet boundary conditions
     std::cout << "Define the problem's Dirichlet boundary conditions..." << std::endl;
-    navierstokes::NoSlipBoundary noSlipBoundary;
+    dcp::Subdomain noSlipBoundary ((navierstokes::DirichletBoundaryEvaluator ()));
     
     std::cout << "Setting up dirichlet's boundary conditions for 'velocity_problem'" << std::endl;
-    guermondSalgadoMethod.addDirichletBC ("velocity_problem", noSlipDirichletBC, noSlipBoundary);
+    guermondSalgadoMethod.addTimeDependentDirichletBC ("velocity_problem", exactU, noSlipBoundary);
 
     
     // define time dependent external loads

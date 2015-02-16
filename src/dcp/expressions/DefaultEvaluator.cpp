@@ -43,7 +43,17 @@ namespace dcp
              "Missing eval() function: you must either derive from dcp::VariableExpression and override the eval() method or pass a functor to the constructor");
     }
     
+    
 
+    void DefaultEvaluator::operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
+    {
+        dolfin::dolfin_error 
+            ("dcp: TimeDependentExpression.cpp --> dcp::DefaultEvaluator",
+             "evaluate expression",
+             "Missing eval() function: you must either derive from dcp::TimeDependentExpression and override the eval() method or pass a functor to the constructor");
+    }
+
+            
 
     void DefaultEvaluator::operator() 
         (dolfin::Array<double>& values, 
@@ -52,7 +62,7 @@ namespace dcp
          const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables)
     {
         dolfin::dolfin_error 
-            ("dcp: TimeDependentExpression.cpp --> dcp::DefaultEvaluator",
+            ("dcp: TimeDependentVariableExpression.cpp --> dcp::DefaultEvaluator",
              "evaluate expression",
              "Missing eval() function: you must either derive from dcp::TimeDependentExpression and override the eval() method or pass a functor to the constructor");
     }

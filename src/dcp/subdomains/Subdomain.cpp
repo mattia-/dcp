@@ -34,4 +34,11 @@ namespace dcp
     {
         return evaluator_ (x, on_boundary);
     }
+    
+
+
+    dcp::Subdomain* Subdomain::clone () const
+    {
+        return new dcp::Subdomain (*this);
+    }
 }

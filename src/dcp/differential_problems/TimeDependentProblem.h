@@ -72,7 +72,7 @@ namespace dcp
             typedef std::pair <std::string, std::string>            TimeDependentCoefficientKey;
             typedef std::shared_ptr <dcp::TimeDependentExpression>  TimeDependentCoefficientValue;
             typedef std::string                                     TimeDependentDirichletBCKey;
-            typedef std::tuple <dcp::TimeDependentExpression::Evaluator, dcp::Subdomain::Evaluator, int> 
+            typedef std::tuple <std::shared_ptr <dcp::TimeDependentExpression>, std::shared_ptr <dcp::Subdomain>, int> 
                     TimeDependentDirichletBCValue;
 
 
@@ -201,7 +201,7 @@ namespace dcp
             //! Get a vector containing all the solutions stored during the simulations along with the times at which
             //! those solutions were stored
             virtual const std::vector<std::pair <double, std::shared_ptr<const dolfin::Function>> > 
-            solutionsWithTimes () const;  
+                solutionsWithTimes () const;  
             
             //! Get const reference to the current simulation time
             /*!
@@ -403,16 +403,16 @@ namespace dcp
              *  \c timeDependentDirichletBCs_ and sets the time dependent Dirichlet boundary condition for the 
              *  protected member \c timeSteppingProblem_.
              *
-             *  \param condition the callable object defining the boundary condition to enforce
-             *  \param boundary the callable object defining the boundary on which to enforce the condition
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
              *  \param bcName the name identifying the boundary condition. If empty,
              *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
              *  
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
-            bool addTimeDependentDirichletBC (const dcp::TimeDependentExpression::Evaluator& condition, 
-                                              const dcp::Subdomain::Evaluator& boundary,
-                                              std::string bcName = "");
+            virtual bool addTimeDependentDirichletBC (const dcp::TimeDependentExpression& condition, 
+                                                      const dcp::Subdomain& boundary,
+                                                      std::string bcName = "");
 
             //! Add time dependend Dirichlet boundary condition to the problem [2]
             /*! 
@@ -420,8 +420,8 @@ namespace dcp
              *  \c timeDependentDirichletBCs_ and sets the time dependent Dirichlet boundary condition for the 
              *  protected member \c timeSteppingProblem_.
              *
-             *  \param condition the callable object defining the boundary condition to enforce
-             *  \param boundary the callable object defining the boundary on which to enforce the condition
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
              *  \param component the function space component on which the boundary condition should be imposed. 
              *  For instance, this can be useful if we have a vector space and we want only the orizontal component to
              *  have a fixed value
@@ -430,10 +430,10 @@ namespace dcp
              *  
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
-            bool addTimeDependentDirichletBC (const dcp::TimeDependentExpression::Evaluator& condition, 
-                                              const dcp::Subdomain::Evaluator& boundary,
-                                              const std::size_t& component,
-                                              std::string bcName = "");
+            virtual bool addTimeDependentDirichletBC (const dcp::TimeDependentExpression& condition, 
+                                                      const dcp::Subdomain& boundary,
+                                                      const std::size_t& component,
+                                                      std::string bcName = "");
 
             //! Remove time dependent Dirichlet boundary condition with given name. 
             //! This function removes the given Dirichlet boundary conditions from the protected member 
@@ -532,7 +532,7 @@ namespace dcp
             //! \c solution_ is now a vector with size greater than one). It uses the value of the parameter \c pause
             //! to decide whether to stop at each plot or not and the value of the parameter \c plot_title to set
             //! the plot title (\c plot_title will actually be added to the time, which is always plotted in the title)
-            void plotSolution () override;
+            virtual void plotSolution () override;
             
             //! Clone method. Overrides method in \c AbstractProblem
             /*!
@@ -602,13 +602,6 @@ namespace dcp
              */
             virtual void advanceTime (const dolfin::Function& previousSolution);
             
-            //! Set the time dependent coefficients at every step of the solve loop
-            /*
-             *  For each \c element in \c timeDependentCoefficients_ , it will set the coefficient's time using \c t_ 
-             *  and call \c setCoefficient()
-             */
-            virtual void setTimeDependentCoefficients ();
-            
             //! Set the time dependent Dirichlet boundary conditions at every step of the solve loop
             /*
              *  For each \c element in \c timeDependentDirichletBCs_ , it will set the boundary condition's time 
@@ -634,6 +627,13 @@ namespace dcp
             virtual void resetTimeDependentDirichletBC 
                 (std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue>::iterator bcIterator);
             
+            //! Set the time dependent coefficients at every step of the solve loop
+            /*
+             *  For each \c element in \c timeDependentCoefficients_ , it will set the coefficient's time using \c t_ 
+             *  and call \c setCoefficient()
+             */
+            virtual void setTimeDependentCoefficients ();
+            
             //! Method to print a warning if \c isFinished() returns \c true. It is just useful to make \c solve()
             //! method clearer to read
             virtual void printFinishedWarning ();
@@ -644,9 +644,9 @@ namespace dcp
              *  \param timeStep the current time step
              *  \param storeInterval the store interval (see constructor documentation)
             */
-            void storeSolution (const dolfin::Function& solution, 
-                                const int& timeStep, 
-                                const int& storeInterval);
+            virtual void storeSolution (const dolfin::Function& solution, 
+                                        const int& timeStep, 
+                                        const int& storeInterval);
             
             //! Store the solution on the last time step. 
             /*!
@@ -654,9 +654,9 @@ namespace dcp
              *  \param timeStep the current time step
              *  \param storeInterval the store interval (see constructor documentation)
             */
-            void storeLastStepSolution (const dolfin::Function& solution, 
-                                        const int& timeStep, 
-                                        const int& storeInterval);
+            virtual void storeLastStepSolution (const dolfin::Function& solution, 
+                                                const int& timeStep, 
+                                                const int& storeInterval);
             
             //! Plot the solution, used inside the time loop and thus kept protected. It overloads the 
             //! plot method in \c dcp::AbstractProblem, which is still usable (and actually overridden in this class
@@ -668,11 +668,11 @@ namespace dcp
              *  \param plotComponent the component of the solution to be plotted (see constructor documentation)
              *  \param pause boolean flag, true if the function should wait after plotting
             */
-            void plotSolution (dolfin::Function& solution, 
-                               const int& timeStep, 
-                               const int& plotInterval, 
-                               const int& plotComponent,
-                               const bool& pause);
+            virtual void plotSolution (dolfin::Function& solution, 
+                                       const int& timeStep, 
+                                       const int& plotInterval, 
+                                       const int& plotComponent,
+                                       const bool& pause);
 
             // ---------------------------------------------------------------------------------------------//
 

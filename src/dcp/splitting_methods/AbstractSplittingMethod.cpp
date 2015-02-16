@@ -193,7 +193,32 @@ namespace dcp
     }
     
     
+    
+    bool AbstractSplittingMethod::addTimeDependentDirichletBC (const std::string& problemName,
+                                                               const dcp::TimeDependentExpression& condition, 
+                                                               const dcp::Subdomain& boundary,
+                                                               std::string bcName)
+    {
+        return (*differentialSystem_) [problemName].addTimeDependentDirichletBC (condition, boundary, bcName); 
+    }
 
+    bool AbstractSplittingMethod::addTimeDependentDirichletBC (const std::string& problemName,
+                                                               const dcp::TimeDependentExpression& condition, 
+                                                               const dcp::Subdomain& boundary,
+                                                               const std::size_t& component,
+                                                               std::string bcName)
+    {
+        return (*differentialSystem_)[problemName].addTimeDependentDirichletBC (condition, boundary, component, bcName);
+    }
+
+    bool AbstractSplittingMethod::removeTimeDependentDirichletBC (const std::string& problemName, 
+                                                                  const std::string& bcName)
+    {
+        return (*differentialSystem_) [problemName].removeTimeDependentDirichletBC (bcName);
+    }
+
+
+            
     /********************** METHODS ***********************/
     void AbstractSplittingMethod::apply (const std::string& type)
     {

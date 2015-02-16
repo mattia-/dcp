@@ -27,24 +27,16 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <dcp/expressions/VariableExpression.h>
+#include <dcp/expressions/GenericExpression.h>
 #include <dcp/expressions/DefaultEvaluator.h>
 
 namespace dcp
 {
     /*! class TimeDependentExpression TimeDependentExpression.h
-     *  \brief Class for expressions depending on time. It derives from \c dcp::VariableExpression so it inherits
-     *  all of its functionalities and can depend on other expression too.
+     *  \brief Class for expressions depending on time. 
      *  
-     *  This class represents an expression which can depend on a time parameter as well as the value of other 
-     *  expressions and functions. In general, a concrete class will need to be
-     *  defined as deriving from this one and the method \c eval() will have to be overridden with a user-defined
-     *  expression, much like what happens with \c dolfin::Expression itself. 
+     *  This class represents an expression which can depend on a time parameter.
      *  The time parameter is stored in the protected member \c t_ and can be set through the method \c setTime(). 
-     *  Remember that the constructor does not accept the time as input argument because that
-     *  would force the user to implement a constructor of his own when he derives from this class to implement the
-     *  \c eval() method, so \c t_ will be default-constructed. Before using the class (and all of those that derive 
-     *  from it), the method \c setTime() must be called if \c t_ should be different from 0.
      *  This class can be used in two ways:
      *  1) it can be derived from, exactly like one does for <tt>\c dolfin::Expression></tt>: concrete class will need 
      *  to be defined as deriving from this one and the method \c eval() will have to be overridden with a user-defined
@@ -53,22 +45,18 @@ namespace dcp
      *  called when the \c eval() method is called. Note that if no functional is passed to the constructor, a default
      *  one will be used (see constructor documentation), so that if an object of type \c dcp::VariableExpression is
      *  built without setting the protected member functional the behaviour is the same as what happens when a 
-     *  \c dolfin::Expression is built (that is, the \c eval() method will issue an error). Note that the evaluator
-     *  was private in \c dcp::VariableExpression and we will shadow it here, defining a new object called 
-     *  \c evaluator . This is due to the fact that the type of this object should change (and the fact that it makes
-     *  no sense to use the evaluator of the base class). 
+     *  \c dolfin::Expression is built (that is, the \c eval() method will issue an error). 
+     *  The former method is provided for ease of use, but the latter one should be preferred. In particular, note that
+     *  if you choose to use the first method, you will probably want to override the \c clone() method as well in
+     *  the derived class.
      */
-    class TimeDependentExpression : public dcp::VariableExpression
+    class TimeDependentExpression : public dcp::GenericExpression
     {
         // ---------------------------------------------------------------------------------------------//  
         public:
-            typedef std::function <void (dolfin::Array<double>&, 
-                                         const dolfin::Array<double>&, 
-                                         const double&,
-                                         const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >&)
-                                  >
-                    Evaluator;
-            
+            typedef std::function <void (dolfin::Array<double>&, const dolfin::Array<double>&, const double&)>
+                Evaluator;
+
             /******************* CONSTRUCTORS *******************/
             //! Default constructor. Create scalar expression. 
             /*
@@ -78,7 +66,7 @@ namespace dcp
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */
             TimeDependentExpression (const Evaluator& evaluator = dcp::DefaultEvaluator ());
-            
+
             //! Create vector-valued expression with given dimension. This will call the appropriate 
             //! \c dolfin::Expression constructor
             /*
@@ -112,7 +100,7 @@ namespace dcp
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */          
             explicit TimeDependentExpression (std::vector<std::size_t> value_shape, 
-                                         const Evaluator& evaluator = dcp::DefaultEvaluator ());
+                                              const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Constructor from \c std::map
             /*!
@@ -124,8 +112,8 @@ namespace dcp
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */
             TimeDependentExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                                const Evaluator& evaluator = dcp::DefaultEvaluator ());
-            
+                                     const Evaluator& evaluator = dcp::DefaultEvaluator ());
+
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
             /*
@@ -157,7 +145,7 @@ namespace dcp
                  std::size_t dim1,
                  const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
                  const Evaluator& evaluator = dcp::DefaultEvaluator ());
-                 
+
 
             //! Create tensor-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -180,15 +168,15 @@ namespace dcp
              *  \param expression object to be copied
              */
             TimeDependentExpression (const TimeDependentExpression& expression) = default;
-            
+
             //! Default move constructor
             /*!
              *  Input arguments:
              *  \param expression object to be moved
              */
             TimeDependentExpression (TimeDependentExpression&& expression) = default;
-            
-            
+
+
             /******************* DESTRUCTOR *******************/
             //! Default destructor                
             /*! 
@@ -207,19 +195,8 @@ namespace dcp
             //! Set the current time
             void setTime (const double& time);
 
-            
-            /******************* METHODS *******************/
-            //! Evaluate at given point in given cell. Overrides method in \c dcp::VariableExpression
-            /*!
-             *  Input arguments are:
-             *  \param values array that will contain the evaluated function at the given point
-             *  \param x the coordinates of the point
-             *  \param cell the cell which contains the given point
-             */
-            virtual void eval (dolfin::Array<double>& values, 
-                               const dolfin::Array<double>& x, 
-                               const ufc::cell& cell) const override;
 
+            /******************* METHODS *******************/
             //! Evaluate at given point in given cell. Overrides method in \c dcp::VariableExpression
             /*!
              *  Input arguments are:
@@ -228,29 +205,22 @@ namespace dcp
              */
             virtual void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override;
 
-            //! Evaluate variable identified by given name at given point. Overrides method in 
-            //! \c dcp::VariableExpression
+            //! Clone method
             /*!
-             *  Input arguments are:
-             *  \param variableName string to identify the variable we want to evaluate
-             *  \param values array that will contain the evaluated function at the given point
-             *  \param x the coordinates of the point at which evaluate the variable
+             *  \return a pointer to the cloned object
              */
-            virtual void evaluateVariable (const std::string& variableName, 
-                                           dolfin::Array<double>& values, 
-                                           const dolfin::Array<double>& x) const override;
+            virtual dcp::TimeDependentExpression* clone () const override;
 
-
-        // ---------------------------------------------------------------------------------------------//  
+            // ---------------------------------------------------------------------------------------------//  
         protected:
             //! The time at which the time dependent expression should be evaluated
             double t_;
-            
+
             //! Just a reference to the time variable \c t_ for ease of use in the derived classes
             const double& t;
 
 
-        // ---------------------------------------------------------------------------------------------//  
+            // ---------------------------------------------------------------------------------------------//  
         private:
             //! The evaluator to use when the \c eval() method is called. Made private so that it cannot be used in
             //! derived classes, since it would make no sense. Derived classes should define their own evaluator

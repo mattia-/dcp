@@ -22,7 +22,9 @@
 
 #include "DefaultEvaluator.h"
 #include "Expression.h"
+#include "GenericExpression.h"
 #include "TimeDependentExpression.h"
+#include "TimeDependentVariableExpression.h"
 #include "VariableExpression.h"
 
 #endif

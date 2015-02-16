@@ -98,21 +98,24 @@ namespace dcp
             
             
             /********************** SETTERS ***********************/
-            //! Set initial solution of the problem with the given name [1]
+            //! Set initial solution of the problem with the given name [1].
+            //! Wrapper for the method \c setInitialSolution() in \c dcp::TimeDependentProblem
             /*!
              *  \param problemName the name of the problem whose initial solution should be set
              *  \param initialSolution the initial solution itself
              */
             virtual void setInitialSolution (const std::string& problemName, const dolfin::Function& initialSolution); 
             
-            //! Set initial solution of the problem with the given name [2]
+            //! Set initial solution of the problem with the given name [2].
+            //! Wrapper for the method \c setInitialSolution() in \c dcp::TimeDependentProblem
             /*!
              *  \param problemName the name of the problem whose initial solution should be set
              *  \param initialSolution the initial solution itself
              */
             virtual void setInitialSolution (const std::string& problemName, const dolfin::Expression& initialSolution); 
             
-            //! Set problem coefficients [1]
+            //! Set problem coefficients [1].
+            //! Wrapper for the method \c setCoefficient() in \c dcp::TimeDependentProblem
             /*!
              *  Parameters are:
              *  \param problemName the name of the problem in which to set the parameter
@@ -128,7 +131,8 @@ namespace dcp
                                          const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                          const std::string& coefficientName);
 
-            //! Set problem coefficients [2]
+            //! Set problem coefficients [2].
+            //! Wrapper for the method \c setCoefficient() in \c dcp::TimeDependentProblem
             /*!
              *  Parameters are:
              *  \param problemName the name of the problem in which to set the parameter
@@ -144,10 +148,11 @@ namespace dcp
                                          const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                          const std::size_t& coefficientNumber);
 
-            //! Set integration subdomains for the forms
+            //! Set integration subdomains for the forms.
+            //! Wrapper for the method \c setIntegrationSubdomains() in \c dcp::TimeDependentProblem
             /*! 
              *  Input arguments are:
-             *  \param problemName the name of the problem in which to set the parameter
+             *  \param problemName the name of the problem in which to set the integration subdomain
              *  \param formType used to disambiguate between different member variables to choose which integration
              *  subdomain to set
              *  \param meshFunction the mesh function used to set the integration subdomains
@@ -161,9 +166,10 @@ namespace dcp
                                                    std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                    const dcp::SubdomainType& subdomainType);
 
-            //! Add Dirichlet boundary condition to the problem [1]
+            //! Add Dirichlet boundary condition to the problem [1].
+            //! Wrapper for the method \c addDirichletBC() in \c dcp::TimeDependentProblem
             /*!
-             *  \param problemName the name of the problem in which to set the parameter
+             *  \param problemName the name of the problem in which to set the Dirichlet boundary condition
              *  \param condition the boundary condition to enforce
              *  \param boundary the boundary on which to enforce the condition
              *  \param bcName the name identifying the boundary condition. If empty,
@@ -176,9 +182,10 @@ namespace dcp
                                          const dolfin::SubDomain& boundary,
                                          std::string bcName = "");
 
-            //! Add Dirichlet boundary condition to the problem [2]
+            //! Add Dirichlet boundary condition to the problem [2].
+            //! Wrapper for the method \c addDirichletBC() in \c dcp::TimeDependentProblem
             /*!
-             *  \param problemName the name of the problem in which to set the parameter
+             *  \param problemName the name of the problem in which to set the Dirichlet boundary condition
              *  \param condition the boundary condition to enforce
              *  \param boundary the boundary on which to enforce the condition
              *  \param component the function space component on which the boundary condition should be imposed. 
@@ -195,9 +202,10 @@ namespace dcp
                                          const std::size_t& component,
                                          std::string bcName = "");
 
-            //! Add Dirichlet boundary condition to the problem [3]
+            //! Add Dirichlet boundary condition to the problem [3].
+            //! Wrapper for the method \c addDirichletBC() in \c dcp::TimeDependentProblem
             /*!
-             *  \param problemName the name of the problem in which to set the parameter
+             *  \param problemName the name of the problem in which to set the Dirichlet boundary condition
              *  \param condition the boundary condition to enforce
              *  \param boundary the boundary on which to enforce the condition
              *  \param bcName the name identifying the boundary condition. If empty,
@@ -210,9 +218,10 @@ namespace dcp
                                          std::shared_ptr<const dolfin::SubDomain> boundary,
                                          std::string bcName = "");
 
-            //! Add Dirichlet boundary condition to the problem [4]
+            //! Add Dirichlet boundary condition to the problem [4].
+            //! Wrapper for the method \c addDirichletBC() in \c dcp::TimeDependentProblem
             /*!
-             *  \param problemName the name of the problem in which to set the parameter
+             *  \param problemName the name of the problem in which to set the Dirichlet boundary condition
              *  \param condition the boundary condition to enforce
              *  \param boundary the boundary on which to enforce the condition
              *  \param component the function space component on which the boundary condition should be imposed. 
@@ -229,9 +238,10 @@ namespace dcp
                                          const std::size_t& component,
                                          std::string bcName = "");
 
-            //! Add Dirichlet boundary condition to the problem [5]
+            //! Add Dirichlet boundary condition to the problem [5].
+            //! Wrapper for the method \c addDirichletBC() in \c dcp::TimeDependentProblem
             /*!
-             *  \param problemName the name of the problem in which to set the parameter
+             *  \param problemName the name of the problem in which to set the Dirichlet boundary condition
              *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the problem
              *  \param bcName the name identifying the boundary condition. If empty,
              *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
@@ -242,9 +252,10 @@ namespace dcp
                                          const dolfin::DirichletBC& dirichletCondition, 
                                          std::string bcName = "");
 
-            //! Add Dirichlet boundary condition to the problem [6]
+            //! Add Dirichlet boundary condition to the problem [6].
+            //! Wrapper for the method \c addDirichletBC() in \c dcp::TimeDependentProblem
             /*!
-             *  \param problemName the name of the problem in which to set the parameter
+             *  \param problemName the name of the problem in which to set the Dirichlet boundary condition
              *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the problem
              *  \param bcName the name identifying the boundary condition. If empty, 
              *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
@@ -255,14 +266,59 @@ namespace dcp
                                          dolfin::DirichletBC&& dirichletCondition, 
                                          std::string bcName = "");
 
-            //! Remove Dirichlet boundary condition with given name
+            //! Remove Dirichlet boundary condition with given name.
+            //! Wrapper for the method \c removeDirichletBC() in \c dcp::TimeDependentProblem
             /*!
-             *  \param problemName the name of the problem in which to set the parameter
+             *  \param problemName the name of the problem from which the boundary condition should be removed
              *  \param bcName name of the boundary condition to be removed.
              *  
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
             virtual bool removeDirichletBC (const std::string& problemName, const std::string& bcName);
+            
+            //! Add time dependend Dirichlet boundary condition to the problem [1].
+            //! Wrapper for the method \c addTimeDependentDirichletBC() in \c dcp::TimeDependentProblem
+            /*! 
+             *  \param problemName the name of the problem in which to set the Dirichlet boundary condition
+             *  \param condition the callable object defining the boundary condition to enforce
+             *  \param boundary the callable object defining the boundary on which to enforce the condition
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<timeDependentDirichletBCsCounter_>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addTimeDependentDirichletBC (const std::string& problemName,
+                                                      const dcp::TimeDependentExpression& condition, 
+                                                      const dcp::Subdomain& boundary,
+                                                      std::string bcName = "");
+
+            //! Add time dependend Dirichlet boundary condition to the problem [2].
+            //! Wrapper for the method \c addTimeDependentDirichletBC() in \c dcp::TimeDependentProblem
+            /*! 
+             *  \param problemName the name of the problem in which to set the Dirichlet boundary condition
+             *  \param condition the callable object defining the boundary condition to enforce
+             *  \param boundary the callable object defining the boundary on which to enforce the condition
+             *  \param component the function space component on which the boundary condition should be imposed. 
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<timeDependentDirichletBCsCounter_>" will be used as default name
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addTimeDependentDirichletBC (const std::string& problemName,
+                                                      const dcp::TimeDependentExpression& condition, 
+                                                      const dcp::Subdomain& boundary,
+                                                      const std::size_t& component,
+                                                      std::string bcName = "");
+
+            //! Remove time dependent Dirichlet boundary condition with given name. .
+            //! Wrapper for the method \c removeTimeDependentDirichletBC() in \c dcp::TimeDependentProblem
+            /*!
+             *  \param problemName the name of the problem from which the boundary condition should be removed
+             *  \param bcName name of the boundary condition to be removed.
+             *  
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool removeTimeDependentDirichletBC (const std::string& problemName, const std::string& bcName);
             
             /********************** METHODS ***********************/
 

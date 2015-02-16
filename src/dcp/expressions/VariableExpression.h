@@ -28,6 +28,8 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <dcp/expressions/GenericExpression.h>
+#include <dcp/expressions/Expression.h>
 #include <dcp/expressions/DefaultEvaluator.h>
 
 namespace dcp
@@ -48,18 +50,21 @@ namespace dcp
      *  called when the \c eval() method is called. Note that if no functional is passed to the constructor, a default
      *  one will be used (see constructor documentation), so that if an object of type \c dcp::VariableExpression is
      *  built without setting the protected member functional the behaviour is the same as what happens when a 
-     *  \c dolfin::Expression is built (that is, the \c eval() method will issue an error)
+     *  \c dolfin::Expression is built (that is, the \c eval() method will issue an error).
+     *  The former method is provided for ease of use, but the latter one should be preferred. In particular, note that
+     *  if you choose to use the first method, you will probably want to override the \c clone() method as well in
+     *  the derived class.
      */
-    class VariableExpression : public dolfin::Expression
+    class VariableExpression : public dcp::Expression
     {
         // ---------------------------------------------------------------------------------------------//  
         public:
             typedef std::function <void (dolfin::Array<double>&, 
                                          const dolfin::Array<double>&, 
                                          const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >&)
-                                  >
-                    Evaluator;
-            
+                >
+                Evaluator;
+
             /******************* CONSTRUCTORS *******************/
             //! Default constructor. Create scalar expression. 
             /*
@@ -69,7 +74,7 @@ namespace dcp
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */
             VariableExpression (const Evaluator& evaluator = dcp::DefaultEvaluator ());
-            
+
             //! Create vector-valued expression with given dimension. This will call the appropriate 
             //! \c dolfin::Expression constructor
             /*
@@ -116,7 +121,7 @@ namespace dcp
              */
             VariableExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
                                 const Evaluator& evaluator = dcp::DefaultEvaluator ());
-            
+
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
             /*
@@ -148,7 +153,7 @@ namespace dcp
                  std::size_t dim1,
                  const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
                  const Evaluator& evaluator = dcp::DefaultEvaluator ());
-                 
+
 
             //! Create tensor-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -171,15 +176,15 @@ namespace dcp
              *  \param expression object to be copied
              */
             VariableExpression (const VariableExpression& expression) = default;
-            
+
             //! Default move constructor
             /*!
              *  Input arguments:
              *  \param expression object to be moved
              */
             VariableExpression (VariableExpression&& expression) = default;
-            
-            
+
+
             /******************* DESTRUCTOR *******************/
             //! Default destructor                
             /*! 
@@ -189,54 +194,8 @@ namespace dcp
             virtual ~VariableExpression () {};
 
 
-            /******************* SETTERS *******************/
-            //! Sets value for the variable with given name
-            /*! 
-             *  Input arguments are:
-             *  \param variableName string identifying the variable we want to set
-             *  \param value the value of such variable, given as a shared pointer to a \c dolfin::GenericFunction
-             *  
-             *  The pair created by the two input arguments will be inserted in the protected member \c variables_
-             */
-            virtual void setCoefficient (const std::string& variableName, 
-                                         const std::shared_ptr <const dolfin::GenericFunction> value);
-
-
-            /******************* GETTERS *******************/
-            //! Get variable with given name and return it as a <tt> const dolfin::Function& </tt>
-            /*! 
-             *  Input arguments are:
-             *  \param variableName the name of the variable to be returned. The method will look for an object with key
-             *  matching \c name in the map \c variables_
-             *
-             *  \return the function, if found, as a <tt> const dolfin::Function& </tt>
-             */
-            virtual const dolfin::Function& function (const std::string& variableName) const;
-
-            //! Get variable with given name and return it as a <tt> const dolfin::Expression& </tt>
-            /*! 
-             *  Input arguments are:
-             *  \param variableName the name of the variable to be returned. The method will look for an object with key
-             *  matching \c name in the map \c variables_
-             *
-             *  \return the function, if found, as a <tt> const dolfin::Expression& </tt>
-             */
-            virtual const dolfin::Expression& expression (const std::string& variableName) const;
-
-
             /******************* METHODS *******************/
-            //! Evaluate at given point in given cell. Overrides method in \c dolfin::Expression
-            /*!
-             *  Input arguments are:
-             *  \param values array that will contain the evaluated function at the given point
-             *  \param x the coordinates of the point
-             *  \param cell the cell which contains the given point
-             */
-            virtual void eval (dolfin::Array<double>& values, 
-                               const dolfin::Array<double>& x, 
-                               const ufc::cell& cell) const override;
-
-            //! Evaluate at given point in given cell. Overrides method in \c dolfin::Expression
+            //! Evaluate at given point in given cell
             /*!
              *  Input arguments are:
              *  \param values array that will contain the evaluated function at the given point
@@ -244,24 +203,19 @@ namespace dcp
              */
             virtual void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override;
 
-            //! Evaluate variable identified by given name at given point
+            //! Clone method
             /*!
-             *  Input arguments are:
-             *  \param variableName string to identify the variable we want to evaluate
-             *  \param values array that will contain the evaluated function at the given point
-             *  \param x the coordinates of the point at which evaluate the variable
+             *  \return a pointer to the cloned object
              */
-            virtual void evaluateVariable (const std::string& variableName, 
-                                           dolfin::Array<double>& values, 
-                                           const dolfin::Array<double>& x) const;
+            virtual dcp::VariableExpression* clone () const override;
 
-        // ---------------------------------------------------------------------------------------------//  
+            // ---------------------------------------------------------------------------------------------//  
         protected:
             //! The map that associates variables' names and values
             std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> > variables_;
 
 
-        // ---------------------------------------------------------------------------------------------//  
+            // ---------------------------------------------------------------------------------------------//  
         private:
             //! The evaluator to use when the \c eval() method is called. Made private so that it cannot be used in
             //! derived classes, since it would make no sense. Derived classes should define their own evaluator

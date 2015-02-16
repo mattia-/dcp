@@ -43,7 +43,7 @@ namespace dcp
             /******************* CONSTRUCTORS *******************/
             //! Default constructor. Create scalar expression
             DefaultEvaluator () = default;
-            
+
             /******************* DESTRUCTOR *******************/
             //! Default destructor                
             /*! 
@@ -55,19 +55,22 @@ namespace dcp
             /******************* METHODS *******************/
             //! Call operator for \c dcp::Expression default evaluator
             void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x);
-            
+
             //! Call operator for \c dcp::VariableExpression default evaluator
             void operator() (dolfin::Array<double>& values, 
                              const dolfin::Array<double>& x, 
                              const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables);
-            
-            //! Call operator for \c dcp::TimeDependentExpression default evaluator
+
+            //! Call operator for \c dcp::TimeDependentVariableExpression default evaluator
+            void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t);
+
+            //! Call operator for \c dcp::TimeDependentVariableExpression default evaluator
             void operator() (dolfin::Array<double>& values, 
                              const dolfin::Array<double>& x, 
                              const double& t,
                              const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables);
-            
-        // ---------------------------------------------------------------------------------------------//  
+
+            // ---------------------------------------------------------------------------------------------//  
         protected:
     };
 }

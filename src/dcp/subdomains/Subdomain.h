@@ -66,6 +66,12 @@ namespace dcp
              *  \param on_boundary \c true for points on the boundary
              */
             virtual bool inside (const dolfin::Array<double>& x, bool on_boundary) const;
+            
+            //! Clone method
+            /*!
+             *  \return a pointer to the cloned object
+             */
+            virtual dcp::Subdomain* clone () const;
 
         // ---------------------------------------------------------------------------------------------//  
         protected:

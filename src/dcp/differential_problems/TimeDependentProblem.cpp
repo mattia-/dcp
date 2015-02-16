@@ -177,89 +177,6 @@ namespace dcp
 
 
     /******************* SETTERS *******************/
-    bool TimeDependentProblem::addTimeDependentDirichletBC (const dcp::TimeDependentExpression::Evaluator& condition, 
-                                                            const dcp::Subdomain::Evaluator& boundary,
-                                                            std::string bcName)
-    {
-        if (bcName.empty ())
-        {
-            bcName = "time_dependent_dirichlet_condition_" + std::to_string (timeDependentDirichletBCsCounter_);
-            timeDependentDirichletBCsCounter_++;
-        }
-
-        dolfin::log (dolfin::DBG, 
-                     "Adding dirichlet boundary condition to time dependent boundary conditions map with name \"%s\"...",
-                     bcName.c_str ());
-
-        // TODO con il make_tuple gli oggetti sono indipendenti?? Sembra di sì, secondo me
-        auto result = timeDependentDirichletBCs_.emplace (bcName, std::make_tuple (condition, boundary, -1));
-
-        bool bcWasAdded = result.second;
-
-        if (bcWasAdded == false)
-        {
-            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
-                             bcName.c_str ());
-        }
-        else
-        {
-            dolfin::begin (dolfin::DBG, 
-                           "Adding dirichlet boundary condition to time stepping boundary conditions map with name \"%s\"...",
-                           bcName.c_str ());
-            bcWasAdded = bcWasAdded && addDirichletBC (dcp::TimeDependentExpression (condition), 
-                                                       dcp::Subdomain (boundary), 
-                                                       bcName);
-            dolfin::end ();
-        }
-
-        return bcWasAdded;
-    }
-
-
-
-    bool TimeDependentProblem::addTimeDependentDirichletBC (const dcp::TimeDependentExpression::Evaluator& condition, 
-                                                            const dcp::Subdomain::Evaluator& boundary,
-                                                            const std::size_t& component,
-                                                            std::string bcName)
-    {
-        if (bcName.empty ())
-        {
-            bcName = "time_dependent_dirichlet_condition_" + std::to_string (timeDependentDirichletBCsCounter_);
-            timeDependentDirichletBCsCounter_++;
-        }
-
-        dolfin::log (dolfin::DBG, 
-                     "Adding dirichlet boundary condition to time dependent boundary conditions map with name \"%s\"...",
-                     bcName.c_str ());
-
-        // TODO con il make_tuple gli oggetti sono indipendenti?? Sembra di sì, secondo me
-        auto result = timeDependentDirichletBCs_.emplace (bcName, std::make_tuple (condition, boundary, component));
-
-        bool bcWasAdded = result.second;
-
-        if (bcWasAdded == false)
-        {
-            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
-                             bcName.c_str ());
-        }
-        else
-        {
-            dolfin::begin (dolfin::DBG, 
-                           "Adding dirichlet boundary condition to time stepping boundary conditions map with name \"%s\"...",
-                           bcName.c_str ());
-            bcWasAdded = bcWasAdded && addDirichletBC (dcp::TimeDependentExpression (condition), 
-                                                       dcp::Subdomain (boundary), 
-                                                       component,
-                                                       bcName);
-            dolfin::end ();
-        }
-
-
-        return result.second;
-    }
-    
-    
-
     void TimeDependentProblem::setInitialSolution (const dolfin::Function& initialSolution)
     {
         solution_.back () = initialSolution;
@@ -363,6 +280,97 @@ namespace dcp
 
     
         
+    bool TimeDependentProblem::addTimeDependentDirichletBC (const dcp::TimeDependentExpression& condition, 
+                                                            const dcp::Subdomain& boundary,
+                                                            std::string bcName)
+    {
+        if (bcName.empty ())
+        {
+            bcName = "time_dependent_dirichlet_condition_" + std::to_string (timeDependentDirichletBCsCounter_);
+            timeDependentDirichletBCsCounter_++;
+        }
+
+        dolfin::log (dolfin::DBG, 
+                     "Adding dirichlet boundary condition to time dependent boundary conditions map with name \"%s\"...",
+                     bcName.c_str ());
+
+        auto result = timeDependentDirichletBCs_.emplace 
+            (bcName, 
+             std::make_tuple (std::shared_ptr<dcp::TimeDependentExpression> (condition.clone ()), 
+                              std::shared_ptr<dcp::Subdomain> (boundary.clone ()), 
+                              -1)
+             );
+
+        bool bcWasAdded = result.second;
+
+        if (bcWasAdded == false)
+        {
+            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+                             bcName.c_str ());
+        }
+        else
+        {
+            dolfin::begin (dolfin::DBG, 
+                           "Adding dirichlet boundary condition to time stepping boundary conditions map with name \"%s\"...",
+                           bcName.c_str ());
+            bcWasAdded = bcWasAdded && addDirichletBC (std::get<0> ((result.first)->second),
+                                                       std::get<1> ((result.first)->second),
+                                                       bcName);
+            dolfin::end ();
+        }
+
+        return bcWasAdded;
+    }
+
+
+
+    bool TimeDependentProblem::addTimeDependentDirichletBC (const dcp::TimeDependentExpression& condition, 
+                                                            const dcp::Subdomain& boundary,
+                                                            const std::size_t& component,
+                                                            std::string bcName)
+    {
+        if (bcName.empty ())
+        {
+            bcName = "time_dependent_dirichlet_condition_" + std::to_string (timeDependentDirichletBCsCounter_);
+            timeDependentDirichletBCsCounter_++;
+        }
+
+        dolfin::log (dolfin::DBG, 
+                     "Adding dirichlet boundary condition to time dependent boundary conditions map with name \"%s\"...",
+                     bcName.c_str ());
+
+        auto result = timeDependentDirichletBCs_.emplace 
+            (bcName, 
+             std::make_tuple (std::shared_ptr<dcp::TimeDependentExpression> (condition.clone ()), 
+                              std::shared_ptr<dcp::Subdomain> (boundary.clone ()), 
+                              component)
+             );
+
+        bool bcWasAdded = result.second;
+
+        if (bcWasAdded == false)
+        {
+            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+                             bcName.c_str ());
+        }
+        else
+        {
+            dolfin::begin (dolfin::DBG, 
+                           "Adding dirichlet boundary condition to time stepping boundary conditions map with name \"%s\"...",
+                           bcName.c_str ());
+            bcWasAdded = bcWasAdded && addDirichletBC (std::get<0> ((result.first)->second),
+                                                       std::get<1> ((result.first)->second),
+                                                       component,
+                                                       bcName);
+            dolfin::end ();
+        }
+
+
+        return result.second;
+    }
+    
+    
+
     bool TimeDependentProblem::removeTimeDependentDirichletBC (const std::string& bcName)
     {
         dolfin::log (dolfin::DBG, 
@@ -394,7 +402,7 @@ namespace dcp
                                                             const std::string& coefficientType,
                                                             std::shared_ptr<dcp::TimeDependentExpression> expression)
     {
-        dolfin::log (dolfin::DBG, 
+        dolfin::begin (dolfin::DBG, 
                        "Inserting time dependent coefficient in map with name \"%s\" and type \"%s\"...",
                        coefficientName.c_str (),
                        coefficientType.c_str ());
@@ -415,7 +423,7 @@ namespace dcp
     bool TimeDependentProblem::removeTimeDependentCoefficient (const std::string& coefficientName,
                                                                const std::string& coefficientType)
     {
-        dolfin::log (dolfin::DBG, 
+        dolfin::begin (dolfin::DBG, 
                        "Removing time dependent coefficient with name \"%s\" and type \"%s\" from map...",
                        coefficientName.c_str (),
                        coefficientType.c_str ());
@@ -667,6 +675,7 @@ namespace dcp
             // previousSolutionCoefficientTypes, because they will be copied when the parameters are copied anyway
             clonedProblem = 
                 new dcp::TimeDependentProblem (this->timeSteppingProblem_, startTime_, dt_, endTime_, {}, {});
+            clonedProblem->timeDependentDirichletBCs_ = this->timeDependentDirichletBCs_;
         }
         else if (cloneMethod == "deep_clone")
         {
@@ -681,15 +690,21 @@ namespace dcp
                                   "clone",
                                   "Cannot clone time dependent differential problem. Unknown clone method: \"%s\"",
                                   cloneMethod.c_str ());
+            for (auto& bc : this->timeDependentDirichletBCs_)
+            {
+                clonedProblem->addTimeDependentDirichletBC (*(std::get<0> (bc.second)),
+                                                            *(std::get<1> (bc.second)),
+                                                            std::get<2> (bc.second),
+                                                            bc.first);
+            }
         }
         
         //copy dirichlet boundary conditions
         dolfin::log (dolfin::DBG, "Copying Dirichlet boundary conditions...");
-        for (auto &i : this->dirichletBCs_)
+        for (auto& bc : this->dirichletBCs_)
         {
-            clonedProblem->addDirichletBC (i.second, i.first);
+            clonedProblem->addDirichletBC (bc.second, bc.first);
         }
-        clonedProblem->timeDependentDirichletBCs_ = this->timeDependentDirichletBCs_;
 
         // clear parameters set of newly created object so that it can be populated by the parameters of the object
         // being created. 
@@ -747,33 +762,6 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Skipping previous solution setting loop since it is set externally.");
         }
     }
-    
-
-
-    void TimeDependentProblem::setTimeDependentCoefficients ()
-    {
-        dolfin::begin (dolfin::DBG, "Setting time dependent coefficients...");
-        
-        for (auto& coefficientPair : timeDependentCoefficients_)
-        {
-            std::shared_ptr <dcp::TimeDependentExpression> expression (coefficientPair.second);
-            std::string coefficientName = std::get<0> (coefficientPair.first);
-            std::string coefficientType = std::get<1> (coefficientPair.first);
-            dolfin::begin (dolfin::DBG, 
-                         "Coefficient: name \"%s\", type \"%s\"", 
-                         coefficientName.c_str (),
-                         coefficientType.c_str ());
-            
-            dolfin::log (dolfin::DBG, "Setting time in time dependent expression...");
-            expression->setTime (t_);
-            
-            timeSteppingProblem_->setCoefficient (coefficientType, expression, coefficientName);
-            
-            dolfin::end ();
-        }
-        
-        dolfin::end ();
-    }
             
     
 
@@ -802,16 +790,15 @@ namespace dcp
         // get bc name
         std::string bcName = bcIterator->first;
         
-        // create dcp::TimeDependentExpression object and set time equal to t_
-        dcp::TimeDependentExpression condition (std::get<0> (bcIterator->second));
-        condition.setTime (t_);
+        // get dcp::TimeDependentExpression object and set time equal to t_
+        std::shared_ptr<dcp::TimeDependentExpression> condition = std::get<0> (bcIterator->second);
+        condition->setTime (t_);
         
-        // create dcp::Subdomain object
-        dcp::Subdomain boundary (std::get<1> (bcIterator->second));
+        // get dcp::Subdomain object
+        std::shared_ptr<dcp::Subdomain> boundary = std::get<1> (bcIterator->second);
 
         // get component on which to enforce the bc
         int component = std::get<2> (bcIterator->second);
-        
         
         dolfin::begin (dolfin::DBG, 
                        "Resetting time dependent Dirichlet's boundary condition \"%s\"...", 
@@ -834,7 +821,34 @@ namespace dcp
     }
 
     
+
+    void TimeDependentProblem::setTimeDependentCoefficients ()
+    {
+        dolfin::begin (dolfin::DBG, "Setting time dependent coefficients...");
+        
+        for (auto& coefficientPair : timeDependentCoefficients_)
+        {
+            std::shared_ptr <dcp::TimeDependentExpression> expression (coefficientPair.second);
+            std::string coefficientName = std::get<0> (coefficientPair.first);
+            std::string coefficientType = std::get<1> (coefficientPair.first);
+            dolfin::begin (dolfin::DBG, 
+                         "Coefficient: name \"%s\", type \"%s\"", 
+                         coefficientName.c_str (),
+                         coefficientType.c_str ());
             
+            dolfin::log (dolfin::DBG, "Setting time in time dependent expression...");
+            expression->setTime (t_);
+            
+            timeSteppingProblem_->setCoefficient (coefficientType, expression, coefficientName);
+            
+            dolfin::end ();
+        }
+        
+        dolfin::end ();
+    }
+    
+            
+    
     void TimeDependentProblem::printFinishedWarning ()
     {
         dolfin::warning ("No time iteration performed in solve() function. End time already reached.");

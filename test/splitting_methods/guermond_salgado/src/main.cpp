@@ -148,7 +148,6 @@ int main (int argc, char* argv[])
     guermondSalgadoMethod.setInitialSolution ("density_problem", exactRho);
     guermondSalgadoMethod.setInitialSolution ("velocity_problem", exactU);
     guermondSalgadoMethod.setInitialSolution ("pressure_update_problem", exactP);
-    guermondSalgadoMethod.setInitialSolution ("pressure_correction_problem", exactP);
     
     
     // define dirichlet boundary conditions
@@ -178,6 +177,7 @@ int main (int argc, char* argv[])
         guermondSalgadoMethod.problem (name).parameters ["plot_interval"] = 1;
         guermondSalgadoMethod.problem (name).parameters ["plot_title"] = name;
     }
+    guermondSalgadoMethod.problem ("pressure_update_problem").parameters ["pause"] = true;
     
     // plots
     dolfin::plot (mesh, "Mesh");

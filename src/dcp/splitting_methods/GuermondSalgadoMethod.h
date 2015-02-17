@@ -262,7 +262,7 @@ namespace dcp
 
         parameters ["splitting_method_type"] = "guermond_salgado";
         
-        dolfin::log (dolfin::DBG, "Creating the time stepping linear problems...");
+        dolfin::begin (dolfin::DBG, "Creating the time stepping linear problems...");
 
         // define the problems
         // 1) density problem
@@ -347,6 +347,7 @@ namespace dcp
 
         dolfin::end (); // "Creating pressure update problem..."
 
+        dolfin::end (); // "Creating the time stepping linear problems..."
 
         // define the system
         dolfin::begin ("Creating time dependent Guermond-Salgado system...");
@@ -471,7 +472,7 @@ namespace dcp
 
         parameters ["splitting_method_type"] = "guermond_salgado";
         
-        dolfin::log (dolfin::DBG, "Creating the time stepping linear problems...");
+        dolfin::begin (dolfin::DBG, "Creating the time stepping linear problems...");
 
         // define the problems
         // 1) density problem
@@ -556,6 +557,7 @@ namespace dcp
 
         dolfin::end (); // "Creating pressure update problem..."
 
+        dolfin::end (); // "Creating the time stepping linear problems..."
 
         // define the system
         dolfin::begin (dolfin::DBG, "Creating time dependent Guermond-Salgado system...");

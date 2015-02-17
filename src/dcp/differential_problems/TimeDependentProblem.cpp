@@ -290,9 +290,9 @@ namespace dcp
             timeDependentDirichletBCsCounter_++;
         }
 
-        dolfin::log (dolfin::DBG, 
-                     "Adding dirichlet boundary condition to time dependent boundary conditions map with name \"%s\"...",
-                     bcName.c_str ());
+        dolfin::begin (dolfin::DBG, 
+                       "Adding dirichlet boundary condition to time dependent boundary conditions map with name \"%s\"...",
+                       bcName.c_str ());
 
         auto result = timeDependentDirichletBCs_.emplace 
             (bcName, 
@@ -311,13 +311,15 @@ namespace dcp
         else
         {
             dolfin::begin (dolfin::DBG, 
-                           "Adding dirichlet boundary condition to time stepping boundary conditions map with name \"%s\"...",
+                           "Adding dirichlet boundary condition to time stepping problem boundary conditions map with name \"%s\"...",
                            bcName.c_str ());
             bcWasAdded = bcWasAdded && addDirichletBC (std::get<0> ((result.first)->second),
                                                        std::get<1> ((result.first)->second),
                                                        bcName);
             dolfin::end ();
         }
+        
+        dolfin::end ();
 
         return bcWasAdded;
     }
@@ -335,9 +337,9 @@ namespace dcp
             timeDependentDirichletBCsCounter_++;
         }
 
-        dolfin::log (dolfin::DBG, 
-                     "Adding dirichlet boundary condition to time dependent boundary conditions map with name \"%s\"...",
-                     bcName.c_str ());
+        dolfin::begin (dolfin::DBG, 
+                       "Adding dirichlet boundary condition to time dependent boundary conditions map with name \"%s\"...",
+                       bcName.c_str ());
 
         auto result = timeDependentDirichletBCs_.emplace 
             (bcName, 
@@ -356,7 +358,7 @@ namespace dcp
         else
         {
             dolfin::begin (dolfin::DBG, 
-                           "Adding dirichlet boundary condition to time stepping boundary conditions map with name \"%s\"...",
+                           "Adding dirichlet boundary condition to time stepping problem boundary conditions map with name \"%s\"...",
                            bcName.c_str ());
             bcWasAdded = bcWasAdded && addDirichletBC (std::get<0> ((result.first)->second),
                                                        std::get<1> ((result.first)->second),
@@ -365,6 +367,7 @@ namespace dcp
             dolfin::end ();
         }
 
+        dolfin::end ();
 
         return result.second;
     }
@@ -373,7 +376,7 @@ namespace dcp
 
     bool TimeDependentProblem::removeTimeDependentDirichletBC (const std::string& bcName)
     {
-        dolfin::log (dolfin::DBG, 
+        dolfin::begin (dolfin::DBG, 
                      "Removing dirichlet boundary condition \"%s\" from time dependent boundary conditions map...", 
                      bcName.c_str ());
         std::size_t nErasedElements = timeDependentDirichletBCs_.erase (bcName);
@@ -392,6 +395,8 @@ namespace dcp
         nErasedElements += removeDirichletBC (bcName);
         dolfin::end ();
 
+        dolfin::end ();
+        
         // remember: both removal were ok if nErasedElements was equal to 1 both times!
         return nErasedElements == 2? true : false;
     }
@@ -415,6 +420,8 @@ namespace dcp
             dolfin::warning ("Time dependent coefficient not inserted because key is already present in map");
         }
         
+        dolfin::end ();
+        
         return result.second;
     }
 
@@ -436,6 +443,8 @@ namespace dcp
         {
             dolfin::warning ("Time dependent coefficient not removed: key was not found in map");
         }
+        
+        dolfin::end ();
         
         return nErasedElements == 1? true : false;
     }

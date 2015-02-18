@@ -159,6 +159,16 @@ namespace dcp
                                   const int& linkToComponent,
                                   const bool& forceRelinking = false);
             
+            //! Remove link between problems' coefficient and solution
+            /*!
+             *  Removes the link identified by the given <tt>dcp::AbstractEquationSystem::LinkKey</tt> 
+             *  from the protected member \c problemsLinks_ .
+             *  \param linkKey the key identifying the link
+             *  
+             *  \return \c true if the link was removed, \c false otherwise
+             */
+            bool removeLink (const LinkKey& linkKey);
+            
             //! Access problem with given name [1] (read only)
             /*!
              *  \param name name of the problem to be accessed. If the name is not found, the function prints an

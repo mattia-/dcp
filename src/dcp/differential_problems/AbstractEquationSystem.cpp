@@ -382,6 +382,13 @@ namespace dcp
         }
         dolfin::end ();
     }
+    
+
+
+    bool AbstractEquationSystem::removeLink (const dcp::AbstractEquationSystem::LinkKey& linkKey)
+    {
+        return (problemsLinks_.erase (linkKey)) == 1 ? true : false;
+    }
             
 
 

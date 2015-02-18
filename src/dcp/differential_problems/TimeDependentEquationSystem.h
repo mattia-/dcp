@@ -112,6 +112,16 @@ namespace dcp
                                                     const int& nStepsBack,
                                                     const bool& forceRelinking = false);
             
+            //! Remove link between problems' coefficient and solution at a previous time step
+            /*!
+             *  Removes the link identified by the given <tt>dcp::AbstractEquationSystem::LinkKey</tt> 
+             *  from the protected member \c linksToPreviousSolutions_ .
+             *  \param linkKey the key identifying the link
+             *  
+             *  \return \c true if the link was removed, \c false otherwise
+             */
+            bool removeLinkToPreviousSolution (const LinkKey& linkKey);
+            
             //! Check if system time loop is finished. It basically calls the function \c isFinished() on every problem
             //! stored in \c storedProblems_ and checks if the number of problems whose time loop has ended is equal 
             //! to the size of \c storedProblems_

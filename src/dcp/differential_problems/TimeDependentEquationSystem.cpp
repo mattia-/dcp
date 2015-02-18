@@ -214,8 +214,11 @@ namespace dcp
             
 
 
-    bool TimeDependentEquationSystem::removeLinkToPreviousSolution (const dcp::AbstractEquationSystem::LinkKey& linkKey)
+    bool TimeDependentEquationSystem::removeLinkToPreviousSolution (const std::string& linkFrom, 
+                                                                    const std::string& linkedCoefficientName,
+                                                                    const std::string& linkedCoefficientType)
     {
+        auto linkKey = std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType);
         return (linksToPreviousSolutions_.erase (linkKey)) == 1 ? true : false;
     }
             

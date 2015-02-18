@@ -161,13 +161,15 @@ namespace dcp
             
             //! Remove link between problems' coefficient and solution
             /*!
-             *  Removes the link identified by the given <tt>dcp::AbstractEquationSystem::LinkKey</tt> 
-             *  from the protected member \c problemsLinks_ .
-             *  \param linkKey the key identifying the link
+             *  Removes the link identified by the input arguments from the protected member \c problemsLinks_ .
+             *  The input arguments will be used to create an object of \c dcp::AbstractProblem::LinkKey to use
+             *  to erase the corresponding entry from \c problemsLinks_ .
              *  
              *  \return \c true if the link was removed, \c false otherwise
              */
-            bool removeLink (const LinkKey& linkKey);
+            bool removeLink (const std::string& linkFrom, 
+                             const std::string& linkedCoefficientName, 
+                             const std::string& linkedCoefficientType);
             
             //! Access problem with given name [1] (read only)
             /*!

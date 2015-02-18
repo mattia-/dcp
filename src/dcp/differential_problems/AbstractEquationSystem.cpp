@@ -385,8 +385,11 @@ namespace dcp
     
 
 
-    bool AbstractEquationSystem::removeLink (const dcp::AbstractEquationSystem::LinkKey& linkKey)
+    bool AbstractEquationSystem::removeLink (const std::string& linkFrom, 
+                                             const std::string& linkedCoefficientName, 
+                                             const std::string& linkedCoefficientType)
     {
+        auto linkKey = std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType);
         return (problemsLinks_.erase (linkKey)) == 1 ? true : false;
     }
             

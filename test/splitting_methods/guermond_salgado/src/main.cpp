@@ -121,8 +121,8 @@ int main (int argc, char* argv[])
     dolfin::Constant mu (1e-1);
     dolfin::Constant chi (1);
     double t0 = 0.0;
-    double dt = 0.1;
-    double T = 10;
+    double dt = 0.01;
+    double T = 1;
     
     // exact solution
     dcp::TimeDependentExpression exactRho ((exact_solutions::RhoEvaluator ()));

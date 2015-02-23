@@ -1,0 +1,24 @@
+# third step of the Guermond-Salgado splitting method
+
+# domain type
+cell = triangle
+
+# function spaces
+Q = FiniteElement ("Lagrange", cell, 1)
+
+# coefficients
+dt = Constant (cell)
+chi = Constant (cell)
+divu = Coefficient (Q)
+    
+# test and trial functions
+phi = TrialFunction (Q)
+psi = TestFunction (Q)
+    
+# pressure correction equation
+# lhs
+a = - inner (grad (phi), grad (psi)) * dx
+
+# rhs
+L = chi / dt * inner (divu, psi) * dx
+

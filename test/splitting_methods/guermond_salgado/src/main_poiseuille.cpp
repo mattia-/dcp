@@ -113,7 +113,7 @@ namespace exact_solutions
         public:
             void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
             {
-                values[0] = -2 * muValue / rhoValue *x[0] + 2 * muValue / rhoValue * 5;
+                values[0] = -2 * muValue / rhoValue * x[0] + 2 * muValue / rhoValue * 5;
             }
     };
 }
@@ -132,7 +132,7 @@ int main (int argc, char* argv[])
     // define constant
     std::cout << "Define the coefficients..." << std::endl;
     dolfin::Constant mu (muValue);
-    dolfin::Constant chi (1.0);
+    dolfin::Constant chi (rhoValue);
     double t0 = 0.0;
     double dt = 0.1;
     dolfin::Constant dtConst (dt);
@@ -164,17 +164,28 @@ int main (int argc, char* argv[])
     guermondSalgadoMethod.setInitialSolution ("pressure_update_problem", exactP);
     
     
+    dolfin::plot (guermondSalgadoMethod.problem ("density_problem").solution (), "rho iniziale");
     dolfin::plot (guermondSalgadoMethod.problem ("pressure_update_problem").solution (), "p iniziale");
     dolfin::plot (guermondSalgadoMethod.problem ("velocity_problem").solution (), "u iniziale");
 //    dolfin::interactive ();
     
+    
+    dolfin::Constant zero (0.0);
+    
     // ******************************************************** //
     guermondSalgadoMethod.system ().removeLink ("velocity_problem", "rho", "bilinear_form");
+    guermondSalgadoMethod.system ().removeLink ("velocity_problem", "phi_old", "bilinear_form");
+    guermondSalgadoMethod.system ().removeLink ("velocity_problem", "p_old", "bilinear_form");
+    guermondSalgadoMethod.system ().removeLink ("pressure_correction_problem", "u", "linear_form");
     guermondSalgadoMethod.system ().removeLinkToPreviousSolution ("velocity_problem", "rho_old", "bilinear_form"); 
     guermondSalgadoMethod.system ().removeLinkToPreviousSolution ("velocity_problem", "rho_old", "linear_form"); 
     guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (exactRho),  "rho");
+    guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (exactRho),  "rho");
     guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (exactRho),  "rho_old");
     guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (exactRho),  "rho_old");
+    guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (zero),  "phi_old");
+    guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (exactP),  "p_old");
+    guermondSalgadoMethod.problem ("pressure_correction_problem").setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (exactU),  "u");
     // ******************************************************** //
     
     // define dirichlet boundary conditions
@@ -182,7 +193,6 @@ int main (int argc, char* argv[])
     dcp::Subdomain noSlipBoundary ((navierstokes::NoSlipBoundaryEvaluator ()));
     dcp::Subdomain inflowBoundary ((navierstokes::InflowBoundaryEvaluator ()));
     dcp::Subdomain outflowBoundary ((navierstokes::OutflowBoundaryEvaluator ()));
-    dolfin::Constant zero (0.0);
     
     std::cout << "Setting up dirichlet's boundary conditions for 'velocity_problem'" << std::endl;
     guermondSalgadoMethod.addDirichletBC ("density_problem", exactRho, inflowBoundary);
@@ -200,7 +210,6 @@ int main (int argc, char* argv[])
         ("f2", 
          "linear_form", 
          dolfin::reference_to_no_delete_pointer (f2));
-    guermondSalgadoMethod.system ().addLink ("velocity_problem", "rho", "linear_form", "density_problem");
         
     
     // define time dependent external loads
@@ -357,7 +366,7 @@ int main (int argc, char* argv[])
         phiDiff = pressureCorrection2 - compPhi;
 //        dolfin::plot (phiDiff, "phi diff");
                
-        dolfin::interactive ();
+//        dolfin::interactive ();
     }
     std::cout << "done" << std::endl;
     

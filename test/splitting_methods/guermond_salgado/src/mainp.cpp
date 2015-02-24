@@ -26,12 +26,10 @@
 #include <dcp/expressions/expressions.h>
 #include <dcp/subdomains/subdomains.h>
 #include "density.h"
-#include "velocity2.h"
+#include "velocity.h"
 #include "pressure_correction.h"
 #include "pressure_update.h"
 #include "error_computers.h"
-#include "my_div.h"
-#include "pressure_correction_2.h"
 #include <fstream>
 
 double rhoValue = 1.0;
@@ -59,37 +57,14 @@ namespace navierstokes
             }
     }; 
     
-    class NeumannBC
-    {
-        public:
-            void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
-            {
-                values[0] = -sin (x[0]) * sin (x[1]) * (2 * cos (2*t) + 2 * muValue / rhoValue * sin (2*t)); 
-                values[1] = -cos (x[0]) * cos (x[1]) * (2 * cos (2*t) + 2 * muValue / rhoValue * sin (2*t)); 
-            }
-    };
-    
     class DirichletBoundaryEvaluator
     { 
         public:
             bool operator() (const dolfin::Array<double>& x, bool on_boundary)
             {
-                return (dolfin::near (x[1], 0) && on_boundary)
-                       ||
-                       (dolfin::near (x[1], 1) && on_boundary)
-                       ||
-                       (dolfin::near (x[0], 1) && on_boundary);
+                return on_boundary;
             }
     }; 
-    
-    class NeumannBoundaryEvaluator
-    {
-        public:
-            bool operator() (const dolfin::Array<double>& x, bool on_boundary)
-            {
-                return (dolfin::near (x[0], 0) && on_boundary);
-            }
-    };
 }
 
 namespace exact_solutions
@@ -128,20 +103,22 @@ int main (int argc, char* argv[])
 //    dolfin::set_log_level (dolfin::DBG);
     // create mesh and finite element space
     std::cout << "Create mesh and finite element space..." << std::endl;
+//    mshr::Circle circle (dolfin::Point (0.0, 0.0), 1);
+//    dolfin::Mesh mesh;
+//    mshr::generate (mesh, circle, 50);
     dolfin::UnitSquareMesh mesh (40, 40);
     
     density::FunctionSpace R (mesh);
-    velocity2::FunctionSpace V (mesh);
+    velocity::FunctionSpace V (mesh);
     pressure_correction::FunctionSpace Q (mesh);
     
     // define constant
     std::cout << "Define the coefficients..." << std::endl;
     dolfin::Constant mu (muValue);
-    dolfin::Constant chi (rhoValue);
+    dolfin::Constant chi (1.0);
     double t0 = 0.0;
     double dt = 0.1;
-    dolfin::Constant dtConst (dt);
-    double T = 1.0;
+    double T = 1;
     
     // exact solution
     dcp::TimeDependentExpression exactRho ((exact_solutions::RhoEvaluator ()));
@@ -155,8 +132,8 @@ int main (int argc, char* argv[])
     std::cout << "Define the problem..." << std::endl;
     dcp::GuermondSalgadoMethod <density::BilinearForm,
                                 density::LinearForm,
-                                velocity2::BilinearForm,
-                                velocity2::LinearForm,
+                                velocity::BilinearForm,
+                                velocity::LinearForm,
                                 pressure_correction::BilinearForm,
                                 pressure_correction::LinearForm,
                                 pressure_update::BilinearForm,
@@ -168,46 +145,15 @@ int main (int argc, char* argv[])
     guermondSalgadoMethod.setInitialSolution ("velocity_problem", exactU);
     guermondSalgadoMethod.setInitialSolution ("pressure_update_problem", exactP);
     
-    
-    dolfin::plot (guermondSalgadoMethod.problem ("density_problem").solution (), "rho iniziale");
-    dolfin::plot (guermondSalgadoMethod.problem ("pressure_update_problem").solution (), "p iniziale");
-    dolfin::plot (guermondSalgadoMethod.problem ("velocity_problem").solution (), "u iniziale");
-    
-    
-    dolfin::Constant zero (0.0);
-    
     // ******************************************************** //
     guermondSalgadoMethod.system ().removeLink ("velocity_problem", "rho", "bilinear_form");
-    guermondSalgadoMethod.system ().removeLink ("velocity_problem", "phi_old", "bilinear_form");
-    guermondSalgadoMethod.system ().removeLink ("velocity_problem", "p_old", "bilinear_form");
-    guermondSalgadoMethod.system ().removeLink ("pressure_correction_problem", "u", "linear_form");
     guermondSalgadoMethod.system ().removeLinkToPreviousSolution ("velocity_problem", "rho_old", "bilinear_form"); 
     guermondSalgadoMethod.system ().removeLinkToPreviousSolution ("velocity_problem", "rho_old", "linear_form"); 
     guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (exactRho),  "rho");
-    guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (exactRho),  "rho");
     guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (exactRho),  "rho_old");
     guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (exactRho),  "rho_old");
-    guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (zero),  "phi_old");
-    guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (exactP),  "p_old");
-    guermondSalgadoMethod.problem ("pressure_correction_problem").setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (exactU),  "u");
     // ******************************************************** //
-    // 
-    // define neumann boundary conditions
-    std::cout << "Define the problem's Neumann boundary conditions..." << std::endl;
-    dcp::Subdomain neumannBoundary ((navierstokes::NeumannBoundaryEvaluator ()));
-    dcp::TimeDependentExpression neumannBC (2, navierstokes::NeumannBC ());
     
-    dolfin::FacetFunction<std::size_t> meshFacets (mesh);
-    meshFacets.set_all (0);
-    neumannBoundary.mark (meshFacets, 1);
-    
-    std::cout << "Setting up dirichlet's neumann conditions for 'velocity_problem'" << std::endl;
-    guermondSalgadoMethod.problem ("velocity_problem").setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (mu),  "mu");
-    guermondSalgadoMethod.problem ("velocity_problem").addTimeDependentCoefficient 
-        ("g",
-         "linear_form",
-         dolfin::reference_to_no_delete_pointer (neumannBC));
-
     
     // define dirichlet boundary conditions
     std::cout << "Define the problem's Dirichlet boundary conditions..." << std::endl;
@@ -215,11 +161,12 @@ int main (int argc, char* argv[])
     
     std::cout << "Setting up dirichlet's boundary conditions for 'velocity_problem'" << std::endl;
     guermondSalgadoMethod.addTimeDependentDirichletBC ("velocity_problem", exactU, noSlipBoundary);
-    guermondSalgadoMethod.addTimeDependentDirichletBC ("pressure_correction_problem", exactP, neumannBoundary);
 
-
+    
+    // define time dependent external loads
     dcp::TimeDependentExpression f1 (2, (navierstokes::ExternalLoadEvaluator ()));
     dcp::TimeDependentExpression f2 (2, (navierstokes::SecondExternalLoadEvaluator ()));
+    dolfin::Constant zero (0.0);
     guermondSalgadoMethod.problem ("velocity_problem").addTimeDependentCoefficient 
         ("f1", 
          "linear_form", 
@@ -228,21 +175,18 @@ int main (int argc, char* argv[])
         ("f2", 
          "linear_form", 
          dolfin::reference_to_no_delete_pointer (f2));
+    guermondSalgadoMethod.problem ("velocity_problem").setCoefficient 
+        ("linear_form", 
+         dolfin::reference_to_no_delete_pointer (zero),
+         "rho");
         
     
-    // define time dependent external loads
     for (auto& name : guermondSalgadoMethod.system ().problemsNames ())
     {
 //        guermondSalgadoMethod.problem (name).parameters ["plot_interval"] = 1;
 //        guermondSalgadoMethod.problem (name).parameters ["plot_title"] = name;
     }
 //    guermondSalgadoMethod.problem ("pressure_update_problem").parameters ["pause"] = true;
-//        guermondSalgadoMethod.problem ("velocity_problem").parameters ["plot_interval"] = 1;
-//        guermondSalgadoMethod.problem ("velocity_problem").parameters ["plot_title"] = "velocity_problem";
-//        guermondSalgadoMethod.problem ("pressure_update_problem").parameters ["plot_interval"] = 1;
-//        guermondSalgadoMethod.problem ("pressure_update_problem").parameters ["plot_title"] = "pressure_update_problem";
-//        guermondSalgadoMethod.problem ("pressure_correction_problem").parameters ["plot_interval"] = 1;
-//        guermondSalgadoMethod.problem ("pressure_correction_problem").parameters ["plot_title"] = "pressure_correction_problem";
     
     // plots
     dolfin::plot (mesh, "Mesh");
@@ -258,7 +202,6 @@ int main (int argc, char* argv[])
     // computed solution
     auto computedRho = guermondSalgadoMethod.problem ("density_problem").solutionsWithTimes ();
     auto computedU = guermondSalgadoMethod.problem ("velocity_problem").solutionsWithTimes ();
-    auto computedPhi = guermondSalgadoMethod.problem ("pressure_correction_problem").solutionsWithTimes ();
     auto computedP = guermondSalgadoMethod.problem ("pressure_update_problem").solutionsWithTimes ();
     
     // error computers
@@ -282,46 +225,14 @@ int main (int argc, char* argv[])
     dolfin::Function rescaledPDifference (Q);
     dolfin::Function exactPressure (Q);
     dolfin::Function pressurePointDifference (Q);
-    
-    my_div::BilinearForm a (Q, Q);
-    my_div::LinearForm L (Q);
-    dolfin::Function sol (Q);
-    
-    pressure_correction_2::BilinearForm aPressureCorrection2 (Q, Q);
-    pressure_correction_2::LinearForm LPressureCorrection2 (Q);
-    dolfin::Function pressureCorrection2 (Q);
-    
-    dolfin::Function compRho (R);
-    dolfin::Function compU (V);
-    dolfin::Function compPhi (Q);
-    dolfin::Function compP (Q);
-    
-    dolfin::Function phiDiff (Q);
-    dolfin::Function rescalingForDivU (Q);
-    dolfin::Function rescaledDivU (Q);
-    
-    for (std::size_t i = 0; i < computedRho.size (); ++i)
+    std::size_t i;
+    for (i = 0; i < computedRho.size (); ++i)
     {
         const double& time = computedRho [i].first;
         std::cout << "****************** t = " << time << std::endl; 
-            
-        compRho = *(computedRho[i].second);
-        compU = *(computedU[i].second);
-        compPhi = *(computedPhi[i].second);
-        compP = *(computedP[i].second);
-        dolfin::plot (compRho, "rho, time = " + std::to_string (time));
-        dolfin::plot (compU, "u, time = " + std::to_string (time));
-        dolfin::plot (compPhi, "phi, time = " + std::to_string (time)); 
-        dolfin::plot (compP, "p, time = " + std::to_string (time)); 
-
         exactRho.setTime (time);
         exactU.setTime (time);
         exactP.setTime (time);
-        
-        dolfin::plot (exactRho, mesh, "rho esatta, time = " + std::to_string (time));
-        dolfin::plot (exactU, mesh, "u esatta, time = " + std::to_string (time));
-        dolfin::plot (exactP, mesh, "p esatta, time = " + std::to_string (time)); 
-
         
         densityL2SquaredErrorComputer.exact_rho = exactRho;
         velocityL2SquaredErrorComputer.exact_u = exactU;
@@ -331,30 +242,29 @@ int main (int argc, char* argv[])
         densityL2SquaredErrorComputer.rho = *(computedRho[i].second);
         velocityL2SquaredErrorComputer.u = *(computedU[i].second);
         velocityH1SquaredErrorComputer.u = *(computedU[i].second);
-        pressureL2SquaredErrorComputer.p = *(computedP[i].second);
+        dolfin::Array<double> point (2);
+        point[0] = 0.0;
+        point[1] = 0.0;
+        dolfin::Array<double> computedPPointValue (1);
+        dolfin::Array<double> exactPPointValue (1);
+        computedP[i].second->eval (computedPPointValue, point);
+        exactP.eval (exactPPointValue, point);
+        std::cout << "exactPPointValue = " << exactPPointValue[0] << std::endl;
+        std::cout << "computedPPointValue = " << computedPPointValue[0] << std::endl;
+        double difference = computedPPointValue[0] - exactPPointValue[0];
+        std::cout << "pressurePointDifference = " << difference << std::endl;
+        dolfin::Constant computedExactPPointDifference (difference);
+        pressurePointDifference = computedExactPPointDifference;
+        dolfin::plot (pressurePointDifference, "pressurePointDifference");
+        std::cout << "rescaledComputedP = " << computedPPointValue[0] - difference << std::endl;
+        rescaledComputedP = *(computedP[i].second) - pressurePointDifference;
+        dolfin::plot (rescaledComputedP, "rescaledComputedP");
+        exactPressure = exactP;
+        rescaledPDifference = rescaledComputedP - exactPressure;
+        dolfin::plot (rescaledPDifference, "rescaledPDifference");
+        pressureL2SquaredErrorComputer.p = rescaledComputedP;
         
-//        dolfin::Array<double> point (2);
-//        point[0] = 0.0;
-//        point[1] = 0.0;
-//        dolfin::Array<double> computedPPointValue (1);
-//        dolfin::Array<double> exactPPointValue (1);
-//        computedP[i].second->eval (computedPPointValue, point);
-//        exactP.eval (exactPPointValue, point);
-//        std::cout << "exactPPointValue = " << exactPPointValue[0] << std::endl;
-//        std::cout << "computedPPointValue = " << computedPPointValue[0] << std::endl;
-//        double difference = computedPPointValue[0] - exactPPointValue[0];
-//        std::cout << "pressurePointDifference = " << difference << std::endl;
-//        dolfin::Constant computedExactPPointDifference (difference);
-//        pressurePointDifference = computedExactPPointDifference;
-//        dolfin::plot (pressurePointDifference, "pressurePointDifference");
-//        std::cout << "rescaledComputedP = " << computedPPointValue[0] - difference << std::endl;
-//        rescaledComputedP = *(computedP[i].second) - pressurePointDifference;
-//        dolfin::plot (rescaledComputedP, "rescaledComputedP");
-//        exactPressure = exactP;
-//        rescaledPDifference = rescaledComputedP - exactPressure;
-//        dolfin::plot (rescaledPDifference, "rescaledPDifference");
-//        pressureL2SquaredErrorComputer.p = rescaledComputedP;
-        
+//        dolfin::interactive ();
     
         densityL2Errors[i] = sqrt (dolfin::assemble (densityL2SquaredErrorComputer));
         velocityL2Errors[i] = sqrt (dolfin::assemble (velocityL2SquaredErrorComputer));
@@ -363,32 +273,20 @@ int main (int argc, char* argv[])
         ERROR_U_H1 << velocityH1Errors[i] << std::endl;
         ERROR_U_L2 << velocityL2Errors[i] << std::endl;
         ERROR_P << pressureL2Errors[i] << std::endl;
-        
-        L.set_coefficient ("vel", computedU[i].second);
-        solve (a == L, sol);
-        dolfin::plot (sol, "div(u), time = " + std::to_string(time));
-        
-//        double rescalingFactor;
-//        std::cout << "rescaling factor for div u =  ";
-//        std::cin >> rescalingFactor;
-//        dolfin::Constant rescalingFactorAsDolfinConstant (rescalingFactor);
-//        rescalingForDivU = rescalingFactorAsDolfinConstant;
-//        dolfin::plot (rescalingForDivU, "rescalingForDivU");
-//        
-//        rescaledDivU = sol - rescalingForDivU;
-        rescaledDivU = sol;
-//        dolfin::plot (rescaledDivU, "div(u) rescaled, time = " + std::to_string(time));
-        LPressureCorrection2.set_coefficient ("divu", dolfin::reference_to_no_delete_pointer (rescaledDivU));
-        LPressureCorrection2.set_coefficient ("chi", dolfin::reference_to_no_delete_pointer (chi));
-        LPressureCorrection2.set_coefficient ("dt", dolfin::reference_to_no_delete_pointer (dtConst));
-        solve (aPressureCorrection2 == LPressureCorrection2, pressureCorrection2);
-//        dolfin::plot (pressureCorrection2, "pressure correction");
-                
-        phiDiff = pressureCorrection2 - compPhi;
-//        dolfin::plot (phiDiff, "phi diff");
-               
-//        dolfin::interactive ();
     }
+    
+    dolfin::Function uDifference (V);
+    dolfin::Function uEsatta (V);
+    uEsatta = exactU;
+    uDifference = *(computedU[i-1].second) - uEsatta;
+    dolfin::plot (uDifference, "differenza u");
+    
+    dolfin::Function pDifference (Q);
+    dolfin::Function pEsatta (Q);
+    pEsatta = exactP;
+    pDifference = *(computedP[i-1].second) - pEsatta;
+    dolfin::plot (pDifference, "differenza p");
+    
     std::cout << "done" << std::endl;
     
     double maxDensityL2Error = *(std::max_element (densityL2Errors.begin (), densityL2Errors.end ()));

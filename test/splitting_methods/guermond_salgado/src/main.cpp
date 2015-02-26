@@ -105,6 +105,12 @@ namespace exact_solutions
 
 int main (int argc, char* argv[])
 {
+    // get dt and T values from command line. Default value: dt = 0.1, T = 1.0
+    dolfin::Parameters parameters ("main_parameters");
+    parameters.add ("dt", 0.1);
+    parameters.add ("T", 1.0);
+    parameters.parse (argc, argv);
+        
 //    dolfin::set_log_level (dolfin::DBG);
     // create mesh and finite element space
     std::cout << "Create mesh and finite element space..." << std::endl;
@@ -121,8 +127,10 @@ int main (int argc, char* argv[])
     dolfin::Constant mu (1e-1);
     dolfin::Constant chi (1);
     double t0 = 0.0;
-    double dt = 0.1;
-    double T = 1;
+    double dt = parameters["dt"];
+    double T = parameters["T"];
+    std::cout << "Time step = " << dt << std::endl; 
+    std::cout << "Final time = " << T << std::endl; 
     
     // exact solution
     dcp::TimeDependentExpression exactRho ((exact_solutions::RhoEvaluator ()));
@@ -200,6 +208,10 @@ int main (int argc, char* argv[])
     std::vector<double> velocityH1Errors (computedU.size ());
     std::vector<double> pressureL2Errors (computedP.size ());
     
+    std::ofstream ERROR_U_H1 ("errore_u_H1_test_case.txt");
+    std::ofstream ERROR_U_L2 ("errore_u_L2_test_case.txt");
+    std::ofstream ERROR_P ("errore_p_test_case.txt");
+    
     std::cout << "Computing errors..." << std::endl;
     dolfin::Function rescaledComputedP (Q);
     dolfin::Function rescaledPMinusExactP (Q);
@@ -256,7 +268,12 @@ int main (int argc, char* argv[])
         velocityL2Errors[i] = sqrt (dolfin::assemble (velocityL2SquaredErrorComputer));
         velocityH1Errors[i] = sqrt (dolfin::assemble (velocityH1SquaredErrorComputer));
         pressureL2Errors[i] = sqrt (dolfin::assemble (pressureL2SquaredErrorComputer));
+        
+        ERROR_U_H1 << velocityH1Errors[i] << std::endl;
+        ERROR_U_L2 << velocityL2Errors[i] << std::endl;
+        ERROR_P << pressureL2Errors[i] << std::endl;
     }
+    
     std::cout << "done" << std::endl;
     
     double maxDensityL2Error = *(std::max_element (densityL2Errors.begin (), densityL2Errors.end ()));

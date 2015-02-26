@@ -204,16 +204,17 @@ int main (int argc, char* argv[])
         velocityH1SquaredErrorComputer.u = *(computedU[i].second);
         pressureL2SquaredErrorComputer.p = rescaledComputedP;
         
-    
         velocityL2Errors[i] = sqrt (dolfin::assemble (velocityL2SquaredErrorComputer));
         velocityH1Errors[i] = sqrt (dolfin::assemble (velocityH1SquaredErrorComputer));
         pressureL2Errors[i] = sqrt (dolfin::assemble (pressureL2SquaredErrorComputer));
+        
         ERROR_U_H1 << velocityH1Errors[i] << std::endl;
         ERROR_U_L2 << velocityL2Errors[i] << std::endl;
         ERROR_P << pressureL2Errors[i] << std::endl;
         
 //        dolfin::interactive ();
     }
+    
     std::cout << "done" << std::endl;
     
     double maxVelocityL2Error = *(std::max_element (velocityL2Errors.begin (), velocityL2Errors.end ()));

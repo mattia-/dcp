@@ -75,11 +75,13 @@ int main (int argc, char* argv[])
     dolfin::FacetFunction<std::size_t> meshFacets (mesh);
     meshFacets.set_all (0);
     neumannBoundary.mark (meshFacets, 1);
+    poissonProblem.setIntegrationSubdomains ("linear_form", 
+                                             dolfin::reference_to_no_delete_pointer (meshFacets), 
+                                             dcp::SubdomainType::BOUNDARY_FACETS);
     
     // set problem coefficients
     dolfin::info ("Set the problem's coefficients...");
     poissonProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (k), "k");
-    poissonProblem.setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (k), "k");
     poissonProblem.setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (f), "f");
     poissonProblem.setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (g), "g");
 

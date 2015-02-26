@@ -165,8 +165,8 @@ int main (int argc, char* argv[])
     // ------------- //
     
     // computed solution
-    auto computedU = incrementalChorinTemamMethod.problem ("velocity_projection_problem").solutionsWithTimes ();
-    auto computedP = incrementalChorinTemamMethod.problem ("pressure_update_problem").solutionsWithTimes ();
+    auto computedU = incrementalChorinTemamMethod.problem ("velocity_projection_problem").solutions ();
+    auto computedP = incrementalChorinTemamMethod.problem ("pressure_update_problem").solutions ();
     
     // error computers
     error_computers::Form_velocity_L2_squared_error velocityL2SquaredErrorComputer (mesh);
@@ -191,8 +191,8 @@ int main (int argc, char* argv[])
     {
         const double& time = computedU [i].first;
             
-        compU = *(computedU[i].second);
-        compP = *(computedP[i].second);
+        compU = computedU[i].second;
+        compP = computedP[i].second;
         dolfin::plot (compU, "u, time = " + std::to_string (time));
         dolfin::plot (compP, "p, time = " + std::to_string (time)); 
         
@@ -200,9 +200,9 @@ int main (int argc, char* argv[])
         velocityH1SquaredErrorComputer.exact_u = exactU;
         pressureL2SquaredErrorComputer.exact_p = exactP;
     
-        velocityL2SquaredErrorComputer.u = *(computedU[i].second);
-        velocityH1SquaredErrorComputer.u = *(computedU[i].second);
-        pressureL2SquaredErrorComputer.p = *(computedP[i].second);
+        velocityL2SquaredErrorComputer.u = computedU[i].second;
+        velocityH1SquaredErrorComputer.u = computedU[i].second;
+        pressureL2SquaredErrorComputer.p = computedP[i].second;
         
         velocityL2Errors[i] = sqrt (dolfin::assemble (velocityL2SquaredErrorComputer));
         velocityH1Errors[i] = sqrt (dolfin::assemble (velocityH1SquaredErrorComputer));

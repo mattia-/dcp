@@ -176,10 +176,10 @@ int main (int argc, char* argv[])
     // ------------- //
     
     // computed solution
-    auto computedRho = guermondSalgadoMethod.problem ("density_problem").solutionsWithTimes ();
-    auto computedU = guermondSalgadoMethod.problem ("velocity_problem").solutionsWithTimes ();
-    auto computedPhi = guermondSalgadoMethod.problem ("pressure_correction_problem").solutionsWithTimes ();
-    auto computedP = guermondSalgadoMethod.problem ("pressure_update_problem").solutionsWithTimes ();
+    auto computedRho = guermondSalgadoMethod.problem ("density_problem").solutions ();
+    auto computedU = guermondSalgadoMethod.problem ("velocity_problem").solutions ();
+    auto computedPhi = guermondSalgadoMethod.problem ("pressure_correction_problem").solutions ();
+    auto computedP = guermondSalgadoMethod.problem ("pressure_update_problem").solutions ();
     
     // error computers
     error_computers::Form_density_L2_squared_error densityL2SquaredErrorComputer (mesh);
@@ -211,11 +211,11 @@ int main (int argc, char* argv[])
     for (std::size_t i = 0; i < computedRho.size (); ++i)
     {
         const double& time = computedRho [i].first;
-            
-        compRho = *(computedRho[i].second);
-        compU = *(computedU[i].second);
-        compPhi = *(computedPhi[i].second);
-        compP = *(computedP[i].second);
+        
+        compRho = computedRho[i].second;
+        compU = computedU[i].second;
+        compPhi = computedPhi[i].second;
+        compP = computedP[i].second;
         dolfin::plot (compRho, "rho, time = " + std::to_string (time));
         dolfin::plot (compU, "u, time = " + std::to_string (time));
         dolfin::plot (compPhi, "phi, time = " + std::to_string (time)); 
@@ -230,26 +230,25 @@ int main (int argc, char* argv[])
         velocityH1SquaredErrorComputer.exact_u = exactU;
         pressureL2SquaredErrorComputer.exact_p = exactP;
     
-        densityL2SquaredErrorComputer.rho = *(computedRho[i].second);
-        velocityL2SquaredErrorComputer.u = *(computedU[i].second);
-        velocityH1SquaredErrorComputer.u = *(computedU[i].second);
+        densityL2SquaredErrorComputer.rho = computedRho[i].second;
+        velocityL2SquaredErrorComputer.u = computedU[i].second;
+        velocityH1SquaredErrorComputer.u = computedU[i].second;
         
         dolfin::Array<double> point (2);
         point[0] = 0.0;
         point[1] = 0.0;
         dolfin::Array<double> computedPPointValue (1);
         dolfin::Array<double> exactPPointValue (1);
-        computedP[i].second->eval (computedPPointValue, point);
+        computedP[i].second.eval (computedPPointValue, point);
         exactP.eval (exactPPointValue, point);
         double computedPExactPPointDifference = computedPPointValue[0] - exactPPointValue[0];
         pressureRescalingFactor = dolfin::Constant (computedPExactPPointDifference);
-        rescaledComputedP = *(computedP[i].second) - pressureRescalingFactor;
+        rescaledComputedP = computedP[i].second - pressureRescalingFactor;
         dolfin::plot (rescaledComputedP, "rescaled computed p, time = " + std::to_string (time));
         exactPressure = exactP;
         rescaledPMinusExactP = rescaledComputedP - exactPressure;
         pressureL2SquaredErrorComputer.p = rescaledComputedP;
         
-    
         densityL2Errors[i] = sqrt (dolfin::assemble (densityL2SquaredErrorComputer));
         velocityL2Errors[i] = sqrt (dolfin::assemble (velocityL2SquaredErrorComputer));
         velocityH1Errors[i] = sqrt (dolfin::assemble (velocityH1SquaredErrorComputer));

@@ -192,16 +192,12 @@ namespace dcp
              */
             virtual const dolfin::Function& solution () const override;  
 
-            //! Get const reference to the problem's solutions vector
+            //! Get const reference to the problem's solutions vector. Note that this returns also the time values 
+            //! associated with the solutions
             /*!
-             *  \return a const reference to the problem's solutions vector
+             *  \return a const reference to the problem's time-solution pairs vector
              */
-            virtual const std::vector<dolfin::Function>& solutions () const;  
-            
-            //! Get a vector containing all the solutions stored during the simulations along with the times at which
-            //! those solutions were stored
-            virtual const std::vector<std::pair <double, std::shared_ptr<const dolfin::Function>> > 
-                solutionsWithTimes () const;  
+            virtual const std::vector <std::pair <double, dolfin::Function> >& solutions () const;  
             
             //! Get const reference to the current simulation time
             /*!
@@ -510,7 +506,7 @@ namespace dcp
             /*!
              *  This method solves the problem defined. It uses the protected members' value to set the problem and then
              *  stores the solution in the private member \c solution_ (which is inherited from the base class), 
-             *  adding to its existing elements (see method \c clear to delete any element stored in \c solution_).
+             *  adding to its existing elements (see method \c clear to delete all elements stored in \c solution_).
              *  The initial value for the time loop will be whatever function is stored as the last element of 
              *  \c solution_ when the method is called. To change the initial value, use the method \c setInitialSolution.
              *  Note that the value of the solution on the intermediate time steps will be saved int the protected
@@ -571,10 +567,6 @@ namespace dcp
             //! If the condition should be enforced on all the function space components, \c -1 is used as a placeholder
             std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue> timeDependentDirichletBCs_;
 
-            //! Vector to save the times on which the solution is stored. This way we can return a vector of pairs
-            //! <time, solution> in the protected member \c solutionsVector
-            std::vector <double> solutionStoringTimes_;
-            
             //! The time during the simulation. It takes into account also previous calls to \c solve since it is
             //! not reset after such function is called. It can be reset to the value of the parameter \c t0 
             //! calling the method \c clear

@@ -131,7 +131,7 @@ namespace dcp
 
     const dolfin::Function& AbstractProblem::solution () const
     {
-        return solution_.back ();
+        return solution_.back ().second;
     }
 
 
@@ -306,12 +306,12 @@ namespace dcp
         // get right function to plot
         if (plotComponent == -1)
         {
-            functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ());
+            functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ().second);
             dolfin::log (dolfin::DBG, "Plotting problem solution, all components...");
         }
         else
         {
-            functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back () [plotComponent]);
+            functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ().second [plotComponent]);
             dolfin::log (dolfin::DBG, "Plotting problem solution, component %d...", plotComponent);
         }
         

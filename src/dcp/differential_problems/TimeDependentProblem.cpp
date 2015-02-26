@@ -36,7 +36,6 @@ namespace dcp
             timeSteppingProblem_ (timeSteppingProblem),
             timeDependentCoefficients_ (),
             timeDependentDirichletBCs_ (),
-            solutionStoringTimes_ (),
             t_ (startTime),
             startTime_ (startTime),
             dt_ (dt),
@@ -45,8 +44,7 @@ namespace dcp
     { 
         dolfin::begin (dolfin::DBG, "Building TimeDependentProblem...");
         
-        solution_.emplace_back (dolfin::Function (timeSteppingProblem->functionSpace ()));
-        solutionStoringTimes_.push_back (startTime);
+        solution_.emplace_back (std::make_pair (t_, dolfin::Function (timeSteppingProblem_->functionSpace ())));
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("problem_type", "time_dependent");
@@ -112,31 +110,14 @@ namespace dcp
 
     const dolfin::Function& TimeDependentProblem::solution () const
     {
-        return solution_.back ();
+        return solution_.back ().second;
     }
 
 
 
-    const std::vector<dolfin::Function>& TimeDependentProblem::solutions () const
+    const std::vector <std::pair <double, dolfin::Function> >& TimeDependentProblem::solutions () const
     {
         return solution_;
-    }
-    
-
-
-    const std::vector<std::pair <double, std::shared_ptr<const dolfin::Function>> > 
-    TimeDependentProblem::solutionsWithTimes () const
-    {
-        std::vector<std::pair <double, std::shared_ptr<const dolfin::Function>> > solutionsVector; 
-        for (std::size_t i = 0; i < solution_.size (); ++i)
-        {
-            double time = solutionStoringTimes_ [i];
-            std::shared_ptr<const dolfin::Function> solution (dolfin::reference_to_no_delete_pointer (solution_ [i]));            
-            auto solutionTimePair = std::make_pair (time, solution);
-            solutionsVector.push_back (solutionTimePair);
-        }
-        
-        return solutionsVector;
     }
     
 
@@ -179,14 +160,14 @@ namespace dcp
     /******************* SETTERS *******************/
     void TimeDependentProblem::setInitialSolution (const dolfin::Function& initialSolution)
     {
-        solution_.back () = initialSolution;
+        solution_.back ().second = initialSolution;
     }
 
     
 
     void TimeDependentProblem::setInitialSolution (const dolfin::Expression& initialSolution)
     {
-        solution_.back () = initialSolution;
+        solution_.back ().second = initialSolution;
     }
    
 
@@ -468,16 +449,12 @@ namespace dcp
 
     void TimeDependentProblem::clear ()
     {
-        // clear solutions vector
-        solution_.clear ();
-        solution_.emplace_back (dolfin::Function (timeSteppingProblem_->functionSpace ()));
-        
-        // clear solution storing times
-        solutionStoringTimes_.clear ();
-        solutionStoringTimes_.push_back (startTime_);
-        
         // reset t_
         t_ = startTime_;
+        
+        // clear solutions vector
+        solution_.clear ();
+        solution_.emplace_back (std::make_pair (t_, dolfin::Function (timeSteppingProblem_->functionSpace ())));
         
         // reset time dependent Dirichlet BCs
         for (auto bcIterator = timeDependentDirichletBCs_.begin (); 
@@ -551,7 +528,7 @@ namespace dcp
         
         
         // function used to step through the time loop
-        dolfin::Function tmpSolution = solution_.back ();
+        dolfin::Function tmpSolution = solution_.back ().second;
         
         std::shared_ptr<dolfin::VTKPlotter> plotter;
         
@@ -624,17 +601,18 @@ namespace dcp
         
         dolfin::begin (dolfin::DBG, "Plotting...");
         
-        for (auto& timeStepSolution : solution_)
+        for (auto& timeSolutionPair : solution_)
         {
+            double time = timeSolutionPair.first;
             // get right function to plot
             if (plotComponent == -1)
             {
-                functionToPlot = dolfin::reference_to_no_delete_pointer (timeStepSolution);
+                functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second);
                 dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, all components...");
             }
             else
             {
-                functionToPlot = dolfin::reference_to_no_delete_pointer (timeStepSolution [plotComponent]);
+                functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second [plotComponent]);
                 dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, component %d...", plotComponent);
             }
 
@@ -642,17 +620,17 @@ namespace dcp
             if (solutionPlotter_ == nullptr)
             {
                 dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
-                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_) + plotTitle);
+                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (time) + plotTitle);
             }
             else if (! solutionPlotter_ -> is_compatible (functionToPlot))
             {
                 dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
                 dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
-                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (t_) + plotTitle);
+                solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (time) + plotTitle);
             }
             else 
             {
-                solutionPlotter_ -> parameters ["title"] = std::string ("Time = " + std::to_string (t_) + plotTitle);
+                solutionPlotter_ -> parameters ["title"] = std::string ("Time = " + std::to_string (time) + plotTitle);
                 solutionPlotter_ -> plot (functionToPlot);
             }
 
@@ -872,8 +850,7 @@ namespace dcp
         if (storeInterval > 0 && timeStep % storeInterval == 0)
         {
             dolfin::log (dolfin::DBG, "Saving time stepping problem solution in solutions vector...");
-            solution_.push_back (solution);
-            solutionStoringTimes_.push_back (t_);
+            solution_.push_back (std::make_pair (t_, solution));
         }
     } 
     
@@ -886,8 +863,7 @@ namespace dcp
         if (!(storeInterval > 0 && timeStep % storeInterval == 0))
         {
             dolfin::log (dolfin::DBG, "Saving last time step solution in solutions vector...");
-            solution_.push_back (solution);
-            solutionStoringTimes_.push_back (t_);
+            solution_.push_back (std::make_pair (t_, solution));
         }
     }
 

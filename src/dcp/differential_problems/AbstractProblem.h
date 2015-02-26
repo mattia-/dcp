@@ -31,6 +31,7 @@
 #include <dcp/differential_problems/SubdomainType.h>
 #include <map>
 #include <string>
+#include <utility>
 
 
 namespace dcp
@@ -134,7 +135,7 @@ namespace dcp
 
             //! Get const reference to the problem's solution
             /*!
-             *  \return a const reference to the last element of the protected member \c solution
+             *  \return a const reference to the second field of the last element of the protected member \c solution
              */
             virtual const dolfin::Function& solution () const;  
 
@@ -326,9 +327,11 @@ namespace dcp
             //! The Dirichlet's boundary conditions. The map associates the bc's name to the bc itself
             std::map<std::string, dolfin::DirichletBC> dirichletBCs_;
 
-            //! Solution of the differential problem. It is declared as a vector sot that it may contain the solution 
-            //! on different timesteps in the time-dependent problem. For steady problems, it will just have size 1.
-            std::vector<dolfin::Function> solution_;
+            //! Solution of the differential problem. It is declared as a vector of pairs so that it may contain the 
+            //! solution and the time at which it was computed on different timesteps in the derived class
+            //! \c dcp::TimeDependentProblem. For steady problems, it will just have size 1, and the time (i.e. the
+            //! first field of the pair) will have a placeholder value equal to -1
+            std::vector <std::pair <double, dolfin::Function> > solution_;
             
             //! Counter of dirichletBC inserted in the protected member map. It is used to create a unique
             //! name for insertion of dirichlet bcs if the input argument \c bcName to \c addDirichletBC() is

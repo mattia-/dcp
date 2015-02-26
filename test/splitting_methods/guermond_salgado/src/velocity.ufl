@@ -29,7 +29,7 @@ v = TestFunction (V)
 # velocity equation:
 # lhs
 a = 1 / dt * 0.5 * (rho + rho_old) * inner (u, v) * dx \
-    + inner (rho * dot (u_old, grad (u)), v) * dx \
+    + inner (rho * dot (grad (u), u_old), v) * dx \
     + 0.5 * inner (div (rho * u_old) * u, v) * dx \
     + mu * inner (grad (u), grad (v)) * dx 
  

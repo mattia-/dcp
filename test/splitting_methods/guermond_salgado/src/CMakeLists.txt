@@ -22,3 +22,9 @@ TARGET_LINK_LIBRARIES (main_pulse_load ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LI
 
 ADD_EXECUTABLE (main_poiseuille main_poiseuille.cpp)
 TARGET_LINK_LIBRARIES (main_poiseuille ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${MSHR_LIBRARIES} dcp)
+
+ADD_EXECUTABLE (main_pulse_load_chorin_temam main_pulse_load_chorin_temam.cpp)
+TARGET_LINK_LIBRARIES (main_pulse_load_chorin_temam ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${MSHR_LIBRARIES} dcp)
+
+ADD_EXECUTABLE (main_poiseuille_chorin_temam main_poiseuille_chorin_temam.cpp)
+TARGET_LINK_LIBRARIES (main_poiseuille_chorin_temam ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${MSHR_LIBRARIES} dcp)

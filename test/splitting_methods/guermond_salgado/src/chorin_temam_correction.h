@@ -25,8 +25,8 @@
 //   restrict_keyword:               ''
 //   split:                          False
 
-#ifndef __MY_DIV_H
-#define __MY_DIV_H
+#ifndef __CHORIN_TEMAM_CORRECTION_H
+#define __CHORIN_TEMAM_CORRECTION_H
 
 #include <cmath>
 #include <stdexcept>
@@ -35,18 +35,18 @@
 
 /// This class defines the interface for a finite element.
 
-class my_div_finite_element_0: public ufc::finite_element
+class chorin_temam_correction_finite_element_0: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  my_div_finite_element_0() : ufc::finite_element()
+  chorin_temam_correction_finite_element_0() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~my_div_finite_element_0()
+  virtual ~chorin_temam_correction_finite_element_0()
   {
     // Do nothing
   }
@@ -1614,25 +1614,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new my_div_finite_element_0();
+    return new chorin_temam_correction_finite_element_0();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class my_div_finite_element_1: public ufc::finite_element
+class chorin_temam_correction_finite_element_1: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  my_div_finite_element_1() : ufc::finite_element()
+  chorin_temam_correction_finite_element_1() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~my_div_finite_element_1()
+  virtual ~chorin_temam_correction_finite_element_1()
   {
     // Do nothing
   }
@@ -4409,12 +4409,12 @@ public:
     {
     case 0:
       {
-        return new my_div_finite_element_0();
+        return new chorin_temam_correction_finite_element_0();
         break;
       }
     case 1:
       {
-        return new my_div_finite_element_0();
+        return new chorin_temam_correction_finite_element_0();
         break;
       }
     }
@@ -4425,25 +4425,320 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new my_div_finite_element_1();
+    return new chorin_temam_correction_finite_element_1();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class my_div_finite_element_2: public ufc::finite_element
+class chorin_temam_correction_finite_element_2: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  my_div_finite_element_2() : ufc::finite_element()
+  chorin_temam_correction_finite_element_2() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~my_div_finite_element_2()
+  virtual ~chorin_temam_correction_finite_element_2()
+  {
+    // Do nothing
+  }
+
+  /// Return a string identifying the finite element
+  virtual const char* signature() const
+  {
+    return "FiniteElement('Real', Domain(Cell('triangle', 2)), 0, None)";
+  }
+
+  /// Return the cell shape
+  virtual ufc::shape cell_shape() const
+  {
+    return ufc::triangle;
+  }
+
+  /// Return the topological dimension of the cell shape
+  virtual std::size_t topological_dimension() const
+  {
+    return 2;
+  }
+
+  /// Return the geometric dimension of the cell shape
+  virtual std::size_t geometric_dimension() const
+  {
+    return 2;
+  }
+
+  /// Return the dimension of the finite element function space
+  virtual std::size_t space_dimension() const
+  {
+    return 1;
+  }
+
+  /// Return the rank of the value space
+  virtual std::size_t value_rank() const
+  {
+    return 0;
+  }
+
+  /// Return the dimension of the value space for axis i
+  virtual std::size_t value_dimension(std::size_t i) const
+  {
+    return 1;
+  }
+
+  /// Evaluate basis function i at given point x in cell (actual implementation)
+  static void _evaluate_basis(std::size_t i,
+                              double* values,
+                              const double* x,
+                              const double* vertex_coordinates,
+                              int cell_orientation)
+  {
+    // Compute Jacobian
+    double J[4];
+    compute_jacobian_triangle_2d(J, vertex_coordinates);
+    
+    // Compute Jacobian inverse and determinant
+    double K[4];
+    double detJ;
+    compute_jacobian_inverse_triangle_2d(K, detJ, J);
+    
+    
+    // Compute constants
+    
+    // Get coordinates and map to the reference (FIAT) element
+    
+    // Reset values
+    *values = 0.0;
+    
+    // Array of basisvalues
+    double basisvalues[1] = {0.0};
+    
+    // Declare helper variables
+    
+    // Compute basisvalues
+    basisvalues[0] = 1.0;
+    
+    // Table(s) of coefficients
+    static const double coefficients0[1] = \
+    {1.0};
+    
+    // Compute value(s)
+    for (unsigned int r = 0; r < 1; r++)
+    {
+      *values += coefficients0[r]*basisvalues[r];
+    } // end loop over 'r'
+  }
+
+  /// Evaluate basis function i at given point x in cell (non-static member function)
+  virtual void evaluate_basis(std::size_t i,
+                              double* values,
+                              const double* x,
+                              const double* vertex_coordinates,
+                              int cell_orientation) const
+  {
+    _evaluate_basis(i, values, x, vertex_coordinates, cell_orientation);
+  }
+
+  /// Evaluate all basis functions at given point x in cell (actual implementation)
+  static void _evaluate_basis_all(double* values,
+                                  const double* x,
+                                  const double* vertex_coordinates,
+                                  int cell_orientation)
+  {
+    // Element is constant, calling evaluate_basis.
+    _evaluate_basis(0, values, x, vertex_coordinates, cell_orientation);
+  }
+
+  /// Evaluate all basis functions at given point x in cell (non-static member function)
+  virtual void evaluate_basis_all(double* values,
+                                  const double* x,
+                                  const double* vertex_coordinates,
+                                  int cell_orientation) const
+  {
+    _evaluate_basis_all(values, x, vertex_coordinates, cell_orientation);
+  }
+
+  /// Evaluate order n derivatives of basis function i at given point x in cell (actual implementation)
+  static void _evaluate_basis_derivatives(std::size_t i,
+                                          std::size_t n,
+                                          double* values,
+                                          const double* x,
+                                          const double* vertex_coordinates,
+                                          int cell_orientation)
+  {
+    
+    // Compute number of derivatives.
+    unsigned int num_derivatives = 1;
+    for (unsigned int r = 0; r < n; r++)
+    {
+      num_derivatives *= 2;
+    } // end loop over 'r'
+    
+    // Reset values. Assuming that values is always an array.
+    for (unsigned int r = 0; r < num_derivatives; r++)
+    {
+      values[r] = 0.0;
+    } // end loop over 'r'
+    
+    // Call evaluate_basis if order of derivatives is equal to zero.
+    if (n == 0)
+    {
+      _evaluate_basis(i, values, x, vertex_coordinates, cell_orientation);
+      return ;
+    }
+    
+    // If order of derivatives is greater than the maximum polynomial degree, return zeros.
+    if (n > 0)
+    {
+    return ;
+    }
+    
+  }
+
+  /// Evaluate order n derivatives of basis function i at given point x in cell (non-static member function)
+  virtual void evaluate_basis_derivatives(std::size_t i,
+                                          std::size_t n,
+                                          double* values,
+                                          const double* x,
+                                          const double* vertex_coordinates,
+                                          int cell_orientation) const
+  {
+    _evaluate_basis_derivatives(i, n, values, x, vertex_coordinates, cell_orientation);
+  }
+
+  /// Evaluate order n derivatives of all basis functions at given point x in cell (actual implementation)
+  static void _evaluate_basis_derivatives_all(std::size_t n,
+                                              double* values,
+                                              const double* x,
+                                              const double* vertex_coordinates,
+                                              int cell_orientation)
+  {
+    // Element is constant, calling evaluate_basis_derivatives.
+    _evaluate_basis_derivatives(0, n, values, x, vertex_coordinates, cell_orientation);
+  }
+
+  /// Evaluate order n derivatives of all basis functions at given point x in cell (non-static member function)
+  virtual void evaluate_basis_derivatives_all(std::size_t n,
+                                              double* values,
+                                              const double* x,
+                                              const double* vertex_coordinates,
+                                              int cell_orientation) const
+  {
+    _evaluate_basis_derivatives_all(n, values, x, vertex_coordinates, cell_orientation);
+  }
+
+  /// Evaluate linear functional for dof i on the function f
+  virtual double evaluate_dof(std::size_t i,
+                              const ufc::function& f,
+                              const double* vertex_coordinates,
+                              int cell_orientation,
+                              const ufc::cell& c) const
+  {
+    // Declare variables for result of evaluation
+    double vals[1];
+    
+    // Declare variable for physical coordinates
+    double y[2];
+    switch (i)
+    {
+    case 0:
+      {
+        y[0] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
+      y[1] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
+      f.evaluate(vals, y, c);
+      return vals[0];
+        break;
+      }
+    }
+    
+    return 0.0;
+  }
+
+  /// Evaluate linear functionals for all dofs on the function f
+  virtual void evaluate_dofs(double* values,
+                             const ufc::function& f,
+                             const double* vertex_coordinates,
+                             int cell_orientation,
+                             const ufc::cell& c) const
+  {
+    // Declare variables for result of evaluation
+    double vals[1];
+    
+    // Declare variable for physical coordinates
+    double y[2];
+    y[0] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
+    y[1] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
+    f.evaluate(vals, y, c);
+    values[0] = vals[0];
+  }
+
+  /// Interpolate vertex values from dof values
+  virtual void interpolate_vertex_values(double* vertex_values,
+                                         const double* dof_values,
+                                         const double* vertex_coordinates,
+                                         int cell_orientation,
+                                         const ufc::cell& c) const
+  {
+    // Evaluate function and change variables
+    vertex_values[0] = dof_values[0];
+    vertex_values[1] = dof_values[0];
+    vertex_values[2] = dof_values[0];
+  }
+
+  /// Map coordinate xhat from reference cell to coordinate x in cell
+  virtual void map_from_reference_cell(double* x,
+                                       const double* xhat,
+                                       const ufc::cell& c) const
+  {
+    throw std::runtime_error("map_from_reference_cell not yet implemented.");
+  }
+
+  /// Map from coordinate x in cell to coordinate xhat in reference cell
+  virtual void map_to_reference_cell(double* xhat,
+                                     const double* x,
+                                     const ufc::cell& c) const
+  {
+    throw std::runtime_error("map_to_reference_cell not yet implemented.");
+  }
+
+  /// Return the number of sub elements (for a mixed element)
+  virtual std::size_t num_sub_elements() const
+  {
+    return 0;
+  }
+
+  /// Create a new finite element for sub element i (for a mixed element)
+  virtual ufc::finite_element* create_sub_element(std::size_t i) const
+  {
+    return 0;
+  }
+
+  /// Create a new class instance
+  virtual ufc::finite_element* create() const
+  {
+    return new chorin_temam_correction_finite_element_2();
+  }
+
+};
+
+/// This class defines the interface for a finite element.
+
+class chorin_temam_correction_finite_element_3: public ufc::finite_element
+{
+public:
+
+  /// Constructor
+  chorin_temam_correction_finite_element_3() : ufc::finite_element()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~chorin_temam_correction_finite_element_3()
   {
     // Do nothing
   }
@@ -5330,7 +5625,7 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new my_div_finite_element_2();
+    return new chorin_temam_correction_finite_element_3();
   }
 
 };
@@ -5338,18 +5633,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class my_div_dofmap_0: public ufc::dofmap
+class chorin_temam_correction_dofmap_0: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  my_div_dofmap_0() : ufc::dofmap()
+  chorin_temam_correction_dofmap_0() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~my_div_dofmap_0()
+  virtual ~chorin_temam_correction_dofmap_0()
   {
     // Do nothing
   }
@@ -5597,7 +5892,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new my_div_dofmap_0();
+    return new chorin_temam_correction_dofmap_0();
   }
 
 };
@@ -5605,18 +5900,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class my_div_dofmap_1: public ufc::dofmap
+class chorin_temam_correction_dofmap_1: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  my_div_dofmap_1() : ufc::dofmap()
+  chorin_temam_correction_dofmap_1() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~my_div_dofmap_1()
+  virtual ~chorin_temam_correction_dofmap_1()
   {
     // Do nothing
   }
@@ -5897,12 +6192,12 @@ public:
     {
     case 0:
       {
-        return new my_div_dofmap_0();
+        return new chorin_temam_correction_dofmap_0();
         break;
       }
     case 1:
       {
-        return new my_div_dofmap_0();
+        return new chorin_temam_correction_dofmap_0();
         break;
       }
     }
@@ -5913,7 +6208,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new my_div_dofmap_1();
+    return new chorin_temam_correction_dofmap_1();
   }
 
 };
@@ -5921,18 +6216,220 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class my_div_dofmap_2: public ufc::dofmap
+class chorin_temam_correction_dofmap_2: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  my_div_dofmap_2() : ufc::dofmap()
+  chorin_temam_correction_dofmap_2() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~my_div_dofmap_2()
+  virtual ~chorin_temam_correction_dofmap_2()
+  {
+    // Do nothing
+  }
+
+  /// Return a string identifying the dofmap
+  virtual const char* signature() const
+  {
+    return "FFC dofmap for FiniteElement('Real', Domain(Cell('triangle', 2)), 0, None)";
+  }
+
+  /// Return true iff mesh entities of topological dimension d are needed
+  virtual bool needs_mesh_entities(std::size_t d) const
+  {
+    switch (d)
+    {
+    case 0:
+      {
+        return false;
+        break;
+      }
+    case 1:
+      {
+        return false;
+        break;
+      }
+    case 2:
+      {
+        return false;
+        break;
+      }
+    }
+    
+    return false;
+  }
+
+  /// Return the topological dimension of the associated cell shape
+  virtual std::size_t topological_dimension() const
+  {
+    return 2;
+  }
+
+  /// Return the geometric dimension of the associated cell shape
+  virtual std::size_t geometric_dimension() const
+  {
+    return 2;
+  }
+
+  /// Return the dimension of the global finite element function space
+  virtual std::size_t global_dimension(const std::vector<std::size_t>&
+                                       num_global_entities) const
+  {
+    return 1;
+  }
+
+  /// Return the dimension of the local finite element function space for a cell
+  virtual std::size_t local_dimension() const
+  {
+    return 1;
+  }
+
+  /// Return the number of dofs on each cell facet
+  virtual std::size_t num_facet_dofs() const
+  {
+    return 0;
+  }
+
+  /// Return the number of dofs associated with each cell entity of dimension d
+  virtual std::size_t num_entity_dofs(std::size_t d) const
+  {
+    switch (d)
+    {
+    case 0:
+      {
+        return 0;
+        break;
+      }
+    case 1:
+      {
+        return 0;
+        break;
+      }
+    case 2:
+      {
+        return 1;
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Tabulate the local-to-global mapping of dofs on a cell
+  virtual void tabulate_dofs(std::size_t* dofs,
+                             const std::vector<std::size_t>& num_global_entities,
+                             const ufc::cell& c) const
+  {
+    dofs[0] = 0;
+  }
+
+  /// Tabulate the local-to-local mapping from facet dofs to cell dofs
+  virtual void tabulate_facet_dofs(std::size_t* dofs,
+                                   std::size_t facet) const
+  {
+    switch (facet)
+    {
+    case 0:
+      {
+        
+        break;
+      }
+    case 1:
+      {
+        
+        break;
+      }
+    case 2:
+      {
+        
+        break;
+      }
+    }
+    
+  }
+
+  /// Tabulate the local-to-local mapping of dofs on entity (d, i)
+  virtual void tabulate_entity_dofs(std::size_t* dofs,
+                                    std::size_t d, std::size_t i) const
+  {
+    if (d > 2)
+    {
+    throw std::runtime_error("d is larger than dimension (2)");
+    }
+    
+    switch (d)
+    {
+    case 0:
+      {
+        
+        break;
+      }
+    case 1:
+      {
+        
+        break;
+      }
+    case 2:
+      {
+        if (i > 0)
+      {
+      throw std::runtime_error("i is larger than number of entities (0)");
+      }
+      
+      dofs[0] = 0;
+        break;
+      }
+    }
+    
+  }
+
+  /// Tabulate the coordinates of all dofs on a cell
+  virtual void tabulate_coordinates(double* dof_coordinates,
+                                    const double* vertex_coordinates) const
+  {
+    dof_coordinates[0] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
+    dof_coordinates[1] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
+  }
+
+  /// Return the number of sub dofmaps (for a mixed element)
+  virtual std::size_t num_sub_dofmaps() const
+  {
+    return 0;
+  }
+
+  /// Create a new dofmap for sub dofmap i (for a mixed element)
+  virtual ufc::dofmap* create_sub_dofmap(std::size_t i) const
+  {
+    return 0;
+  }
+
+  /// Create a new class instance
+  virtual ufc::dofmap* create() const
+  {
+    return new chorin_temam_correction_dofmap_2();
+  }
+
+};
+
+/// This class defines the interface for a local-to-global mapping of
+/// degrees of freedom (dofs).
+
+class chorin_temam_correction_dofmap_3: public ufc::dofmap
+{
+public:
+
+  /// Constructor
+  chorin_temam_correction_dofmap_3() : ufc::dofmap()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~chorin_temam_correction_dofmap_3()
   {
     // Do nothing
   }
@@ -6142,7 +6639,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new my_div_dofmap_2();
+    return new chorin_temam_correction_dofmap_3();
   }
 
 };
@@ -6151,18 +6648,18 @@ public:
 /// tensor corresponding to the local contribution to a form from
 /// the integral over a cell.
 
-class my_div_cell_integral_0_otherwise: public ufc::cell_integral
+class chorin_temam_correction_cell_integral_0_otherwise: public ufc::cell_integral
 {
 public:
 
   /// Constructor
-  my_div_cell_integral_0_otherwise() : ufc::cell_integral()
+  chorin_temam_correction_cell_integral_0_otherwise() : ufc::cell_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~my_div_cell_integral_0_otherwise()
+  virtual ~chorin_temam_correction_cell_integral_0_otherwise()
   {
     // Do nothing
   }
@@ -6170,7 +6667,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({});
+    static const std::vector<bool> enabled({true});
     return enabled;
   }
 
@@ -6181,9 +6678,9 @@ public:
                                int cell_orientation) const
   {
     // Number of operations (multiply-add pairs) for Jacobian data:      3
-    // Number of operations (multiply-add pairs) for geometry tensor:    0
-    // Number of operations (multiply-add pairs) for tensor contraction: 4
-    // Total number of operations (multiply-add pairs):                  7
+    // Number of operations (multiply-add pairs) for geometry tensor:    10
+    // Number of operations (multiply-add pairs) for tensor contraction: 11
+    // Total number of operations (multiply-add pairs):                  24
     
     // Compute Jacobian
     double J[4];
@@ -6198,18 +6695,21 @@ public:
     const double det = std::abs(detJ);
     
     // Compute geometry tensor
-    const double G0_ = det;
+    const double G0_0_0_0 = det*(w[0][0]*((K[0]*K[0] + K[1]*K[1])));
+    const double G0_0_0_1 = det*(w[0][0]*((K[0]*K[2] + K[1]*K[3])));
+    const double G0_0_1_0 = det*(w[0][0]*((K[2]*K[0] + K[3]*K[1])));
+    const double G0_0_1_1 = det*(w[0][0]*((K[2]*K[2] + K[3]*K[3])));
     
     // Compute element tensor
-    A[0] = 0.0833333333333334*G0_;
-    A[1] = 0.0416666666666667*G0_;
-    A[2] = 0.0416666666666667*G0_;
-    A[3] = 0.0416666666666667*G0_;
-    A[4] = 0.0833333333333333*G0_;
-    A[5] = 0.0416666666666666*G0_;
-    A[6] = 0.0416666666666667*G0_;
-    A[7] = 0.0416666666666666*G0_;
-    A[8] = 0.0833333333333333*G0_;
+    A[0] = -0.499999999999999*G0_0_0_0 - 0.5*G0_0_0_1 - 0.5*G0_0_1_0 - 0.5*G0_0_1_1;
+    A[1] = 0.499999999999999*G0_0_0_0 + 0.5*G0_0_1_0;
+    A[2] = 0.5*G0_0_0_1 + 0.5*G0_0_1_1;
+    A[3] = 0.499999999999999*G0_0_0_0 + 0.5*G0_0_0_1;
+    A[4] = -0.499999999999999*G0_0_0_0;
+    A[5] = -0.5*G0_0_0_1;
+    A[6] = 0.5*G0_0_1_0 + 0.5*G0_0_1_1;
+    A[7] = -0.5*G0_0_1_0;
+    A[8] = -0.5*G0_0_1_1;
   }
 
 };
@@ -6218,18 +6718,18 @@ public:
 /// tensor corresponding to the local contribution to a form from
 /// the integral over a cell.
 
-class my_div_cell_integral_1_otherwise: public ufc::cell_integral
+class chorin_temam_correction_cell_integral_1_otherwise: public ufc::cell_integral
 {
 public:
 
   /// Constructor
-  my_div_cell_integral_1_otherwise() : ufc::cell_integral()
+  chorin_temam_correction_cell_integral_1_otherwise() : ufc::cell_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~my_div_cell_integral_1_otherwise()
+  virtual ~chorin_temam_correction_cell_integral_1_otherwise()
   {
     // Do nothing
   }
@@ -6309,18 +6809,18 @@ public:
 /// sequence of basis functions of Vj and w1, w2, ..., wn are given
 /// fixed functions (coefficients).
 
-class my_div_form_0: public ufc::form
+class chorin_temam_correction_form_0: public ufc::form
 {
 public:
 
   /// Constructor
-  my_div_form_0() : ufc::form()
+  chorin_temam_correction_form_0() : ufc::form()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~my_div_form_0()
+  virtual ~chorin_temam_correction_form_0()
   {
     // Do nothing
   }
@@ -6328,13 +6828,13 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "52c8d096982a23a3bfc03f770ad68d237051e53889ec0254487f23fab5e3e4a95d618a5af0af524a61c2d495c8239e10d342691867a7dbec485ae128076e58e8";
+    return "7af2d4032320b2005759685c8797c9aa7628125e6cd08dee42ef31d59d8638bce9a5316ec7bda0b551d8f7cb7a0aa0a3a503e1770ae73c12c0ca0c91dd3e231c";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
   virtual std::size_t original_coefficient_position(std::size_t i) const
   {
-    static const std::vector<std::size_t> position({});
+    static const std::vector<std::size_t> position({0});
     return position[i];
   }
 
@@ -6347,7 +6847,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 0;
+    return 1;
   }
 
   /// Return the number of cell domains
@@ -6417,12 +6917,17 @@ public:
     {
     case 0:
       {
-        return new my_div_finite_element_2();
+        return new chorin_temam_correction_finite_element_3();
         break;
       }
     case 1:
       {
-        return new my_div_finite_element_2();
+        return new chorin_temam_correction_finite_element_3();
+        break;
+      }
+    case 2:
+      {
+        return new chorin_temam_correction_finite_element_2();
         break;
       }
     }
@@ -6437,12 +6942,17 @@ public:
     {
     case 0:
       {
-        return new my_div_dofmap_2();
+        return new chorin_temam_correction_dofmap_3();
         break;
       }
     case 1:
       {
-        return new my_div_dofmap_2();
+        return new chorin_temam_correction_dofmap_3();
+        break;
+      }
+    case 2:
+      {
+        return new chorin_temam_correction_dofmap_2();
         break;
       }
     }
@@ -6483,7 +6993,7 @@ public:
   /// Create a new cell integral on everywhere else
   virtual ufc::cell_integral* create_default_cell_integral() const
   {
-    return new my_div_cell_integral_0_otherwise();
+    return new chorin_temam_correction_cell_integral_0_otherwise();
   }
 
   /// Create a new exterior facet integral on everywhere else
@@ -6527,18 +7037,18 @@ public:
 /// sequence of basis functions of Vj and w1, w2, ..., wn are given
 /// fixed functions (coefficients).
 
-class my_div_form_1: public ufc::form
+class chorin_temam_correction_form_1: public ufc::form
 {
 public:
 
   /// Constructor
-  my_div_form_1() : ufc::form()
+  chorin_temam_correction_form_1() : ufc::form()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~my_div_form_1()
+  virtual ~chorin_temam_correction_form_1()
   {
     // Do nothing
   }
@@ -6635,12 +7145,12 @@ public:
     {
     case 0:
       {
-        return new my_div_finite_element_2();
+        return new chorin_temam_correction_finite_element_3();
         break;
       }
     case 1:
       {
-        return new my_div_finite_element_1();
+        return new chorin_temam_correction_finite_element_1();
         break;
       }
     }
@@ -6655,12 +7165,12 @@ public:
     {
     case 0:
       {
-        return new my_div_dofmap_2();
+        return new chorin_temam_correction_dofmap_3();
         break;
       }
     case 1:
       {
-        return new my_div_dofmap_1();
+        return new chorin_temam_correction_dofmap_1();
         break;
       }
     }
@@ -6701,7 +7211,7 @@ public:
   /// Create a new cell integral on everywhere else
   virtual ufc::cell_integral* create_default_cell_integral() const
   {
-    return new my_div_cell_integral_1_otherwise();
+    return new chorin_temam_correction_cell_integral_1_otherwise();
   }
 
   /// Create a new exterior facet integral on everywhere else
@@ -6746,29 +7256,29 @@ public:
 #include <dolfin/adaptivity/ErrorControl.h>
 #include <dolfin/adaptivity/GoalFunctional.h>
 
-namespace my_div
+namespace chorin_temam_correction
 {
 
-class CoefficientSpace_vel: public dolfin::FunctionSpace
+class CoefficientSpace_dt: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_vel(const dolfin::Mesh& mesh):
+  CoefficientSpace_dt(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_1()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_2()), mesh)))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_vel(std::shared_ptr<const dolfin::Mesh> mesh):
+  CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_1()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_2()), *mesh)))
   {
     // Do nothing
   }
@@ -6776,20 +7286,67 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_vel(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  CoefficientSpace_dt(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_1()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_2()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_vel(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_1()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_2()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+};
+
+class CoefficientSpace_u_star: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_u_star(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_1()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_u_star(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_1()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_u_star(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_1()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_u_star(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_1()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -6805,8 +7362,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_0(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -6814,8 +7371,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -6825,8 +7382,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -6835,8 +7392,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -6852,8 +7409,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_1(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -6861,8 +7418,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_1(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -6872,8 +7429,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_1(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -6882,13 +7439,15 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_1(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
 
 };
+
+typedef CoefficientSpace_dt Form_a_FunctionSpace_2;
 
 class Form_a: public dolfin::Form
 {
@@ -6896,22 +7455,70 @@ public:
 
   // Constructor
   Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0):
-    dolfin::Form(2, 0)
+    dolfin::Form(2, 1), dt(*this, 0)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
     _function_spaces[1] = reference_to_no_delete_pointer(V1);
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new my_div_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_0());
+  }
+
+  // Constructor
+  Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& dt):
+    dolfin::Form(2, 1), dt(*this, 0)
+  {
+    _function_spaces[0] = reference_to_no_delete_pointer(V0);
+    _function_spaces[1] = reference_to_no_delete_pointer(V1);
+
+    this->dt = dt;
+
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_0());
+  }
+
+  // Constructor
+  Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> dt):
+    dolfin::Form(2, 1), dt(*this, 0)
+  {
+    _function_spaces[0] = reference_to_no_delete_pointer(V0);
+    _function_spaces[1] = reference_to_no_delete_pointer(V1);
+
+    this->dt = *dt;
+
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_0());
   }
 
   // Constructor
   Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(2, 0)
+    dolfin::Form(2, 1), dt(*this, 0)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new my_div_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_0());
+  }
+
+  // Constructor
+  Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& dt):
+    dolfin::Form(2, 1), dt(*this, 0)
+  {
+    _function_spaces[0] = V0;
+    _function_spaces[1] = V1;
+
+    this->dt = dt;
+
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_0());
+  }
+
+  // Constructor
+  Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> dt):
+    dolfin::Form(2, 1), dt(*this, 0)
+  {
+    _function_spaces[0] = V0;
+    _function_spaces[1] = V1;
+
+    this->dt = *dt;
+
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_0());
   }
 
   // Destructor
@@ -6921,153 +7528,7 @@ public:
   /// Return the number of the coefficient with this name
   virtual std::size_t coefficient_number(const std::string& name) const
   {
-
-    dolfin::dolfin_error("generated code for class Form",
-                         "access coefficient data",
-                         "There are no coefficients");
-    return 0;
-  }
-
-  /// Return the name of the coefficient with this number
-  virtual std::string coefficient_name(std::size_t i) const
-  {
-
-    dolfin::dolfin_error("generated code for class Form",
-                         "access coefficient data",
-                         "There are no coefficients");
-    return "unnamed";
-  }
-
-  // Typedefs
-  typedef Form_a_FunctionSpace_0 TestSpace;
-  typedef Form_a_FunctionSpace_1 TrialSpace;
-
-  // Coefficients
-};
-
-class Form_L_FunctionSpace_0: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  Form_L_FunctionSpace_0(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  Form_L_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new my_div_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new my_div_dofmap_2()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-typedef CoefficientSpace_vel Form_L_FunctionSpace_1;
-
-class Form_L: public dolfin::Form
-{
-public:
-
-  // Constructor
-  Form_L(const dolfin::FunctionSpace& V0):
-    dolfin::Form(1, 1), vel(*this, 0)
-  {
-    _function_spaces[0] = reference_to_no_delete_pointer(V0);
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new my_div_form_1());
-  }
-
-  // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& vel):
-    dolfin::Form(1, 1), vel(*this, 0)
-  {
-    _function_spaces[0] = reference_to_no_delete_pointer(V0);
-
-    this->vel = vel;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new my_div_form_1());
-  }
-
-  // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> vel):
-    dolfin::Form(1, 1), vel(*this, 0)
-  {
-    _function_spaces[0] = reference_to_no_delete_pointer(V0);
-
-    this->vel = *vel;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new my_div_form_1());
-  }
-
-  // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 1), vel(*this, 0)
-  {
-    _function_spaces[0] = V0;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new my_div_form_1());
-  }
-
-  // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& vel):
-    dolfin::Form(1, 1), vel(*this, 0)
-  {
-    _function_spaces[0] = V0;
-
-    this->vel = vel;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new my_div_form_1());
-  }
-
-  // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> vel):
-    dolfin::Form(1, 1), vel(*this, 0)
-  {
-    _function_spaces[0] = V0;
-
-    this->vel = *vel;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new my_div_form_1());
-  }
-
-  // Destructor
-  ~Form_L()
-  {}
-
-  /// Return the number of the coefficient with this name
-  virtual std::size_t coefficient_number(const std::string& name) const
-  {
-    if (name == "vel")
+    if (name == "dt")
       return 0;
 
     dolfin::dolfin_error("generated code for class Form",
@@ -7082,7 +7543,162 @@ public:
     switch (i)
     {
     case 0:
-      return "vel";
+      return "dt";
+    }
+
+    dolfin::dolfin_error("generated code for class Form",
+                         "access coefficient data",
+                         "Invalid coefficient");
+    return "unnamed";
+  }
+
+  // Typedefs
+  typedef Form_a_FunctionSpace_0 TestSpace;
+  typedef Form_a_FunctionSpace_1 TrialSpace;
+  typedef Form_a_FunctionSpace_2 CoefficientSpace_dt;
+
+  // Coefficients
+  dolfin::CoefficientAssigner dt;
+};
+
+class Form_L_FunctionSpace_0: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  Form_L_FunctionSpace_0(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  Form_L_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_correction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_correction_dofmap_3()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+};
+
+typedef CoefficientSpace_u_star Form_L_FunctionSpace_1;
+
+class Form_L: public dolfin::Form
+{
+public:
+
+  // Constructor
+  Form_L(const dolfin::FunctionSpace& V0):
+    dolfin::Form(1, 1), u_star(*this, 0)
+  {
+    _function_spaces[0] = reference_to_no_delete_pointer(V0);
+
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_1());
+  }
+
+  // Constructor
+  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& u_star):
+    dolfin::Form(1, 1), u_star(*this, 0)
+  {
+    _function_spaces[0] = reference_to_no_delete_pointer(V0);
+
+    this->u_star = u_star;
+
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_1());
+  }
+
+  // Constructor
+  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> u_star):
+    dolfin::Form(1, 1), u_star(*this, 0)
+  {
+    _function_spaces[0] = reference_to_no_delete_pointer(V0);
+
+    this->u_star = *u_star;
+
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_1());
+  }
+
+  // Constructor
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0):
+    dolfin::Form(1, 1), u_star(*this, 0)
+  {
+    _function_spaces[0] = V0;
+
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_1());
+  }
+
+  // Constructor
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& u_star):
+    dolfin::Form(1, 1), u_star(*this, 0)
+  {
+    _function_spaces[0] = V0;
+
+    this->u_star = u_star;
+
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_1());
+  }
+
+  // Constructor
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u_star):
+    dolfin::Form(1, 1), u_star(*this, 0)
+  {
+    _function_spaces[0] = V0;
+
+    this->u_star = *u_star;
+
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_correction_form_1());
+  }
+
+  // Destructor
+  ~Form_L()
+  {}
+
+  /// Return the number of the coefficient with this name
+  virtual std::size_t coefficient_number(const std::string& name) const
+  {
+    if (name == "u_star")
+      return 0;
+
+    dolfin::dolfin_error("generated code for class Form",
+                         "access coefficient data",
+                         "Invalid coefficient");
+    return 0;
+  }
+
+  /// Return the name of the coefficient with this number
+  virtual std::string coefficient_name(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      return "u_star";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -7093,10 +7709,10 @@ public:
 
   // Typedefs
   typedef Form_L_FunctionSpace_0 TestSpace;
-  typedef Form_L_FunctionSpace_1 CoefficientSpace_vel;
+  typedef Form_L_FunctionSpace_1 CoefficientSpace_u_star;
 
   // Coefficients
-  dolfin::CoefficientAssigner vel;
+  dolfin::CoefficientAssigner u_star;
 };
 
 // Class typedefs

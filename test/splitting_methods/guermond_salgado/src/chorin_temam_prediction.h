@@ -25,8 +25,8 @@
 //   restrict_keyword:               ''
 //   split:                          False
 
-#ifndef __VELOCITY2_H
-#define __VELOCITY2_H
+#ifndef __CHORIN_TEMAM_PREDICTION_H
+#define __CHORIN_TEMAM_PREDICTION_H
 
 #include <cmath>
 #include <stdexcept>
@@ -35,18 +35,18 @@
 
 /// This class defines the interface for a finite element.
 
-class velocity2_finite_element_0: public ufc::finite_element
+class chorin_temam_prediction_finite_element_0: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  velocity2_finite_element_0() : ufc::finite_element()
+  chorin_temam_prediction_finite_element_0() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_finite_element_0()
+  virtual ~chorin_temam_prediction_finite_element_0()
   {
     // Do nothing
   }
@@ -933,25 +933,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new velocity2_finite_element_0();
+    return new chorin_temam_prediction_finite_element_0();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class velocity2_finite_element_1: public ufc::finite_element
+class chorin_temam_prediction_finite_element_1: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  velocity2_finite_element_1() : ufc::finite_element()
+  chorin_temam_prediction_finite_element_1() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_finite_element_1()
+  virtual ~chorin_temam_prediction_finite_element_1()
   {
     // Do nothing
   }
@@ -1228,25 +1228,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new velocity2_finite_element_1();
+    return new chorin_temam_prediction_finite_element_1();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class velocity2_finite_element_2: public ufc::finite_element
+class chorin_temam_prediction_finite_element_2: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  velocity2_finite_element_2() : ufc::finite_element()
+  chorin_temam_prediction_finite_element_2() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_finite_element_2()
+  virtual ~chorin_temam_prediction_finite_element_2()
   {
     // Do nothing
   }
@@ -2814,25 +2814,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new velocity2_finite_element_2();
+    return new chorin_temam_prediction_finite_element_2();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class velocity2_finite_element_3: public ufc::finite_element
+class chorin_temam_prediction_finite_element_3: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  velocity2_finite_element_3() : ufc::finite_element()
+  chorin_temam_prediction_finite_element_3() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_finite_element_3()
+  virtual ~chorin_temam_prediction_finite_element_3()
   {
     // Do nothing
   }
@@ -5609,12 +5609,12 @@ public:
     {
     case 0:
       {
-        return new velocity2_finite_element_2();
+        return new chorin_temam_prediction_finite_element_2();
         break;
       }
     case 1:
       {
-        return new velocity2_finite_element_2();
+        return new chorin_temam_prediction_finite_element_2();
         break;
       }
     }
@@ -5625,7 +5625,7 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new velocity2_finite_element_3();
+    return new chorin_temam_prediction_finite_element_3();
   }
 
 };
@@ -5633,18 +5633,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class velocity2_dofmap_0: public ufc::dofmap
+class chorin_temam_prediction_dofmap_0: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  velocity2_dofmap_0() : ufc::dofmap()
+  chorin_temam_prediction_dofmap_0() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_dofmap_0()
+  virtual ~chorin_temam_prediction_dofmap_0()
   {
     // Do nothing
   }
@@ -5854,7 +5854,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new velocity2_dofmap_0();
+    return new chorin_temam_prediction_dofmap_0();
   }
 
 };
@@ -5862,18 +5862,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class velocity2_dofmap_1: public ufc::dofmap
+class chorin_temam_prediction_dofmap_1: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  velocity2_dofmap_1() : ufc::dofmap()
+  chorin_temam_prediction_dofmap_1() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_dofmap_1()
+  virtual ~chorin_temam_prediction_dofmap_1()
   {
     // Do nothing
   }
@@ -6056,7 +6056,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new velocity2_dofmap_1();
+    return new chorin_temam_prediction_dofmap_1();
   }
 
 };
@@ -6064,18 +6064,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class velocity2_dofmap_2: public ufc::dofmap
+class chorin_temam_prediction_dofmap_2: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  velocity2_dofmap_2() : ufc::dofmap()
+  chorin_temam_prediction_dofmap_2() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_dofmap_2()
+  virtual ~chorin_temam_prediction_dofmap_2()
   {
     // Do nothing
   }
@@ -6323,7 +6323,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new velocity2_dofmap_2();
+    return new chorin_temam_prediction_dofmap_2();
   }
 
 };
@@ -6331,18 +6331,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class velocity2_dofmap_3: public ufc::dofmap
+class chorin_temam_prediction_dofmap_3: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  velocity2_dofmap_3() : ufc::dofmap()
+  chorin_temam_prediction_dofmap_3() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_dofmap_3()
+  virtual ~chorin_temam_prediction_dofmap_3()
   {
     // Do nothing
   }
@@ -6623,12 +6623,12 @@ public:
     {
     case 0:
       {
-        return new velocity2_dofmap_2();
+        return new chorin_temam_prediction_dofmap_2();
         break;
       }
     case 1:
       {
-        return new velocity2_dofmap_2();
+        return new chorin_temam_prediction_dofmap_2();
         break;
       }
     }
@@ -6639,7 +6639,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new velocity2_dofmap_3();
+    return new chorin_temam_prediction_dofmap_3();
   }
 
 };
@@ -6648,18 +6648,18 @@ public:
 /// tensor corresponding to the local contribution to a form from
 /// the integral over a cell.
 
-class velocity2_cell_integral_0_otherwise: public ufc::cell_integral
+class chorin_temam_prediction_cell_integral_0_otherwise: public ufc::cell_integral
 {
 public:
 
   /// Constructor
-  velocity2_cell_integral_0_otherwise() : ufc::cell_integral()
+  chorin_temam_prediction_cell_integral_0_otherwise() : ufc::cell_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_cell_integral_0_otherwise()
+  virtual ~chorin_temam_prediction_cell_integral_0_otherwise()
   {
     // Do nothing
   }
@@ -6667,7 +6667,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({true, true, true, true, true});
+    static const std::vector<bool> enabled({true, true, true});
     return enabled;
   }
 
@@ -6696,185 +6696,108 @@ public:
     
     
     // Array of quadrature weights.
-    static const double W16[16] = {0.0235683681933823, 0.0353880678980859, 0.0225840492823699, 0.00542322591052525, 0.0441850885223617, 0.0663442161070497, 0.0423397245217463, 0.0101672595644788, 0.0441850885223617, 0.0663442161070497, 0.0423397245217463, 0.0101672595644788, 0.0235683681933823, 0.0353880678980859, 0.0225840492823699, 0.00542322591052525};
-    // Quadrature points on the UFC reference element: (0.0654669945550145, 0.0571041961145177), (0.0502101232113698, 0.276843013638124), (0.028912084224389, 0.583590432368917), (0.00970378512694614, 0.860240135656219), (0.311164552244357, 0.0571041961145177), (0.238648659731443, 0.276843013638124), (0.137419104134574, 0.583590432368917), (0.0461220799064521, 0.860240135656219), (0.631731251641125, 0.0571041961145177), (0.484508326630433, 0.276843013638124), (0.278990463496509, 0.583590432368917), (0.0936377844373285, 0.860240135656219), (0.877428809330468, 0.0571041961145177), (0.672946863150506, 0.276843013638124), (0.387497483406694, 0.583590432368917), (0.130056079216834, 0.860240135656219)
+    static const double W7[7] = {0.1125, 0.0629695902724136, 0.0629695902724136, 0.0629695902724136, 0.0661970763942531, 0.0661970763942531, 0.0661970763942531};
+    // Quadrature points on the UFC reference element: (0.333333333333333, 0.333333333333333), (0.797426985353087, 0.101286507323456), (0.101286507323456, 0.797426985353087), (0.101286507323456, 0.101286507323456), (0.0597158717897698, 0.470142064105115), (0.470142064105115, 0.0597158717897698), (0.470142064105115, 0.470142064105115)
     
     // Values of basis functions at quadrature points.
-    static const double FE0[16][6] = \
-    {{0.662333821555697, -0.0568951398028818, -0.0505824176867471, 0.0149537603843903, 0.200419467218139, 0.229770508331402},
-    {0.232768098097707, -0.0451680102655678, -0.123558905237647, 0.0556012872999084, 0.745202550451633, 0.135154979653967},
-    {-0.0871888841136516, -0.0272402669959926, 0.0975651531361618, 0.0674912629327908, 0.904559295532719, 0.0448134395079725},
-    {-0.0962269117343233, -0.0095154582353662, 0.619786046331442, 0.0333903417359317, 0.447517836913622, 0.00504814498869295},
-    {0.166437496959, -0.117517795097495, -0.0505824176867471, 0.0710752064609913, 0.144298021141538, 0.786289488222712},
-    {-0.0150116894819879, -0.124742294148215, -0.123558905237647, 0.264272856643007, 0.536530981108534, 0.462509051116308},
-    {-0.123319106052515, -0.0996510837722764, 0.0975651531361618, 0.320785897590582, 0.651264660874928, 0.15335447822312},
-    {-0.0761017150886652, -0.0418675873966577, 0.619786046331442, 0.158704257101893, 0.322203921547661, 0.0172750775043263},
-    {-0.117517795097495, 0.166437496959, -0.0505824176867471, 0.144298021141538, 0.0710752064609913, 0.786289488222712},
-    {-0.124742294148215, -0.0150116894819881, -0.123558905237647, 0.536530981108534, 0.264272856643007, 0.462509051116308},
-    {-0.0996510837722763, -0.123319106052515, 0.0975651531361618, 0.651264660874928, 0.320785897590582, 0.15335447822312},
-    {-0.0418675873966577, -0.0761017150886653, 0.619786046331442, 0.322203921547661, 0.158704257101893, 0.0172750775043263},
-    {-0.0568951398028819, 0.662333821555697, -0.0505824176867471, 0.200419467218139, 0.0149537603843903, 0.229770508331402},
-    {-0.0451680102655678, 0.232768098097706, -0.123558905237647, 0.745202550451633, 0.0556012872999085, 0.135154979653967},
-    {-0.0272402669959926, -0.0871888841136518, 0.0975651531361618, 0.904559295532719, 0.0674912629327909, 0.0448134395079725},
-    {-0.00951545823536613, -0.0962269117343234, 0.619786046331442, 0.447517836913623, 0.0333903417359314, 0.0050481449886929}};
+    static const double FE1_C0[7][6] = \
+    {{-0.111111111111111, -0.111111111111111, -0.111111111111111, 0.444444444444444, 0.444444444444444, 0.444444444444444},
+    {-0.0807685941918872, 0.474352608585538, -0.0807685941918871, 0.323074376767549, 0.0410358262631383, 0.323074376767549},
+    {-0.0807685941918872, -0.0807685941918872, 0.474352608585538, 0.323074376767549, 0.323074376767549, 0.0410358262631383},
+    {0.474352608585539, -0.0807685941918871, -0.0807685941918871, 0.0410358262631383, 0.323074376767549, 0.323074376767549},
+    {-0.0280749432230786, -0.0525839011025453, -0.0280749432230788, 0.112299772892315, 0.884134241764073, 0.112299772892315},
+    {-0.0280749432230787, -0.0280749432230788, -0.0525839011025453, 0.112299772892315, 0.112299772892315, 0.884134241764073},
+    {-0.0525839011025454, -0.0280749432230789, -0.0280749432230788, 0.884134241764072, 0.112299772892315, 0.112299772892315}};
     
     // Array of non-zero columns
-    static const unsigned int nzc8[6] = {0, 1, 2, 3, 4, 5};
+    static const unsigned int nzc6[6] = {0, 1, 2, 3, 4, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc11[6] = {6, 7, 8, 9, 10, 11};
+    static const unsigned int nzc9[6] = {6, 7, 8, 9, 10, 11};
     
-    static const double FE0_D01[16][5] = \
-    {{-2.50971523732188, -0.771583215541929, 0.261867978220048, 3.28129845286381, -0.261867978220057},
-    {-1.69178745260203, 0.107372054552496, 0.200840492845468, 1.58441539804954, -0.200840492845478},
-    {-0.549989933626782, 1.33436172947567, 0.115648336897542, -0.784371795848882, -0.115648336897554},
-    {0.479775683132657, 2.44096054262488, 0.0388151405077668, -2.92073622575753, -0.038815140507782},
-    {-1.52692500656451, -0.771583215541929, 1.24465820897742, 2.29850822210644, -1.24465820897743},
-    {-0.938033306521738, 0.107372054552496, 0.95459463892576, 0.830661251969246, -0.954594638925772},
-    {-0.11596185398604, 1.33436172947567, 0.549676416538283, -1.21839987548962, -0.549676416538296},
-    {0.625448862250681, 2.44096054262488, 0.184488319625791, -3.06640940487555, -0.184488319625806},
-    {-0.244658208977433, -0.771583215541929, 2.52692500656449, 1.01624142451937, -2.5269250065645},
-    {0.0454053610742235, 0.107372054552497, 1.93803330652172, -0.152777415626714, -1.93803330652173},
-    {0.450323583461697, 1.33436172947567, 1.11596185398602, -1.78468531293736, -1.11596185398603},
-    {0.815511680374187, 2.44096054262488, 0.374551137749296, -3.25647222299906, -0.374551137749312},
-    {0.738132021779938, -0.771583215541929, 3.50971523732186, 0.0334511937620001, -3.50971523732187},
-    {0.799159507154516, 0.107372054552496, 2.69178745260201, -0.906531561707005, -2.69178745260203},
-    {0.884351663102439, 1.33436172947567, 1.54998993362676, -2.2187133925781, -1.54998993362678},
-    {0.961184859492211, 2.44096054262488, 0.52022431686732, -3.40214540211708, -0.520224316867336}};
+    static const double FE1_C0_D01[7][5] = \
+    {{-0.333333333333338, 0.333333333333335, 1.33333333333332, 0.0, -1.33333333333333},
+    {0.59485397070617, -0.594853970706174, 3.18970794141233, 1.22124532708767e-14, -3.18970794141235},
+    {0.594853970706169, 2.18970794141235, 0.405146029293808, -2.78456191211851, -0.405146029293824},
+    {-2.18970794141235, -0.594853970706174, 0.405146029293814, 2.78456191211853, -0.405146029293824},
+    {-0.880568256420466, 0.880568256420462, 0.238863487159066, 0.0, -0.238863487159078},
+    {-0.880568256420465, -0.76113651284092, 1.88056825642045, 1.64170476926139, -1.88056825642046},
+    {0.761136512840915, 0.880568256420462, 1.88056825642045, -1.64170476926137, -1.88056825642046}};
     
     // Array of non-zero columns
-    static const unsigned int nzc0[5] = {0, 2, 3, 4, 5};
+    static const unsigned int nzc7[5] = {0, 2, 3, 4, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc9[5] = {0, 2, 3, 4, 5};
+    static const unsigned int nzc10[5] = {6, 8, 9, 10, 11};
+    
+    static const double FE1_C0_D10[7][5] = \
+    {{-0.333333333333333, 0.333333333333333, 1.33333333333333, -1.33333333333333, 0.0},
+    {0.594853970706177, 2.18970794141235, 0.405146029293824, -0.405146029293824, -2.78456191211853},
+    {0.594853970706173, -0.594853970706176, 3.18970794141234, -3.18970794141234, 0.0},
+    {-2.18970794141235, -0.594853970706177, 0.405146029293824, -0.405146029293824, 2.78456191211853},
+    {-0.880568256420461, -0.761136512840922, 1.88056825642046, -1.88056825642046, 1.64170476926138},
+    {-0.88056825642046, 0.880568256420459, 0.238863487159078, -0.238863487159078, 0.0},
+    {0.761136512840922, 0.880568256420461, 1.88056825642046, -1.88056825642046, -1.64170476926138}};
     
     // Array of non-zero columns
-    static const unsigned int nzc12[5] = {6, 8, 9, 10, 11};
-    
-    static const double FE0_D10[16][5] = \
-    {{-2.50971523732187, -0.738132021779945, 0.228416784458069, -0.228416784458069, 3.24784725910182},
-    {-1.69178745260203, -0.799159507154523, 1.10737205455249, -1.10737205455249, 2.49094695975655},
-    {-0.549989933626778, -0.884351663102445, 2.33436172947566, -2.33436172947566, 1.43434159672922},
-    {0.479775683132661, -0.961184859492217, 3.44096054262487, -3.44096054262487, 0.481409176359556},
-    {-1.5269250065645, 0.244658208977426, 0.228416784458069, -0.228416784458069, 1.28226679758707},
-    {-0.938033306521733, -0.0454053610742297, 1.10737205455249, -1.10737205455249, 0.983438667595962},
-    {-0.115961853986036, -0.450323583461703, 2.33436172947566, -2.33436172947566, 0.566285437447739},
-    {0.625448862250685, -0.815511680374193, 3.44096054262487, -3.44096054262487, 0.190062818123508},
-    {-0.244658208977426, 1.5269250065645, 0.228416784458069, -0.228416784458069, -1.28226679758707},
-    {0.0454053610742296, 0.938033306521733, 1.10737205455249, -1.10737205455249, -0.983438667595963},
-    {0.450323583461703, 0.115961853986035, 2.33436172947566, -2.33436172947566, -0.566285437447738},
-    {0.815511680374191, -0.625448862250687, 3.44096054262487, -3.44096054262487, -0.190062818123504},
-    {0.738132021779945, 2.50971523732187, 0.228416784458069, -0.228416784458069, -3.24784725910182},
-    {0.799159507154523, 1.69178745260203, 1.10737205455249, -1.10737205455249, -2.49094695975655},
-    {0.884351663102445, 0.549989933626778, 2.33436172947566, -2.33436172947566, -1.43434159672922},
-    {0.961184859492215, -0.479775683132663, 3.44096054262487, -3.44096054262487, -0.481409176359553}};
+    static const unsigned int nzc8[5] = {0, 1, 3, 4, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc1[5] = {0, 1, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc10[5] = {0, 1, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc13[5] = {6, 7, 9, 10, 11};
+    static const unsigned int nzc11[5] = {6, 7, 9, 10, 11};
     
     // Reset values in the element tensor.
     for (unsigned int r = 0; r < 144; r++)
     {
       A[r] = 0.0;
     } // end loop over 'r'
-    // Number of operations to compute geometry constants: 29.
-    double G[12];
-    G[0] = det*w[1][0]*(K[0]*K[0] + K[1]*K[1]);
-    G[1] = det*w[1][0]*(K[0]*K[2] + K[1]*K[3]);
-    G[2] = det*w[1][0]*(K[2]*K[2] + K[3]*K[3]);
-    G[3] = K[1]*det;
-    G[4] = K[3]*det;
-    G[5] = K[0]*det;
-    G[6] = K[2]*det;
-    G[7] = 0.5*K[0]*det;
-    G[8] = 0.5*K[2]*det;
-    G[9] = 0.5*K[1]*det;
-    G[10] = 0.5*K[3]*det;
-    G[11] = 0.5*det/w[0][0];
+    // Number of operations to compute geometry constants: 26.
+    double G[7];
+    G[0] = det*w[0][0]*w[1][0]*(K[2]*K[2] + K[3]*K[3]);
+    G[1] = det*w[0][0]*w[1][0]*(K[0]*K[2] + K[1]*K[3]);
+    G[2] = det*w[0][0]*w[1][0]*(K[0]*K[0] + K[1]*K[1]);
+    G[3] = K[2]*det*w[1][0];
+    G[4] = K[3]*det*w[1][0];
+    G[5] = K[0]*det*w[1][0];
+    G[6] = K[1]*det*w[1][0];
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
     
     // Loop quadrature points for integral.
-    // Number of operations to compute element tensor for following IP loop = 27088
-    for (unsigned int ip = 0; ip < 16; ip++)
+    // Number of operations to compute element tensor for following IP loop = 8484
+    for (unsigned int ip = 0; ip < 7; ip++)
     {
       
       // Coefficient declarations.
       double F0 = 0.0;
       double F1 = 0.0;
-      double F2 = 0.0;
-      double F3 = 0.0;
-      double F4 = 0.0;
-      double F5 = 0.0;
-      double F6 = 0.0;
-      double F7 = 0.0;
-      double F8 = 0.0;
-      double F9 = 0.0;
       
-      // Total number of operations to compute function values = 60
-      for (unsigned int r = 0; r < 5; r++)
-      {
-        F1 += FE0_D10[ip][r]*w[4][nzc1[r]];
-        F2 += FE0_D01[ip][r]*w[4][nzc0[r]];
-        F3 += FE0_D10[ip][r]*w[2][nzc10[r]];
-        F4 += FE0_D01[ip][r]*w[2][nzc9[r]];
-        F7 += FE0_D10[ip][r]*w[2][nzc13[r]];
-        F8 += FE0_D01[ip][r]*w[2][nzc12[r]];
-      } // end loop over 'r'
-      
-      // Total number of operations to compute function values = 48
+      // Total number of operations to compute function values = 24
       for (unsigned int r = 0; r < 6; r++)
       {
-        F0 += FE0[ip][r]*w[2][nzc8[r]];
-        F5 += FE0[ip][r]*w[4][r];
-        F6 += FE0[ip][r]*w[2][nzc11[r]];
-        F9 += FE0[ip][r]*w[3][r];
+        F0 += FE1_C0[ip][r]*w[2][nzc6[r]];
+        F1 += FE1_C0[ip][r]*w[2][nzc9[r]];
       } // end loop over 'r'
       
-      // Number of operations to compute ip constants: 49
-      double I[12];
+      // Number of operations to compute ip constants: 12
+      double I[6];
       // Number of operations: 1
-      I[0] = G[0]*W16[ip];
-      
-      // Number of operations: 1
-      I[1] = G[1]*W16[ip];
+      I[0] = G[0]*W7[ip];
       
       // Number of operations: 1
-      I[2] = G[2]*W16[ip];
+      I[1] = G[1]*W7[ip];
       
-      // Number of operations: 3
-      I[3] = F0*F5*G[3]*W16[ip];
+      // Number of operations: 1
+      I[2] = G[2]*W7[ip];
       
-      // Number of operations: 3
-      I[4] = F5*F6*G[4]*W16[ip];
+      // Number of operations: 4
+      I[3] = W7[ip]*(F0*G[3] + F1*G[4]);
       
-      // Number of operations: 3
-      I[5] = F5*F6*G[3]*W16[ip];
+      // Number of operations: 4
+      I[4] = W7[ip]*(F0*G[5] + F1*G[6]);
       
-      // Number of operations: 3
-      I[6] = F0*F5*G[4]*W16[ip];
-      
-      // Number of operations: 3
-      I[7] = F0*F5*G[5]*W16[ip];
-      
-      // Number of operations: 3
-      I[8] = F5*F6*G[6]*W16[ip];
-      
-      // Number of operations: 3
-      I[9] = F5*F6*G[5]*W16[ip];
-      
-      // Number of operations: 3
-      I[10] = F0*F5*G[6]*W16[ip];
-      
-      // Number of operations: 22
-      I[11] = W16[ip]*(F0*(F1*G[7] + F2*G[8]) + F5*(G[11] + F3*G[7] + F4*G[8] + F7*G[9] + F8*G[10]) + F6*(F1*G[9] + F2*G[10]) + F9*G[11]);
+      // Number of operations: 1
+      I[5] = W7[ip]*det;
       
       
       // Number of operations for primary indices: 600
@@ -6883,45 +6806,37 @@ public:
         for (unsigned int k = 0; k < 5; k++)
         {
           // Number of operations to compute entry: 3
-          A[nzc10[j]*12 + nzc10[k]] += FE0_D10[ip][j]*FE0_D10[ip][k]*I[0];
+          A[nzc10[j]*12 + nzc10[k]] += FE1_C0_D01[ip][j]*FE1_C0_D01[ip][k]*I[0];
           // Number of operations to compute entry: 3
-          A[nzc10[j]*12 + nzc9[k]] += FE0_D01[ip][k]*FE0_D10[ip][j]*I[1];
+          A[nzc10[j]*12 + nzc11[k]] += FE1_C0_D01[ip][j]*FE1_C0_D10[ip][k]*I[1];
           // Number of operations to compute entry: 3
-          A[nzc12[j]*12 + nzc12[k]] += FE0_D01[ip][j]*FE0_D01[ip][k]*I[2];
+          A[nzc11[j]*12 + nzc10[k]] += FE1_C0_D01[ip][k]*FE1_C0_D10[ip][j]*I[1];
           // Number of operations to compute entry: 3
-          A[nzc12[j]*12 + nzc13[k]] += FE0_D01[ip][j]*FE0_D10[ip][k]*I[1];
+          A[nzc11[j]*12 + nzc11[k]] += FE1_C0_D10[ip][j]*FE1_C0_D10[ip][k]*I[2];
           // Number of operations to compute entry: 3
-          A[nzc13[j]*12 + nzc12[k]] += FE0_D01[ip][k]*FE0_D10[ip][j]*I[1];
+          A[nzc7[j]*12 + nzc7[k]] += FE1_C0_D01[ip][j]*FE1_C0_D01[ip][k]*I[0];
           // Number of operations to compute entry: 3
-          A[nzc13[j]*12 + nzc13[k]] += FE0_D10[ip][j]*FE0_D10[ip][k]*I[0];
+          A[nzc7[j]*12 + nzc8[k]] += FE1_C0_D01[ip][j]*FE1_C0_D10[ip][k]*I[1];
           // Number of operations to compute entry: 3
-          A[nzc9[j]*12 + nzc10[k]] += FE0_D01[ip][j]*FE0_D10[ip][k]*I[1];
+          A[nzc8[j]*12 + nzc7[k]] += FE1_C0_D01[ip][k]*FE1_C0_D10[ip][j]*I[1];
           // Number of operations to compute entry: 3
-          A[nzc9[j]*12 + nzc9[k]] += FE0_D01[ip][j]*FE0_D01[ip][k]*I[2];
+          A[nzc8[j]*12 + nzc8[k]] += FE1_C0_D10[ip][j]*FE1_C0_D10[ip][k]*I[2];
         } // end loop over 'k'
       } // end loop over 'j'
       
-      // Number of operations for primary indices: 720
+      // Number of operations for primary indices: 360
       for (unsigned int j = 0; j < 6; j++)
       {
         for (unsigned int k = 0; k < 5; k++)
         {
           // Number of operations to compute entry: 3
-          A[nzc11[j]*12 + nzc10[k]] += FE0[ip][j]*FE0_D10[ip][k]*I[3];
+          A[nzc6[j]*12 + nzc7[k]] += FE1_C0[ip][j]*FE1_C0_D01[ip][k]*I[3];
           // Number of operations to compute entry: 3
-          A[nzc11[j]*12 + nzc12[k]] += FE0[ip][j]*FE0_D01[ip][k]*I[4];
+          A[nzc6[j]*12 + nzc8[k]] += FE1_C0[ip][j]*FE1_C0_D10[ip][k]*I[4];
           // Number of operations to compute entry: 3
-          A[nzc11[j]*12 + nzc13[k]] += FE0[ip][j]*FE0_D10[ip][k]*I[5];
+          A[nzc9[j]*12 + nzc10[k]] += FE1_C0[ip][j]*FE1_C0_D01[ip][k]*I[3];
           // Number of operations to compute entry: 3
-          A[nzc11[j]*12 + nzc9[k]] += FE0[ip][j]*FE0_D01[ip][k]*I[6];
-          // Number of operations to compute entry: 3
-          A[nzc8[j]*12 + nzc10[k]] += FE0[ip][j]*FE0_D10[ip][k]*I[7];
-          // Number of operations to compute entry: 3
-          A[nzc8[j]*12 + nzc12[k]] += FE0[ip][j]*FE0_D01[ip][k]*I[8];
-          // Number of operations to compute entry: 3
-          A[nzc8[j]*12 + nzc13[k]] += FE0[ip][j]*FE0_D10[ip][k]*I[9];
-          // Number of operations to compute entry: 3
-          A[nzc8[j]*12 + nzc9[k]] += FE0[ip][j]*FE0_D01[ip][k]*I[10];
+          A[nzc9[j]*12 + nzc11[k]] += FE1_C0[ip][j]*FE1_C0_D10[ip][k]*I[4];
         } // end loop over 'k'
       } // end loop over 'j'
       
@@ -6931,9 +6846,9 @@ public:
         for (unsigned int k = 0; k < 6; k++)
         {
           // Number of operations to compute entry: 3
-          A[nzc11[j]*12 + nzc11[k]] += FE0[ip][j]*FE0[ip][k]*I[11];
+          A[nzc6[j]*12 + nzc6[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[5];
           // Number of operations to compute entry: 3
-          A[nzc8[j]*12 + nzc8[k]] += FE0[ip][j]*FE0[ip][k]*I[11];
+          A[nzc9[j]*12 + nzc9[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[5];
         } // end loop over 'k'
       } // end loop over 'j'
     } // end loop over 'ip'
@@ -6945,18 +6860,18 @@ public:
 /// tensor corresponding to the local contribution to a form from
 /// the integral over a cell.
 
-class velocity2_cell_integral_1_otherwise: public ufc::cell_integral
+class chorin_temam_prediction_cell_integral_1_otherwise: public ufc::cell_integral
 {
 public:
 
   /// Constructor
-  velocity2_cell_integral_1_otherwise() : ufc::cell_integral()
+  chorin_temam_prediction_cell_integral_1_otherwise() : ufc::cell_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_cell_integral_1_otherwise()
+  virtual ~chorin_temam_prediction_cell_integral_1_otherwise()
   {
     // Do nothing
   }
@@ -6964,7 +6879,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({true, false, true, true, true, true, true, true, true, false});
+    static const std::vector<bool> enabled({true, true, true, true});
     return enabled;
   }
 
@@ -6974,6 +6889,11 @@ public:
                                const double*  vertex_coordinates,
                                int cell_orientation) const
   {
+    // Number of operations (multiply-add pairs) for Jacobian data:      3
+    // Number of operations (multiply-add pairs) for geometry tensor:    46
+    // Number of operations (multiply-add pairs) for tensor contraction: 114
+    // Total number of operations (multiply-add pairs):                  163
+    
     // Compute Jacobian
     double J[4];
     compute_jacobian_triangle_2d(J, vertex_coordinates);
@@ -6986,262 +6906,53 @@ public:
     // Set scale factor
     const double det = std::abs(detJ);
     
-    // Compute cell volume
-    
-    
-    // Compute circumradius of triangle in 2D
-    
-    
-    // Array of quadrature weights.
-    static const double W12[12] = {0.0254224531851035, 0.0254224531851035, 0.0254224531851035, 0.0583931378631895, 0.0583931378631895, 0.0583931378631895, 0.041425537809187, 0.041425537809187, 0.041425537809187, 0.041425537809187, 0.041425537809187, 0.041425537809187};
-    // Quadrature points on the UFC reference element: (0.873821971016996, 0.063089014491502), (0.063089014491502, 0.873821971016996), (0.063089014491502, 0.063089014491502), (0.501426509658179, 0.24928674517091), (0.24928674517091, 0.501426509658179), (0.24928674517091, 0.24928674517091), (0.636502499121399, 0.310352451033785), (0.636502499121399, 0.053145049844816), (0.310352451033785, 0.636502499121399), (0.310352451033785, 0.053145049844816), (0.053145049844816, 0.636502499121399), (0.053145049844816, 0.310352451033785)
-    
-    // Values of basis functions at quadrature points.
-    static const double FE0_D01[12][2] = \
-    {{-1.0, 1.0},
-    {-1.0, 1.0},
-    {-1.0, 1.0},
-    {-1.0, 1.0},
-    {-1.0, 1.0},
-    {-1.0, 1.0},
-    {-1.0, 1.0},
-    {-1.0, 1.0},
-    {-1.0, 1.0},
-    {-1.0, 1.0},
-    {-1.0, 1.0},
-    {-1.0, 1.0}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc0[2] = {0, 2};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc1[2] = {0, 1};
-    
-    static const double FE1[12][6] = \
-    {{-0.0551285669924841, 0.653307703047059, -0.0551285669924841, 0.220514267969936, 0.0159208949980358, 0.220514267969936},
-    {-0.055128566992484, -0.055128566992484, 0.65330770304706, 0.220514267969936, 0.220514267969936, 0.0159208949980358},
-    {0.65330770304706, -0.0551285669924841, -0.0551285669924841, 0.0159208949980358, 0.220514267969936, 0.220514267969936},
-    {-0.124998982535098, 0.00143057951778876, -0.124998982535098, 0.499995930140389, 0.248575525271626, 0.499995930140391},
-    {-0.124998982535098, -0.124998982535098, 0.00143057951778887, 0.499995930140389, 0.499995930140391, 0.248575525271626},
-    {0.00143057951778986, -0.124998982535098, -0.124998982535098, 0.248575525271625, 0.49999593014039, 0.49999593014039},
-    {-0.0474962571988001, 0.173768363654174, -0.117715163308429, 0.790160442765823, 0.0659747859186054, 0.135307828168627},
-    {-0.117715163308429, 0.173768363654174, -0.0474962571988, 0.135307828168627, 0.0659747859186052, 0.790160442765823},
-    {-0.0474962571988, -0.117715163308429, 0.173768363654174, 0.790160442765823, 0.135307828168627, 0.0659747859186053},
-    {0.173768363654174, -0.117715163308429, -0.0474962571988, 0.0659747859186052, 0.135307828168627, 0.790160442765823},
-    {-0.117715163308429, -0.0474962571988, 0.173768363654174, 0.135307828168627, 0.790160442765823, 0.0659747859186053},
-    {0.173768363654174, -0.0474962571988001, -0.117715163308429, 0.0659747859186054, 0.790160442765823, 0.135307828168627}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc8[6] = {0, 1, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc9[6] = {6, 7, 8, 9, 10, 11};
-    
-    // Reset values in the element tensor.
-    for (unsigned int r = 0; r < 12; r++)
-    {
-      A[r] = 0.0;
-    } // end loop over 'r'
-    // Number of operations to compute geometry constants: 5.
-    double G[5];
-    G[0] = det/w[0][0];
-    G[1] =  - K[0]*det;
-    G[2] =  - K[2]*det;
-    G[3] =  - K[1]*det;
-    G[4] =  - K[3]*det;
-    
-    // Compute element tensor using UFL quadrature representation
-    // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
-    
-    // Loop quadrature points for integral.
-    // Number of operations to compute element tensor for following IP loop = 1944
-    for (unsigned int ip = 0; ip < 12; ip++)
-    {
-      
-      // Coefficient declarations.
-      double F0 = 0.0;
-      double F1 = 0.0;
-      double F2 = 0.0;
-      double F3 = 0.0;
-      double F4 = 0.0;
-      double F5 = 0.0;
-      double F6 = 0.0;
-      double F7 = 0.0;
-      double F8 = 0.0;
-      double F9 = 0.0;
-      double F10 = 0.0;
-      double F11 = 0.0;
-      
-      // Total number of operations to compute function values = 16
-      for (unsigned int r = 0; r < 2; r++)
-      {
-        F3 += FE0_D01[ip][r]*w[5][nzc1[r]];
-        F4 += FE0_D01[ip][r]*w[5][nzc0[r]];
-        F5 += FE0_D01[ip][r]*w[6][nzc1[r]];
-        F6 += FE0_D01[ip][r]*w[6][nzc0[r]];
-      } // end loop over 'r'
-      
-      // Total number of operations to compute function values = 96
-      for (unsigned int r = 0; r < 6; r++)
-      {
-        F0 += FE1[ip][r]*w[2][nzc8[r]];
-        F1 += FE1[ip][r]*w[3][r];
-        F2 += FE1[ip][r]*w[2][nzc9[r]];
-        F7 += FE1[ip][r]*w[7][nzc8[r]];
-        F8 += FE1[ip][r]*w[4][r];
-        F9 += FE1[ip][r]*w[7][nzc9[r]];
-        F10 += FE1[ip][r]*w[8][nzc8[r]];
-        F11 += FE1[ip][r]*w[8][nzc9[r]];
-      } // end loop over 'r'
-      
-      // Number of operations to compute ip constants: 26
-      double I[2];
-      // Number of operations: 13
-      I[0] = W12[ip]*(F0*F1*G[0] + G[1]*(F3 + F5) + G[2]*(F4 + F6) + det*(F10 + F7*F8));
-      
-      // Number of operations: 13
-      I[1] = W12[ip]*(F1*F2*G[0] + G[3]*(F3 + F5) + G[4]*(F4 + F6) + det*(F11 + F8*F9));
-      
-      
-      // Number of operations for primary indices: 24
-      for (unsigned int j = 0; j < 6; j++)
-      {
-        // Number of operations to compute entry: 2
-        A[nzc8[j]] += FE1[ip][j]*I[0];
-        // Number of operations to compute entry: 2
-        A[nzc9[j]] += FE1[ip][j]*I[1];
-      } // end loop over 'j'
-    } // end loop over 'ip'
-  }
-
-};
-
-/// This class defines the interface for the tabulation of the
-/// exterior facet tensor corresponding to the local contribution to
-/// a form from the integral over an exterior facet.
-
-class velocity2_exterior_facet_integral_1_1: public ufc::exterior_facet_integral
-{
-public:
-
-  /// Constructor
-  velocity2_exterior_facet_integral_1_1() : ufc::exterior_facet_integral()
-  {
-    // Do nothing
-  }
-
-  /// Destructor
-  virtual ~velocity2_exterior_facet_integral_1_1()
-  {
-    // Do nothing
-  }
-
-  /// Tabulate which form coefficients are used by this integral
-  virtual const std::vector<bool> & enabled_coefficients() const
-  {
-    static const std::vector<bool> enabled({false, true, false, false, false, false, false, false, false, true});
-    return enabled;
-  }
-
-  /// Tabulate the tensor for the contribution from a local exterior facet
-  virtual void tabulate_tensor(double*  A,
-                               const double * const *  w,
-                               const double*  vertex_coordinates,
-                               std::size_t facet,
-                               int cell_orientation) const
-  {
-    // Number of operations (multiply-add pairs) for Jacobian data:      10
-    // Number of operations (multiply-add pairs) for geometry tensor:    18
-    // Number of operations (multiply-add pairs) for tensor contraction: 45
-    // Total number of operations (multiply-add pairs):                  73
-    
-    // Compute Jacobian
-    double J[4];
-    compute_jacobian_triangle_2d(J, vertex_coordinates);
-    
-    // Compute Jacobian inverse and determinant
-    double K[4];
-    double detJ;
-    compute_jacobian_inverse_triangle_2d(K, detJ, J);
-    
-    // Get vertices on edge
-    static unsigned int edge_vertices[3][2] = {{1, 2}, {0, 2}, {0, 1}};
-    const unsigned int v0 = edge_vertices[facet][0];
-    const unsigned int v1 = edge_vertices[facet][1];
-    
-    // Compute scale factor (length of edge scaled by length of reference interval)
-    const double dx0 = vertex_coordinates[2*v1 + 0] - vertex_coordinates[2*v0 + 0];
-    const double dx1 = vertex_coordinates[2*v1 + 1] - vertex_coordinates[2*v0 + 1];
-    const double det = std::sqrt(dx0*dx0 + dx1*dx1);
-    
-    
     // Compute geometry tensor
-    const double G0_0_0 = det*w[9][0]*w[1][0]*(1.0);
-    const double G0_1_0 = det*w[9][1]*w[1][0]*(1.0);
-    const double G0_2_0 = det*w[9][2]*w[1][0]*(1.0);
-    const double G0_3_0 = det*w[9][3]*w[1][0]*(1.0);
-    const double G0_4_0 = det*w[9][4]*w[1][0]*(1.0);
-    const double G0_5_0 = det*w[9][5]*w[1][0]*(1.0);
-    const double G0_6_0 = det*w[9][6]*w[1][0]*(1.0);
-    const double G0_7_0 = det*w[9][7]*w[1][0]*(1.0);
-    const double G0_8_0 = det*w[9][8]*w[1][0]*(1.0);
-    const double G0_9_0 = det*w[9][9]*w[1][0]*(1.0);
-    const double G0_10_0 = det*w[9][10]*w[1][0]*(1.0);
-    const double G0_11_0 = det*w[9][11]*w[1][0]*(1.0);
+    const double G0_0_0_0_0 = det*w[0][0]*w[2][0]*K[0]*(1.0);
+    const double G0_0_0_0_1 = det*w[0][0]*w[2][0]*K[2]*(1.0);
+    const double G0_0_0_1_0 = det*w[0][0]*w[2][1]*K[0]*(1.0);
+    const double G0_0_0_2_1 = det*w[0][0]*w[2][2]*K[2]*(1.0);
+    const double G0_0_1_0_0 = det*w[0][0]*w[2][0]*K[1]*(1.0);
+    const double G0_0_1_0_1 = det*w[0][0]*w[2][0]*K[3]*(1.0);
+    const double G0_0_1_1_0 = det*w[0][0]*w[2][1]*K[1]*(1.0);
+    const double G0_0_1_2_1 = det*w[0][0]*w[2][2]*K[3]*(1.0);
+    const double G1_0_0 = det*w[0][0]*w[3][0]*(1.0);
+    const double G1_0_1 = det*w[0][0]*w[3][1]*(1.0);
+    const double G1_0_2 = det*w[0][0]*w[3][2]*(1.0);
+    const double G1_0_3 = det*w[0][0]*w[3][3]*(1.0);
+    const double G1_0_4 = det*w[0][0]*w[3][4]*(1.0);
+    const double G1_0_5 = det*w[0][0]*w[3][5]*(1.0);
+    const double G1_0_6 = det*w[0][0]*w[3][6]*(1.0);
+    const double G1_0_7 = det*w[0][0]*w[3][7]*(1.0);
+    const double G1_0_8 = det*w[0][0]*w[3][8]*(1.0);
+    const double G1_0_9 = det*w[0][0]*w[3][9]*(1.0);
+    const double G1_0_10 = det*w[0][0]*w[3][10]*(1.0);
+    const double G1_0_11 = det*w[0][0]*w[3][11]*(1.0);
+    const double G2_0 = det*w[1][0]*(1.0);
+    const double G2_1 = det*w[1][1]*(1.0);
+    const double G2_2 = det*w[1][2]*(1.0);
+    const double G2_3 = det*w[1][3]*(1.0);
+    const double G2_4 = det*w[1][4]*(1.0);
+    const double G2_5 = det*w[1][5]*(1.0);
+    const double G2_6 = det*w[1][6]*(1.0);
+    const double G2_7 = det*w[1][7]*(1.0);
+    const double G2_8 = det*w[1][8]*(1.0);
+    const double G2_9 = det*w[1][9]*(1.0);
+    const double G2_10 = det*w[1][10]*(1.0);
+    const double G2_11 = det*w[1][11]*(1.0);
     
     // Compute element tensor
-    switch (facet)
-    {
-    case 0:
-      {
-        A[0] = 0.0;
-      A[1] = 0.133333333333333*G0_1_0 - 0.0333333333333333*G0_2_0 + 0.0666666666666666*G0_3_0;
-      A[2] = -0.0333333333333333*G0_1_0 + 0.133333333333333*G0_2_0 + 0.0666666666666666*G0_3_0;
-      A[3] = 0.0666666666666666*G0_1_0 + 0.0666666666666666*G0_2_0 + 0.533333333333333*G0_3_0;
-      A[4] = 0.0;
-      A[5] = 0.0;
-      A[6] = 0.0;
-      A[7] = 0.133333333333333*G0_7_0 - 0.0333333333333333*G0_8_0 + 0.0666666666666666*G0_9_0;
-      A[8] = -0.0333333333333333*G0_7_0 + 0.133333333333333*G0_8_0 + 0.0666666666666666*G0_9_0;
-      A[9] = 0.0666666666666666*G0_7_0 + 0.0666666666666666*G0_8_0 + 0.533333333333333*G0_9_0;
-      A[10] = 0.0;
-      A[11] = 0.0;
-        break;
-      }
-    case 1:
-      {
-        A[0] = 0.133333333333333*G0_0_0 - 0.0333333333333333*G0_2_0 + 0.0666666666666666*G0_4_0;
-      A[1] = 0.0;
-      A[2] = -0.0333333333333333*G0_0_0 + 0.133333333333333*G0_2_0 + 0.0666666666666666*G0_4_0;
-      A[3] = 0.0;
-      A[4] = 0.0666666666666666*G0_0_0 + 0.0666666666666666*G0_2_0 + 0.533333333333333*G0_4_0;
-      A[5] = 0.0;
-      A[6] = 0.133333333333333*G0_6_0 - 0.0333333333333333*G0_8_0 + 0.0666666666666666*G0_10_0;
-      A[7] = 0.0;
-      A[8] = -0.0333333333333333*G0_6_0 + 0.133333333333333*G0_8_0 + 0.0666666666666666*G0_10_0;
-      A[9] = 0.0;
-      A[10] = 0.0666666666666666*G0_6_0 + 0.0666666666666666*G0_8_0 + 0.533333333333333*G0_10_0;
-      A[11] = 0.0;
-        break;
-      }
-    case 2:
-      {
-        A[0] = 0.133333333333333*G0_0_0 - 0.0333333333333333*G0_1_0 + 0.0666666666666666*G0_5_0;
-      A[1] = -0.0333333333333333*G0_0_0 + 0.133333333333333*G0_1_0 + 0.0666666666666666*G0_5_0;
-      A[2] = 0.0;
-      A[3] = 0.0;
-      A[4] = 0.0;
-      A[5] = 0.0666666666666666*G0_0_0 + 0.0666666666666666*G0_1_0 + 0.533333333333333*G0_5_0;
-      A[6] = 0.133333333333333*G0_6_0 - 0.0333333333333333*G0_7_0 + 0.0666666666666666*G0_11_0;
-      A[7] = -0.0333333333333333*G0_6_0 + 0.133333333333333*G0_7_0 + 0.0666666666666666*G0_11_0;
-      A[8] = 0.0;
-      A[9] = 0.0;
-      A[10] = 0.0;
-      A[11] = 0.0666666666666666*G0_6_0 + 0.0666666666666666*G0_7_0 + 0.533333333333333*G0_11_0;
-        break;
-      }
-    }
-    
+    A[0] = 0.0166666666666666*G1_0_0 - 0.00277777777777778*G1_0_1 - 0.00277777777777778*G1_0_2 - 0.0111111111111111*G1_0_3 + 0.0166666666666666*G2_0 - 0.00277777777777778*G2_1 - 0.00277777777777778*G2_2 - 0.0111111111111111*G2_3;
+    A[1] = -0.00277777777777778*G1_0_0 + 0.0166666666666667*G1_0_1 - 0.00277777777777781*G1_0_2 - 0.0111111111111111*G1_0_4 - 0.00277777777777778*G2_0 + 0.0166666666666667*G2_1 - 0.00277777777777781*G2_2 - 0.0111111111111111*G2_4;
+    A[2] = -0.00277777777777778*G1_0_0 - 0.0027777777777778*G1_0_1 + 0.0166666666666667*G1_0_2 - 0.0111111111111111*G1_0_5 - 0.00277777777777778*G2_0 - 0.0027777777777778*G2_1 + 0.0166666666666667*G2_2 - 0.0111111111111111*G2_5;
+    A[3] = 0.166666666666666*G0_0_0_0_0 + 0.166666666666667*G0_0_0_0_1 - 0.166666666666666*G0_0_0_1_0 - 0.166666666666666*G0_0_0_2_1 - 0.0111111111111111*G1_0_0 + 0.0888888888888888*G1_0_3 + 0.0444444444444443*G1_0_4 + 0.0444444444444443*G1_0_5 - 0.0111111111111111*G2_0 + 0.0888888888888888*G2_3 + 0.0444444444444443*G2_4 + 0.0444444444444443*G2_5;
+    A[4] = 0.166666666666666*G0_0_0_0_0 + 0.166666666666666*G0_0_0_0_1 - 0.166666666666666*G0_0_0_1_0 - 0.166666666666666*G0_0_0_2_1 - 0.0111111111111111*G1_0_1 + 0.0444444444444443*G1_0_3 + 0.0888888888888887*G1_0_4 + 0.0444444444444443*G1_0_5 - 0.0111111111111111*G2_1 + 0.0444444444444443*G2_3 + 0.0888888888888887*G2_4 + 0.0444444444444443*G2_5;
+    A[5] = 0.166666666666666*G0_0_0_0_0 + 0.166666666666666*G0_0_0_0_1 - 0.166666666666666*G0_0_0_1_0 - 0.166666666666666*G0_0_0_2_1 - 0.0111111111111111*G1_0_2 + 0.0444444444444443*G1_0_3 + 0.0444444444444443*G1_0_4 + 0.0888888888888887*G1_0_5 - 0.0111111111111111*G2_2 + 0.0444444444444443*G2_3 + 0.0444444444444443*G2_4 + 0.0888888888888887*G2_5;
+    A[6] = 0.0166666666666666*G1_0_6 - 0.00277777777777778*G1_0_7 - 0.00277777777777778*G1_0_8 - 0.0111111111111111*G1_0_9 + 0.0166666666666666*G2_6 - 0.00277777777777778*G2_7 - 0.00277777777777778*G2_8 - 0.0111111111111111*G2_9;
+    A[7] = -0.00277777777777778*G1_0_6 + 0.0166666666666667*G1_0_7 - 0.00277777777777781*G1_0_8 - 0.0111111111111111*G1_0_10 - 0.00277777777777778*G2_6 + 0.0166666666666667*G2_7 - 0.00277777777777781*G2_8 - 0.0111111111111111*G2_10;
+    A[8] = -0.00277777777777778*G1_0_6 - 0.0027777777777778*G1_0_7 + 0.0166666666666667*G1_0_8 - 0.0111111111111111*G1_0_11 - 0.00277777777777778*G2_6 - 0.0027777777777778*G2_7 + 0.0166666666666667*G2_8 - 0.0111111111111111*G2_11;
+    A[9] = 0.166666666666666*G0_0_1_0_0 + 0.166666666666667*G0_0_1_0_1 - 0.166666666666666*G0_0_1_1_0 - 0.166666666666666*G0_0_1_2_1 - 0.0111111111111111*G1_0_6 + 0.0888888888888888*G1_0_9 + 0.0444444444444443*G1_0_10 + 0.0444444444444443*G1_0_11 - 0.0111111111111111*G2_6 + 0.0888888888888888*G2_9 + 0.0444444444444443*G2_10 + 0.0444444444444443*G2_11;
+    A[10] = 0.166666666666666*G0_0_1_0_0 + 0.166666666666666*G0_0_1_0_1 - 0.166666666666666*G0_0_1_1_0 - 0.166666666666666*G0_0_1_2_1 - 0.0111111111111111*G1_0_7 + 0.0444444444444443*G1_0_9 + 0.0888888888888887*G1_0_10 + 0.0444444444444443*G1_0_11 - 0.0111111111111111*G2_7 + 0.0444444444444443*G2_9 + 0.0888888888888887*G2_10 + 0.0444444444444443*G2_11;
+    A[11] = 0.166666666666666*G0_0_1_0_0 + 0.166666666666666*G0_0_1_0_1 - 0.166666666666666*G0_0_1_1_0 - 0.166666666666666*G0_0_1_2_1 - 0.0111111111111111*G1_0_8 + 0.0444444444444443*G1_0_9 + 0.0444444444444443*G1_0_10 + 0.0888888888888887*G1_0_11 - 0.0111111111111111*G2_8 + 0.0444444444444443*G2_9 + 0.0444444444444443*G2_10 + 0.0888888888888887*G2_11;
   }
 
 };
@@ -7261,18 +6972,18 @@ public:
 /// sequence of basis functions of Vj and w1, w2, ..., wn are given
 /// fixed functions (coefficients).
 
-class velocity2_form_0: public ufc::form
+class chorin_temam_prediction_form_0: public ufc::form
 {
 public:
 
   /// Constructor
-  velocity2_form_0() : ufc::form()
+  chorin_temam_prediction_form_0() : ufc::form()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_form_0()
+  virtual ~chorin_temam_prediction_form_0()
   {
     // Do nothing
   }
@@ -7280,13 +6991,13 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "46b96fe416d742fb29ffc672efe7bc2f5a91e6820c24c1345092179e536c6ce75e2f06afa5a85853fd30d7d03410180793580b940449da3faef939bf4533140a";
+    return "055c2cafb8260ba970af1adbe051a37a07e1afcfc567ec70937722b17782e7c1df176a56580faca36b1d92b6716c21666706cd73db13dfa71cacc1f3ab194b6d";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
   virtual std::size_t original_coefficient_position(std::size_t i) const
   {
-    static const std::vector<std::size_t> position({0, 1, 2, 3, 4});
+    static const std::vector<std::size_t> position({0, 1, 2});
     return position[i];
   }
 
@@ -7299,7 +7010,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 5;
+    return 3;
   }
 
   /// Return the number of cell domains
@@ -7369,37 +7080,27 @@ public:
     {
     case 0:
       {
-        return new velocity2_finite_element_3();
+        return new chorin_temam_prediction_finite_element_3();
         break;
       }
     case 1:
       {
-        return new velocity2_finite_element_3();
+        return new chorin_temam_prediction_finite_element_3();
         break;
       }
     case 2:
       {
-        return new velocity2_finite_element_1();
+        return new chorin_temam_prediction_finite_element_1();
         break;
       }
     case 3:
       {
-        return new velocity2_finite_element_1();
+        return new chorin_temam_prediction_finite_element_1();
         break;
       }
     case 4:
       {
-        return new velocity2_finite_element_3();
-        break;
-      }
-    case 5:
-      {
-        return new velocity2_finite_element_2();
-        break;
-      }
-    case 6:
-      {
-        return new velocity2_finite_element_2();
+        return new chorin_temam_prediction_finite_element_3();
         break;
       }
     }
@@ -7414,37 +7115,27 @@ public:
     {
     case 0:
       {
-        return new velocity2_dofmap_3();
+        return new chorin_temam_prediction_dofmap_3();
         break;
       }
     case 1:
       {
-        return new velocity2_dofmap_3();
+        return new chorin_temam_prediction_dofmap_3();
         break;
       }
     case 2:
       {
-        return new velocity2_dofmap_1();
+        return new chorin_temam_prediction_dofmap_1();
         break;
       }
     case 3:
       {
-        return new velocity2_dofmap_1();
+        return new chorin_temam_prediction_dofmap_1();
         break;
       }
     case 4:
       {
-        return new velocity2_dofmap_3();
-        break;
-      }
-    case 5:
-      {
-        return new velocity2_dofmap_2();
-        break;
-      }
-    case 6:
-      {
-        return new velocity2_dofmap_2();
+        return new chorin_temam_prediction_dofmap_3();
         break;
       }
     }
@@ -7485,7 +7176,7 @@ public:
   /// Create a new cell integral on everywhere else
   virtual ufc::cell_integral* create_default_cell_integral() const
   {
-    return new velocity2_cell_integral_0_otherwise();
+    return new chorin_temam_prediction_cell_integral_0_otherwise();
   }
 
   /// Create a new exterior facet integral on everywhere else
@@ -7529,18 +7220,18 @@ public:
 /// sequence of basis functions of Vj and w1, w2, ..., wn are given
 /// fixed functions (coefficients).
 
-class velocity2_form_1: public ufc::form
+class chorin_temam_prediction_form_1: public ufc::form
 {
 public:
 
   /// Constructor
-  velocity2_form_1() : ufc::form()
+  chorin_temam_prediction_form_1() : ufc::form()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity2_form_1()
+  virtual ~chorin_temam_prediction_form_1()
   {
     // Do nothing
   }
@@ -7548,13 +7239,13 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "2da10c67bf1978d3df61df5d9282fa0207cf39ada6216197bfcbc1db0f6af2054188afa6b6cffcb253267103a6b2b25065273ab9d966182116ea97602252685b";
+    return "8147b9c76185d9de8c42a1e4031c05a78af85c973211a67063adf7c8ea5586c803b9e97dc183f5f52243bd0d9c2a67c5eb871d5a2c77a06c71d93ff7991e800c";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
   virtual std::size_t original_coefficient_position(std::size_t i) const
   {
-    static const std::vector<std::size_t> position({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    static const std::vector<std::size_t> position({0, 1, 2, 3});
     return position[i];
   }
 
@@ -7567,7 +7258,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 10;
+    return 4;
   }
 
   /// Return the number of cell domains
@@ -7579,7 +7270,7 @@ public:
   /// Return the number of exterior facet domains
   virtual std::size_t num_exterior_facet_domains() const
   {
-    return 2;
+    return 0;
   }
 
   /// Return the number of interior facet domains
@@ -7609,7 +7300,7 @@ public:
   /// Return whether the form has any exterior facet integrals
   virtual bool has_exterior_facet_integrals() const
   {
-    return true;
+    return false;
   }
 
   /// Return whether the form has any interior facet integrals
@@ -7637,57 +7328,27 @@ public:
     {
     case 0:
       {
-        return new velocity2_finite_element_3();
+        return new chorin_temam_prediction_finite_element_3();
         break;
       }
     case 1:
       {
-        return new velocity2_finite_element_1();
+        return new chorin_temam_prediction_finite_element_1();
         break;
       }
     case 2:
       {
-        return new velocity2_finite_element_1();
+        return new chorin_temam_prediction_finite_element_3();
         break;
       }
     case 3:
       {
-        return new velocity2_finite_element_3();
+        return new chorin_temam_prediction_finite_element_0();
         break;
       }
     case 4:
       {
-        return new velocity2_finite_element_2();
-        break;
-      }
-    case 5:
-      {
-        return new velocity2_finite_element_2();
-        break;
-      }
-    case 6:
-      {
-        return new velocity2_finite_element_0();
-        break;
-      }
-    case 7:
-      {
-        return new velocity2_finite_element_0();
-        break;
-      }
-    case 8:
-      {
-        return new velocity2_finite_element_3();
-        break;
-      }
-    case 9:
-      {
-        return new velocity2_finite_element_3();
-        break;
-      }
-    case 10:
-      {
-        return new velocity2_finite_element_3();
+        return new chorin_temam_prediction_finite_element_3();
         break;
       }
     }
@@ -7702,57 +7363,27 @@ public:
     {
     case 0:
       {
-        return new velocity2_dofmap_3();
+        return new chorin_temam_prediction_dofmap_3();
         break;
       }
     case 1:
       {
-        return new velocity2_dofmap_1();
+        return new chorin_temam_prediction_dofmap_1();
         break;
       }
     case 2:
       {
-        return new velocity2_dofmap_1();
+        return new chorin_temam_prediction_dofmap_3();
         break;
       }
     case 3:
       {
-        return new velocity2_dofmap_3();
+        return new chorin_temam_prediction_dofmap_0();
         break;
       }
     case 4:
       {
-        return new velocity2_dofmap_2();
-        break;
-      }
-    case 5:
-      {
-        return new velocity2_dofmap_2();
-        break;
-      }
-    case 6:
-      {
-        return new velocity2_dofmap_0();
-        break;
-      }
-    case 7:
-      {
-        return new velocity2_dofmap_0();
-        break;
-      }
-    case 8:
-      {
-        return new velocity2_dofmap_3();
-        break;
-      }
-    case 9:
-      {
-        return new velocity2_dofmap_3();
-        break;
-      }
-    case 10:
-      {
-        return new velocity2_dofmap_3();
+        return new chorin_temam_prediction_dofmap_3();
         break;
       }
     }
@@ -7769,15 +7400,6 @@ public:
   /// Create a new exterior facet integral on sub domain i
   virtual ufc::exterior_facet_integral* create_exterior_facet_integral(std::size_t i) const
   {
-    switch (i)
-    {
-    case 1:
-      {
-        return new velocity2_exterior_facet_integral_1_1();
-        break;
-      }
-    }
-    
     return 0;
   }
 
@@ -7802,7 +7424,7 @@ public:
   /// Create a new cell integral on everywhere else
   virtual ufc::cell_integral* create_default_cell_integral() const
   {
-    return new velocity2_cell_integral_1_otherwise();
+    return new chorin_temam_prediction_cell_integral_1_otherwise();
   }
 
   /// Create a new exterior facet integral on everywhere else
@@ -7847,7 +7469,7 @@ public:
 #include <dolfin/adaptivity/ErrorControl.h>
 #include <dolfin/adaptivity/GoalFunctional.h>
 
-namespace velocity2
+namespace chorin_temam_prediction
 {
 
 class CoefficientSpace_dt: public dolfin::FunctionSpace
@@ -7859,8 +7481,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_dt(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_1()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_1()), mesh)))
   {
     // Do nothing
   }
@@ -7868,8 +7490,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_1()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_1()), *mesh)))
   {
     // Do nothing
   }
@@ -7879,8 +7501,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_dt(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_1()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_1()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -7889,34 +7511,34 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_1()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_1()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
 
 };
 
-class CoefficientSpace_f1: public dolfin::FunctionSpace
+class CoefficientSpace_f: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_f1(const dolfin::Mesh& mesh):
+  CoefficientSpace_f(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), mesh)))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_f1(std::shared_ptr<const dolfin::Mesh> mesh):
+  CoefficientSpace_f(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -7924,46 +7546,46 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_f1(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  CoefficientSpace_f(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_f1(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  CoefficientSpace_f(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
 
 };
 
-class CoefficientSpace_f2: public dolfin::FunctionSpace
+class CoefficientSpace_nu: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_f2(const dolfin::Mesh& mesh):
+  CoefficientSpace_nu(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_1()), mesh)))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_f2(std::shared_ptr<const dolfin::Mesh> mesh):
+  CoefficientSpace_nu(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_1()), *mesh)))
   {
     // Do nothing
   }
@@ -7971,114 +7593,20 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_f2(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  CoefficientSpace_nu(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_1()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_f2(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  CoefficientSpace_nu(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class CoefficientSpace_g: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_g(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_g(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_g(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_g(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class CoefficientSpace_mu: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_mu(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_1()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_mu(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_1()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_mu(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_1()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_mu(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_1()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_1()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -8094,8 +7622,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_p_old(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_0()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_0()), mesh)))
   {
     // Do nothing
   }
@@ -8103,8 +7631,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_p_old(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_0()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_0()), *mesh)))
   {
     // Do nothing
   }
@@ -8114,8 +7642,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_p_old(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_0()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_0()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -8124,149 +7652,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_p_old(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_0()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class CoefficientSpace_phi_old: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_phi_old(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_0()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_phi_old(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_0()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_phi_old(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_0()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_phi_old(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_0()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class CoefficientSpace_rho: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_rho(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_2()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_rho(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_2()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_rho(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_2()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_rho(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_2()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class CoefficientSpace_rho_old: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_rho_old(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_2()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_rho_old(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_2()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_rho_old(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_2()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_rho_old(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_2()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_0()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -8282,8 +7669,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_u_old(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -8291,8 +7678,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_u_old(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -8302,8 +7689,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_u_old(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -8312,8 +7699,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_u_old(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -8329,8 +7716,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_0(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -8338,8 +7725,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -8349,8 +7736,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -8359,8 +7746,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -8376,8 +7763,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_1(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -8385,8 +7772,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_1(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -8396,8 +7783,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_1(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -8406,23 +7793,19 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_1(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
 
 };
 
-typedef CoefficientSpace_dt Form_a_FunctionSpace_2;
+typedef CoefficientSpace_nu Form_a_FunctionSpace_2;
 
-typedef CoefficientSpace_mu Form_a_FunctionSpace_3;
+typedef CoefficientSpace_dt Form_a_FunctionSpace_3;
 
 typedef CoefficientSpace_u_old Form_a_FunctionSpace_4;
-
-typedef CoefficientSpace_rho_old Form_a_FunctionSpace_5;
-
-typedef CoefficientSpace_rho Form_a_FunctionSpace_6;
 
 class Form_a: public dolfin::Form
 {
@@ -8430,86 +7813,78 @@ public:
 
   // Constructor
   Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+    dolfin::Form(2, 3), nu(*this, 0), dt(*this, 1), u_old(*this, 2)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
     _function_spaces[1] = reference_to_no_delete_pointer(V1);
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_0());
   }
 
   // Constructor
-  Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& mu, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& rho_old, const dolfin::GenericFunction& rho):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+  Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old):
+    dolfin::Form(2, 3), nu(*this, 0), dt(*this, 1), u_old(*this, 2)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
     _function_spaces[1] = reference_to_no_delete_pointer(V1);
 
+    this->nu = nu;
     this->dt = dt;
-    this->mu = mu;
     this->u_old = u_old;
-    this->rho_old = rho_old;
-    this->rho = rho;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_0());
   }
 
   // Constructor
-  Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> mu, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> rho_old, std::shared_ptr<const dolfin::GenericFunction> rho):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+  Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old):
+    dolfin::Form(2, 3), nu(*this, 0), dt(*this, 1), u_old(*this, 2)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
     _function_spaces[1] = reference_to_no_delete_pointer(V1);
 
+    this->nu = *nu;
     this->dt = *dt;
-    this->mu = *mu;
     this->u_old = *u_old;
-    this->rho_old = *rho_old;
-    this->rho = *rho;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_0());
   }
 
   // Constructor
   Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+    dolfin::Form(2, 3), nu(*this, 0), dt(*this, 1), u_old(*this, 2)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_0());
   }
 
   // Constructor
-  Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& mu, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& rho_old, const dolfin::GenericFunction& rho):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+  Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old):
+    dolfin::Form(2, 3), nu(*this, 0), dt(*this, 1), u_old(*this, 2)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
 
+    this->nu = nu;
     this->dt = dt;
-    this->mu = mu;
     this->u_old = u_old;
-    this->rho_old = rho_old;
-    this->rho = rho;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_0());
   }
 
   // Constructor
-  Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> mu, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> rho_old, std::shared_ptr<const dolfin::GenericFunction> rho):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+  Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old):
+    dolfin::Form(2, 3), nu(*this, 0), dt(*this, 1), u_old(*this, 2)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
 
+    this->nu = *nu;
     this->dt = *dt;
-    this->mu = *mu;
     this->u_old = *u_old;
-    this->rho_old = *rho_old;
-    this->rho = *rho;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_0());
   }
 
   // Destructor
@@ -8519,16 +7894,12 @@ public:
   /// Return the number of the coefficient with this name
   virtual std::size_t coefficient_number(const std::string& name) const
   {
-    if (name == "dt")
+    if (name == "nu")
       return 0;
-    else if (name == "mu")
+    else if (name == "dt")
       return 1;
     else if (name == "u_old")
       return 2;
-    else if (name == "rho_old")
-      return 3;
-    else if (name == "rho")
-      return 4;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -8542,15 +7913,11 @@ public:
     switch (i)
     {
     case 0:
-      return "dt";
+      return "nu";
     case 1:
-      return "mu";
+      return "dt";
     case 2:
       return "u_old";
-    case 3:
-      return "rho_old";
-    case 4:
-      return "rho";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -8562,18 +7929,14 @@ public:
   // Typedefs
   typedef Form_a_FunctionSpace_0 TestSpace;
   typedef Form_a_FunctionSpace_1 TrialSpace;
-  typedef Form_a_FunctionSpace_2 CoefficientSpace_dt;
-  typedef Form_a_FunctionSpace_3 CoefficientSpace_mu;
+  typedef Form_a_FunctionSpace_2 CoefficientSpace_nu;
+  typedef Form_a_FunctionSpace_3 CoefficientSpace_dt;
   typedef Form_a_FunctionSpace_4 CoefficientSpace_u_old;
-  typedef Form_a_FunctionSpace_5 CoefficientSpace_rho_old;
-  typedef Form_a_FunctionSpace_6 CoefficientSpace_rho;
 
   // Coefficients
+  dolfin::CoefficientAssigner nu;
   dolfin::CoefficientAssigner dt;
-  dolfin::CoefficientAssigner mu;
   dolfin::CoefficientAssigner u_old;
-  dolfin::CoefficientAssigner rho_old;
-  dolfin::CoefficientAssigner rho;
 };
 
 class Form_L_FunctionSpace_0: public dolfin::FunctionSpace
@@ -8585,8 +7948,8 @@ public:
   // Create standard function space (reference version)
   Form_L_FunctionSpace_0(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -8594,8 +7957,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -8605,8 +7968,8 @@ public:
   // Create standard function space (reference version)
   Form_L_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -8615,8 +7978,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity2_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity2_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new chorin_temam_prediction_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new chorin_temam_prediction_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -8625,23 +7988,11 @@ public:
 
 typedef CoefficientSpace_dt Form_L_FunctionSpace_1;
 
-typedef CoefficientSpace_mu Form_L_FunctionSpace_2;
+typedef CoefficientSpace_u_old Form_L_FunctionSpace_2;
 
-typedef CoefficientSpace_u_old Form_L_FunctionSpace_3;
+typedef CoefficientSpace_p_old Form_L_FunctionSpace_3;
 
-typedef CoefficientSpace_rho_old Form_L_FunctionSpace_4;
-
-typedef CoefficientSpace_rho Form_L_FunctionSpace_5;
-
-typedef CoefficientSpace_p_old Form_L_FunctionSpace_6;
-
-typedef CoefficientSpace_phi_old Form_L_FunctionSpace_7;
-
-typedef CoefficientSpace_f1 Form_L_FunctionSpace_8;
-
-typedef CoefficientSpace_f2 Form_L_FunctionSpace_9;
-
-typedef CoefficientSpace_g Form_L_FunctionSpace_10;
+typedef CoefficientSpace_f Form_L_FunctionSpace_4;
 
 class Form_L: public dolfin::Form
 {
@@ -8649,100 +8000,76 @@ public:
 
   // Constructor
   Form_L(const dolfin::FunctionSpace& V0):
-    dolfin::Form(1, 10), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4), p_old(*this, 5), phi_old(*this, 6), f1(*this, 7), f2(*this, 8), g(*this, 9)
+    dolfin::Form(1, 4), dt(*this, 0), u_old(*this, 1), p_old(*this, 2), f(*this, 3)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_1());
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& mu, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& rho_old, const dolfin::GenericFunction& rho, const dolfin::GenericFunction& p_old, const dolfin::GenericFunction& phi_old, const dolfin::GenericFunction& f1, const dolfin::GenericFunction& f2, const dolfin::GenericFunction& g):
-    dolfin::Form(1, 10), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4), p_old(*this, 5), phi_old(*this, 6), f1(*this, 7), f2(*this, 8), g(*this, 9)
+  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& p_old, const dolfin::GenericFunction& f):
+    dolfin::Form(1, 4), dt(*this, 0), u_old(*this, 1), p_old(*this, 2), f(*this, 3)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
     this->dt = dt;
-    this->mu = mu;
     this->u_old = u_old;
-    this->rho_old = rho_old;
-    this->rho = rho;
     this->p_old = p_old;
-    this->phi_old = phi_old;
-    this->f1 = f1;
-    this->f2 = f2;
-    this->g = g;
+    this->f = f;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_1());
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> mu, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> rho_old, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> p_old, std::shared_ptr<const dolfin::GenericFunction> phi_old, std::shared_ptr<const dolfin::GenericFunction> f1, std::shared_ptr<const dolfin::GenericFunction> f2, std::shared_ptr<const dolfin::GenericFunction> g):
-    dolfin::Form(1, 10), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4), p_old(*this, 5), phi_old(*this, 6), f1(*this, 7), f2(*this, 8), g(*this, 9)
+  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> p_old, std::shared_ptr<const dolfin::GenericFunction> f):
+    dolfin::Form(1, 4), dt(*this, 0), u_old(*this, 1), p_old(*this, 2), f(*this, 3)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
     this->dt = *dt;
-    this->mu = *mu;
     this->u_old = *u_old;
-    this->rho_old = *rho_old;
-    this->rho = *rho;
     this->p_old = *p_old;
-    this->phi_old = *phi_old;
-    this->f1 = *f1;
-    this->f2 = *f2;
-    this->g = *g;
+    this->f = *f;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_1());
   }
 
   // Constructor
   Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 10), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4), p_old(*this, 5), phi_old(*this, 6), f1(*this, 7), f2(*this, 8), g(*this, 9)
+    dolfin::Form(1, 4), dt(*this, 0), u_old(*this, 1), p_old(*this, 2), f(*this, 3)
   {
     _function_spaces[0] = V0;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_1());
   }
 
   // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& mu, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& rho_old, const dolfin::GenericFunction& rho, const dolfin::GenericFunction& p_old, const dolfin::GenericFunction& phi_old, const dolfin::GenericFunction& f1, const dolfin::GenericFunction& f2, const dolfin::GenericFunction& g):
-    dolfin::Form(1, 10), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4), p_old(*this, 5), phi_old(*this, 6), f1(*this, 7), f2(*this, 8), g(*this, 9)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& p_old, const dolfin::GenericFunction& f):
+    dolfin::Form(1, 4), dt(*this, 0), u_old(*this, 1), p_old(*this, 2), f(*this, 3)
   {
     _function_spaces[0] = V0;
 
     this->dt = dt;
-    this->mu = mu;
     this->u_old = u_old;
-    this->rho_old = rho_old;
-    this->rho = rho;
     this->p_old = p_old;
-    this->phi_old = phi_old;
-    this->f1 = f1;
-    this->f2 = f2;
-    this->g = g;
+    this->f = f;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_1());
   }
 
   // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> mu, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> rho_old, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> p_old, std::shared_ptr<const dolfin::GenericFunction> phi_old, std::shared_ptr<const dolfin::GenericFunction> f1, std::shared_ptr<const dolfin::GenericFunction> f2, std::shared_ptr<const dolfin::GenericFunction> g):
-    dolfin::Form(1, 10), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4), p_old(*this, 5), phi_old(*this, 6), f1(*this, 7), f2(*this, 8), g(*this, 9)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> p_old, std::shared_ptr<const dolfin::GenericFunction> f):
+    dolfin::Form(1, 4), dt(*this, 0), u_old(*this, 1), p_old(*this, 2), f(*this, 3)
   {
     _function_spaces[0] = V0;
 
     this->dt = *dt;
-    this->mu = *mu;
     this->u_old = *u_old;
-    this->rho_old = *rho_old;
-    this->rho = *rho;
     this->p_old = *p_old;
-    this->phi_old = *phi_old;
-    this->f1 = *f1;
-    this->f2 = *f2;
-    this->g = *g;
+    this->f = *f;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity2_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new chorin_temam_prediction_form_1());
   }
 
   // Destructor
@@ -8754,24 +8081,12 @@ public:
   {
     if (name == "dt")
       return 0;
-    else if (name == "mu")
-      return 1;
     else if (name == "u_old")
-      return 2;
-    else if (name == "rho_old")
-      return 3;
-    else if (name == "rho")
-      return 4;
+      return 1;
     else if (name == "p_old")
-      return 5;
-    else if (name == "phi_old")
-      return 6;
-    else if (name == "f1")
-      return 7;
-    else if (name == "f2")
-      return 8;
-    else if (name == "g")
-      return 9;
+      return 2;
+    else if (name == "f")
+      return 3;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -8787,23 +8102,11 @@ public:
     case 0:
       return "dt";
     case 1:
-      return "mu";
-    case 2:
       return "u_old";
-    case 3:
-      return "rho_old";
-    case 4:
-      return "rho";
-    case 5:
+    case 2:
       return "p_old";
-    case 6:
-      return "phi_old";
-    case 7:
-      return "f1";
-    case 8:
-      return "f2";
-    case 9:
-      return "g";
+    case 3:
+      return "f";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -8815,27 +8118,15 @@ public:
   // Typedefs
   typedef Form_L_FunctionSpace_0 TestSpace;
   typedef Form_L_FunctionSpace_1 CoefficientSpace_dt;
-  typedef Form_L_FunctionSpace_2 CoefficientSpace_mu;
-  typedef Form_L_FunctionSpace_3 CoefficientSpace_u_old;
-  typedef Form_L_FunctionSpace_4 CoefficientSpace_rho_old;
-  typedef Form_L_FunctionSpace_5 CoefficientSpace_rho;
-  typedef Form_L_FunctionSpace_6 CoefficientSpace_p_old;
-  typedef Form_L_FunctionSpace_7 CoefficientSpace_phi_old;
-  typedef Form_L_FunctionSpace_8 CoefficientSpace_f1;
-  typedef Form_L_FunctionSpace_9 CoefficientSpace_f2;
-  typedef Form_L_FunctionSpace_10 CoefficientSpace_g;
+  typedef Form_L_FunctionSpace_2 CoefficientSpace_u_old;
+  typedef Form_L_FunctionSpace_3 CoefficientSpace_p_old;
+  typedef Form_L_FunctionSpace_4 CoefficientSpace_f;
 
   // Coefficients
   dolfin::CoefficientAssigner dt;
-  dolfin::CoefficientAssigner mu;
   dolfin::CoefficientAssigner u_old;
-  dolfin::CoefficientAssigner rho_old;
-  dolfin::CoefficientAssigner rho;
   dolfin::CoefficientAssigner p_old;
-  dolfin::CoefficientAssigner phi_old;
-  dolfin::CoefficientAssigner f1;
-  dolfin::CoefficientAssigner f2;
-  dolfin::CoefficientAssigner g;
+  dolfin::CoefficientAssigner f;
 };
 
 // Class typedefs

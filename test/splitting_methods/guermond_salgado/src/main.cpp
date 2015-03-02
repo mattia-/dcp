@@ -106,10 +106,11 @@ namespace exact_solutions
 
 int main (int argc, char* argv[])
 {
-    // get dt and T values from command line. Default value: dt = 0.1, T = 1.0
+    // get dt and T values from command line. Default value: dt = 0.1, T = 1.0, N = 50
     dolfin::Parameters parameters ("main_parameters");
     parameters.add ("dt", 0.1);
     parameters.add ("T", 1.0);
+    parameters.add ("N", 50);
     parameters.parse (argc, argv);
         
 //    dolfin::set_log_level (dolfin::DBG);
@@ -117,7 +118,8 @@ int main (int argc, char* argv[])
     std::cout << "Create mesh and finite element space..." << std::endl;
     mshr::Circle circle (dolfin::Point (0.0, 0.0), 1);
     dolfin::Mesh mesh;
-    mshr::generate (mesh, circle, 30);
+    int N = parameters["N"];
+    mshr::generate (mesh, circle, N);
     
     density::FunctionSpace R (mesh);
     velocity::FunctionSpace V (mesh);
@@ -181,7 +183,7 @@ int main (int argc, char* argv[])
     guermondSalgadoMethod.system ().addLink ("velocity_problem", "rho", "linear_form", "density_problem");
         
     // plots
-    dolfin::plot (mesh, "Mesh");
+//    dolfin::plot (mesh, "Mesh");
     
     // solve problem
     std::cout << "Solve the problem..." << std::endl;
@@ -209,9 +211,15 @@ int main (int argc, char* argv[])
     std::vector<double> velocityH1Errors (computedU.size ());
     std::vector<double> pressureL2Errors (computedP.size ());
     
-    std::ofstream ERROR_U_H1 ("errore_u_H1_test_case.txt");
-    std::ofstream ERROR_U_L2 ("errore_u_L2_test_case.txt");
-    std::ofstream ERROR_P ("errore_p_test_case.txt");
+    std::ofstream ERROR_RHO ("errore_rho_test_case_dt=" + std::to_string (dt) + ".txt");
+    std::ofstream ERROR_U_H1 ("errore_u_H1_test_case_dt=" + std::to_string (dt) + ".txt");
+    std::ofstream ERROR_U_L2 ("errore_u_L2_test_case_dt=" + std::to_string (dt) + ".txt");
+    std::ofstream ERROR_P ("errore_p_test_case_dt=" + std::to_string (dt) + ".txt");
+    
+    std::ofstream MAX_ERROR_RHO ("max_errore_rho_test_case.txt", std::ios_base::app);
+    std::ofstream MAX_ERROR_U_H1 ("max_errore_u_H1_test_case.txt", std::ios_base::app);
+    std::ofstream MAX_ERROR_U_L2 ("max_errore_u_L2_test_case.txt", std::ios_base::app);
+    std::ofstream MAX_ERROR_P ("max_errore_p_test_case.txt", std::ios_base::app);
     
     std::cout << "Computing errors..." << std::endl;
     dolfin::Function rescaledComputedP (Q);
@@ -232,11 +240,11 @@ int main (int argc, char* argv[])
         compU = computedU[i].second;
         compPhi = computedPhi[i].second;
         compP = computedP[i].second;
-        dolfin::plot (compRho, "rho, time = " + std::to_string (time));
-        dolfin::plot (compU, "u, time = " + std::to_string (time));
-        dolfin::plot (compPhi, "phi, time = " + std::to_string (time)); 
-        dolfin::plot (compP, "p, time = " + std::to_string (time)); 
-//        dolfin::plot (computedP[i].second, "p, time = " + std::to_string (time)); 
+//        dolfin::plot (compRho, "rho, time = " + std::to_string (time));
+//        dolfin::plot (compU, "u, time = " + std::to_string (time));
+//        dolfin::plot (compPhi, "phi, time = " + std::to_string (time)); 
+//        dolfin::plot (compP, "p, time = " + std::to_string (time)); 
+////        dolfin::plot (computedP[i].second, "p, time = " + std::to_string (time)); 
 //        dolfin::interactive ();
 //        dolfin::info (computedP[i].second, true);
 
@@ -263,7 +271,7 @@ int main (int argc, char* argv[])
         double computedPExactPPointDifference = computedPPointValue[0] - exactPPointValue[0];
         pressureRescalingFactor = dolfin::Constant (computedPExactPPointDifference);
         rescaledComputedP = computedP[i].second - pressureRescalingFactor;
-        dolfin::plot (rescaledComputedP, "rescaled computed p, time = " + std::to_string (time));
+//        dolfin::plot (rescaledComputedP, "rescaled computed p, time = " + std::to_string (time));
         exactPressure = exactP;
         rescaledPMinusExactP = rescaledComputedP - exactPressure;
         pressureL2SquaredErrorComputer.p = rescaledComputedP;
@@ -273,6 +281,7 @@ int main (int argc, char* argv[])
         velocityH1Errors[i] = sqrt (dolfin::assemble (velocityH1SquaredErrorComputer));
         pressureL2Errors[i] = sqrt (dolfin::assemble (pressureL2SquaredErrorComputer));
         
+        ERROR_RHO << densityL2Errors[i] << std::endl;
         ERROR_U_H1 << velocityH1Errors[i] << std::endl;
         ERROR_U_L2 << velocityL2Errors[i] << std::endl;
         ERROR_P << pressureL2Errors[i] << std::endl;
@@ -289,11 +298,16 @@ int main (int argc, char* argv[])
     std::cout << "Max velocity L2 error: " << maxVelocityL2Error << std::endl;
     std::cout << "Max velocity H1 error: " << maxVelocityH1Error << std::endl;
     std::cout << "Max pressure L2 error: " << maxPressureL2Error << std::endl;
+    
+    MAX_ERROR_RHO << dt << " " << maxDensityL2Error << std::endl;
+    MAX_ERROR_U_H1 << dt << " " << maxVelocityL2Error << std::endl;
+    MAX_ERROR_U_L2 << dt << " " << maxVelocityH1Error << std::endl;
+    MAX_ERROR_P << dt << " " << maxPressureL2Error << std::endl;
     // ----------------- //
     // end compute error //
     // ----------------- //
     
-    dolfin::interactive ();
+//    dolfin::interactive ();
     
     return 0;
 }

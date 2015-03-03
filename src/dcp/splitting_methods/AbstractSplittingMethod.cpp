@@ -116,13 +116,13 @@ namespace dcp
     
 
 
-    void AbstractSplittingMethod::setIntegrationSubdomains 
+    void AbstractSplittingMethod::setIntegrationSubdomain 
         (const std::string& problemName,
          const std::string& formType,
          std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
          const dcp::SubdomainType& subdomainType)
     {
-        (*differentialSystem_) [problemName].setIntegrationSubdomains (formType, meshFunction, subdomainType);
+        (*differentialSystem_) [problemName].setIntegrationSubdomain (formType, meshFunction, subdomainType);
     }
     
 

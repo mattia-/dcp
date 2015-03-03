@@ -75,7 +75,7 @@ int main (int argc, char* argv[])
     dolfin::FacetFunction<std::size_t> meshFacets (mesh);
     meshFacets.set_all (0);
     neumannBoundary.mark (meshFacets, 1);
-    poissonProblem.setIntegrationSubdomains ("linear_form", 
+    poissonProblem.setIntegrationSubdomain ("linear_form", 
                                              dolfin::reference_to_no_delete_pointer (meshFacets), 
                                              dcp::SubdomainType::BOUNDARY_FACETS);
     

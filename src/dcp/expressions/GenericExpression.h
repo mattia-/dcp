@@ -83,7 +83,7 @@ namespace dcp
              *  Input arguments:
              *  \param variables map used to initialize the protected member \c variables_
              */
-            GenericExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
+            GenericExpression (const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables);
 
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -94,7 +94,7 @@ namespace dcp
              */         
             explicit GenericExpression 
                 (std::size_t dim,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
+                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables);
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -107,7 +107,7 @@ namespace dcp
             GenericExpression 
                 (std::size_t dim0, 
                  std::size_t dim1,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
+                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables);
 
 
             //! Create tensor-valued expression with given dimension and given map. This will call the appropriate 
@@ -119,7 +119,7 @@ namespace dcp
              */         
             explicit GenericExpression 
                 (std::vector<std::size_t> value_shape,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
+                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables);
 
             //! Default copy constructor
             /*!
@@ -152,10 +152,11 @@ namespace dcp
              *  \param variableName string identifying the variable we want to set
              *  \param value the value of such variable, given as a shared pointer to a \c dolfin::GenericFunction
              *  
-             *  The pair created by the two input arguments will be inserted in the protected member \c variables_
+             *  If the string key already exists in \c variables_ , its value will be updated. If it does not, a
+             *  new entry will be created using \c variableName as key
              */
             virtual void setCoefficient (const std::string& variableName, 
-                                         const std::shared_ptr <const dolfin::GenericFunction> value);
+                                         const std::shared_ptr <dolfin::GenericFunction> value);
 
 
             /******************* GETTERS *******************/
@@ -180,8 +181,23 @@ namespace dcp
             virtual const dolfin::Expression& expression (const std::string& variableName) const;
 
 
+            //! Get all the names of the variables stored in \c variables_
+            virtual std::vector<std::string> variablesNames () const;
+            
+
             /******************* METHODS *******************/
             //! Evaluate at given point in given cell. Overrides method in \c dolfin::Expression
+            /*!
+             *  Input arguments are:
+             *  \param values array that will contain the evaluated function at the given point
+             *  \param x the coordinates of the point
+             *  \param cell the cell containing the point
+             */
+            virtual void eval (dolfin::Array<double>& values, 
+                               const dolfin::Array<double>& x, 
+                               const ufc::cell& cell) const override;
+            
+            //! Evaluate at given point. Overrides method in \c dolfin::Expression
             /*!
              *  Input arguments are:
              *  \param values array that will contain the evaluated function at the given point
@@ -209,7 +225,7 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//  
         protected:
             //! The map that associates variables' names and values
-            std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> > variables_;
+            std::map <std::string, std::shared_ptr<dolfin::GenericFunction> > variables_;
     };
 }
 

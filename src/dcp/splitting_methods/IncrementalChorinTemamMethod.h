@@ -287,7 +287,6 @@ namespace dcp
                                             {"linear_form"},
                                             {}));
 
-        velocityProjectionProblem->parameters ["plot_interval"] = 1;
         velocityProjectionProblem->parameters ["dt_name"] = dtName;
 
 
@@ -481,7 +480,6 @@ namespace dcp
                                             {"linear_form"},
                                             {}));
 
-        velocityProjectionProblem->parameters ["plot_interval"] = 1;
         velocityProjectionProblem->parameters ["dt_name"] = dtName;
 
 

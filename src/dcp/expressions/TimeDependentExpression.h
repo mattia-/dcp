@@ -111,7 +111,7 @@ namespace dcp
              *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */
-            TimeDependentExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+            TimeDependentExpression (const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                                      const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
@@ -126,7 +126,7 @@ namespace dcp
              */         
             explicit TimeDependentExpression 
                 (std::size_t dim,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                  const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
@@ -143,7 +143,7 @@ namespace dcp
             TimeDependentExpression 
                 (std::size_t dim0, 
                  std::size_t dim1,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                  const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
 
@@ -159,7 +159,7 @@ namespace dcp
              */         
             explicit TimeDependentExpression 
                 (std::vector<std::size_t> value_shape,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                  const Evaluator& evaluator = dcp::DefaultEvaluator ());
             //
             //! Default copy constructor
@@ -192,8 +192,21 @@ namespace dcp
 
 
             /******************* SETTERS *******************/
-            //! Set the current time
-            void setTime (const double& time);
+            //! Set the current time for the variable defined by the input string
+            /*!
+             *  \param time the value to set the current time (of the variable identified by variableName) to
+             *  \param variableName the name of the variable of which the time value should be set. 
+             *  The default value is the empty string, which means that the time value of \c this object
+             *  should be set. Note that if \c variableName is not empty, a check is performed to decide 
+             *  whether the type of the variable identified by \c variableName allows a call to \c setTime()
+             */
+            void setTime (const double& time, const std::string& variableName = "");
+
+            //! Set the current time for \c this object and for all the variables stored in \c variables_
+            /*!
+             *  \param time the value to set the time to
+             */
+            void setTimeAll (const double& time);
 
 
             /******************* METHODS *******************/

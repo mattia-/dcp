@@ -35,7 +35,7 @@ namespace dcp
     void DefaultEvaluator::operator() 
         (dolfin::Array<double>& values, 
          const dolfin::Array<double>& x, 
-         const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables)
+         const std::map <std::string, std::shared_ptr<dolfin::GenericFunction> >& variables)
     {
         dolfin::dolfin_error 
             ("dcp: VariableExpression.cpp --> dcp::DefaultEvaluator",
@@ -59,7 +59,7 @@ namespace dcp
         (dolfin::Array<double>& values, 
          const dolfin::Array<double>& x, 
          const double& t,
-         const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables)
+         const std::map <std::string, std::shared_ptr<dolfin::GenericFunction> >& variables)
     {
         dolfin::dolfin_error 
             ("dcp: TimeDependentVariableExpression.cpp --> dcp::DefaultEvaluator",

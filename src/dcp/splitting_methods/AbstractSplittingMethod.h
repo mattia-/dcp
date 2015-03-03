@@ -149,7 +149,7 @@ namespace dcp
                                          const std::size_t& coefficientNumber);
 
             //! Set integration subdomains for the forms.
-            //! Wrapper for the method \c setIntegrationSubdomains() in \c dcp::TimeDependentProblem
+            //! Wrapper for the method \c setIntegrationSubdomain() in \c dcp::TimeDependentProblem
             /*! 
              *  Input arguments are:
              *  \param problemName the name of the problem in which to set the integration subdomain
@@ -161,7 +161,7 @@ namespace dcp
              * 
              *  \return boolean flag, with \c true representing success and \c false representing failure
              */
-            virtual void setIntegrationSubdomains (const std::string& problemName,
+            virtual void setIntegrationSubdomain (const std::string& problemName,
                                                    const std::string& formType,
                                                    std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                    const dcp::SubdomainType& subdomainType);

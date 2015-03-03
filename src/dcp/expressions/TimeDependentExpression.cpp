@@ -74,7 +74,7 @@ namespace dcp
 
 
     TimeDependentExpression::TimeDependentExpression 
-        (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+        (const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
          const dcp::TimeDependentExpression::Evaluator& evaluator) 
         : 
         dcp::GenericExpression (variables),
@@ -89,7 +89,7 @@ namespace dcp
 
     TimeDependentExpression::TimeDependentExpression 
         (std::size_t dim,
-         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
          const dcp::TimeDependentExpression::Evaluator& evaluator) 
         : 
         dcp::GenericExpression (dim, variables),
@@ -105,7 +105,7 @@ namespace dcp
     TimeDependentExpression::TimeDependentExpression 
         (std::size_t dim0, 
          std::size_t dim1,
-         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
          const dcp::TimeDependentExpression::Evaluator& evaluator)
         :
         dcp::GenericExpression (dim0, dim1, variables),
@@ -119,7 +119,7 @@ namespace dcp
 
     TimeDependentExpression::TimeDependentExpression 
         (std::vector<std::size_t> value_shape,
-         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
          const dcp::TimeDependentExpression::Evaluator& evaluator)
         :
         dcp::GenericExpression (value_shape, variables),
@@ -141,11 +141,41 @@ namespace dcp
 
 
     /******************* SETTERS *******************/
-    void TimeDependentExpression::setTime (const double& time)
+    void TimeDependentExpression::setTime (const double& time, const std::string& variableName)
     {
-        t_ = time;
+        if (variableName.empty ())
+        {
+            t_ = time;
+            return;
+        }
+        
+        // if variableName is not empty, get the variable with given name
+        auto nameVariablePair = variables_.find (variableName);
+        
+        // if element was found and it is an object of type dcp::TimeDependentExpression (or derived from it),
+        // call setTime()
+        if (nameVariablePair != variables_.end () 
+            &&
+            std::dynamic_pointer_cast<dcp::TimeDependentExpression> (nameVariablePair->second) != nullptr)
+        {
+            std::dynamic_pointer_cast<dcp::TimeDependentExpression> (nameVariablePair->second) -> setTime (t);
+        }
     } 
 
+
+
+    void TimeDependentExpression::setTimeAll (const double& time)
+    {
+        // set time for this object
+        setTime (time);
+        
+        // set time for all the variables
+        for (auto nameVariablePair : variables_)
+        {
+            setTime (time, nameVariablePair.first);
+        }
+    }
+            
 
 
     /******************* METHODS *******************/

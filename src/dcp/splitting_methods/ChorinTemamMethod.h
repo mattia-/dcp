@@ -262,7 +262,6 @@ namespace dcp
                                             {"linear_form"},
                                             {}));
 
-        projectionProblem->parameters ["plot_interval"] = 1;
         projectionProblem->parameters ["dt_name"] = dtName;
 
 
@@ -404,7 +403,6 @@ namespace dcp
                                             {"linear_form"},
                                             {}));
 
-        projectionProblem->parameters ["plot_interval"] = 1;
         projectionProblem->parameters ["dt_name"] = dtName;
 
 

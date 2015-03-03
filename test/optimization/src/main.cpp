@@ -138,10 +138,10 @@ int main (int argc, char* argv[])
 
     problems["adjoint"].addDirichletBC (adjoint_dirichletBC, adjoint_dirichletBoundary, 0);
 
-    problems["adjoint"].setIntegrationSubdomains ("bilinear_form", 
+    problems["adjoint"].setIntegrationSubdomain ("bilinear_form", 
                                                   dolfin::reference_to_no_delete_pointer (meshFacets),
                                                   dcp::SubdomainType::BOUNDARY_FACETS);
-    problems["adjoint"].setIntegrationSubdomains ("linear_form", 
+    problems["adjoint"].setIntegrationSubdomain ("linear_form", 
                                                   dolfin::reference_to_no_delete_pointer (meshCells),
                                                   dcp::SubdomainType::INTERNAL_CELLS);
 
@@ -188,9 +188,9 @@ int main (int argc, char* argv[])
                                         dolfin::reference_to_no_delete_pointer (problems.solution("primal")[1]), 
                                         "p");
     
-    objectiveFunctional.setIntegrationSubdomains (dolfin::reference_to_no_delete_pointer (meshFacets), 
+    objectiveFunctional.setIntegrationSubdomain (dolfin::reference_to_no_delete_pointer (meshFacets), 
                                                   dcp::SubdomainType::BOUNDARY_FACETS);
-    objectiveFunctional.setIntegrationSubdomains (dolfin::reference_to_no_delete_pointer (meshCells),
+    objectiveFunctional.setIntegrationSubdomain (dolfin::reference_to_no_delete_pointer (meshCells),
                                                   dcp::SubdomainType::INTERNAL_CELLS);
     
     objectiveFunctional.setCoefficient ("gradient",

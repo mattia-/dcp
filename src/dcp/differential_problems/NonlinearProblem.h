@@ -290,7 +290,7 @@ namespace dcp
                  *  
                  *  See \c AbstractProblem documentation for more details on the function
                  */
-                virtual void setIntegrationSubdomains (const std::string& formType,
+                virtual void setIntegrationSubdomain (const std::string& formType,
                                                        std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                        const dcp::SubdomainType& subdomainType) override;
                 
@@ -752,7 +752,7 @@ namespace dcp
 
     template <class T_ResidualForm, class T_JacobianForm>
         void NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        setIntegrationSubdomains (const std::string& formType,
+        setIntegrationSubdomain (const std::string& formType,
                                   std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                   const dcp::SubdomainType& subdomainType)
         {

@@ -191,11 +191,11 @@ namespace dcp
 
 
     void TimeDependentProblem::
-    setIntegrationSubdomains (const std::string& formType,
+    setIntegrationSubdomain (const std::string& formType,
                               std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                               const dcp::SubdomainType& subdomainType)
     {
-        timeSteppingProblem_->setIntegrationSubdomains (formType, meshFunction, subdomainType);
+        timeSteppingProblem_->setIntegrationSubdomain (formType, meshFunction, subdomainType);
     }
 
 

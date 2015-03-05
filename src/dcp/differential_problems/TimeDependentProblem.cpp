@@ -30,7 +30,8 @@ namespace dcp
          const double& dt,
          const double& endTime,
          std::initializer_list<std::string> dtCoefficientTypes,
-         std::initializer_list<std::string> previousSolutionCoefficientTypes)
+         std::initializer_list<std::string> previousSolutionCoefficientTypes,
+         const unsigned int& nTimeSchemeSteps)
         : 
             AbstractProblem (timeSteppingProblem->functionSpace ()),
             timeSteppingProblem_ (timeSteppingProblem),
@@ -40,11 +41,27 @@ namespace dcp
             startTime_ (startTime),
             dt_ (dt),
             endTime_ (endTime),
+            nTimeSchemeSteps_ (nTimeSchemeSteps),
             timeDependentDirichletBCsCounter_ (0)
     { 
         dolfin::begin (dolfin::DBG, "Building TimeDependentProblem...");
         
-        solution_.emplace_back (std::make_pair (t_, dolfin::Function (timeSteppingProblem_->functionSpace ())));
+        // we need a solution for every step in the time scheme! 
+        // And the time should be t0, t0+dt, t0+2dt ...
+        dolfin::begin (dolfin::DBG, "Creating initial solutions...");
+        unsigned int stepNumber;
+        for (stepNumber = 0; stepNumber < nTimeSchemeSteps_; ++stepNumber)
+        {
+            solution_.emplace_back (std::make_pair (t_ + stepNumber * dt, 
+                                                    dolfin::Function (timeSteppingProblem_->functionSpace ())));
+        }
+        dolfin::log (dolfin::DBG, "Created %d initial solutions", stepNumber + 1);
+        
+        // set the correct value for t_, since it was not incremented during the previous loop.
+        // Use stepNumber - 1 since t_ will be incremented at the *beginning* of the time loop, not at the end
+        t_ += (stepNumber - 1) * dt;
+            
+        dolfin::end ();
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("problem_type", "time_dependent");
@@ -158,16 +175,40 @@ namespace dcp
 
 
     /******************* SETTERS *******************/
-    void TimeDependentProblem::setInitialSolution (const dolfin::Function& initialSolution)
+    void TimeDependentProblem::setInitialSolution (const dolfin::Function& initialSolution, 
+                                                   const unsigned int& stepNumber)
     {
-        solution_.back ().second = initialSolution;
+        if (stepNumber > nTimeSchemeSteps_)
+        {
+            dolfin::warning ("initial solution not set. Requested time step number is greater than problem's scheme's number of time steps");
+            return;
+        }
+        
+        auto solutionsIterator = solution_.rbegin ();
+        
+        // the solution we want to set is identified by stepNumber. If it is equal to 1, we must set the last element
+        // in solution_, if it is equal to 2 the last but one element and so on. That's why we subtract 1 from 
+        // stepNumber in the next instruction
+        (solutionsIterator + (stepNumber - 1)) -> second = initialSolution;
     }
 
     
 
-    void TimeDependentProblem::setInitialSolution (const dolfin::Expression& initialSolution)
+    void TimeDependentProblem::setInitialSolution (const dolfin::Expression& initialSolution,
+                                                   const unsigned int& stepNumber)
     {
-        solution_.back ().second = initialSolution;
+        if (stepNumber > nTimeSchemeSteps_)
+        {
+            dolfin::warning ("initial solution not set. Requested time step number is greater than problem's scheme's number of time steps");
+            return;
+        }
+        
+        auto solutionsIterator = solution_.rbegin ();
+        
+        // the solution we want to set is identified by stepNumber. If it is equal to 1, we must set the last element
+        // in solution_, if it is equal to 2 the last but one element and so on. That's why we subtract 1 from 
+        // stepNumber in the next instruction
+        (solutionsIterator + (stepNumber - 1)) -> second = initialSolution;
     }
    
 
@@ -545,7 +586,7 @@ namespace dcp
                 dolfin::begin (dolfin::INFO, "===== Timestep %d =====", timeStep);
             }
             
-            advanceTime (tmpSolution);
+            advanceTime ();
             
             setTimeDependentCoefficients ();
             
@@ -711,7 +752,7 @@ namespace dcp
 
 
     /******************* PROTECTED METHODS *******************/
-    void TimeDependentProblem::advanceTime (const dolfin::Function& previousSolution)
+    void TimeDependentProblem::advanceTime ()
     {
         t_ += dt_;
         
@@ -725,24 +766,36 @@ namespace dcp
         bool previousSolutionIsSetExternally = parameters ["previous_solution_is_set_externally"];
         if (previousSolutionIsSetExternally == false)
         {
-            dolfin::log (dolfin::DBG, "Setting previous solution coefficients...");
-            for (auto& i : previousSolutionCoefficientTypes)
+            dolfin::begin (dolfin::DBG, "Setting previous solution coefficients...");
+            for (unsigned int step = 1; step <= nTimeSchemeSteps_; ++step)
             {
-                if (timeSteppingSolutionComponent >= 0)
+                // if step > 1, append step number to the name of the coefficient to set 
+                if (step > 1)
                 {
-                    timeSteppingProblem_->setCoefficient 
-                        (i, 
-                         dolfin::reference_to_no_delete_pointer (previousSolution [timeSteppingSolutionComponent]), 
-                         previousSolutionName);
+                    previousSolutionName = previousSolutionName + "_" + std::to_string (step);
                 }
-                else
+                
+                // get the index of the function in solution_ to use to set the coefficient
+                unsigned int index = solution_.size () - step;
+                for (auto& previousSolutionCoefficientType : previousSolutionCoefficientTypes)
                 {
-                    timeSteppingProblem_->setCoefficient 
-                        (i, 
-                         dolfin::reference_to_no_delete_pointer (previousSolution), 
-                         previousSolutionName);
-                }
-            } 
+                    if (timeSteppingSolutionComponent >= 0)
+                    {
+                        timeSteppingProblem_ -> setCoefficient 
+                            (previousSolutionCoefficientType, 
+                             dolfin::reference_to_no_delete_pointer ((solution_ [index].second) [timeSteppingSolutionComponent]), 
+                             previousSolutionName);
+                    }
+                    else
+                    {
+                        timeSteppingProblem_ -> setCoefficient 
+                            (previousSolutionCoefficientType, 
+                             dolfin::reference_to_no_delete_pointer (solution_ [index].second),
+                             previousSolutionName);
+                    }
+                } 
+            }
+            dolfin::end ();
         }
         else
         {

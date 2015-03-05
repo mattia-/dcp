@@ -25,10 +25,10 @@
 #include <dcp/splitting_methods/splitting_methods.h>
 #include <dcp/expressions/expressions.h>
 #include <dcp/subdomains/subdomains.h>
-#include "density.h"
-#include "velocity.h"
-#include "pressure_correction.h"
-#include "pressure_update.h"
+#include "density_second_order.h"
+#include "velocity_second_order.h"
+#include "pressure_correction_second_order.h"
+#include "pressure_update_second_order.h"
 #include "error_computers.h"
 #include <fstream>
 
@@ -121,9 +121,9 @@ int main (int argc, char* argv[])
     int N = parameters["N"];
     mshr::generate (mesh, circle, N);
     
-    density::FunctionSpace R (mesh);
-    velocity::FunctionSpace V (mesh);
-    pressure_correction::FunctionSpace Q (mesh);
+    density_second_order::FunctionSpace R (mesh);
+    velocity_second_order::FunctionSpace V (mesh);
+    pressure_correction_second_order::FunctionSpace Q (mesh);
     
     // define constant
     std::cout << "Define the coefficients..." << std::endl;
@@ -135,32 +135,40 @@ int main (int argc, char* argv[])
     std::cout << "Time step = " << dt << std::endl; 
     std::cout << "Final time = " << T << std::endl; 
     
-    // exact solution
-    dcp::TimeDependentExpression exactRho ((exact_solutions::RhoEvaluator ()));
-    exactRho.setTime (t0);
-    dcp::TimeDependentExpression exactU (2, exact_solutions::UEvaluator ());
-    exactU.setTime (t0);
-    dcp::TimeDependentExpression exactP ((exact_solutions::PEvaluator ()));
-    exactP.setTime (t0);
-
     // define the problems
     std::cout << "Define the problem..." << std::endl;
-    dcp::GuermondSalgadoMethod <density::BilinearForm,
-                                density::LinearForm,
-                                velocity::BilinearForm,
-                                velocity::LinearForm,
-                                pressure_correction::BilinearForm,
-                                pressure_correction::LinearForm,
-                                pressure_update::BilinearForm,
-                                pressure_update::LinearForm>
-        guermondSalgadoMethod (R, V, Q, t0, dt, T, mu, chi);
+    dcp::GuermondSalgadoMethod <density_second_order::BilinearForm,
+                                density_second_order::LinearForm,
+                                velocity_second_order::BilinearForm,
+                                velocity_second_order::LinearForm,
+                                pressure_correction_second_order::BilinearForm,
+                                pressure_correction_second_order::LinearForm,
+                                pressure_update_second_order::BilinearForm,
+                                pressure_update_second_order::LinearForm>
+        guermondSalgadoMethod (R, V, Q, t0, dt, T, mu, chi, 2);
     
+    // exact solution
+    dcp::TimeDependentExpression exactRho ((exact_solutions::RhoEvaluator ()));
+    dcp::TimeDependentExpression exactU (2, exact_solutions::UEvaluator ());
+    dcp::TimeDependentExpression exactP ((exact_solutions::PEvaluator ()));
+
     // set initial solutions
-    guermondSalgadoMethod.setInitialSolution ("density_problem", exactRho);
-    guermondSalgadoMethod.setInitialSolution ("velocity_problem", exactU);
-    guermondSalgadoMethod.setInitialSolution ("pressure_update_problem", exactP);
+    // first step
+    exactRho.setTime (t0);
+    exactU.setTime (t0);
+    exactP.setTime (t0);
+    guermondSalgadoMethod.setInitialSolution ("density_problem", exactRho, 2);
+    guermondSalgadoMethod.setInitialSolution ("velocity_problem", exactU, 2);
+//    guermondSalgadoMethod.setInitialSolution ("pressure_update_problem", exactP, 2);
     
-    
+    // second step
+    exactRho.setTime (t0+dt);
+    exactU.setTime (t0+dt);
+    exactP.setTime (t0+dt);
+    guermondSalgadoMethod.setInitialSolution ("density_problem", exactRho, 1);
+    guermondSalgadoMethod.setInitialSolution ("velocity_problem", exactU, 1);
+    guermondSalgadoMethod.setInitialSolution ("pressure_update_problem", exactP, 1);
+
     // define dirichlet boundary conditions
     std::cout << "Define the problem's Dirichlet boundary conditions..." << std::endl;
     dcp::Subdomain dirichletBoundary ((navierstokes::DirichletBoundaryEvaluator ()));
@@ -211,15 +219,15 @@ int main (int argc, char* argv[])
     std::vector<double> velocityH1Errors (computedU.size ());
     std::vector<double> pressureL2Errors (computedP.size ());
     
-    std::ofstream ERROR_RHO ("error_rho_test_case_dt=" + std::to_string (dt) + ".txt");
-    std::ofstream ERROR_U_H1 ("error_u_H1_test_case_dt=" + std::to_string (dt) + ".txt");
-    std::ofstream ERROR_U_L2 ("error_u_L2_test_case_dt=" + std::to_string (dt) + ".txt");
-    std::ofstream ERROR_P ("error_p_test_case_dt=" + std::to_string (dt) + ".txt");
+    std::ofstream ERROR_RHO ("error_rho_test_case_order2_dt=" + std::to_string (dt) + ".txt");
+    std::ofstream ERROR_U_H1 ("error_u_H1_test_case_order2_dt=" + std::to_string (dt) + ".txt");
+    std::ofstream ERROR_U_L2 ("error_u_L2_test_case_order2_dt=" + std::to_string (dt) + ".txt");
+    std::ofstream ERROR_P ("error_p_test_case_order2_dt=" + std::to_string (dt) + ".txt");
     
-    std::ofstream MAX_ERROR_RHO ("max_error_rho_test_case.txt", std::ios_base::app);
-    std::ofstream MAX_ERROR_U_H1 ("max_error_u_H1_test_case.txt", std::ios_base::app);
-    std::ofstream MAX_ERROR_U_L2 ("max_error_u_L2_test_case.txt", std::ios_base::app);
-    std::ofstream MAX_ERROR_P ("max_error_p_test_case.txt", std::ios_base::app);
+    std::ofstream MAX_ERROR_RHO ("max_error_rho_test_case_order2.txt", std::ios_base::app);
+    std::ofstream MAX_ERROR_U_H1 ("max_error_u_H1_test_case_order2.txt", std::ios_base::app);
+    std::ofstream MAX_ERROR_U_L2 ("max_error_u_L2_test_case_order2.txt", std::ios_base::app);
+    std::ofstream MAX_ERROR_P ("max_error_p_test_case_order2.txt", std::ios_base::app);
     
     std::cout << "Computing errors..." << std::endl;
     dolfin::Function rescaledComputedP (Q);

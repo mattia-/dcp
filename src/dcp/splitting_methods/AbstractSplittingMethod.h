@@ -72,13 +72,13 @@ namespace dcp
             /*! 
              *  \return a pointer to the system
              */
-            virtual const dcp::AbstractEquationSystem& system () const;
+            virtual const dcp::TimeDependentEquationSystem& system () const;
 
             //! Get the system stored in the protected member \c differentialSystem_ [2], non const version
             /*! 
              *  \return a pointer to the system
              */
-            virtual dcp::AbstractEquationSystem& system ();
+            virtual dcp::TimeDependentEquationSystem& system ();
 
             //! Access problem in \c differentialSystem_ with given name [1] (read only)
             /*!
@@ -86,7 +86,7 @@ namespace dcp
              *  
              *  \return a reference to the problem
              */
-            virtual const dcp::AbstractProblem& problem (const std::string& name) const;
+            virtual const dcp::TimeDependentProblem& problem (const std::string& name) const;
             
             //! Access problem in \c differentialSystem_ with given name [2] (read and write)
             /*!
@@ -94,7 +94,7 @@ namespace dcp
              *  
              *  \return a reference to the problem
              */
-            virtual dcp::AbstractProblem& problem (const std::string& name);
+            virtual dcp::TimeDependentProblem& problem (const std::string& name);
             
             
             /********************** SETTERS ***********************/
@@ -103,16 +103,32 @@ namespace dcp
             /*!
              *  \param problemName the name of the problem whose initial solution should be set
              *  \param initialSolution the initial solution itself
+             *  \param stepNumber the number of steps to go back to set the initial solution. This is only useful 
+             *  for multisteps method, where more than one previous solution is needed to compute the solution at the
+             *  current time step. This number, if greater than one, will be concatenated to \c "previous_solution_name"
+             *  to form the coefficient name to be set. See the documentation for the constructor of
+             *  \c dcp::TimeDependentProblem for more details.
+             *  The default value is 1, that means that the input function should be used to set the last solution.
              */
-            virtual void setInitialSolution (const std::string& problemName, const dolfin::Function& initialSolution); 
+            virtual void setInitialSolution (const std::string& problemName, 
+                                             const dolfin::Function& initialSolution,
+                                             const unsigned int& stepNumber = 1);
             
-            //! Set initial solution of the problem with the given name [2].
+            //! Set initial solution of the problem with the given name [1].
             //! Wrapper for the method \c setInitialSolution() in \c dcp::TimeDependentProblem
             /*!
              *  \param problemName the name of the problem whose initial solution should be set
              *  \param initialSolution the initial solution itself
+             *  \param stepNumber the number of steps to go back to set the initial solution. This is only useful 
+             *  for multisteps method, where more than one previous solution is needed to compute the solution at the
+             *  current time step. This number, if greater than one, will be concatenated to \c "previous_solution_name"
+             *  to form the coefficient name to be set. See the documentation for the constructor of
+             *  \c dcp::TimeDependentProblem for more details.
+             *  The default value is 1, that means that the input function should be used to set the last solution.
              */
-            virtual void setInitialSolution (const std::string& problemName, const dolfin::Expression& initialSolution); 
+            virtual void setInitialSolution (const std::string& problemName, 
+                                             const dolfin::Expression& initialSolution,
+                                             const unsigned int& stepNumber = 1);
             
             //! Set problem coefficients [1].
             //! Wrapper for the method \c setCoefficient() in \c dcp::TimeDependentProblem

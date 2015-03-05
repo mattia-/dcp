@@ -61,37 +61,6 @@ namespace dcp
              */
             virtual ~NavierStokesSplittingMethod () = 0;
 
-            
-            /********************** GETTERS ***********************/
-            //! Get the system stored in the protected member \c differentialSystem_ [1], const version
-            /*! 
-             *  \return a pointer to the system
-             */
-            virtual const dcp::TimeDependentEquationSystem& system () const;
-
-            //! Get the system stored in the protected member \c differentialSystem_ [2], non const version
-            /*! 
-             *  \return a pointer to the system
-             */
-            virtual dcp::TimeDependentEquationSystem& system ();
-
-            //! Access problem in \c differentialSystem_ with given name [1] (read only)
-            /*!
-             *  \param name name of the problem to be accessed. 
-             *  
-             *  \return a reference to the problem
-             */
-            virtual const dcp::TimeDependentProblem& problem (const std::string& name) const;
-            
-            //! Access problem in \c differentialSystem_ with given name [2] (read and write)
-            /*!
-             *  \param name name of the problem to be accessed. 
-             *  
-             *  \return a reference to the problem
-             */
-            virtual dcp::TimeDependentProblem& problem (const std::string& name);
-            
-            
             // ---------------------------------------------------------------------------------------------//
 
         protected:

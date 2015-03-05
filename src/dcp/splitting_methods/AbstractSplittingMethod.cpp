@@ -50,28 +50,28 @@ namespace dcp
             
 
     /********************** GETTERS ***********************/
-    const dcp::AbstractEquationSystem& AbstractSplittingMethod::system () const
+    const dcp::TimeDependentEquationSystem& AbstractSplittingMethod::system () const
     {
         return *differentialSystem_;
     }
 
 
 
-    dcp::AbstractEquationSystem& AbstractSplittingMethod::system ()
+    dcp::TimeDependentEquationSystem& AbstractSplittingMethod::system ()
     {
         return *differentialSystem_;
     }
 
 
     
-    const dcp::AbstractProblem& AbstractSplittingMethod::problem (const std::string& name) const
+    const dcp::TimeDependentProblem& AbstractSplittingMethod::problem (const std::string& name) const
     {
         return (*differentialSystem_) [name];
     }
     
 
 
-    dcp::AbstractProblem& AbstractSplittingMethod::problem (const std::string& name)
+    dcp::TimeDependentProblem& AbstractSplittingMethod::problem (const std::string& name)
     {
         return (*differentialSystem_) [name];
     }
@@ -80,18 +80,20 @@ namespace dcp
 
     /********************** SETTERS ***********************/
     void AbstractSplittingMethod::setInitialSolution (const std::string& problemName, 
-                                                      const dolfin::Function& initialSolution)
+                                                      const dolfin::Function& initialSolution,
+                                                      const unsigned int& stepNumber)
     {
-        (*differentialSystem_) [problemName].setInitialSolution (initialSolution);
+        (*differentialSystem_) [problemName].setInitialSolution (initialSolution, stepNumber);
     }
 
     
 
     void AbstractSplittingMethod::setInitialSolution (const std::string& problemName, 
-                                                      const dolfin::Expression& initialSolution)
+                                                      const dolfin::Expression& initialSolution,
+                                                      const unsigned int& stepNumber)
     {
 
-        (*differentialSystem_) [problemName].setInitialSolution (initialSolution);
+        (*differentialSystem_) [problemName].setInitialSolution (initialSolution, stepNumber);
     }
     
 

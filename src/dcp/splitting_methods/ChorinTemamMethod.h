@@ -340,117 +340,18 @@ namespace dcp
                           std::shared_ptr <dolfin::FunctionSpace> (new dolfin::FunctionSpace (pressureFunctionSpace))}
                     )
     {
-
-        dolfin::begin (dolfin::DBG, "Building ChorinTemamMethod...");
-
-        parameters ["splitting_method_type"] = "chorin_temam";
-
-        dolfin::log (dolfin::DBG, "Creating the time stepping linear problems...");
-
-
-        // define the problems
-        // 1) prediction problem
-        dolfin::begin (dolfin::DBG, "Creating prediction problem...");
-
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingPredictionProblem
-            (new dcp::LinearProblem <T_PredictionBilinearForm, T_PredictionLinearForm> (velocityFunctionSpace_));
-
-        std::shared_ptr <dcp::TimeDependentProblem> predictionProblem
-            (new dcp::TimeDependentProblem (timeSteppingPredictionProblem,
-                                            startTime,
-                                            dt,
-                                            endTime,
-                                            {"bilinear_form"},
-                                            {}));
-
-        predictionProblem->parameters ["dt_name"] = dtName;
-        predictionProblem->parameters ["previous_solution_name"] = previousVelocityName;
-        predictionProblem->parameters ["previous_solution_is_set_externally"] = true;
-
-        dolfin::end (); // "Creating prediction problem..."
-
-
-        // 2) correction problem
-        dolfin::begin (dolfin::DBG, "Creating correction problem...");
-
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingCorrectionProblem
-            (new dcp::LinearProblem <T_CorrectionBilinearForm, T_CorrectionLinearForm> (pressureFunctionSpace_));
-
-        std::shared_ptr <dcp::TimeDependentProblem> correctionProblem
-            (new dcp::TimeDependentProblem (timeSteppingCorrectionProblem,
-                                            startTime,
-                                            dt,
-                                            endTime,
-                                            {"bilinear_form"},
-                                            {}));
-
-        correctionProblem->parameters ["dt_name"] = dtName;
-
-        dolfin::end (); // "Creating correction problem..."
-
-
-        // 3) projection problem
-        dolfin::begin (dolfin::DBG, "Creating projection problem...");
-
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingProjectionProblem
-            (new dcp::LinearProblem <T_ProjectionBilinearForm, T_ProjectionLinearForm> (velocityFunctionSpace_));
-
-        std::shared_ptr <dcp::TimeDependentProblem> projectionProblem
-            (new dcp::TimeDependentProblem (timeSteppingProjectionProblem,
-                                            startTime,
-                                            dt,
-                                            endTime,
-                                            {"linear_form"},
-                                            {}));
-
-        projectionProblem->parameters ["dt_name"] = dtName;
-
-
-        dolfin::end (); // "Creating projection problem..."
-
-
-        // define the system
-        dolfin::begin ("Creating time dependent Chorin-Temam system...");
-
-        // 0) create the object
-        std::shared_ptr<dcp::TimeDependentEquationSystem> chorinTemamSystem (new dcp::TimeDependentEquationSystem);
-
-        // 1) add problems
-        dolfin::begin (dolfin::DBG, "Adding problems to protected member map...");
-        chorinTemamSystem->addProblem ("prediction_problem", predictionProblem);
-        chorinTemamSystem->addProblem ("correction_problem", correctionProblem);
-        chorinTemamSystem->addProblem ("projection_problem", projectionProblem);
-        dolfin::end (); // "Adding problems to protected member map"
-
-        // 2) add links
-        dolfin::begin (dolfin::DBG, "Setting up problems' links...");
-        chorinTemamSystem->addLink ("prediction_problem", previousVelocityName, "bilinear_form", "projection_problem");
-        chorinTemamSystem->addLink ("prediction_problem", previousVelocityName, "linear_form", "projection_problem");
-        chorinTemamSystem->addLink ("correction_problem", intermediateVelocityName, "linear_form", "prediction_problem");
-        chorinTemamSystem->addLink ("projection_problem", intermediateVelocityName, "linear_form", "prediction_problem");
-        chorinTemamSystem->addLink ("projection_problem", pressureName, "linear_form", "correction_problem");
-        dolfin::end (); // "Setting up problems' links"
-
-        // 3) set coefficients
-        dolfin::begin (dolfin::DBG, "Setting coefficients...");
-        (*chorinTemamSystem) ["prediction_problem"].setCoefficient ("bilinear_form",
-                                                                    dolfin::reference_to_no_delete_pointer (nu),
-                                                                    "nu");
-
-        // remember that predictionProblem and (*chorinTemamSystem ["prediction_problem"]) point to the same object, so
-        // changes to one pointed object affect the other. We use predictionProblem since it is far more readable
-        predictionProblem->addTimeDependentCoefficient (externalForceName, "linear_form", externalForce);
-        dolfin::end (); // "Setting coefficients"
-
-        dolfin::end (); // "Creating the time stepping linear problems..."
-
-        dolfin::begin (dolfin::DBG, "Saving time dependent problem as protected member...");
-        differentialSystem_ = chorinTemamSystem;
-        dolfin::end (); // "Saving time dependent problem as protected member..."
-
-        dolfin::end (); // "Building ChorinTemamMethod"
-
-        dolfin::log (dolfin::DBG, "ChorinTemamMethod object created");
+        ChorinTemamMethod (velocityFunctionSpace,
+                           pressureFunctionSpace,
+                           startTime,
+                           dt,
+                           endTime,
+                           nu,
+                           previousVelocityName,
+                           intermediateVelocityName,
+                           pressureName,
+                           dtName);
+                          
+        (*differentialSystem_) ["prediction_problem"].addTimeDependentCoefficient (externalForceName, "linear_form", externalForce);
     }
 }
 #endif

@@ -47,33 +47,4 @@ namespace dcp
     {
         
     }
-    
-
-
-    /********************** GETTERS ***********************/
-    const dcp::TimeDependentEquationSystem& NavierStokesSplittingMethod::system () const
-    {
-        return *(std::dynamic_pointer_cast<dcp::TimeDependentEquationSystem> (differentialSystem_));
-    }
-
-
-
-    dcp::TimeDependentEquationSystem& NavierStokesSplittingMethod::system ()
-    {
-        return *(std::dynamic_pointer_cast<dcp::TimeDependentEquationSystem> (differentialSystem_));
-    }
-
-
-    
-    const dcp::TimeDependentProblem& NavierStokesSplittingMethod::problem (const std::string& name) const
-    {
-        return (*(std::dynamic_pointer_cast<dcp::TimeDependentEquationSystem> (differentialSystem_))) [name];
-    }
-    
-
-
-    dcp::TimeDependentProblem& NavierStokesSplittingMethod::problem (const std::string& name)
-    {
-        return (*(std::dynamic_pointer_cast<dcp::TimeDependentEquationSystem> (differentialSystem_))) [name];
-    }
 }

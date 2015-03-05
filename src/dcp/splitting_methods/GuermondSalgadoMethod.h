@@ -56,7 +56,7 @@ namespace dcp
      *        update problem
      *
      *  The incremental Guermond-Salgado problem is supposed to be in the form presented in section
-     *  3.1 of the aforementioned paper.
+     *  3.1 (for order one in time) or 4 (for order two in time) of the aforementioned paper.
      */
     template <class T_DensityBilinearForm_,
               class T_DensityLinearForm_,
@@ -92,25 +92,44 @@ namespace dcp
                  *  \param endTime the final time for the simulation
                  *  \param mu the viscosity
                  *  \param chi the penalization parameter in the third equation
+                 *  \param nTimeSchemeSteps the number of time steps involved in the time stepping problem solution. 
+                 *  See \c dcp::TimeDependentProblem documentation for more details. Default value: \c 1
                  *  \param velocityName the name of the coefficient representing the velocity at the current
                  *  time step in the ufl file describing the pressure correction problem
                  *  Default: \c "u"
                  *  \param previousVelocityName the name of the coefficient representing the velocity at the previous
-                 *  time step in the ufl file describing the density problem and the velocity problem. 
+                 *  time steps in the ufl file describing the density problem and the velocity problem. 
+                 *  A number will be appended to this variable to identify solutions from 2 or more time steps back.
+                 *  For example, if the current time index is \c n and \c previousVelocityName contains \c "u_old", 
+                 *  then the velocity at index \c n-1 will be identified by \c "u_old", the velocity at time index
+                 *  \c n-1 by "u_old_2" and so on.
                  *  Default: \c "u_old"
                  *  \param previousPressureName the name of the coefficient representing the pressure at the previous
                  *  time step in the ufl file describing the velocity problem and the pressure correction problem. 
+                 *  A number will be appended to this variable to identify solutions from 2 or more time steps back.
+                 *  For example, if the current time index is \c n and \c previousPressureName contains \c "p_old", 
+                 *  then the pressure at index \c n-1 will be identified by \c "p_old", the pressure at time index
+                 *  \c n-1 by "p_old_2" and so on.
                  *  Default: \c "p_old"
                  *  \param densityName the name of the coefficient representing the density at the current time step
                  *  in the ufl file describing the velocity problem.
                  *  Default: \c "rho"
                  *  \param previousDensityName the name of the coefficient representing the density at the previous
                  *  time step in the ufl file describing the density problem and the velocity problem. 
+                 *  A number will be appended to this variable to identify solutions from 2 or more time steps back.
+                 *  For example, if the current time index is \c n and \c previousDensityName contains \c "rho_old", 
+                 *  then the density at index \c n-1 will be identified by \c "rho_old", the density at time index
+                 *  \c n-1 by "rho_old_2" and so on.
                  *  Default: \c "rho_old"
                  *  \param pressureIncrementName the name of the coefficient representing the pressure increment
                  *  in the pressure update problem. Default: \c "phi"
                  *  \param previousPressureIncrementName the name of the coefficient representing the pressure increment
-                 *  at the previous time step in the velocity problem. Default: \c "phi_old"
+                 *  at the previous time step in the velocity problem. 
+                 *  A number will be appended to this variable to identify solutions from 2 or more time steps back.
+                 *  For example, if the current time index is \c n and \c previousPressureIncrementName contains 
+                 *  \c "phi_old", then the pressure increment at index \c n-1 will be identified by \c "phi_old", 
+                 *  the pressure increment at time index \c n-1 by "phi_old_2" and so on.
+                 *  Default: \c "phi_old"
                  *  \param dtName the name of the coefficient representing the time step in the ufl files describing the
                  *  problems. Default: \c "dt"   
                  */
@@ -122,6 +141,7 @@ namespace dcp
                                        const double& endTime,
                                        const dolfin::GenericFunction& mu,
                                        const dolfin::GenericFunction& chi,
+                                       const unsigned int& nTimeSchemeSteps = 1,
                                        const std::string& velocityName = "u",
                                        const std::string& previousVelocityName = "u_old",
                                        const std::string& previousPressureName = "p_old",
@@ -147,6 +167,8 @@ namespace dcp
                  *  \param mu the viscosity
                  *  \param chi the penalization parameter in the third equation
                  *  \param externalForce the external load applied to the velocity problem
+                 *  \param nTimeSchemeSteps the number of time steps involved in the time stepping problem solution. 
+                 *  See \c dcp::TimeDependentProblem documentation for more details. Default value: \c 1
                  *  \param velocityName the name of the coefficient representing the velocity at the current
                  *  time step in the ufl file describing the pressure correction problem
                  *  Default: \c "u"
@@ -180,6 +202,7 @@ namespace dcp
                                        const dolfin::GenericFunction& mu,
                                        const dolfin::GenericFunction& chi,
                                        std::shared_ptr<dcp::TimeDependentExpression> externalForce,
+                                       const unsigned int& nTimeSchemeSteps = 1,
                                        const std::string& velocityName = "u",
                                        const std::string& previousVelocityName = "u_old",
                                        const std::string& previousPressureName = "p_old",
@@ -193,7 +216,7 @@ namespace dcp
                 /************************* DESTRUCTOR *************************/
                 //! Destructor
                 /*!
-                 *  Default destructor, since members of the class are trivially destructible.
+                 hi*  Default destructor, since members of the class are trivially destructible.
                  */
                 virtual ~GuermondSalgadoMethod () {};
 
@@ -241,6 +264,7 @@ namespace dcp
                                const double& endTime,
                                const dolfin::GenericFunction& mu,
                                const dolfin::GenericFunction& chi,
+                               const unsigned int& nTimeSchemeSteps,
                                const std::string& velocityName,
                                const std::string& previousVelocityName,
                                const std::string& previousPressureName,
@@ -257,10 +281,17 @@ namespace dcp
                     ),
                 densityFunctionSpace_ (*(functionSpaces_ [2]))
     {
-
         dolfin::begin (dolfin::DBG, "Building GuermondSalgadoMethod...");
-
+        
         parameters ["splitting_method_type"] = "guermond_salgado";
+        
+        if (nTimeSchemeSteps != 1 && nTimeSchemeSteps != 2)
+        {
+            dolfin::dolfin_error ("GuermondSalgadoMethod.h",
+                                  "create GuermondSalgadoMethod object",
+                                  "Unknown order %d for time scheme. Available orders are 1 and 2", 
+                                  nTimeSchemeSteps);
+        }
         
         dolfin::begin (dolfin::DBG, "Creating the time stepping linear problems...");
 
@@ -277,7 +308,8 @@ namespace dcp
                                             dt,
                                             endTime,
                                             {"bilinear_form", "linear_form"},
-                                            {"linear_form"}));
+                                            {"linear_form"},
+                                            nTimeSchemeSteps));
 
         densityProblem->parameters ["dt_name"] = dtName;
         densityProblem->parameters ["previous_solution_name"] = previousDensityName;
@@ -297,7 +329,8 @@ namespace dcp
                                             dt,
                                             endTime,
                                             {"bilinear_form", "linear_form"},
-                                            {"bilinear_form", "linear_form"}));
+                                            {"bilinear_form", "linear_form"},
+                                            nTimeSchemeSteps));
 
         velocityProblem->parameters ["dt_name"] = dtName;
         velocityProblem->parameters ["previous_solution_name"] = previousVelocityName;
@@ -319,7 +352,8 @@ namespace dcp
                                             dt,
                                             endTime,
                                             {"linear_form"},
-                                            {}));
+                                            {},
+                                            nTimeSchemeSteps));
 
         pressureCorrectionProblem->parameters ["dt_name"] = dtName;
 
@@ -335,13 +369,19 @@ namespace dcp
              T_PressureUpdateLinearForm> 
              (pressureFunctionSpace_));
 
+        // the problem is created with a start time of startTime+dt, because otherwise the time would be skewed with 
+        // respect to the other problems, since they all use two-steps time schemes (see also dcp::TimeDependentProblem
+        // constructor to see why multi-step problems have an incremented start time)
+        // TODO che brutta cosa! e poi come si fa? Dipende da nTimeSchemeSteps
         std::shared_ptr <dcp::TimeDependentProblem> pressureUpdateProblem
             (new dcp::TimeDependentProblem (timeSteppingPressureUpdateProblem,
                                             startTime,
+//                                            startTime+dt,
                                             dt,
                                             endTime,
                                             {},
-                                            {"linear_form"}));
+                                            {"linear_form"}, 
+                                            1));
 
         pressureUpdateProblem->parameters ["previous_solution_name"] = previousPressureName;
 
@@ -350,7 +390,7 @@ namespace dcp
         dolfin::end (); // "Creating the time stepping linear problems..."
 
         // define the system
-        dolfin::begin ("Creating time dependent Guermond-Salgado system...");
+        dolfin::begin (dolfin::DBG, "Creating time dependent Guermond-Salgado system...");
 
         // 0) create the object
         std::shared_ptr<dcp::TimeDependentEquationSystem> guermondSalgadoSystem (new dcp::TimeDependentEquationSystem);
@@ -381,16 +421,6 @@ namespace dcp
                                         previousPressureIncrementName, 
                                         "linear_form", 
                                         "pressure_correction_problem");
-        guermondSalgadoSystem->addLinkToPreviousSolution ("velocity_problem", 
-                                                          previousDensityName, 
-                                                          "bilinear_form", 
-                                                          "density_problem",
-                                                          1);
-        guermondSalgadoSystem->addLinkToPreviousSolution ("velocity_problem", 
-                                                          previousDensityName, 
-                                                          "linear_form", 
-                                                          "density_problem",
-                                                          1);
         guermondSalgadoSystem->addLink ("pressure_correction_problem", 
                                         velocityName, 
                                         "linear_form", 
@@ -399,13 +429,59 @@ namespace dcp
                                         pressureIncrementName, 
                                         "linear_form", 
                                         "pressure_correction_problem");
+        
         dolfin::end (); // "Setting up problems' links"
+        
+        // add links specific to first order time scheme
+        if (nTimeSchemeSteps == 1)
+        {
+            dolfin::begin (dolfin::DBG, "Setting up specific links for first order time scheme...");
+            guermondSalgadoSystem->addLinkToPreviousSolution ("velocity_problem", 
+                                                              previousDensityName, 
+                                                              "bilinear_form", 
+                                                              "density_problem",
+                                                              1);
+            guermondSalgadoSystem->addLinkToPreviousSolution ("velocity_problem", 
+                                                              previousDensityName, 
+                                                              "linear_form", 
+                                                              "density_problem",
+                                                              1);
+            dolfin::end (); // "Setting up specific links for first order time scheme"
+        }
+            
+        // add links specific to second order time scheme
+        if (nTimeSchemeSteps == 2)
+        {
+            dolfin::begin (dolfin::DBG, "Setting up specific links for second order time scheme...");
+            guermondSalgadoSystem->addLinkToPreviousSolution ("density_problem", 
+                                                              previousVelocityName + "_2", 
+                                                              "bilinear_form", 
+                                                              "velocity_problem",
+                                                              1);
+            guermondSalgadoSystem->addLinkToPreviousSolution ("velocity_problem", 
+                                                              previousPressureIncrementName + "_2", 
+                                                              "linear_form", 
+                                                              "pressure_correction_problem",
+                                                              1);
+            guermondSalgadoSystem->addLink ("pressure_update_problem", 
+                                            velocityName, 
+                                            "linear_form", 
+                                            "velocity_problem");
+            dolfin::end (); // "Setting up specific links for second order time scheme"
+        }
+            
 
         // 3) set coefficients
         dolfin::begin (dolfin::DBG, "Setting coefficients...");
         (*guermondSalgadoSystem) ["velocity_problem"].setCoefficient ("bilinear_form",
                                                                       dolfin::reference_to_no_delete_pointer (mu),
                                                                       "mu");
+        if (nTimeSchemeSteps == 2)
+        {
+            (*guermondSalgadoSystem) ["pressure_update_problem"].setCoefficient ("linear_form",
+                                                                                 dolfin::reference_to_no_delete_pointer (mu),
+                                                                                 "mu");
+        }
         (*guermondSalgadoSystem) ["pressure_correction_problem"].setCoefficient 
             ("linear_form",
              dolfin::reference_to_no_delete_pointer (chi),
@@ -450,6 +526,7 @@ namespace dcp
                                const dolfin::GenericFunction& mu,
                                const dolfin::GenericFunction& chi,
                                std::shared_ptr<dcp::TimeDependentExpression> externalForce,
+                               const unsigned int& nTimeSchemeSteps,
                                const std::string& velocityName,
                                const std::string& previousVelocityName,
                                const std::string& previousPressureName,
@@ -467,167 +544,27 @@ namespace dcp
                     ),
                 densityFunctionSpace_ (*(functionSpaces_ [2]))
     {
-
-        dolfin::begin (dolfin::DBG, "Building GuermondSalgadoMethod...");
-
-        parameters ["splitting_method_type"] = "guermond_salgado";
-        
-        dolfin::begin (dolfin::DBG, "Creating the time stepping linear problems...");
-
-        // define the problems
-        // 1) density problem
-        dolfin::begin (dolfin::DBG, "Creating density problem...");
-
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingDensityProblem
-            (new dcp::LinearProblem <T_DensityBilinearForm, T_DensityLinearForm> (densityFunctionSpace_));
-
-        std::shared_ptr <dcp::TimeDependentProblem> densityProblem
-            (new dcp::TimeDependentProblem (timeSteppingDensityProblem,
-                                            startTime,
-                                            dt,
-                                            endTime,
-                                            {"bilinear_form", "linear_form"},
-                                            {"linear_form"}));
-
-        densityProblem->parameters ["dt_name"] = dtName;
-        densityProblem->parameters ["previous_solution_name"] = previousDensityName;
-
-        dolfin::end (); // "Creating density problem..."
-
-
-        // 2) velocity problem
-        dolfin::begin (dolfin::DBG, "Creating velocity problem...");
-
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingVelocityProblem
-            (new dcp::LinearProblem <T_VelocityBilinearForm, T_VelocityLinearForm> (velocityFunctionSpace_));
-
-        std::shared_ptr <dcp::TimeDependentProblem> velocityProblem
-            (new dcp::TimeDependentProblem (timeSteppingVelocityProblem,
-                                            startTime,
-                                            dt,
-                                            endTime,
-                                            {"bilinear_form", "linear_form"},
-                                            {"bilinear_form", "linear_form"}));
-
-        velocityProblem->parameters ["dt_name"] = dtName;
-        velocityProblem->parameters ["previous_solution_name"] = previousVelocityName;
-
-        dolfin::end (); // "Creating correction problem..."
-
-
-        // 3) pressure correction problem
-        dolfin::begin (dolfin::DBG, "Creating pressure correction problem...");
-
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingPressureCorrectionProblem
-            (new dcp::LinearProblem <T_PressureCorrectionBilinearForm, 
-             T_PressureCorrectionLinearForm> 
-             (pressureFunctionSpace_));
-
-        std::shared_ptr <dcp::TimeDependentProblem> pressureCorrectionProblem
-            (new dcp::TimeDependentProblem (timeSteppingPressureCorrectionProblem,
-                                            startTime,
-                                            dt,
-                                            endTime,
-                                            {"linear_form"},
-                                            {}));
-
-        pressureCorrectionProblem->parameters ["dt_name"] = dtName;
-
-
-        dolfin::end (); // "Creating pressure correction problem..."
-
-
-        // 4) pressure update problem
-        dolfin::begin (dolfin::DBG, "Creating pressure update problem...");
-
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingPressureUpdateProblem
-            (new dcp::LinearProblem <T_PressureUpdateBilinearForm, 
-             T_PressureUpdateLinearForm> 
-             (pressureFunctionSpace_));
-
-        std::shared_ptr <dcp::TimeDependentProblem> pressureUpdateProblem
-            (new dcp::TimeDependentProblem (timeSteppingPressureUpdateProblem,
-                                            startTime,
-                                            dt,
-                                            endTime,
-                                            {},
-                                            {"linear_form"}));
-
-        pressureUpdateProblem->parameters ["previous_solution_name"] = previousPressureName;
-
-        dolfin::end (); // "Creating pressure update problem..."
-
-        dolfin::end (); // "Creating the time stepping linear problems..."
-
-        // define the system
-        dolfin::begin (dolfin::DBG, "Creating time dependent Guermond-Salgado system...");
-
-        // 0) create the object
-        std::shared_ptr<dcp::TimeDependentEquationSystem> guermondSalgadoSystem (new dcp::TimeDependentEquationSystem);
-
-        // 1) add problems
-        dolfin::begin (dolfin::DBG, "Adding problems to protected member map...");
-        guermondSalgadoSystem->addProblem ("density_problem", densityProblem);
-        guermondSalgadoSystem->addProblem ("velocity_problem", velocityProblem);
-        guermondSalgadoSystem->addProblem ("pressure_correction_problem", pressureCorrectionProblem);
-        guermondSalgadoSystem->addProblem ("pressure_update_problem", pressureUpdateProblem);
-        dolfin::end (); // "Adding problems to protected member map"
-
-        // 2) add links
-        dolfin::begin (dolfin::DBG, "Setting up problems' links...");
-        guermondSalgadoSystem->addLink ("density_problem", 
-                                        previousVelocityName, 
-                                        "bilinear_form", 
-                                        "velocity_problem");
-        guermondSalgadoSystem->addLink ("velocity_problem", 
-                                        densityName, 
-                                        "bilinear_form", 
-                                        "density_problem");
-        guermondSalgadoSystem->addLink ("velocity_problem", 
-                                        previousPressureName, 
-                                        "linear_form", 
-                                        "pressure_update_problem");
-        guermondSalgadoSystem->addLink ("velocity_problem", 
-                                        previousPressureIncrementName, 
-                                        "linear_form", 
-                                        "pressure_correction_problem");
-        guermondSalgadoSystem->addLinkToPreviousSolution ("velocity_problem", 
-                                                          previousDensityName, 
-                                                          "bilinear_form", 
-                                                          "density_problem",
-                                                          1);
-        guermondSalgadoSystem->addLink ("pressure_correction_problem", 
-                                        velocityName, 
-                                        "linear_form", 
-                                        "velocity_problem");
-        guermondSalgadoSystem->addLink ("pressure_update_problem", 
-                                        pressureIncrementName, 
-                                        "linear_form", 
-                                        "pressure_correction_problem");
-        dolfin::end (); // "Setting up problems' links"
-
-        // 3) set coefficients
-        dolfin::begin (dolfin::DBG, "Setting coefficients...");
-        (*guermondSalgadoSystem) ["velocity_problem"].setCoefficient ("bilinear_form",
-                                                                      dolfin::reference_to_no_delete_pointer (mu),
-                                                                      "mu");
-        (*guermondSalgadoSystem) ["pressure_correction_problem"].setCoefficient ("linear_form",
-                                                                                 dolfin::reference_to_no_delete_pointer (chi),
-                                                                                 "chi");
-        // remember that velocityProblem and (*guermondSalgadoSystem ["velocity_problem"]) point to the same object, so
-        // changes to one pointed object affect the other. We use velocityProblem since it is far more readable
-        velocityProblem->addTimeDependentCoefficient (externalForceName, "linear_form", externalForce);
-        dolfin::end (); // "Setting coefficients"
-
-        dolfin::end (); // "Creating the time stepping linear problems..."
-
-        dolfin::begin (dolfin::DBG, "Saving time dependent problem as protected member...");
-        differentialSystem_ = guermondSalgadoSystem;
-        dolfin::end (); // "Saving time dependent problem as protected member..."
-
-        dolfin::end (); // "Building GuermondSalgadoMethod"
-
-        dolfin::log (dolfin::DBG, "GuermondSalgadoMethod object created");
+        GuermondSalgadoMethod (densityFunctionSpace,
+                               velocityFunctionSpace,
+                               pressureFunctionSpace,
+                               startTime,
+                               dt,
+                               endTime,
+                               mu,
+                               chi,
+                               nTimeSchemeSteps,
+                               velocityName,
+                               previousVelocityName,
+                               previousPressureName,
+                               densityName,
+                               previousDensityName,
+                               pressureIncrementName,
+                               previousPressureIncrementName,
+                               dtName);
+                               
+        (*differentialSystem_) ["velocity_problem"].addTimeDependentCoefficient (externalForceName, 
+                                                                                 "linear_form", 
+                                                                                 externalForce);
     }
 }
 #endif

@@ -406,7 +406,8 @@ namespace Ivan
 
             //! The displacement function
             // TODO : std::shared_ptr<dolfin::GenericFunction> displacement_;
-            std::shared_ptr<geometry::MapTgamma> displacement_;
+            std::shared_ptr<dolfin::Function> displacement_;
+//            std::shared_ptr<geometry::MapTgamma> displacement_;
             std::shared_ptr<dolfin::MeshDisplacement> actualDisplacement_;
 
             // ---------------------------------------------------------------------------------------------//

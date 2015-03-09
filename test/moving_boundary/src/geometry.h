@@ -23,9 +23,53 @@
 #define __GEOMETRY_H
 
 #include <dolfin.h>
-//#include "poisson.h"
+#include "laplaceVec.h"
 
 namespace geometry {
+
+class FreeSurface : public dolfin::SubDomain
+{
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return on_boundary && 
+               !( dolfin::near (x[0], 0)
+               ||
+               dolfin::near (x[1], 0)
+               ||
+               dolfin::near (x[0], 1));
+    }
+};
+
+class FixedBoundary : public dolfin::SubDomain
+{
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return (dolfin::near (x[0], 0) && on_boundary)
+               ||
+               (dolfin::near (x[1], 0) && on_boundary)
+               ||
+               (dolfin::near (x[0], 1) && on_boundary);
+    }
+};
+
+class ParabolicProfile : public dolfin::Expression
+{
+    void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+    {
+        values[0] = 0.5*x[0]*(1-x[0]);
+        values[1] = 0.5*x[0]*(1-x[0]);
+    }
+    
+    std::size_t value_rank() const
+    {
+      return 1;
+    }
+
+    std::size_t value_dimension(std::size_t i) const
+    {
+      return 2;
+    }
+};
 
 bool timeNOTcount(true);
 
@@ -129,6 +173,7 @@ private:
 //t {
   double gamma_ (double x, double t) const
   {
+    return 1.5*t/4.0*0.4*sin(3*PI*x)+t*x;
 //    return t/4.0*0.2*sin(3*PI*x);
 //    return 50*x*x*(1-x)*(1-x)*(x-0.3)*(x-0.7)*(t-1)*(t-3)*(1+t/2);
     //return 75*x*x*(1-x)*(1-x)*(x-0.3)*(x-0.7)*t*(2-t)*(4-t)/(1+t);
@@ -227,8 +272,10 @@ class MeshManager
     const T_FunctionSpace& functionSpace();
     const dolfin::Mesh& mesh();
 
-    void moveMesh (const dolfin::GenericFunction& displacement);
+    void moveMesh (const dolfin::GenericFunction& displacement, const std::string& component="all", const double dt=1.0);
 //move//    std::shared_ptr<dolfin::MeshDisplacement> moveMesh (const dolfin::GenericFunction& boundaryDisplacement);
+
+    dolfin::Function& displacement ();
  
   protected:
 
@@ -239,6 +286,9 @@ class MeshManager
     std::shared_ptr<dolfin::Mesh> mesh_;
     std::shared_ptr<const dolfin::FiniteElement> element_;
     std::shared_ptr<const dolfin::GenericDofMap> dofmap_;
+    std::shared_ptr<dolfin::FunctionSpace> wFunSp_;
+    dolfin::Function w_;
+    std::shared_ptr<dcp::AbstractProblem> problemALE_;
 /*    std::vector<std::shared_ptr<dolfin::FiniteElement> > subElements_;
     std::vector<std::shared_ptr<dolfin::GenericDofMap> > subDofmaps_;
 */
@@ -253,7 +303,12 @@ MeshManager<T_MeshMover,T_FunctionSpace>::MeshManager(const std::shared_ptr<T_Me
   functionSpace_ (functionSpace),
   mesh_ (new dolfin::Mesh(*functionSpace->mesh())),
   element_ (new dolfin::FiniteElement(*functionSpace->element())),
-  dofmap_ (functionSpace->dofmap()->copy())
+  dofmap_ (functionSpace->dofmap()->copy()),
+//  problemALE_ (dolfin::reference_to_no_delete_pointer(*mesh_), dolfin::reference_to_no_delete_pointer(laplaceVec::FunctionSpace(*mesh_))),
+//  w_ (* problemALE_->functionSpace())
+  wFunSp_ (new laplaceVec::FunctionSpace(*mesh_)),
+  w_ (*wFunSp_),
+  problemALE_ (new dcp::LinearProblem<laplaceVec::BilinearForm, laplaceVec::LinearForm> (dolfin::reference_to_no_delete_pointer(*mesh_), dolfin::reference_to_no_delete_pointer(*wFunSp_)))
 /*  subElements_ (2,nullptr),
   subDofmaps_ (2,nullptr) */
   //dofmap_ (new dolfin::DofMap(std::shared_ptr<const ufc::dofmap>(new const poisson_dofmap_1), *mesh_))
@@ -262,6 +317,9 @@ MeshManager<T_MeshMover,T_FunctionSpace>::MeshManager(const std::shared_ptr<T_Me
   {
     //dolfin::DofMapBuilder::build(*dofmap_,*mesh_,nullptr);
 //    dofmap_ = dofmap_->create(*mesh_);
+    this->moveMesh(dolfin::Constant(0,0),"initializing");
+    dolfin::Constant zero (0,0);
+    problemALE_->setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (zero), "zero");
   }
 
 template <class T_MeshMover, class T_FunctionSpace>
@@ -270,13 +328,21 @@ MeshManager<T_MeshMover,T_FunctionSpace>::MeshManager (const T_MeshMover& meshMo
   functionSpace_ (&functionSpace),
   mesh_ (new dolfin::Mesh(*functionSpace.mesh())),
   element_ (new const dolfin::FiniteElement(*functionSpace->element())),
-  dofmap_ (functionSpace->dofmap()->copy())
+  dofmap_ (functionSpace->dofmap()->copy()),
+//  problemALE_ (dolfin::reference_to_no_delete_pointer(*mesh_), dolfin::reference_to_no_delete_pointer(laplaceVec::FunctionSpace(*mesh_))),
+//  w_ (* problemALE_->functionSpace())
+  wFunSp_ (new laplaceVec::FunctionSpace(*mesh_)),
+  w_ (*wFunSp_),
+  problemALE_ (new dcp::LinearProblem<laplaceVec::BilinearForm, laplaceVec::LinearForm> (dolfin::reference_to_no_delete_pointer(*mesh_), dolfin::reference_to_no_delete_pointer(*wFunSp_)))
 /*  subElements_ (2,nullptr),
   subDofmaps_ (2,nullptr) */
   //dofmap_ (new const dolfin::DofMap(static_cast<const dolfin::DofMap&>(*functionSpace->dofmap())))
   {
     //dolfin::DofMapBuilder::build(*dofmap_,*mesh_,nullptr);
 //    dofmap_ = dofmap_->create(*mesh_);
+    this->moveMesh(dolfin::Constant(0,0),"initializing");
+    dolfin::Constant zero (0,0);
+    problemALE_->setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (zero), "zero");
   }
 
 template <class T_MeshMover, class T_FunctionSpace>
@@ -291,11 +357,45 @@ const dolfin::Mesh& MeshManager<T_MeshMover,T_FunctionSpace>::mesh()
   }
 
 template<class T_MeshMover, class T_FunctionSpace>
-void MeshManager<T_MeshMover,T_FunctionSpace>::moveMesh (const dolfin::GenericFunction& displacement)
+void MeshManager<T_MeshMover,T_FunctionSpace>::moveMesh (const dolfin::GenericFunction& displacement, const std::string& component, const double dt)
 {
   //  std::cout << "muovo la mesh di " << functionSpace_->str(true) << std::endl;
   //  std::cout << element_->value_rank() << " " << element_->value_dimension(1) << " " << element_->space_dimension() << " " << element_->num_sub_elements() << " " << element_->signature() << std::endl;
-  meshMover_.move (*mesh_, displacement);
+  if (component == "all" || component == "initializing")
+  {
+//      meshMover_.move (const_cast<dolfin::Mesh&>(* functionSpace_->mesh()), displacement);
+      meshMover_.move (* mesh_, displacement);
+  }
+  else if (component == "normal")
+  {
+      geometry::FreeSurface freeSurface;
+      geometry::FixedBoundary fixedBoundary;
+      dolfin::Constant zero (0,0);
+      dolfin::Constant uno (1,1);
+//      geometry::ParabolicProfile parabolicProfile;
+//      problemALE_->addDirichletBC (dolfin::DirichletBC (* problemALE_->functionSpace(), parabolicProfile, freeSurface));
+/*      dolfin::Function displ (functionSpace_);
+      displ = static_cast<const dolfin::Function&>(displacement);
+      (* displ.vector()) *= dt;*/
+      problemALE_->removeDirichletBC ("freeSurfaceBC");
+      problemALE_->addDirichletBC (dolfin::DirichletBC (* problemALE_->functionSpace(), displacement, freeSurface, "geometric"),"freeSurfaceBC");
+      problemALE_->removeDirichletBC ("fixedBoundaryBC");
+      problemALE_->addDirichletBC (dolfin::DirichletBC (* problemALE_->functionSpace(), zero, fixedBoundary, "geometric"),"fixedBoundaryBC");
+      problemALE_->setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (zero), "zero");
+      problemALE_->solve();
+      w_ = problemALE_->solution();
+      (* w_.vector()) *= dt;
+dolfin::plot(w_,"la vu doppia");dolfin::interactive();
+      meshMover_.move (* mesh_, w_);
+  }
+//  else if (component == "tangential")
+  else
+  {
+      std::cerr << "Unadmissible component choice (options are: all, normal, tangential)"
+                << "\t in void MeshManager<T_MeshMover,T_FunctionSpace>::moveMesh (const dolfin::GenericFunction& displacement, const std::string& component)"
+                << std::endl;
+      exit(10);
+  }
   //  *functionSpace_ = T_FunctionSpace(mesh_,element_,dofmap_);
   /*  for (int i=0; i!=2; i++)
   {
@@ -314,7 +414,23 @@ void MeshManager<T_MeshMover,T_FunctionSpace>::moveMesh (const dolfin::GenericFu
   dolfin::interactive();
   }
   */
+dolfin::plot(*functionSpace_->mesh(), "asdjklbw mesh");
+dolfin::interactive();
+dolfin::plot(* (*(*functionSpace_)[0])[0]->mesh(), "asdjklbw [0][0] mesh");
+dolfin::interactive();
   setMeshAll(functionSpace_, mesh_);
+  setMeshAll(problemALE_->functionSpace(), mesh_);
+if (component == "initializing") {
+dolfin::plot(*functionSpace_->mesh(), "asdjklbw mesh dopo setMeshAll");
+dolfin::interactive();
+dolfin::plot(* (*(*functionSpace_)[0])[0]->mesh(), "asdjklbw [0][0] mesh dopo setMeshAll");
+dolfin::interactive();
+/*  * functionSpace_ = dolfin::FunctionSpace (mesh_,functionSpace_->element(),functionSpace_->dofmap()->create(*mesh_));
+dolfin::plot(*functionSpace_->mesh(), "asdjklbw mesh dopo ricostruzione");
+dolfin::interactive();
+dolfin::plot(* (*(*functionSpace_)[0])[0]->mesh(), "asdjklbw [0][0] mesh dopo ricostruzione");
+dolfin::interactive();*/
+}
   // TODO forse questo casino dei subspace e' eliminabile, se T_FunctionSpace potesse essere diverso da dolfin::FunctionSpace,
   // pero' servirebbe che AbstractProblem fosse templatizzato sul tipo di functionSpace_, cosi' da poter creare un getter che
   // restituisca un puntatore / una referenza (non const) al tipo "vero" del function space
@@ -337,6 +453,12 @@ void MeshManager<T_MeshMover,T_FunctionSpace>::moveMesh (const dolfin::GenericFu
 //move//  
 //move//    return displacement;
 //move//  }
+ 
+template<class T_MeshMover, class T_FunctionSpace>
+dolfin::Function& MeshManager<T_MeshMover,T_FunctionSpace>::displacement ()
+{
+  return w_;
+}
 
 template<class T_MeshMover, class T_FunctionSpace>
 void MeshManager<T_MeshMover,T_FunctionSpace>::setMeshAll (std::shared_ptr<dolfin::FunctionSpace> functionSpace, std::shared_ptr<dolfin::Mesh> mesh)

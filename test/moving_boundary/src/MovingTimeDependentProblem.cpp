@@ -43,7 +43,8 @@ namespace Ivan
         solutions_ (),
         meshManager_ (std::shared_ptr<dolfin::ALE>(new dolfin::ALE()),functionSpace),
 //TODO :        displacement_ (std::shared_ptr<dolfin::GenericFunction> (new geometry::MapTgamma()))
-        displacement_ (std::shared_ptr<geometry::MapTgamma> (new geometry::MapTgamma()))
+//udisp        displacement_ (std::shared_ptr<geometry::MapTgamma> (new geometry::MapTgamma()))
+        displacement_ (new dolfin::Function(functionSpace))
     { 
         dolfin::begin (dolfin::DBG, "Building MovingTimeDependentProblem...");
         
@@ -96,9 +97,9 @@ namespace Ivan
         dcp::AbstractProblem (mesh, functionSpace),
         timeSteppingProblem_ (timeSteppingProblem),
         solutions_ (),
-        meshManager_ (std::shared_ptr<dolfin::ALE>(new dolfin::ALE()),std::shared_ptr<dolfin::FunctionSpace>(new dolfin::FunctionSpace(functionSpace))),
+        meshManager_ (std::shared_ptr<dolfin::ALE>(new dolfin::ALE()),std::shared_ptr<dolfin::FunctionSpace>(new dolfin::FunctionSpace(functionSpace)))
 //        displacement_ (std::shared_ptr<dolfin::GenericFunction> (new geometry::MapTgamma()))
-        displacement_ (std::shared_ptr<geometry::MapTgamma> (new geometry::MapTgamma()))
+//udisp        displacement_ (std::shared_ptr<geometry::MapTgamma> (new geometry::MapTgamma()))
     { 
         dolfin::begin (dolfin::DBG, "Building MovingTimeDependentProblem...");
         
@@ -151,9 +152,9 @@ namespace Ivan
         dcp::AbstractProblem (mesh, functionSpace),
         timeSteppingProblem_ (timeSteppingProblem),
         solutions_ (),
-        meshManager_ (std::shared_ptr<dolfin::ALE>(new dolfin::ALE()),std::shared_ptr<dolfin::FunctionSpace>(&functionSpace)),
+        meshManager_ (std::shared_ptr<dolfin::ALE>(new dolfin::ALE()),std::shared_ptr<dolfin::FunctionSpace>(&functionSpace))
 //        displacement_ (std::shared_ptr<dolfin::GenericFunction> (new geometry::MapTgamma()))
-        displacement_ (std::shared_ptr<geometry::MapTgamma> (new geometry::MapTgamma()))
+//udisp        displacement_ (std::shared_ptr<geometry::MapTgamma> (new geometry::MapTgamma()))
     { 
         dolfin::begin (dolfin::DBG, "Building MovingTimeDependentProblem...");
         
@@ -335,19 +336,21 @@ namespace Ivan
         
         double t = parameters ["start_time"];
         int timeStep = 0;
-        displacement_->initTime(t);
+//udisp        displacement_->initTime(t);
         
         // save initial solution in member vector
         solutions_.push_back (solution_);
         
-        dolfin::FunctionSpace Vw (* (*functionSpace_)[0]->collapse());
-dolfin::File solutionFile("poiseuille.pvd");
+std::cerr << "mi sa che è qua" << std::endl;
+//udisp        dolfin::FunctionSpace Vw (* (*functionSpace_)[0]->collapse());
+std::cerr << "infatti" << std::endl;
+dolfin::File solutionFile("insideMovingTimeDependentProblem.pvd");
         while (t < endTime + DOLFIN_EPS)
         {
 //            displacement_->printTimes();
             timeStep++;
             t += dt;
-            displacement_->setTime(t);
+//udisp            displacement_->setTime(t);
 
 //            displacement_->printTimes();
 /*std::cerr << functionSpace_->element()->signature() << std::endl;
@@ -363,10 +366,12 @@ dolfin::interactive();
             timeSteppingProblem_->setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (displacementFunction[0]), "w");
             //this->setCoefficient ("jacobian_form", displacementFunction, "w");
 */
-            Vw = dolfin::FunctionSpace (meshManager_.functionSpace().mesh(),Vw.element(),Vw.dofmap());
-            dolfin::Function w (Vw);
-            w = *displacement_;
-//            w = dolfin::Constant (0,0);
+    //        displacement_.reset(new dolfin::Function((solution_[0])));
+//udisp            Vw = dolfin::FunctionSpace (meshManager_.functionSpace().mesh(),Vw.element(),Vw.dofmap());
+//udisp            dolfin::Function w (Vw);
+//udisp            w = *displacement_;
+    //        dolfin::Function w (solution_[0]);
+            dolfin::Function& w(meshManager_.displacement());
             timeSteppingProblem_->setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (w), "w");
             timeSteppingProblem_->setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (w), "w");
 std::cerr << "   OK   " << std::endl;
@@ -425,7 +430,8 @@ solutionFile << solution_;
                 }
             }
 
-            meshManager_.moveMesh(*displacement_);
+//udisp            meshManager_.moveMesh(*displacement_);
+            meshManager_.moveMesh(solution_[0],"normal",dt);
 //            displacement_->setTime(t);
 //move//            displacement_ = std::shared_ptr<dolfin::MeshDisplacement> (new dolfin::MeshDisplacement(*(meshManager_.moveMesh(*displacement_))));
 //move//            actualDisplacement_.reset (&(*(meshManager_.moveMesh(*displacement_))));

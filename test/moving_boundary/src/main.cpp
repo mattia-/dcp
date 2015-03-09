@@ -1,1 +1,1 @@
-main_navierstokes.cpp
+../src/main_myNS_curv.cpp

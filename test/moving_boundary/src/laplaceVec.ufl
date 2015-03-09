@@ -1,5 +1,5 @@
 #/* 
-# *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
+# *  Copyright (C) 2014, Ivan Fumagalli, ivan.fumagalli@polimi.it
 # * 
 # *  This file is part of the DCP library
 # *   
@@ -17,27 +17,24 @@
 # *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
 # */ 
 
-#shell definition
-SHELL = /bin/bash
+# UFL file for laplace problem simulation
+#
+# define mesh dimension
+cell = triangle
 
-OPTIMIZATION_FLAG = -O
+# define function spaces
+V = VectorElement ("Lagrange", cell, 1)
 
-UFL_SOURCES = $(shell find . -name "*.ufl")
-HEADER_FILES = $(UFL_SOURCES:.ufl=.h)
-DEBUG_FILES = $(UFL_SOURCES:.ufl=_debug.py) 
-DEBUG_FILES += $(UFL_SOURCES:.ufl=_debug.pyc) 
+# define test and trial functions
+u = TrialFunction (V)
+v = TestFunction (V)
 
-.DEFAULT_GOAL: all
+# define coefficients
+zero = Coefficient(V)
 
-.PHONY: all
+# define bilinear form
+a = inner (grad (u), grad (v)) * dx
 
-all: $(HEADER_FILES)
-
-%.h: %.ufl
-	ffc -l dolfin $(OPTIMIZATION_FLAG) $<
-	
-cleanall: 
-	$(RM) $(DEBUG_FILES) $(HEADER_FILES)
-	
-clean:
-	$(RM) $(DEBUG_FILES)
+# define linear form 
+L = inner(zero,v) * dx 
+#inner (0*zero, v) * dx

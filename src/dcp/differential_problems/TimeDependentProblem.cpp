@@ -483,7 +483,7 @@ namespace dcp
     /******************* METHODS *******************/
     bool TimeDependentProblem::isFinished ()
     {
-        return (dt_ > 0) ? (t_ >= endTime_) : (t_ <= endTime_);
+        return (dt_ > 0) ? (t_ >= endTime_ - DOLFIN_EPS) : (t_ <= endTime_ + DOLFIN_EPS);
     }
     
 

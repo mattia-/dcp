@@ -159,7 +159,6 @@ int main (int argc, char* argv[])
     exactP.setTime (t0);
     guermondSalgadoMethod.setInitialSolution ("density_problem", exactRho, 2);
     guermondSalgadoMethod.setInitialSolution ("velocity_problem", exactU, 2);
-//    guermondSalgadoMethod.setInitialSolution ("pressure_update_problem", exactP, 2);
     
     // second step
     exactRho.setTime (t0+dt);
@@ -204,7 +203,6 @@ int main (int argc, char* argv[])
     // computed solution
     auto computedRho = guermondSalgadoMethod.problem ("density_problem").solutions ();
     auto computedU = guermondSalgadoMethod.problem ("velocity_problem").solutions ();
-    auto computedPhi = guermondSalgadoMethod.problem ("pressure_correction_problem").solutions ();
     auto computedP = guermondSalgadoMethod.problem ("pressure_update_problem").solutions ();
     
     // error computers
@@ -237,28 +235,28 @@ int main (int argc, char* argv[])
     
     dolfin::Function compRho (R);
     dolfin::Function compU (V);
-    dolfin::Function compPhi (Q);
     dolfin::Function compP (Q);
     
-    for (std::size_t i = 0; i < computedRho.size (); ++i)
+    for (std::size_t i = 0; i < computedP.size (); ++i)
     {
-        const double& time = computedRho [i].first;
+        const double& rhoTime = computedRho [i+1].first;
+        const double& uTime = computedU [i+1].first;
+        const double& pTime = computedP [i].first;
             
-        compRho = computedRho[i].second;
-        compU = computedU[i].second;
-        compPhi = computedPhi[i].second;
+        compRho = computedRho[i+1].second;
+        compU = computedU[i+1].second;
         compP = computedP[i].second;
+        
 //        dolfin::plot (compRho, "rho, time = " + std::to_string (time));
 //        dolfin::plot (compU, "u, time = " + std::to_string (time));
-//        dolfin::plot (compPhi, "phi, time = " + std::to_string (time)); 
 //        dolfin::plot (compP, "p, time = " + std::to_string (time)); 
 ////        dolfin::plot (computedP[i].second, "p, time = " + std::to_string (time)); 
 //        dolfin::interactive ();
 //        dolfin::info (computedP[i].second, true);
 
-        exactRho.setTime (time);
-        exactU.setTime (time);
-        exactP.setTime (time);
+        exactRho.setTime (rhoTime);
+        exactU.setTime (uTime);
+        exactP.setTime (pTime);;
         
         densityL2SquaredErrorComputer.exact_rho = exactRho;
         velocityL2SquaredErrorComputer.exact_u = exactU;

@@ -369,19 +369,29 @@ namespace dcp
              T_PressureUpdateLinearForm> 
              (pressureFunctionSpace_));
 
-        // the problem is created with a start time of startTime+dt, because otherwise the time would be skewed with 
-        // respect to the other problems, since they all use two-steps time schemes (see also dcp::TimeDependentProblem
-        // constructor to see why multi-step problems have an incremented start time)
-        // TODO che brutta cosa! e poi come si fa? Dipende da nTimeSchemeSteps
-        std::shared_ptr <dcp::TimeDependentProblem> pressureUpdateProblem
-            (new dcp::TimeDependentProblem (timeSteppingPressureUpdateProblem,
-                                            startTime,
-//                                            startTime+dt,
-                                            dt,
-                                            endTime,
-                                            {},
-                                            {"linear_form"}, 
-                                            1));
+        // if nTimeSchemeSteps == 2, the problem pressure update problem is created with a start time of startTime+dt, 
+        // because otherwise the time would be skewed with respect to the other problems, since they all use two-steps 
+        // time schemes (see also dcp::TimeDependentProblem constructor to see why multi-step problems have an 
+        // incremented start time)
+        std::shared_ptr <dcp::TimeDependentProblem> pressureUpdateProblem = nullptr;
+        if (nTimeSchemeSteps == 1)
+        {
+            pressureUpdateProblem.reset (new dcp::TimeDependentProblem (timeSteppingPressureUpdateProblem,
+                                                                        startTime,
+                                                                        dt,
+                                                                        endTime,
+                                                                        {},
+                                                                        {"linear_form"}));
+        }
+        else
+        {
+            pressureUpdateProblem.reset (new dcp::TimeDependentProblem (timeSteppingPressureUpdateProblem,
+                                                                        startTime+dt,
+                                                                        dt,
+                                                                        endTime,
+                                                                        {},
+                                                                        {"linear_form"}));
+        }
 
         pressureUpdateProblem->parameters ["previous_solution_name"] = previousPressureName;
 

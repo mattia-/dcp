@@ -587,7 +587,7 @@ dolfin::File solutionFile("insideMovingTimeDependentProblem.pvd");
 
             dolfin::Function& w(meshManager_.displacement());
 dolfin::plot(w,"w in MovingTimeDependentProblem");
-dolfin::interactive();
+//dolfin::interactive();
             timeSteppingProblem_->setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (w), "w");
             timeSteppingProblem_->setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (w), "w");
             

@@ -387,7 +387,7 @@ void MeshManager<T_MeshMover,T_FunctionSpace>::moveMesh (const dolfin::GenericFu
       problemALE_->solve();
       w_ = problemALE_->solution();
       (* w_.vector()) *= dt;
-dolfin::plot(w_,"la vu doppia");dolfin::interactive();
+dolfin::plot(w_,"la vu doppia");//dolfin::interactive();
       meshMover_.move (* mesh_, w_);
   }
 //  else if (component == "tangential")
@@ -417,9 +417,9 @@ dolfin::plot(w_,"la vu doppia");dolfin::interactive();
   }
   */
 dolfin::plot(*functionSpace_->mesh(), "asdjklbw mesh");
-dolfin::interactive();
+//dolfin::interactive();
 dolfin::plot(* (*(*functionSpace_)[0])[0]->mesh(), "asdjklbw [0][0] mesh");
-dolfin::interactive();
+//dolfin::interactive();
   setMeshAll(functionSpace_, mesh_);
   setMeshAll(problemALE_->functionSpace(), mesh_);
 if (component == "initializing") {

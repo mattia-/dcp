@@ -31,74 +31,6 @@ bool geometry::timeNOTcount(true);
 
 namespace myNavierstokesTimeCurv
 {
-/*    class InflowBoundary : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return x[0] <= (0 + DOLFIN_EPS) && on_boundary;
-        }
-    };
-
-    class GammaSD : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return (x[1] <= (0 + DOLFIN_EPS) || x[1] >= (7 - DOLFIN_EPS)) && on_boundary;
-        }
-    };
-    
-    class Circle : public dolfin::SubDomain
-    {
-        public:
-            Circle () : 
-                center (2),
-                radius (0.5)
-            {
-                center[0] = 3.5;
-                center[1] = 3.5;
-            }
-            
-            bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-            {
-                double dx = x[0] - center[0];
-                double dy = x[1] - center[1];
-                double r = sqrt (dx * dx + dy * dy);
-                
-                return r <= (radius + 1e-3) && on_boundary;
-            }
-
-        private:
-            dolfin::Array<double> center;
-            double radius;
-    }; 
-    
-    class NoSlipBoundary : public dolfin::SubDomain
-    { 
-        public:
-            bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-            {
-                bool onWall1 = (x[0] >= 1.75 - DOLFIN_EPS && x[0] <= 1.75 + DOLFIN_EPS)
-                            && (x[1] >= 3 - DOLFIN_EPS && x[1] <= 4 + DOLFIN_EPS)
-                            && on_boundary;
-                bool onWall2 = (x[0] >= (1.75 - DOLFIN_EPS) && x[0] <= (2 + DOLFIN_EPS))
-                            && (x[1] <= (4 + DOLFIN_EPS) && x[1] >= (4 - DOLFIN_EPS))
-                            && on_boundary;
-                bool onWall3 = (x[0] >= 2 - DOLFIN_EPS && x[0] <= 2 + DOLFIN_EPS)
-                            && (x[1] >= 3 - DOLFIN_EPS && x[1] <= 4 + DOLFIN_EPS)
-                            && on_boundary;
-                bool onWall4 = (x[0] >= (1.75 - DOLFIN_EPS) && x[0] <= (2 + DOLFIN_EPS))
-                            && (x[1] <= (3 + DOLFIN_EPS) && x[1] >= (3 - DOLFIN_EPS))
-                            && on_boundary;
-                
-                bool onCircle = circle.inside (x, on_boundary);
-
-                return onWall1 || onWall2 || onWall3 || onWall4 || onCircle;
-            }
-
-        private:
-            myNavierstokesTimeCurv::Circle circle;
-    }; 
-*/
     class LeftBoundary : public dolfin::SubDomain
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
@@ -115,13 +47,21 @@ namespace myNavierstokesTimeCurv
         } 
     };
     
-    class BottomBoundary : public dolfin::SubDomain
+ /*   class BottomBoundary : public dolfin::SubDomain
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
             return dolfin::near (x[1], 0) && on_boundary;
         }
     };
+ */   class BottomBoundaryEvaluator
+    { 
+        public:
+            bool operator() (const dolfin::Array<double>& x, bool on_boundary)
+            {
+                return dolfin::near (x[1], 0) && on_boundary;
+            }
+    }; 
 
     class TopBoundary : public dolfin::SubDomain
     {
@@ -145,6 +85,28 @@ namespace myNavierstokesTimeCurv
         }
     };*/
 
+    class InflowDirichletBC : public dcp::TimeDependentExpression
+    {
+        public:
+            InflowDirichletBC () : dcp::TimeDependentExpression (2) { }
+        
+            void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override
+            {
+                values[0] = 0;
+                values[1] = sin(2*3.14*t); //x[0]*(1-x[0]);
+            }
+    }; 
+
+    class InflowDirichletBCEvaluator
+    {
+        public:
+            void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
+            {
+                values[0] = 0;
+                values[1] = sin(2*3.14*t) * 6*x[0]*(1-x[0]);
+            }
+    };
+    
 }
 
 int main (int argc, char* argv[])
@@ -174,7 +136,7 @@ if (true)
     dolfin::Mesh mesh;
     mshr::generate (mesh, *(rectangle - circle), 50);
 */
-    dolfin::UnitSquareMesh mesh (20,20);
+    dolfin::UnitSquareMesh mesh (50,50);
     
     myNavierstokesTimeCurv::FunctionSpace V (mesh);
     
@@ -184,7 +146,7 @@ if (true)
     
     // define problem
     double t0 = 0.0;
-    double dt = 0.1;
+    double dt = 0.05;
     double T = 1;
     std::cout << "Define the problem..." << std::endl;
  /*   Ivan::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh),
@@ -215,7 +177,7 @@ if (true)
     dolfin::Constant gamma (7.2e-2);
 //    dolfin::Constant p_out (1000.0);
 //    dolfin::Constant p_left (0.0);
-    dolfin::Constant inflowDirichletBC (0.0, 1.0);
+ //   dolfin::Constant inflowDirichletBC (0.0, 1.0);
     dolfin::Constant symmetryDirichletBC (0.0);
     dolfin::Constant noSlipDirichletBC (0.0, 0.0);
 
@@ -232,8 +194,14 @@ if (true)
     myNavierstokesTimeCurv::LeftBoundary wallLeft;
     myNavierstokesTimeCurv::RightBoundary wallRight;
     myNavierstokesTimeCurv::TopBoundary freeSurface;
-    myNavierstokesTimeCurv::BottomBoundary inflowBoundary;
-    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], inflowDirichletBC, inflowBoundary));
+ //   myNavierstokesTimeCurv::BottomBoundary inflowBoundary;
+    dcp::Subdomain inflowBoundary ((myNavierstokesTimeCurv::BottomBoundaryEvaluator ()));
+
+    //myNavierstokesTimeCurv::InflowDirichletBC inflowDirichletBC;
+    dcp::TimeDependentExpression inflowDirichletBC(2,(myNavierstokesTimeCurv::InflowDirichletBCEvaluator ()));
+
+ //   navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], inflowDirichletBC, inflowBoundary));
+    navierStokesProblem.addTimeDependentDirichletBC (inflowDirichletBC, inflowBoundary, 0);
 //    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, noSlipBoundaryTop, "topological", false));
     navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, wallLeft));
     navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, wallRight));

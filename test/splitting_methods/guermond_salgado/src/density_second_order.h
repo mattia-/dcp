@@ -5741,32 +5741,50 @@ public:
     {
       A[r] = 0.0;
     } // end loop over 'r'
-    // Number of operations to compute geometry constants: 45.
-    double G[18];
-    G[0] = K[2]*K[2]*circumradius*det;
-    G[1] = 2.0*K[2]*K[3]*circumradius*det;
-    G[2] = K[3]*K[3]*circumradius*det;
-    G[3] = K[0]*K[2]*circumradius*det;
-    G[4] = circumradius*det*(K[0]*K[3] + K[1]*K[2]);
-    G[5] = K[1]*K[3]*circumradius*det;
-    G[6] = K[0]*K[0]*circumradius*det;
-    G[7] = 2.0*K[0]*K[1]*circumradius*det;
-    G[8] = K[1]*K[1]*circumradius*det;
-    G[9] = 2.0*K[2]*det;
-    G[10] = 2.0*K[3]*det;
-    G[11] =  - K[2]*det;
-    G[12] =  - K[3]*det;
-    G[13] = 2.0*K[0]*det;
-    G[14] = 2.0*K[1]*det;
-    G[15] =  - K[0]*det;
-    G[16] =  - K[1]*det;
-    G[17] = 1.5*det/w[0][0];
+    // Number of operations to compute geometry constants: 121.
+    double G[36];
+    G[0] = 4.0*K[2]*K[2]*circumradius*det;
+    G[1] = -4.0*K[2]*K[2]*circumradius*det;
+    G[2] = 8.0*K[2]*K[3]*circumradius*det;
+    G[3] = -4.0*K[2]*K[3]*circumradius*det;
+    G[4] = K[2]*K[2]*circumradius*det;
+    G[5] = 2.0*K[2]*K[3]*circumradius*det;
+    G[6] = 4.0*K[3]*K[3]*circumradius*det;
+    G[7] = -4.0*K[3]*K[3]*circumradius*det;
+    G[8] = K[3]*K[3]*circumradius*det;
+    G[9] = 4.0*K[0]*K[2]*circumradius*det;
+    G[10] = -4.0*K[0]*K[2]*circumradius*det;
+    G[11] = 4.0*circumradius*det*(K[0]*K[3] + K[1]*K[2]);
+    G[12] = -2.0*circumradius*det*(K[0]*K[3] + K[1]*K[2]);
+    G[13] = K[0]*K[2]*circumradius*det;
+    G[14] = circumradius*det*(K[0]*K[3] + K[1]*K[2]);
+    G[15] = 4.0*K[1]*K[3]*circumradius*det;
+    G[16] = -4.0*K[1]*K[3]*circumradius*det;
+    G[17] = K[1]*K[3]*circumradius*det;
+    G[18] = 4.0*K[0]*K[0]*circumradius*det;
+    G[19] = -4.0*K[0]*K[0]*circumradius*det;
+    G[20] = 8.0*K[0]*K[1]*circumradius*det;
+    G[21] = -4.0*K[0]*K[1]*circumradius*det;
+    G[22] = K[0]*K[0]*circumradius*det;
+    G[23] = 2.0*K[0]*K[1]*circumradius*det;
+    G[24] = 4.0*K[1]*K[1]*circumradius*det;
+    G[25] = -4.0*K[1]*K[1]*circumradius*det;
+    G[26] = K[1]*K[1]*circumradius*det;
+    G[27] = 2.0*K[2]*det;
+    G[28] =  - K[2]*det;
+    G[29] = 2.0*K[3]*det;
+    G[30] =  - K[3]*det;
+    G[31] = 2.0*K[0]*det;
+    G[32] =  - K[0]*det;
+    G[33] = 2.0*K[1]*det;
+    G[34] =  - K[1]*det;
+    G[35] = 1.5*det/w[0][0];
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
     
     // Loop quadrature points for integral.
-    // Number of operations to compute element tensor for following IP loop = 34202
+    // Number of operations to compute element tensor for following IP loop = 37730
     for (unsigned int ip = 0; ip < 49; ip++)
     {
       
@@ -5780,30 +5798,30 @@ public:
       for (unsigned int r = 0; r < 6; r++)
       {
         F0 += FE0[ip][r]*w[1][nzc8[r]];
-        F1 += FE0[ip][r]*w[1][nzc9[r]];
-        F2 += FE0[ip][r]*w[2][nzc8[r]];
+        F1 += FE0[ip][r]*w[2][nzc8[r]];
+        F2 += FE0[ip][r]*w[1][nzc9[r]];
         F3 += FE0[ip][r]*w[2][nzc9[r]];
       } // end loop over 'r'
       
-      // Number of operations to compute ip constants: 62
+      // Number of operations to compute ip constants: 134
       double I[6];
-      // Number of operations: 15
-      I[0] = W49[ip]*(F0*F0*G[0] + F1*(F0*G[1] + F1*G[2]))/(1e-06 + 3.87298334620742*std::sqrt((F0*F0 + F1*F1)));
+      // Number of operations: 39
+      I[0] = W49[ip]*(F0*F0*G[0] + F1*(F0*G[1] + F1*G[4]) + F2*(F0*G[2] + F1*G[3] + F2*G[6]) + F3*(F0*G[3] + F1*G[5] + F2*G[7] + F3*G[8]))/(1e-06 + 3.87298334620742*std::sqrt(((2.0*F0 - F1)*(2.0*F0 - F1) + (2.0*F2 - F3)*(2.0*F2 - F3))));
       
-      // Number of operations: 15
-      I[1] = W49[ip]*(F0*F0*G[3] + F1*(F0*G[4] + F1*G[5]))/(1e-06 + 3.87298334620742*std::sqrt((F0*F0 + F1*F1)));
+      // Number of operations: 39
+      I[1] = W49[ip]*(F0*F0*G[9] + F1*(F0*G[10] + F1*G[13]) + F2*(F0*G[11] + F1*G[12] + F2*G[15]) + F3*(F0*G[12] + F1*G[14] + F2*G[16] + F3*G[17]))/(1e-06 + 3.87298334620742*std::sqrt(((2.0*F0 - F1)*(2.0*F0 - F1) + (2.0*F2 - F3)*(2.0*F2 - F3))));
       
-      // Number of operations: 15
-      I[2] = W49[ip]*(F0*F0*G[6] + F1*(F0*G[7] + F1*G[8]))/(1e-06 + 3.87298334620742*std::sqrt((F0*F0 + F1*F1)));
-      
-      // Number of operations: 8
-      I[3] = W49[ip]*(F0*G[9] + F1*G[10] + F2*G[11] + F3*G[12]);
+      // Number of operations: 39
+      I[2] = W49[ip]*(F0*F0*G[18] + F1*(F0*G[19] + F1*G[22]) + F2*(F0*G[20] + F1*G[21] + F2*G[24]) + F3*(F0*G[21] + F1*G[23] + F2*G[25] + F3*G[26]))/(1e-06 + 3.87298334620742*std::sqrt(((2.0*F0 - F1)*(2.0*F0 - F1) + (2.0*F2 - F3)*(2.0*F2 - F3))));
       
       // Number of operations: 8
-      I[4] = W49[ip]*(F0*G[13] + F1*G[14] + F2*G[15] + F3*G[16]);
+      I[3] = W49[ip]*(F0*G[27] + F1*G[28] + F2*G[29] + F3*G[30]);
+      
+      // Number of operations: 8
+      I[4] = W49[ip]*(F0*G[31] + F1*G[32] + F2*G[33] + F3*G[34]);
       
       // Number of operations: 1
-      I[5] = G[17]*W49[ip];
+      I[5] = G[35]*W49[ip];
       
       
       // Number of operations for primary indices: 300
@@ -5992,7 +6010,7 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "da0e6075be55096c7dae6583dddee7fa5fee4620921185ac3c343839c058a1d78c3b079cc3a3d8fab4bfd306e1078bb8a06f17b49f8940b5c13a5dc8ee142a10";
+    return "7497b765ff3612983e22c8d3a5dc7b2e2c3fb4c68b84515a0189ee79578610bc13530055c937cb08fb9d7b513933e4f35cb3a6f3ba920ccf00718446ecc69793";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)

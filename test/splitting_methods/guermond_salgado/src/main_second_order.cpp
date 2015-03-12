@@ -237,7 +237,7 @@ int main (int argc, char* argv[])
     dolfin::Function compU (V);
     dolfin::Function compP (Q);
     
-    for (std::size_t i = 0; i < computedP.size (); ++i)
+    for (std::size_t i = 1; i < computedP.size (); ++i)
     {
         const double& rhoTime = computedRho [i+1].first;
         const double& uTime = computedU [i+1].first;
@@ -247,12 +247,10 @@ int main (int argc, char* argv[])
         compU = computedU[i+1].second;
         compP = computedP[i].second;
         
-//        dolfin::plot (compRho, "rho, time = " + std::to_string (time));
-//        dolfin::plot (compU, "u, time = " + std::to_string (time));
-//        dolfin::plot (compP, "p, time = " + std::to_string (time)); 
-////        dolfin::plot (computedP[i].second, "p, time = " + std::to_string (time)); 
+//        dolfin::plot (compRho, "rho, time = " + std::to_string (rhoTime));
+//        dolfin::plot (compU, "u, time = " + std::to_string (uTime));
+//        dolfin::plot (compP, "p, time = " + std::to_string (pTime)); 
 //        dolfin::interactive ();
-//        dolfin::info (computedP[i].second, true);
 
         exactRho.setTime (rhoTime);
         exactU.setTime (uTime);

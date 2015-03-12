@@ -13,6 +13,7 @@ dt = Constant (cell)
 mu = Constant (cell)
 u_old = Coefficient (V)
 u_old_2 = Coefficient (V)
+u_star = Coefficient (V)
 rho_old = Coefficient (R)
 rho = Coefficient (R)
 p_old = Coefficient (Q)
@@ -28,10 +29,13 @@ f2 = Coefficient (V)
 u = TrialFunction (V)
 v = TestFunction (V)
 
+# coefficient value
+u_star = 2 * u_old - u_old_2
+
 # velocity equation:
 # lhs
 a = 3.0 / (2.0 * dt) * rho * inner (u, v) * dx \
-    + inner (rho * dot (grad (u), (2 * u_old - u_old_2)), v) * dx \
+    + inner (rho * dot (grad (u), u_star), v) * dx \
     + mu * inner (grad (u), grad (v)) * dx 
  
 # rhs

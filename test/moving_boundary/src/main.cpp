@@ -1,1 +1,1 @@
-../src/main_myNS_curv.cpp
+main_myNS_curv.cpp

@@ -71,7 +71,7 @@ class ParabolicProfile : public dolfin::Expression
     }
 };
 
-bool timeNOTcount(true);
+extern bool timeNOTcount;
 
 class MapTgamma : public dolfin::Expression
 {
@@ -308,7 +308,8 @@ MeshManager<T_MeshMover,T_FunctionSpace>::MeshManager(const std::shared_ptr<T_Me
 //  w_ (* problemALE_->functionSpace())
   wFunSp_ (new laplaceVec::FunctionSpace(*mesh_)),
   w_ (*wFunSp_),
-  problemALE_ (new dcp::LinearProblem<laplaceVec::BilinearForm, laplaceVec::LinearForm> (dolfin::reference_to_no_delete_pointer(*mesh_), dolfin::reference_to_no_delete_pointer(*wFunSp_)))
+ // problemALE_ (new dcp::LinearProblem<laplaceVec::BilinearForm, laplaceVec::LinearForm> (dolfin::reference_to_no_delete_pointer(*mesh_), dolfin::reference_to_no_delete_pointer(*wFunSp_)))
+  problemALE_ (new dcp::LinearProblem<laplaceVec::BilinearForm, laplaceVec::LinearForm> (dolfin::reference_to_no_delete_pointer(*wFunSp_)))
 /*  subElements_ (2,nullptr),
   subDofmaps_ (2,nullptr) */
   //dofmap_ (new dolfin::DofMap(std::shared_ptr<const ufc::dofmap>(new const poisson_dofmap_1), *mesh_))
@@ -333,7 +334,8 @@ MeshManager<T_MeshMover,T_FunctionSpace>::MeshManager (const T_MeshMover& meshMo
 //  w_ (* problemALE_->functionSpace())
   wFunSp_ (new laplaceVec::FunctionSpace(*mesh_)),
   w_ (*wFunSp_),
-  problemALE_ (new dcp::LinearProblem<laplaceVec::BilinearForm, laplaceVec::LinearForm> (dolfin::reference_to_no_delete_pointer(*mesh_), dolfin::reference_to_no_delete_pointer(*wFunSp_)))
+ // problemALE_ (new dcp::LinearProblem<laplaceVec::BilinearForm, laplaceVec::LinearForm> (dolfin::reference_to_no_delete_pointer(*mesh_), dolfin::reference_to_no_delete_pointer(*wFunSp_)))
+  problemALE_ (new dcp::LinearProblem<laplaceVec::BilinearForm, laplaceVec::LinearForm> (dolfin::reference_to_no_delete_pointer(*wFunSp_)))
 /*  subElements_ (2,nullptr),
   subDofmaps_ (2,nullptr) */
   //dofmap_ (new const dolfin::DofMap(static_cast<const dolfin::DofMap&>(*functionSpace->dofmap())))

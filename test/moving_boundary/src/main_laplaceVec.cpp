@@ -20,7 +20,7 @@
 #include <iostream>
 #include <string>
 #include <dolfin.h>
-#include <differential_problems/differential_problems.h>
+#include <dcp/differential_problems/differential_problems.h>
 #include "laplaceVec.h"
 
 namespace laplaceVec
@@ -103,8 +103,7 @@ int main (int argc, char* argv[])
     
     // define problem
     dolfin::info ("Define the problem...");
-    dcp::LinearProblem <laplaceVec::BilinearForm, laplaceVec::LinearForm> laplaceVecProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                                                                                    dolfin::reference_to_no_delete_pointer (V));
+    dcp::LinearProblem <laplaceVec::BilinearForm, laplaceVec::LinearForm> laplaceVecProblem (dolfin::reference_to_no_delete_pointer (V));
 
     // define coefficients
     dolfin::info ("Define the problem's coefficients...");

@@ -22,10 +22,12 @@
 #include <dolfin.h>
 //#include <mshr.h>
 #include "myNavierstokesTimeCurv.h"
-#include <differential_problems/differential_problems.h>
+#include <dcp/differential_problems/differential_problems.h>
 #include "geometry.h"
 #include "MovingTimeDependentProblem.h"
-#include "MovingTimeDependentProblem.cpp"
+//#include "MovingTimeDependentProblem.cpp"
+
+bool geometry::timeNOTcount(true);
 
 namespace myNavierstokesTimeCurv
 {
@@ -176,29 +178,36 @@ if (true)
     
     myNavierstokesTimeCurv::FunctionSpace V (mesh);
     
+    dcp::NonlinearProblem <myNavierstokesTimeCurv::ResidualForm, myNavierstokesTimeCurv::JacobianForm> 
+         timeSteppingProblem (dolfin::reference_to_no_delete_pointer (V), 
+                             "trial");
+    
     // define problem
     double t0 = 0.0;
     double dt = 0.1;
     double T = 1;
     std::cout << "Define the problem..." << std::endl;
-    Ivan::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh),
+ /*   Ivan::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh),
                                                    dolfin::reference_to_no_delete_pointer (V),
+ */   Ivan::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (timeSteppingProblem),
                                                    t0,
                                                    dt, 
                                                    T, 
-                                                   std::vector<std::string> ({"residual_form", "jacobian_form"}),
-                                                   std::vector<std::string> ({"residual_form"})
+                                                   {"residual_form", "jacobian_form"},
+                                                   {"residual_form"}
                                                   );
          
-    dcp::NonlinearProblem <myNavierstokesTimeCurv::ResidualForm, myNavierstokesTimeCurv::JacobianForm> 
-         timeSteppingProblem (dolfin::reference_to_no_delete_pointer (mesh), 
+ /*   dcp::NonlinearProblem <myNavierstokesTimeCurv::ResidualForm, myNavierstokesTimeCurv::JacobianForm> 
+  //       timeSteppingProblem (dolfin::reference_to_no_delete_pointer (mesh), 
 //treno+        timeSteppingProblem (dolfin::reference_to_no_delete_pointer(const_cast<dolfin::Mesh&> (* navierStokesProblem.functionSpace()->mesh())), 
                              // tutto sto casino serve perché in dolfin::FunctionSpace::mesh() restituisce un std::shared_ptr<const dolfin::Mesh> e il const della Mesh non lo voglio
-                            dolfin::reference_to_no_delete_pointer (V),
+         timeSteppingProblem (dolfin::reference_to_no_delete_pointer (V), 
+  //                          dolfin::reference_to_no_delete_pointer (V),
 //treno+                             dolfin::reference_to_no_delete_pointer(* navierStokesProblem.functionSpace()),
 //                             navierStokesProblem.functionSpace(),
                              "trial");
     navierStokesProblem.setTimeSteppingProblem (dolfin::reference_to_no_delete_pointer (timeSteppingProblem));
+ */
     
     // define constant
     std::cout << "Define the problem's coefficients..." << std::endl;
@@ -237,6 +246,10 @@ if (true)
     meshFacets.set_all (0);
     freeSurface.mark (meshFacets, 1);
 //    gammaSD.mark(meshFacets, 2);
+    navierStokesProblem.setIntegrationSubdomain ("linear_form",
+                                            dolfin::reference_to_no_delete_pointer (meshFacets),
+                                            dcp::SubdomainType::BOUNDARY_FACETS);
+
 
     // problem settings
     std::cout << "Set the problem's coefficients..." << std::endl;
@@ -256,12 +269,13 @@ if (true)
 
     // saves and plots
     dolfin::File solutionFile ("myNsCurv.pvd");
-    const std::vector<dolfin::Function>& solutionsVector = navierStokesProblem.solutionsVector(); 
+    const std::vector<std::pair<double, dolfin::Function> >& solutionsVector (navierStokesProblem.solutions()); 
     double t=t0;
     for (auto it = solutionsVector.begin(); it != solutionsVector.end(); it++, t+=dt)
-        solutionFile << std::pair<const dolfin::Function*, double>(&(*it),t);
+ //       solutionFile << std::pair<const dolfin::Function*, double>(&(*it),t);
+        solutionFile << std::pair<const dolfin::Function*, double>(&(it->second),it->first);
     dolfin::plot (* navierStokesProblem.solution().function_space()->mesh(), "Final mesh");
-    dolfin::plot (* solutionsVector[5].function_space()->mesh(), "mesh intermedia");
+    dolfin::plot (* solutionsVector[5].second.function_space()->mesh(), "mesh intermedia e' uguale a finale");
     
     dolfin::interactive ();
     

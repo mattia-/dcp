@@ -211,7 +211,7 @@ namespace dcp
             /*!
              *  \return a const reference to the problem's time-solution pairs vector
              */
-            virtual const std::vector <std::pair <double, dolfin::Function> >& solutions () const;  
+            virtual const std::vector <std::pair <double, dolfin::Function> >& solutionsVector () const;  
             
             //! Get const reference to the current simulation time
             /*!

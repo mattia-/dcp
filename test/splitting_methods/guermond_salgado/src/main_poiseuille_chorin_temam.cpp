@@ -165,8 +165,8 @@ int main (int argc, char* argv[])
     // ------------- //
     
     // computed solution
-    auto computedU = incrementalChorinTemamMethod.problem ("velocity_projection_problem").solutions ();
-    auto computedP = incrementalChorinTemamMethod.problem ("pressure_update_problem").solutions ();
+    auto computedU = incrementalChorinTemamMethod.problem ("velocity_projection_problem").solutionsVector ();
+    auto computedP = incrementalChorinTemamMethod.problem ("pressure_update_problem").solutionsVector ();
     
     // error computers
     error_computers::Form_velocity_L2_squared_error velocityL2SquaredErrorComputer (mesh);

@@ -196,10 +196,10 @@ int main (int argc, char* argv[])
     // ------------- //
     
     // computed solution
-    auto computedRho = guermondSalgadoMethod.problem ("density_problem").solutions ();
-    auto computedU = guermondSalgadoMethod.problem ("velocity_problem").solutions ();
-    auto computedPhi = guermondSalgadoMethod.problem ("pressure_correction_problem").solutions ();
-    auto computedP = guermondSalgadoMethod.problem ("pressure_update_problem").solutions ();
+    auto computedRho = guermondSalgadoMethod.problem ("density_problem").solutionsVector ();
+    auto computedU = guermondSalgadoMethod.problem ("velocity_problem").solutionsVector ();
+    auto computedPhi = guermondSalgadoMethod.problem ("pressure_correction_problem").solutionsVector ();
+    auto computedP = guermondSalgadoMethod.problem ("pressure_update_problem").solutionsVector ();
     
     // error computers
     error_computers::Form_density_L2_squared_error densityL2SquaredErrorComputer (mesh);

@@ -58,7 +58,7 @@ namespace dcp
             typedef std::function <void (dolfin::Array<double>&, 
                                          const dolfin::Array<double>&, 
                                          const double&,
-                                         const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >&)
+                                         const std::map <std::string, std::shared_ptr<dolfin::GenericFunction> >&)
                 >
                 Evaluator;
 
@@ -116,7 +116,7 @@ namespace dcp
              *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */
-            TimeDependentVariableExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+            TimeDependentVariableExpression (const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                                              const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
@@ -131,7 +131,7 @@ namespace dcp
              */         
             explicit TimeDependentVariableExpression 
                 (std::size_t dim,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                  const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
@@ -148,7 +148,7 @@ namespace dcp
             TimeDependentVariableExpression 
                 (std::size_t dim0, 
                  std::size_t dim1,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                  const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
 
@@ -164,7 +164,7 @@ namespace dcp
              */         
             explicit TimeDependentVariableExpression 
                 (std::vector<std::size_t> value_shape,
-                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                  const Evaluator& evaluator = dcp::DefaultEvaluator ());
             //
             //! Default copy constructor

@@ -214,6 +214,16 @@ namespace dcp
             
 
 
+    bool TimeDependentEquationSystem::removeLinkToPreviousSolution (const std::string& linkFrom, 
+                                                                    const std::string& linkedCoefficientName,
+                                                                    const std::string& linkedCoefficientType)
+    {
+        auto linkKey = std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType);
+        return (linksToPreviousSolutions_.erase (linkKey)) == 1 ? true : false;
+    }
+            
+
+
     bool TimeDependentEquationSystem::isFinished ()
     {
         std::size_t nFinished = 0;
@@ -450,12 +460,12 @@ namespace dcp
                   std::get<2> (link.second));
             
             // get target problem solution vector
-            const std::vector<dolfin::Function>& targetProblemSolutionsVector = targetProblem.solutions ();  
+            auto& targetProblemSolutionsVector = targetProblem.solutionsVector ();  
             
             // get target function, by going back from the last element of nStepsBack steps. 
             // NB: we use operator+ to traverse the vector backwards, since rbegin is a REVERSE iterator
             int nStepsBack = std::get<2> (link.second);
-            const dolfin::Function& targetFunction = *(targetProblemSolutionsVector.rbegin() + nStepsBack);
+            const dolfin::Function& targetFunction = (targetProblemSolutionsVector.rbegin() + nStepsBack)->second;
 
             problem.setCoefficient (std::get<2> (link.first), 
                                     dolfin::reference_to_no_delete_pointer (targetFunction),
@@ -474,12 +484,12 @@ namespace dcp
                  std::get<2> (link.second));
 
             // get target problem solution vector
-            const std::vector<dolfin::Function>& targetProblemSolutionsVector = targetProblem.solutions ();  
+            auto& targetProblemSolutionsVector = targetProblem.solutionsVector ();  
             
             // get target function, by going back from the last element of nStepsBack steps. 
             // NB: we use operator+ to traverse the vector backwards, since rbegin is a REVERSE iterator
             int nStepsBack = std::get<2> (link.second);
-            const dolfin::Function& targetFunction = *(targetProblemSolutionsVector.rbegin() + nStepsBack);
+            const dolfin::Function& targetFunction = (targetProblemSolutionsVector.rbegin() + nStepsBack)->second;
 
             int component = std::get<1> (link.second);
             problem.setCoefficient (std::get<2> (link.first), 

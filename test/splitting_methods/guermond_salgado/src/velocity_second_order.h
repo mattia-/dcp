@@ -25,8 +25,8 @@
 //   restrict_keyword:               ''
 //   split:                          False
 
-#ifndef __VELOCITY_H
-#define __VELOCITY_H
+#ifndef __VELOCITY_SECOND_ORDER_H
+#define __VELOCITY_SECOND_ORDER_H
 
 #include <cmath>
 #include <stdexcept>
@@ -35,18 +35,18 @@
 
 /// This class defines the interface for a finite element.
 
-class velocity_finite_element_0: public ufc::finite_element
+class velocity_second_order_finite_element_0: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  velocity_finite_element_0() : ufc::finite_element()
+  velocity_second_order_finite_element_0() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_finite_element_0()
+  virtual ~velocity_second_order_finite_element_0()
   {
     // Do nothing
   }
@@ -933,25 +933,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new velocity_finite_element_0();
+    return new velocity_second_order_finite_element_0();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class velocity_finite_element_1: public ufc::finite_element
+class velocity_second_order_finite_element_1: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  velocity_finite_element_1() : ufc::finite_element()
+  velocity_second_order_finite_element_1() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_finite_element_1()
+  virtual ~velocity_second_order_finite_element_1()
   {
     // Do nothing
   }
@@ -1228,25 +1228,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new velocity_finite_element_1();
+    return new velocity_second_order_finite_element_1();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class velocity_finite_element_2: public ufc::finite_element
+class velocity_second_order_finite_element_2: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  velocity_finite_element_2() : ufc::finite_element()
+  velocity_second_order_finite_element_2() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_finite_element_2()
+  virtual ~velocity_second_order_finite_element_2()
   {
     // Do nothing
   }
@@ -2814,25 +2814,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new velocity_finite_element_2();
+    return new velocity_second_order_finite_element_2();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class velocity_finite_element_3: public ufc::finite_element
+class velocity_second_order_finite_element_3: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  velocity_finite_element_3() : ufc::finite_element()
+  velocity_second_order_finite_element_3() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_finite_element_3()
+  virtual ~velocity_second_order_finite_element_3()
   {
     // Do nothing
   }
@@ -5609,12 +5609,12 @@ public:
     {
     case 0:
       {
-        return new velocity_finite_element_2();
+        return new velocity_second_order_finite_element_2();
         break;
       }
     case 1:
       {
-        return new velocity_finite_element_2();
+        return new velocity_second_order_finite_element_2();
         break;
       }
     }
@@ -5625,7 +5625,7 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new velocity_finite_element_3();
+    return new velocity_second_order_finite_element_3();
   }
 
 };
@@ -5633,18 +5633,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class velocity_dofmap_0: public ufc::dofmap
+class velocity_second_order_dofmap_0: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  velocity_dofmap_0() : ufc::dofmap()
+  velocity_second_order_dofmap_0() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_dofmap_0()
+  virtual ~velocity_second_order_dofmap_0()
   {
     // Do nothing
   }
@@ -5854,7 +5854,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new velocity_dofmap_0();
+    return new velocity_second_order_dofmap_0();
   }
 
 };
@@ -5862,18 +5862,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class velocity_dofmap_1: public ufc::dofmap
+class velocity_second_order_dofmap_1: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  velocity_dofmap_1() : ufc::dofmap()
+  velocity_second_order_dofmap_1() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_dofmap_1()
+  virtual ~velocity_second_order_dofmap_1()
   {
     // Do nothing
   }
@@ -6056,7 +6056,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new velocity_dofmap_1();
+    return new velocity_second_order_dofmap_1();
   }
 
 };
@@ -6064,18 +6064,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class velocity_dofmap_2: public ufc::dofmap
+class velocity_second_order_dofmap_2: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  velocity_dofmap_2() : ufc::dofmap()
+  velocity_second_order_dofmap_2() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_dofmap_2()
+  virtual ~velocity_second_order_dofmap_2()
   {
     // Do nothing
   }
@@ -6323,7 +6323,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new velocity_dofmap_2();
+    return new velocity_second_order_dofmap_2();
   }
 
 };
@@ -6331,18 +6331,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class velocity_dofmap_3: public ufc::dofmap
+class velocity_second_order_dofmap_3: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  velocity_dofmap_3() : ufc::dofmap()
+  velocity_second_order_dofmap_3() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_dofmap_3()
+  virtual ~velocity_second_order_dofmap_3()
   {
     // Do nothing
   }
@@ -6623,12 +6623,12 @@ public:
     {
     case 0:
       {
-        return new velocity_dofmap_2();
+        return new velocity_second_order_dofmap_2();
         break;
       }
     case 1:
       {
-        return new velocity_dofmap_2();
+        return new velocity_second_order_dofmap_2();
         break;
       }
     }
@@ -6639,7 +6639,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new velocity_dofmap_3();
+    return new velocity_second_order_dofmap_3();
   }
 
 };
@@ -6648,18 +6648,18 @@ public:
 /// tensor corresponding to the local contribution to a form from
 /// the integral over a cell.
 
-class velocity_cell_integral_0_otherwise: public ufc::cell_integral
+class velocity_second_order_cell_integral_0_otherwise: public ufc::cell_integral
 {
 public:
 
   /// Constructor
-  velocity_cell_integral_0_otherwise() : ufc::cell_integral()
+  velocity_second_order_cell_integral_0_otherwise() : ufc::cell_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_cell_integral_0_otherwise()
+  virtual ~velocity_second_order_cell_integral_0_otherwise()
   {
     // Do nothing
   }
@@ -6719,12 +6719,12 @@ public:
     {-0.00951545823536613, -0.0962269117343234, 0.619786046331442, 0.447517836913623, 0.0333903417359314, 0.0050481449886929}};
     
     // Array of non-zero columns
-    static const unsigned int nzc8[6] = {0, 1, 2, 3, 4, 5};
+    static const unsigned int nzc6[6] = {0, 1, 2, 3, 4, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc11[6] = {6, 7, 8, 9, 10, 11};
+    static const unsigned int nzc9[6] = {6, 7, 8, 9, 10, 11};
     
-    static const double FE0_D01[16][5] = \
+    static const double FE2_C0_D01[16][5] = \
     {{-2.50971523732188, -0.771583215541929, 0.261867978220048, 3.28129845286381, -0.261867978220057},
     {-1.69178745260203, 0.107372054552496, 0.200840492845468, 1.58441539804954, -0.200840492845478},
     {-0.549989933626782, 1.33436172947567, 0.115648336897542, -0.784371795848882, -0.115648336897554},
@@ -6743,15 +6743,12 @@ public:
     {0.961184859492211, 2.44096054262488, 0.52022431686732, -3.40214540211708, -0.520224316867336}};
     
     // Array of non-zero columns
-    static const unsigned int nzc0[5] = {0, 2, 3, 4, 5};
+    static const unsigned int nzc7[5] = {0, 2, 3, 4, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc9[5] = {0, 2, 3, 4, 5};
+    static const unsigned int nzc10[5] = {6, 8, 9, 10, 11};
     
-    // Array of non-zero columns
-    static const unsigned int nzc12[5] = {6, 8, 9, 10, 11};
-    
-    static const double FE0_D10[16][5] = \
+    static const double FE2_C0_D10[16][5] = \
     {{-2.50971523732187, -0.738132021779945, 0.228416784458069, -0.228416784458069, 3.24784725910182},
     {-1.69178745260203, -0.799159507154523, 1.10737205455249, -1.10737205455249, 2.49094695975655},
     {-0.549989933626778, -0.884351663102445, 2.33436172947566, -2.33436172947566, 1.43434159672922},
@@ -6770,13 +6767,10 @@ public:
     {0.961184859492215, -0.479775683132663, 3.44096054262487, -3.44096054262487, -0.481409176359553}};
     
     // Array of non-zero columns
-    static const unsigned int nzc1[5] = {0, 1, 3, 4, 5};
+    static const unsigned int nzc8[5] = {0, 1, 3, 4, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc10[5] = {0, 1, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc13[5] = {6, 7, 9, 10, 11};
+    static const unsigned int nzc11[5] = {6, 7, 9, 10, 11};
     
     // Reset values in the element tensor.
     for (unsigned int r = 0; r < 144; r++)
@@ -6785,24 +6779,24 @@ public:
     } // end loop over 'r'
     // Number of operations to compute geometry constants: 29.
     double G[12];
-    G[0] = det*w[1][0]*(K[0]*K[0] + K[1]*K[1]);
+    G[0] = det*w[1][0]*(K[2]*K[2] + K[3]*K[3]);
     G[1] = det*w[1][0]*(K[0]*K[2] + K[1]*K[3]);
-    G[2] = det*w[1][0]*(K[2]*K[2] + K[3]*K[3]);
-    G[3] = K[2]*det;
-    G[4] = K[3]*det;
-    G[5] = K[0]*det;
-    G[6] = K[1]*det;
-    G[7] = 0.5*K[0]*det;
-    G[8] = 0.5*K[2]*det;
-    G[9] = 0.5*K[1]*det;
-    G[10] = 0.5*K[3]*det;
-    G[11] = 0.5*det/w[0][0];
+    G[2] = det*w[1][0]*(K[0]*K[0] + K[1]*K[1]);
+    G[3] = 2.0*K[2]*det;
+    G[4] =  - K[2]*det;
+    G[5] = 2.0*K[3]*det;
+    G[6] =  - K[3]*det;
+    G[7] = 2.0*K[0]*det;
+    G[8] =  - K[0]*det;
+    G[9] = 2.0*K[1]*det;
+    G[10] =  - K[1]*det;
+    G[11] = 1.5*det/w[0][0];
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
     
     // Loop quadrature points for integral.
-    // Number of operations to compute element tensor for following IP loop = 21104
+    // Number of operations to compute element tensor for following IP loop = 20144
     for (unsigned int ip = 0; ip < 16; ip++)
     {
       
@@ -6812,33 +6806,18 @@ public:
       double F2 = 0.0;
       double F3 = 0.0;
       double F4 = 0.0;
-      double F5 = 0.0;
-      double F6 = 0.0;
-      double F7 = 0.0;
-      double F8 = 0.0;
-      double F9 = 0.0;
       
       // Total number of operations to compute function values = 60
-      for (unsigned int r = 0; r < 5; r++)
-      {
-        F1 += FE0_D10[ip][r]*w[4][nzc1[r]];
-        F2 += FE0_D01[ip][r]*w[4][nzc0[r]];
-        F3 += FE0_D10[ip][r]*w[2][nzc10[r]];
-        F4 += FE0_D01[ip][r]*w[2][nzc9[r]];
-        F7 += FE0_D10[ip][r]*w[2][nzc13[r]];
-        F8 += FE0_D01[ip][r]*w[2][nzc12[r]];
-      } // end loop over 'r'
-      
-      // Total number of operations to compute function values = 48
       for (unsigned int r = 0; r < 6; r++)
       {
-        F0 += FE0[ip][r]*w[2][nzc8[r]];
-        F5 += FE0[ip][r]*w[4][r];
-        F6 += FE0[ip][r]*w[2][nzc11[r]];
-        F9 += FE0[ip][r]*w[3][r];
+        F0 += FE0[ip][r]*w[4][r];
+        F1 += FE0[ip][r]*w[2][nzc6[r]];
+        F2 += FE0[ip][r]*w[3][nzc6[r]];
+        F3 += FE0[ip][r]*w[2][nzc9[r]];
+        F4 += FE0[ip][r]*w[3][nzc9[r]];
       } // end loop over 'r'
       
-      // Number of operations to compute ip constants: 35
+      // Number of operations to compute ip constants: 23
       double I[6];
       // Number of operations: 1
       I[0] = G[0]*W16[ip];
@@ -6849,14 +6828,14 @@ public:
       // Number of operations: 1
       I[2] = G[2]*W16[ip];
       
-      // Number of operations: 5
-      I[3] = F5*W16[ip]*(F0*G[3] + F6*G[4]);
+      // Number of operations: 9
+      I[3] = F0*W16[ip]*(F1*G[3] + F2*G[4] + F3*G[5] + F4*G[6]);
       
-      // Number of operations: 5
-      I[4] = F5*W16[ip]*(F0*G[5] + F6*G[6]);
+      // Number of operations: 9
+      I[4] = F0*W16[ip]*(F1*G[7] + F2*G[8] + F3*G[9] + F4*G[10]);
       
-      // Number of operations: 22
-      I[5] = W16[ip]*(F0*(F1*G[7] + F2*G[8]) + F5*(G[11] + F3*G[7] + F4*G[8] + F7*G[9] + F8*G[10]) + F6*(F1*G[9] + F2*G[10]) + F9*G[11]);
+      // Number of operations: 2
+      I[5] = F0*G[11]*W16[ip];
       
       
       // Number of operations for primary indices: 600
@@ -6865,21 +6844,21 @@ public:
         for (unsigned int k = 0; k < 5; k++)
         {
           // Number of operations to compute entry: 3
-          A[nzc10[j]*12 + nzc10[k]] += FE0_D10[ip][j]*FE0_D10[ip][k]*I[0];
+          A[nzc10[j]*12 + nzc10[k]] += FE2_C0_D01[ip][j]*FE2_C0_D01[ip][k]*I[0];
           // Number of operations to compute entry: 3
-          A[nzc10[j]*12 + nzc9[k]] += FE0_D01[ip][k]*FE0_D10[ip][j]*I[1];
+          A[nzc10[j]*12 + nzc11[k]] += FE2_C0_D01[ip][j]*FE2_C0_D10[ip][k]*I[1];
           // Number of operations to compute entry: 3
-          A[nzc12[j]*12 + nzc12[k]] += FE0_D01[ip][j]*FE0_D01[ip][k]*I[2];
+          A[nzc11[j]*12 + nzc10[k]] += FE2_C0_D01[ip][k]*FE2_C0_D10[ip][j]*I[1];
           // Number of operations to compute entry: 3
-          A[nzc12[j]*12 + nzc13[k]] += FE0_D01[ip][j]*FE0_D10[ip][k]*I[1];
+          A[nzc11[j]*12 + nzc11[k]] += FE2_C0_D10[ip][j]*FE2_C0_D10[ip][k]*I[2];
           // Number of operations to compute entry: 3
-          A[nzc13[j]*12 + nzc12[k]] += FE0_D01[ip][k]*FE0_D10[ip][j]*I[1];
+          A[nzc7[j]*12 + nzc7[k]] += FE2_C0_D01[ip][j]*FE2_C0_D01[ip][k]*I[0];
           // Number of operations to compute entry: 3
-          A[nzc13[j]*12 + nzc13[k]] += FE0_D10[ip][j]*FE0_D10[ip][k]*I[0];
+          A[nzc7[j]*12 + nzc8[k]] += FE2_C0_D01[ip][j]*FE2_C0_D10[ip][k]*I[1];
           // Number of operations to compute entry: 3
-          A[nzc9[j]*12 + nzc10[k]] += FE0_D01[ip][j]*FE0_D10[ip][k]*I[1];
+          A[nzc8[j]*12 + nzc7[k]] += FE2_C0_D01[ip][k]*FE2_C0_D10[ip][j]*I[1];
           // Number of operations to compute entry: 3
-          A[nzc9[j]*12 + nzc9[k]] += FE0_D01[ip][j]*FE0_D01[ip][k]*I[2];
+          A[nzc8[j]*12 + nzc8[k]] += FE2_C0_D10[ip][j]*FE2_C0_D10[ip][k]*I[2];
         } // end loop over 'k'
       } // end loop over 'j'
       
@@ -6889,13 +6868,13 @@ public:
         for (unsigned int k = 0; k < 5; k++)
         {
           // Number of operations to compute entry: 3
-          A[nzc11[j]*12 + nzc12[k]] += FE0[ip][j]*FE0_D01[ip][k]*I[3];
+          A[nzc6[j]*12 + nzc7[k]] += FE0[ip][j]*FE2_C0_D01[ip][k]*I[3];
           // Number of operations to compute entry: 3
-          A[nzc11[j]*12 + nzc13[k]] += FE0[ip][j]*FE0_D10[ip][k]*I[4];
+          A[nzc6[j]*12 + nzc8[k]] += FE0[ip][j]*FE2_C0_D10[ip][k]*I[4];
           // Number of operations to compute entry: 3
-          A[nzc8[j]*12 + nzc10[k]] += FE0[ip][j]*FE0_D10[ip][k]*I[4];
+          A[nzc9[j]*12 + nzc10[k]] += FE0[ip][j]*FE2_C0_D01[ip][k]*I[3];
           // Number of operations to compute entry: 3
-          A[nzc8[j]*12 + nzc9[k]] += FE0[ip][j]*FE0_D01[ip][k]*I[3];
+          A[nzc9[j]*12 + nzc11[k]] += FE0[ip][j]*FE2_C0_D10[ip][k]*I[4];
         } // end loop over 'k'
       } // end loop over 'j'
       
@@ -6905,9 +6884,9 @@ public:
         for (unsigned int k = 0; k < 6; k++)
         {
           // Number of operations to compute entry: 3
-          A[nzc11[j]*12 + nzc11[k]] += FE0[ip][j]*FE0[ip][k]*I[5];
+          A[nzc6[j]*12 + nzc6[k]] += FE0[ip][j]*FE0[ip][k]*I[5];
           // Number of operations to compute entry: 3
-          A[nzc8[j]*12 + nzc8[k]] += FE0[ip][j]*FE0[ip][k]*I[5];
+          A[nzc9[j]*12 + nzc9[k]] += FE0[ip][j]*FE0[ip][k]*I[5];
         } // end loop over 'k'
       } // end loop over 'j'
     } // end loop over 'ip'
@@ -6919,18 +6898,18 @@ public:
 /// tensor corresponding to the local contribution to a form from
 /// the integral over a cell.
 
-class velocity_cell_integral_1_otherwise: public ufc::cell_integral
+class velocity_second_order_cell_integral_1_otherwise: public ufc::cell_integral
 {
 public:
 
   /// Constructor
-  velocity_cell_integral_1_otherwise() : ufc::cell_integral()
+  velocity_second_order_cell_integral_1_otherwise() : ufc::cell_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_cell_integral_1_otherwise()
+  virtual ~velocity_second_order_cell_integral_1_otherwise()
   {
     // Do nothing
   }
@@ -6938,7 +6917,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({true, true, true, true, true, true, true, true});
+    static const std::vector<bool> enabled({true, true, true, true, true, true, true, true, true});
     return enabled;
   }
 
@@ -7016,19 +6995,28 @@ public:
     {
       A[r] = 0.0;
     } // end loop over 'r'
-    // Number of operations to compute geometry constants: 5.
-    double G[5];
-    G[0] = det/w[0][0];
-    G[1] =  - K[0]*det;
+    // Number of operations to compute geometry constants: 24.
+    double G[14];
+    G[0] = -0.5*det/w[0][0];
+    G[1] = 2.0*det/w[0][0];
     G[2] =  - K[2]*det;
-    G[3] =  - K[1]*det;
-    G[4] =  - K[3]*det;
+    G[3] = 0.333333333333333*K[0]*det;
+    G[4] = 0.333333333333333*K[2]*det;
+    G[5] = -1.33333333333333*K[0]*det;
+    G[6] = -1.33333333333333*K[2]*det;
+    G[7] =  - K[0]*det;
+    G[8] =  - K[3]*det;
+    G[9] = 0.333333333333333*K[1]*det;
+    G[10] = 0.333333333333333*K[3]*det;
+    G[11] = -1.33333333333333*K[1]*det;
+    G[12] = -1.33333333333333*K[3]*det;
+    G[13] =  - K[1]*det;
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
     
     // Loop quadrature points for integral.
-    // Number of operations to compute element tensor for following IP loop = 1944
+    // Number of operations to compute element tensor for following IP loop = 2376
     for (unsigned int ip = 0; ip < 12; ip++)
     {
       
@@ -7045,36 +7033,42 @@ public:
       double F9 = 0.0;
       double F10 = 0.0;
       double F11 = 0.0;
+      double F12 = 0.0;
+      double F13 = 0.0;
+      double F14 = 0.0;
       
-      // Total number of operations to compute function values = 16
+      // Total number of operations to compute function values = 24
       for (unsigned int r = 0; r < 2; r++)
       {
-        F3 += FE0_D01[ip][r]*w[4][nzc1[r]];
-        F4 += FE0_D01[ip][r]*w[4][nzc0[r]];
-        F5 += FE0_D01[ip][r]*w[5][nzc1[r]];
-        F6 += FE0_D01[ip][r]*w[5][nzc0[r]];
+        F5 += FE0_D01[ip][r]*w[6][nzc1[r]];
+        F6 += FE0_D01[ip][r]*w[6][nzc0[r]];
+        F7 += FE0_D01[ip][r]*w[5][nzc1[r]];
+        F8 += FE0_D01[ip][r]*w[5][nzc0[r]];
+        F9 += FE0_D01[ip][r]*w[4][nzc1[r]];
+        F10 += FE0_D01[ip][r]*w[4][nzc0[r]];
       } // end loop over 'r'
       
-      // Total number of operations to compute function values = 96
+      // Total number of operations to compute function values = 108
       for (unsigned int r = 0; r < 6; r++)
       {
-        F0 += FE1[ip][r]*w[1][nzc8[r]];
-        F1 += FE1[ip][r]*w[2][r];
-        F2 += FE1[ip][r]*w[1][nzc9[r]];
-        F7 += FE1[ip][r]*w[6][nzc8[r]];
-        F8 += FE1[ip][r]*w[3][r];
-        F9 += FE1[ip][r]*w[6][nzc9[r]];
-        F10 += FE1[ip][r]*w[7][nzc8[r]];
-        F11 += FE1[ip][r]*w[7][nzc9[r]];
+        F0 += FE1[ip][r]*w[2][nzc8[r]];
+        F1 += FE1[ip][r]*w[3][r];
+        F2 += FE1[ip][r]*w[2][nzc9[r]];
+        F3 += FE1[ip][r]*w[1][nzc8[r]];
+        F4 += FE1[ip][r]*w[1][nzc9[r]];
+        F11 += FE1[ip][r]*w[7][nzc8[r]];
+        F12 += FE1[ip][r]*w[7][nzc9[r]];
+        F13 += FE1[ip][r]*w[8][nzc8[r]];
+        F14 += FE1[ip][r]*w[8][nzc9[r]];
       } // end loop over 'r'
       
-      // Number of operations to compute ip constants: 26
+      // Number of operations to compute ip constants: 42
       double I[2];
-      // Number of operations: 13
-      I[0] = W12[ip]*(F0*F1*G[0] + G[1]*(F3 + F5) + G[2]*(F4 + F6) + det*(F10 + F7*F8));
+      // Number of operations: 21
+      I[0] = W12[ip]*(F1*(F0*G[0] + F11*det + F3*G[1]) + F10*G[2] + F13*det + F5*G[3] + F6*G[4] + F7*G[5] + F8*G[6] + F9*G[7]);
       
-      // Number of operations: 13
-      I[1] = W12[ip]*(F1*F2*G[0] + G[3]*(F3 + F5) + G[4]*(F4 + F6) + det*(F11 + F8*F9));
+      // Number of operations: 21
+      I[1] = W12[ip]*(F1*(F12*det + F2*G[0] + F4*G[1]) + F10*G[8] + F14*det + F5*G[9] + F6*G[10] + F7*G[11] + F8*G[12] + F9*G[13]);
       
       
       // Number of operations for primary indices: 24
@@ -7105,18 +7099,18 @@ public:
 /// sequence of basis functions of Vj and w1, w2, ..., wn are given
 /// fixed functions (coefficients).
 
-class velocity_form_0: public ufc::form
+class velocity_second_order_form_0: public ufc::form
 {
 public:
 
   /// Constructor
-  velocity_form_0() : ufc::form()
+  velocity_second_order_form_0() : ufc::form()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_form_0()
+  virtual ~velocity_second_order_form_0()
   {
     // Do nothing
   }
@@ -7124,7 +7118,7 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "76a47e971f1ec042054c9c2b8472287daf52c8d837887c4b024768ae3c6a1f058830293c579dd760359af39591313099b13d9c13a035545fd1a3010e366b589f";
+    return "08ac817eea6defdb5954c3ca3ebeed603049fb039c78e2c75e38502cf6a2cf94648eb5b786c3564e8c6771dea4b4c2892e2171981aaaf318f4bc2f6b7d05a2c7";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
@@ -7213,37 +7207,37 @@ public:
     {
     case 0:
       {
-        return new velocity_finite_element_3();
+        return new velocity_second_order_finite_element_3();
         break;
       }
     case 1:
       {
-        return new velocity_finite_element_3();
+        return new velocity_second_order_finite_element_3();
         break;
       }
     case 2:
       {
-        return new velocity_finite_element_1();
+        return new velocity_second_order_finite_element_1();
         break;
       }
     case 3:
       {
-        return new velocity_finite_element_1();
+        return new velocity_second_order_finite_element_1();
         break;
       }
     case 4:
       {
-        return new velocity_finite_element_3();
+        return new velocity_second_order_finite_element_3();
         break;
       }
     case 5:
       {
-        return new velocity_finite_element_2();
+        return new velocity_second_order_finite_element_3();
         break;
       }
     case 6:
       {
-        return new velocity_finite_element_2();
+        return new velocity_second_order_finite_element_2();
         break;
       }
     }
@@ -7258,37 +7252,37 @@ public:
     {
     case 0:
       {
-        return new velocity_dofmap_3();
+        return new velocity_second_order_dofmap_3();
         break;
       }
     case 1:
       {
-        return new velocity_dofmap_3();
+        return new velocity_second_order_dofmap_3();
         break;
       }
     case 2:
       {
-        return new velocity_dofmap_1();
+        return new velocity_second_order_dofmap_1();
         break;
       }
     case 3:
       {
-        return new velocity_dofmap_1();
+        return new velocity_second_order_dofmap_1();
         break;
       }
     case 4:
       {
-        return new velocity_dofmap_3();
+        return new velocity_second_order_dofmap_3();
         break;
       }
     case 5:
       {
-        return new velocity_dofmap_2();
+        return new velocity_second_order_dofmap_3();
         break;
       }
     case 6:
       {
-        return new velocity_dofmap_2();
+        return new velocity_second_order_dofmap_2();
         break;
       }
     }
@@ -7329,7 +7323,7 @@ public:
   /// Create a new cell integral on everywhere else
   virtual ufc::cell_integral* create_default_cell_integral() const
   {
-    return new velocity_cell_integral_0_otherwise();
+    return new velocity_second_order_cell_integral_0_otherwise();
   }
 
   /// Create a new exterior facet integral on everywhere else
@@ -7373,18 +7367,18 @@ public:
 /// sequence of basis functions of Vj and w1, w2, ..., wn are given
 /// fixed functions (coefficients).
 
-class velocity_form_1: public ufc::form
+class velocity_second_order_form_1: public ufc::form
 {
 public:
 
   /// Constructor
-  velocity_form_1() : ufc::form()
+  velocity_second_order_form_1() : ufc::form()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~velocity_form_1()
+  virtual ~velocity_second_order_form_1()
   {
     // Do nothing
   }
@@ -7392,13 +7386,13 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "9a09c0755f919e07b44dce3316913fb2bde0c80b8f9efc5ee7bbe68b4b7bb7171f5120387001d6c72d32fdd5c99cea7f1e6ab2f78d2a151aa02ac234a947fa0c";
+    return "96b09bc195e81ece83574cba9e7d2e3cdf21dc3a810159ac8436ecfb4be7d4712bc622e6d9c900dd9adef6ab1cfa94ed5d1aac7d94be1dfdba49a007efc0f8a5";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
   virtual std::size_t original_coefficient_position(std::size_t i) const
   {
-    static const std::vector<std::size_t> position({0, 1, 2, 3, 4, 5, 6, 7});
+    static const std::vector<std::size_t> position({0, 1, 2, 3, 4, 5, 6, 7, 8});
     return position[i];
   }
 
@@ -7411,7 +7405,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 8;
+    return 9;
   }
 
   /// Return the number of cell domains
@@ -7481,47 +7475,52 @@ public:
     {
     case 0:
       {
-        return new velocity_finite_element_3();
+        return new velocity_second_order_finite_element_3();
         break;
       }
     case 1:
       {
-        return new velocity_finite_element_1();
+        return new velocity_second_order_finite_element_1();
         break;
       }
     case 2:
       {
-        return new velocity_finite_element_3();
+        return new velocity_second_order_finite_element_3();
         break;
       }
     case 3:
       {
-        return new velocity_finite_element_2();
+        return new velocity_second_order_finite_element_3();
         break;
       }
     case 4:
       {
-        return new velocity_finite_element_2();
+        return new velocity_second_order_finite_element_2();
         break;
       }
     case 5:
       {
-        return new velocity_finite_element_0();
+        return new velocity_second_order_finite_element_0();
         break;
       }
     case 6:
       {
-        return new velocity_finite_element_0();
+        return new velocity_second_order_finite_element_0();
         break;
       }
     case 7:
       {
-        return new velocity_finite_element_3();
+        return new velocity_second_order_finite_element_0();
         break;
       }
     case 8:
       {
-        return new velocity_finite_element_3();
+        return new velocity_second_order_finite_element_3();
+        break;
+      }
+    case 9:
+      {
+        return new velocity_second_order_finite_element_3();
         break;
       }
     }
@@ -7536,47 +7535,52 @@ public:
     {
     case 0:
       {
-        return new velocity_dofmap_3();
+        return new velocity_second_order_dofmap_3();
         break;
       }
     case 1:
       {
-        return new velocity_dofmap_1();
+        return new velocity_second_order_dofmap_1();
         break;
       }
     case 2:
       {
-        return new velocity_dofmap_3();
+        return new velocity_second_order_dofmap_3();
         break;
       }
     case 3:
       {
-        return new velocity_dofmap_2();
+        return new velocity_second_order_dofmap_3();
         break;
       }
     case 4:
       {
-        return new velocity_dofmap_2();
+        return new velocity_second_order_dofmap_2();
         break;
       }
     case 5:
       {
-        return new velocity_dofmap_0();
+        return new velocity_second_order_dofmap_0();
         break;
       }
     case 6:
       {
-        return new velocity_dofmap_0();
+        return new velocity_second_order_dofmap_0();
         break;
       }
     case 7:
       {
-        return new velocity_dofmap_3();
+        return new velocity_second_order_dofmap_0();
         break;
       }
     case 8:
       {
-        return new velocity_dofmap_3();
+        return new velocity_second_order_dofmap_3();
+        break;
+      }
+    case 9:
+      {
+        return new velocity_second_order_dofmap_3();
         break;
       }
     }
@@ -7617,7 +7621,7 @@ public:
   /// Create a new cell integral on everywhere else
   virtual ufc::cell_integral* create_default_cell_integral() const
   {
-    return new velocity_cell_integral_1_otherwise();
+    return new velocity_second_order_cell_integral_1_otherwise();
   }
 
   /// Create a new exterior facet integral on everywhere else
@@ -7662,7 +7666,7 @@ public:
 #include <dolfin/adaptivity/ErrorControl.h>
 #include <dolfin/adaptivity/GoalFunctional.h>
 
-namespace velocity
+namespace velocity_second_order
 {
 
 class CoefficientSpace_dt: public dolfin::FunctionSpace
@@ -7674,8 +7678,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_dt(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_1()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_1()), mesh)))
   {
     // Do nothing
   }
@@ -7683,8 +7687,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_1()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_1()), *mesh)))
   {
     // Do nothing
   }
@@ -7694,8 +7698,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_dt(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_1()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_1()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -7704,8 +7708,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_1()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_1()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -7721,8 +7725,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_f1(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -7730,8 +7734,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_f1(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -7741,8 +7745,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_f1(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -7751,8 +7755,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_f1(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -7768,8 +7772,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_f2(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -7777,8 +7781,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_f2(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -7788,8 +7792,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_f2(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -7798,8 +7802,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_f2(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -7815,8 +7819,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_mu(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_1()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_1()), mesh)))
   {
     // Do nothing
   }
@@ -7824,8 +7828,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_mu(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_1()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_1()), *mesh)))
   {
     // Do nothing
   }
@@ -7835,8 +7839,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_mu(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_1()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_1()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -7845,8 +7849,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_mu(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_1()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_1()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -7862,8 +7866,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_p_old(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_0()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), mesh)))
   {
     // Do nothing
   }
@@ -7871,8 +7875,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_p_old(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_0()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), *mesh)))
   {
     // Do nothing
   }
@@ -7882,8 +7886,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_p_old(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_0()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -7892,8 +7896,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_p_old(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_0()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -7909,8 +7913,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_phi_old(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_0()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), mesh)))
   {
     // Do nothing
   }
@@ -7918,8 +7922,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_phi_old(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_0()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), *mesh)))
   {
     // Do nothing
   }
@@ -7929,8 +7933,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_phi_old(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_0()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -7939,8 +7943,55 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_phi_old(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_0()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+};
+
+class CoefficientSpace_phi_old_2: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_phi_old_2(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_phi_old_2(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_phi_old_2(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_phi_old_2(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_0()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -7956,8 +8007,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_rho(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_2()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_2()), mesh)))
   {
     // Do nothing
   }
@@ -7965,8 +8016,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_rho(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_2()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_2()), *mesh)))
   {
     // Do nothing
   }
@@ -7976,8 +8027,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_rho(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_2()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_2()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -7986,55 +8037,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_rho(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_2()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class CoefficientSpace_rho_old: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_rho_old(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_2()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_rho_old(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_2()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_rho_old(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_2()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_rho_old(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_2()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_2()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -8050,8 +8054,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_u_old(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -8059,8 +8063,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_u_old(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -8070,8 +8074,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_u_old(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -8080,8 +8084,55 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_u_old(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+};
+
+class CoefficientSpace_u_old_2: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_u_old_2(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_u_old_2(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_u_old_2(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_u_old_2(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -8097,8 +8148,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_0(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -8106,8 +8157,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -8117,8 +8168,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -8127,8 +8178,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -8144,8 +8195,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_1(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -8153,8 +8204,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_1(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -8164,8 +8215,8 @@ public:
   // Create standard function space (reference version)
   Form_a_FunctionSpace_1(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -8174,8 +8225,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_a_FunctionSpace_1(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -8188,7 +8239,7 @@ typedef CoefficientSpace_mu Form_a_FunctionSpace_3;
 
 typedef CoefficientSpace_u_old Form_a_FunctionSpace_4;
 
-typedef CoefficientSpace_rho_old Form_a_FunctionSpace_5;
+typedef CoefficientSpace_u_old_2 Form_a_FunctionSpace_5;
 
 typedef CoefficientSpace_rho Form_a_FunctionSpace_6;
 
@@ -8198,17 +8249,17 @@ public:
 
   // Constructor
   Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), u_old_2(*this, 3), rho(*this, 4)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
     _function_spaces[1] = reference_to_no_delete_pointer(V1);
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_0());
   }
 
   // Constructor
-  Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& mu, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& rho_old, const dolfin::GenericFunction& rho):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+  Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& mu, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& u_old_2, const dolfin::GenericFunction& rho):
+    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), u_old_2(*this, 3), rho(*this, 4)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
     _function_spaces[1] = reference_to_no_delete_pointer(V1);
@@ -8216,15 +8267,15 @@ public:
     this->dt = dt;
     this->mu = mu;
     this->u_old = u_old;
-    this->rho_old = rho_old;
+    this->u_old_2 = u_old_2;
     this->rho = rho;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_0());
   }
 
   // Constructor
-  Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> mu, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> rho_old, std::shared_ptr<const dolfin::GenericFunction> rho):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+  Form_a(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> mu, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> u_old_2, std::shared_ptr<const dolfin::GenericFunction> rho):
+    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), u_old_2(*this, 3), rho(*this, 4)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
     _function_spaces[1] = reference_to_no_delete_pointer(V1);
@@ -8232,25 +8283,25 @@ public:
     this->dt = *dt;
     this->mu = *mu;
     this->u_old = *u_old;
-    this->rho_old = *rho_old;
+    this->u_old_2 = *u_old_2;
     this->rho = *rho;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_0());
   }
 
   // Constructor
   Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), u_old_2(*this, 3), rho(*this, 4)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_0());
   }
 
   // Constructor
-  Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& mu, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& rho_old, const dolfin::GenericFunction& rho):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+  Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& mu, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& u_old_2, const dolfin::GenericFunction& rho):
+    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), u_old_2(*this, 3), rho(*this, 4)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
@@ -8258,15 +8309,15 @@ public:
     this->dt = dt;
     this->mu = mu;
     this->u_old = u_old;
-    this->rho_old = rho_old;
+    this->u_old_2 = u_old_2;
     this->rho = rho;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_0());
   }
 
   // Constructor
-  Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> mu, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> rho_old, std::shared_ptr<const dolfin::GenericFunction> rho):
-    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), rho_old(*this, 3), rho(*this, 4)
+  Form_a(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> mu, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> u_old_2, std::shared_ptr<const dolfin::GenericFunction> rho):
+    dolfin::Form(2, 5), dt(*this, 0), mu(*this, 1), u_old(*this, 2), u_old_2(*this, 3), rho(*this, 4)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
@@ -8274,10 +8325,10 @@ public:
     this->dt = *dt;
     this->mu = *mu;
     this->u_old = *u_old;
-    this->rho_old = *rho_old;
+    this->u_old_2 = *u_old_2;
     this->rho = *rho;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_0());
   }
 
   // Destructor
@@ -8293,7 +8344,7 @@ public:
       return 1;
     else if (name == "u_old")
       return 2;
-    else if (name == "rho_old")
+    else if (name == "u_old_2")
       return 3;
     else if (name == "rho")
       return 4;
@@ -8316,7 +8367,7 @@ public:
     case 2:
       return "u_old";
     case 3:
-      return "rho_old";
+      return "u_old_2";
     case 4:
       return "rho";
     }
@@ -8333,14 +8384,14 @@ public:
   typedef Form_a_FunctionSpace_2 CoefficientSpace_dt;
   typedef Form_a_FunctionSpace_3 CoefficientSpace_mu;
   typedef Form_a_FunctionSpace_4 CoefficientSpace_u_old;
-  typedef Form_a_FunctionSpace_5 CoefficientSpace_rho_old;
+  typedef Form_a_FunctionSpace_5 CoefficientSpace_u_old_2;
   typedef Form_a_FunctionSpace_6 CoefficientSpace_rho;
 
   // Coefficients
   dolfin::CoefficientAssigner dt;
   dolfin::CoefficientAssigner mu;
   dolfin::CoefficientAssigner u_old;
-  dolfin::CoefficientAssigner rho_old;
+  dolfin::CoefficientAssigner u_old_2;
   dolfin::CoefficientAssigner rho;
 };
 
@@ -8353,8 +8404,8 @@ public:
   // Create standard function space (reference version)
   Form_L_FunctionSpace_0(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh)))
   {
     // Do nothing
   }
@@ -8362,8 +8413,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh)))
   {
     // Do nothing
   }
@@ -8373,8 +8424,8 @@ public:
   // Create standard function space (reference version)
   Form_L_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -8383,8 +8434,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new velocity_second_order_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new velocity_second_order_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -8395,7 +8446,7 @@ typedef CoefficientSpace_dt Form_L_FunctionSpace_1;
 
 typedef CoefficientSpace_u_old Form_L_FunctionSpace_2;
 
-typedef CoefficientSpace_rho_old Form_L_FunctionSpace_3;
+typedef CoefficientSpace_u_old_2 Form_L_FunctionSpace_3;
 
 typedef CoefficientSpace_rho Form_L_FunctionSpace_4;
 
@@ -8403,9 +8454,11 @@ typedef CoefficientSpace_p_old Form_L_FunctionSpace_5;
 
 typedef CoefficientSpace_phi_old Form_L_FunctionSpace_6;
 
-typedef CoefficientSpace_f1 Form_L_FunctionSpace_7;
+typedef CoefficientSpace_phi_old_2 Form_L_FunctionSpace_7;
 
-typedef CoefficientSpace_f2 Form_L_FunctionSpace_8;
+typedef CoefficientSpace_f1 Form_L_FunctionSpace_8;
+
+typedef CoefficientSpace_f2 Form_L_FunctionSpace_9;
 
 class Form_L: public dolfin::Form
 {
@@ -8413,92 +8466,96 @@ public:
 
   // Constructor
   Form_L(const dolfin::FunctionSpace& V0):
-    dolfin::Form(1, 8), dt(*this, 0), u_old(*this, 1), rho_old(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), f1(*this, 6), f2(*this, 7)
+    dolfin::Form(1, 9), dt(*this, 0), u_old(*this, 1), u_old_2(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), phi_old_2(*this, 6), f1(*this, 7), f2(*this, 8)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_1());
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& rho_old, const dolfin::GenericFunction& rho, const dolfin::GenericFunction& p_old, const dolfin::GenericFunction& phi_old, const dolfin::GenericFunction& f1, const dolfin::GenericFunction& f2):
-    dolfin::Form(1, 8), dt(*this, 0), u_old(*this, 1), rho_old(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), f1(*this, 6), f2(*this, 7)
+  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& u_old_2, const dolfin::GenericFunction& rho, const dolfin::GenericFunction& p_old, const dolfin::GenericFunction& phi_old, const dolfin::GenericFunction& phi_old_2, const dolfin::GenericFunction& f1, const dolfin::GenericFunction& f2):
+    dolfin::Form(1, 9), dt(*this, 0), u_old(*this, 1), u_old_2(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), phi_old_2(*this, 6), f1(*this, 7), f2(*this, 8)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
     this->dt = dt;
     this->u_old = u_old;
-    this->rho_old = rho_old;
+    this->u_old_2 = u_old_2;
     this->rho = rho;
     this->p_old = p_old;
     this->phi_old = phi_old;
+    this->phi_old_2 = phi_old_2;
     this->f1 = f1;
     this->f2 = f2;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_1());
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> rho_old, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> p_old, std::shared_ptr<const dolfin::GenericFunction> phi_old, std::shared_ptr<const dolfin::GenericFunction> f1, std::shared_ptr<const dolfin::GenericFunction> f2):
-    dolfin::Form(1, 8), dt(*this, 0), u_old(*this, 1), rho_old(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), f1(*this, 6), f2(*this, 7)
+  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> u_old_2, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> p_old, std::shared_ptr<const dolfin::GenericFunction> phi_old, std::shared_ptr<const dolfin::GenericFunction> phi_old_2, std::shared_ptr<const dolfin::GenericFunction> f1, std::shared_ptr<const dolfin::GenericFunction> f2):
+    dolfin::Form(1, 9), dt(*this, 0), u_old(*this, 1), u_old_2(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), phi_old_2(*this, 6), f1(*this, 7), f2(*this, 8)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
     this->dt = *dt;
     this->u_old = *u_old;
-    this->rho_old = *rho_old;
+    this->u_old_2 = *u_old_2;
     this->rho = *rho;
     this->p_old = *p_old;
     this->phi_old = *phi_old;
+    this->phi_old_2 = *phi_old_2;
     this->f1 = *f1;
     this->f2 = *f2;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_1());
   }
 
   // Constructor
   Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 8), dt(*this, 0), u_old(*this, 1), rho_old(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), f1(*this, 6), f2(*this, 7)
+    dolfin::Form(1, 9), dt(*this, 0), u_old(*this, 1), u_old_2(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), phi_old_2(*this, 6), f1(*this, 7), f2(*this, 8)
   {
     _function_spaces[0] = V0;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_1());
   }
 
   // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& rho_old, const dolfin::GenericFunction& rho, const dolfin::GenericFunction& p_old, const dolfin::GenericFunction& phi_old, const dolfin::GenericFunction& f1, const dolfin::GenericFunction& f2):
-    dolfin::Form(1, 8), dt(*this, 0), u_old(*this, 1), rho_old(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), f1(*this, 6), f2(*this, 7)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& u_old_2, const dolfin::GenericFunction& rho, const dolfin::GenericFunction& p_old, const dolfin::GenericFunction& phi_old, const dolfin::GenericFunction& phi_old_2, const dolfin::GenericFunction& f1, const dolfin::GenericFunction& f2):
+    dolfin::Form(1, 9), dt(*this, 0), u_old(*this, 1), u_old_2(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), phi_old_2(*this, 6), f1(*this, 7), f2(*this, 8)
   {
     _function_spaces[0] = V0;
 
     this->dt = dt;
     this->u_old = u_old;
-    this->rho_old = rho_old;
+    this->u_old_2 = u_old_2;
     this->rho = rho;
     this->p_old = p_old;
     this->phi_old = phi_old;
+    this->phi_old_2 = phi_old_2;
     this->f1 = f1;
     this->f2 = f2;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_1());
   }
 
   // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> rho_old, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> p_old, std::shared_ptr<const dolfin::GenericFunction> phi_old, std::shared_ptr<const dolfin::GenericFunction> f1, std::shared_ptr<const dolfin::GenericFunction> f2):
-    dolfin::Form(1, 8), dt(*this, 0), u_old(*this, 1), rho_old(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), f1(*this, 6), f2(*this, 7)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> u_old_2, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> p_old, std::shared_ptr<const dolfin::GenericFunction> phi_old, std::shared_ptr<const dolfin::GenericFunction> phi_old_2, std::shared_ptr<const dolfin::GenericFunction> f1, std::shared_ptr<const dolfin::GenericFunction> f2):
+    dolfin::Form(1, 9), dt(*this, 0), u_old(*this, 1), u_old_2(*this, 2), rho(*this, 3), p_old(*this, 4), phi_old(*this, 5), phi_old_2(*this, 6), f1(*this, 7), f2(*this, 8)
   {
     _function_spaces[0] = V0;
 
     this->dt = *dt;
     this->u_old = *u_old;
-    this->rho_old = *rho_old;
+    this->u_old_2 = *u_old_2;
     this->rho = *rho;
     this->p_old = *p_old;
     this->phi_old = *phi_old;
+    this->phi_old_2 = *phi_old_2;
     this->f1 = *f1;
     this->f2 = *f2;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_form_1());
+    _ufc_form = std::shared_ptr<const ufc::form>(new velocity_second_order_form_1());
   }
 
   // Destructor
@@ -8512,7 +8569,7 @@ public:
       return 0;
     else if (name == "u_old")
       return 1;
-    else if (name == "rho_old")
+    else if (name == "u_old_2")
       return 2;
     else if (name == "rho")
       return 3;
@@ -8520,10 +8577,12 @@ public:
       return 4;
     else if (name == "phi_old")
       return 5;
-    else if (name == "f1")
+    else if (name == "phi_old_2")
       return 6;
-    else if (name == "f2")
+    else if (name == "f1")
       return 7;
+    else if (name == "f2")
+      return 8;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -8541,7 +8600,7 @@ public:
     case 1:
       return "u_old";
     case 2:
-      return "rho_old";
+      return "u_old_2";
     case 3:
       return "rho";
     case 4:
@@ -8549,8 +8608,10 @@ public:
     case 5:
       return "phi_old";
     case 6:
-      return "f1";
+      return "phi_old_2";
     case 7:
+      return "f1";
+    case 8:
       return "f2";
     }
 
@@ -8564,20 +8625,22 @@ public:
   typedef Form_L_FunctionSpace_0 TestSpace;
   typedef Form_L_FunctionSpace_1 CoefficientSpace_dt;
   typedef Form_L_FunctionSpace_2 CoefficientSpace_u_old;
-  typedef Form_L_FunctionSpace_3 CoefficientSpace_rho_old;
+  typedef Form_L_FunctionSpace_3 CoefficientSpace_u_old_2;
   typedef Form_L_FunctionSpace_4 CoefficientSpace_rho;
   typedef Form_L_FunctionSpace_5 CoefficientSpace_p_old;
   typedef Form_L_FunctionSpace_6 CoefficientSpace_phi_old;
-  typedef Form_L_FunctionSpace_7 CoefficientSpace_f1;
-  typedef Form_L_FunctionSpace_8 CoefficientSpace_f2;
+  typedef Form_L_FunctionSpace_7 CoefficientSpace_phi_old_2;
+  typedef Form_L_FunctionSpace_8 CoefficientSpace_f1;
+  typedef Form_L_FunctionSpace_9 CoefficientSpace_f2;
 
   // Coefficients
   dolfin::CoefficientAssigner dt;
   dolfin::CoefficientAssigner u_old;
-  dolfin::CoefficientAssigner rho_old;
+  dolfin::CoefficientAssigner u_old_2;
   dolfin::CoefficientAssigner rho;
   dolfin::CoefficientAssigner p_old;
   dolfin::CoefficientAssigner phi_old;
+  dolfin::CoefficientAssigner phi_old_2;
   dolfin::CoefficientAssigner f1;
   dolfin::CoefficientAssigner f2;
 };

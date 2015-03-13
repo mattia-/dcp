@@ -13,3 +13,21 @@ SET (EXEC_SOURCES main.cpp)
 SET (EXEC ${PROJECT_NAME})
 ADD_EXECUTABLE (${EXEC} ${EXEC_SOURCES})
 TARGET_LINK_LIBRARIES (${EXEC} ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${MSHR_LIBRARIES} dcp)
+
+ADD_EXECUTABLE (main_second_order main_second_order.cpp)
+TARGET_LINK_LIBRARIES (main_second_order ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${MSHR_LIBRARIES} dcp)
+
+ADD_EXECUTABLE (main_exact_solution main_exact_solution.cpp)
+TARGET_LINK_LIBRARIES (main_exact_solution ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${MSHR_LIBRARIES} dcp)
+
+ADD_EXECUTABLE (main_pulse_load main_pulse_load.cpp)
+TARGET_LINK_LIBRARIES (main_pulse_load ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${MSHR_LIBRARIES} dcp)
+
+ADD_EXECUTABLE (main_poiseuille main_poiseuille.cpp)
+TARGET_LINK_LIBRARIES (main_poiseuille ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${MSHR_LIBRARIES} dcp)
+
+ADD_EXECUTABLE (main_pulse_load_chorin_temam main_pulse_load_chorin_temam.cpp)
+TARGET_LINK_LIBRARIES (main_pulse_load_chorin_temam ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${MSHR_LIBRARIES} dcp)
+
+ADD_EXECUTABLE (main_poiseuille_chorin_temam main_poiseuille_chorin_temam.cpp)
+TARGET_LINK_LIBRARIES (main_poiseuille_chorin_temam ${DOLFIN_LIBRARIES} ${DOLFIN_3RD_PARTY_LIBRARIES} ${MSHR_LIBRARIES} dcp)

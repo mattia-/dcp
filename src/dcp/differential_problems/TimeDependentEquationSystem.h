@@ -112,6 +112,20 @@ namespace dcp
                                                     const int& nStepsBack,
                                                     const bool& forceRelinking = false);
             
+            //! Remove link between problems' coefficient and solution at a previous time step
+            /*!
+             *  Removes the link identified by the input arguments from the protected member 
+             *  \c linksToPreviousSolutions_ .
+             *  The input arguments will be used to create an object of \c dcp::AbstractProblem::LinkKey to use
+             *  to erase the corresponding entry from \c linksToPreviousSolutions_ .
+             *  
+             *  \return \c true if the link was removed, \c false otherwise
+             */
+            bool removeLinkToPreviousSolution (const std::string& linkFrom, 
+                                               const std::string& linkedCoefficientName, 
+                                               const std::string& linkedCoefficientType);
+            
+            
             //! Check if system time loop is finished. It basically calls the function \c isFinished() on every problem
             //! stored in \c storedProblems_ and checks if the number of problems whose time loop has ended is equal 
             //! to the size of \c storedProblems_

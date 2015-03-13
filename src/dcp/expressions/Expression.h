@@ -110,7 +110,7 @@ namespace dcp
              *  the default one will be used (which will just issue a \c dolfin_error : the behaviour in this case is
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */
-            Expression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+            Expression (const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                         const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
@@ -124,7 +124,7 @@ namespace dcp
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */         
             explicit Expression (std::size_t dim,
-                                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                                  const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
@@ -140,7 +140,7 @@ namespace dcp
              */         
             Expression (std::size_t dim0, 
                         std::size_t dim1,
-                        const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                        const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                         const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
 
@@ -155,7 +155,7 @@ namespace dcp
              *  the same as the normal <tt>dolfin::Expression</tt>s)
              */         
             explicit Expression (std::vector<std::size_t> value_shape,
-                                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+                                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
                                  const Evaluator& evaluator = dcp::DefaultEvaluator ());
 
             //! Default copy constructor

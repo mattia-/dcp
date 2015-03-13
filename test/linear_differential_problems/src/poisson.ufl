@@ -38,4 +38,4 @@ g = Coefficient (V)
 a = inner (k * grad (u), grad (v)) * dx
 
 # define linear form 
-L = inner (f, v) * dx + inner (k * g, v) * ds[1]
+L = inner (f, v) * dx + inner (g, v) * ds(1)

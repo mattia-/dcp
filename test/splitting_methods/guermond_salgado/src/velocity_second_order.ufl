@@ -12,10 +12,13 @@ Q = FiniteElement ("Lagrange", cell, 1)
 dt = Constant (cell)
 mu = Constant (cell)
 u_old = Coefficient (V)
+u_old_2 = Coefficient (V)
+u_star = Coefficient (V)
 rho_old = Coefficient (R)
 rho = Coefficient (R)
 p_old = Coefficient (Q)
 phi_old = Coefficient (Q)
+phi_old_2 = Coefficient (Q)
 # the external force is divided into two parts: f = f1 * rho + f2
 # this is because rho is a solution, and there is no way to link it
 # to a TimeDependentExpression
@@ -26,15 +29,18 @@ f2 = Coefficient (V)
 u = TrialFunction (V)
 v = TestFunction (V)
 
+# coefficient value
+u_star = 2 * u_old - u_old_2
+
 # velocity equation:
 # lhs
-a = 1 / dt * 0.5 * (rho + rho_old) * inner (u, v) * dx \
-    + inner (rho * dot (grad (u), u_old), v) * dx \
-    + 0.5 * inner (div (rho * u_old) * u, v) * dx \
+a = 3.0 / (2.0 * dt) * rho * inner (u, v) * dx \
+    + inner (rho * dot (grad (u), u_star), v) * dx \
     + mu * inner (grad (u), grad (v)) * dx 
  
 # rhs
-L = 1 / dt * inner (rho_old * u_old, v) * dx \
+L = 2.0 / dt * inner (rho * u_old, v) * dx \
+    - 1.0 / (2.0 * dt) * inner (rho * u_old_2, v) * dx \
     + inner (rho * f1, v) * dx \
     + inner (f2, v) * dx \
-    - inner (grad (p_old + phi_old), v) * dx
+    - inner (grad (p_old + 4.0 / 3.0 * phi_old - 1.0 / 3.0 * phi_old_2), v) * dx

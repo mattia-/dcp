@@ -1757,7 +1757,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({false, true, false});
+    static const std::vector<bool> enabled({true, false});
     return enabled;
   }
 
@@ -1785,9 +1785,9 @@ public:
     const double det = std::abs(detJ);
     
     // Compute geometry tensor
-    const double G0_0 = det*w[1][0]*(1.0);
-    const double G0_1 = det*w[1][1]*(1.0);
-    const double G0_2 = det*w[1][2]*(1.0);
+    const double G0_0 = det*w[0][0]*(1.0);
+    const double G0_1 = det*w[0][1]*(1.0);
+    const double G0_2 = det*w[0][2]*(1.0);
     
     // Compute element tensor
     A[0] = 0.0833333333333334*G0_0 + 0.0416666666666667*G0_1 + 0.0416666666666667*G0_2;
@@ -1801,18 +1801,18 @@ public:
 /// exterior facet tensor corresponding to the local contribution to
 /// a form from the integral over an exterior facet.
 
-class poisson_exterior_facet_integral_1_otherwise: public ufc::exterior_facet_integral
+class poisson_exterior_facet_integral_1_1: public ufc::exterior_facet_integral
 {
 public:
 
   /// Constructor
-  poisson_exterior_facet_integral_1_otherwise() : ufc::exterior_facet_integral()
+  poisson_exterior_facet_integral_1_1() : ufc::exterior_facet_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~poisson_exterior_facet_integral_1_otherwise()
+  virtual ~poisson_exterior_facet_integral_1_1()
   {
     // Do nothing
   }
@@ -1820,7 +1820,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({true, false, true});
+    static const std::vector<bool> enabled({false, true});
     return enabled;
   }
 
@@ -1832,9 +1832,9 @@ public:
                                int cell_orientation) const
   {
     // Number of operations (multiply-add pairs) for Jacobian data:      10
-    // Number of operations (multiply-add pairs) for geometry tensor:    4
+    // Number of operations (multiply-add pairs) for geometry tensor:    3
     // Number of operations (multiply-add pairs) for tensor contraction: 9
-    // Total number of operations (multiply-add pairs):                  23
+    // Total number of operations (multiply-add pairs):                  22
     
     // Compute Jacobian
     double J[4];
@@ -1857,9 +1857,9 @@ public:
     
     
     // Compute geometry tensor
-    const double G0_0_0 = det*w[0][0]*w[2][0]*(1.0);
-    const double G0_0_1 = det*w[0][0]*w[2][1]*(1.0);
-    const double G0_0_2 = det*w[0][0]*w[2][2]*(1.0);
+    const double G0_0 = det*w[1][0]*(1.0);
+    const double G0_1 = det*w[1][1]*(1.0);
+    const double G0_2 = det*w[1][2]*(1.0);
     
     // Compute element tensor
     switch (facet)
@@ -1867,21 +1867,21 @@ public:
     case 0:
       {
         A[0] = 0.0;
-      A[1] = 0.333333333333333*G0_0_1 + 0.166666666666667*G0_0_2;
-      A[2] = 0.166666666666667*G0_0_1 + 0.333333333333333*G0_0_2;
+      A[1] = 0.333333333333333*G0_1 + 0.166666666666667*G0_2;
+      A[2] = 0.166666666666667*G0_1 + 0.333333333333333*G0_2;
         break;
       }
     case 1:
       {
-        A[0] = 0.333333333333333*G0_0_0 + 0.166666666666667*G0_0_2;
+        A[0] = 0.333333333333333*G0_0 + 0.166666666666667*G0_2;
       A[1] = 0.0;
-      A[2] = 0.166666666666667*G0_0_0 + 0.333333333333333*G0_0_2;
+      A[2] = 0.166666666666667*G0_0 + 0.333333333333333*G0_2;
         break;
       }
     case 2:
       {
-        A[0] = 0.333333333333333*G0_0_0 + 0.166666666666667*G0_0_1;
-      A[1] = 0.166666666666667*G0_0_0 + 0.333333333333333*G0_0_1;
+        A[0] = 0.333333333333333*G0_0 + 0.166666666666667*G0_1;
+      A[1] = 0.166666666666667*G0_0 + 0.333333333333333*G0_1;
       A[2] = 0.0;
         break;
       }
@@ -2153,13 +2153,13 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "7131c68b172db44678f92687905bedd422e53cebaa628fe7f40fd01b68f389fd61790172d13db4867fadc2a81c53a2f7c81faa414f71637ffc2f9d18321623a9";
+    return "aa913a2309670256a97fbd81b845e4889466c6fd2a81bf382bc8eabdfa240425c736cf1532c1d232dd563b4634fee2ec5e4b2262d4ff4d4b5ac10d4f19918774";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
   virtual std::size_t original_coefficient_position(std::size_t i) const
   {
-    static const std::vector<std::size_t> position({0, 1, 2});
+    static const std::vector<std::size_t> position({0, 1});
     return position[i];
   }
 
@@ -2172,7 +2172,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 3;
+    return 2;
   }
 
   /// Return the number of cell domains
@@ -2184,7 +2184,7 @@ public:
   /// Return the number of exterior facet domains
   virtual std::size_t num_exterior_facet_domains() const
   {
-    return 0;
+    return 2;
   }
 
   /// Return the number of interior facet domains
@@ -2247,15 +2247,10 @@ public:
       }
     case 1:
       {
-        return new poisson_finite_element_0();
-        break;
-      }
-    case 2:
-      {
         return new poisson_finite_element_1();
         break;
       }
-    case 3:
+    case 2:
       {
         return new poisson_finite_element_1();
         break;
@@ -2277,15 +2272,10 @@ public:
       }
     case 1:
       {
-        return new poisson_dofmap_0();
-        break;
-      }
-    case 2:
-      {
         return new poisson_dofmap_1();
         break;
       }
-    case 3:
+    case 2:
       {
         return new poisson_dofmap_1();
         break;
@@ -2304,6 +2294,15 @@ public:
   /// Create a new exterior facet integral on sub domain i
   virtual ufc::exterior_facet_integral* create_exterior_facet_integral(std::size_t i) const
   {
+    switch (i)
+    {
+    case 1:
+      {
+        return new poisson_exterior_facet_integral_1_1();
+        break;
+      }
+    }
+    
     return 0;
   }
 
@@ -2334,7 +2333,7 @@ public:
   /// Create a new exterior facet integral on everywhere else
   virtual ufc::exterior_facet_integral* create_default_exterior_facet_integral() const
   {
-    return new poisson_exterior_facet_integral_1_otherwise();
+    return 0;
   }
 
   /// Create a new interior facet integral on everywhere else
@@ -2772,11 +2771,9 @@ public:
 
 };
 
-typedef CoefficientSpace_k Form_L_FunctionSpace_1;
+typedef CoefficientSpace_f Form_L_FunctionSpace_1;
 
-typedef CoefficientSpace_f Form_L_FunctionSpace_2;
-
-typedef CoefficientSpace_g Form_L_FunctionSpace_3;
+typedef CoefficientSpace_g Form_L_FunctionSpace_2;
 
 class Form_L: public dolfin::Form
 {
@@ -2784,7 +2781,7 @@ public:
 
   // Constructor
   Form_L(const dolfin::FunctionSpace& V0):
-    dolfin::Form(1, 3), k(*this, 0), f(*this, 1), g(*this, 2)
+    dolfin::Form(1, 2), f(*this, 0), g(*this, 1)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
@@ -2792,12 +2789,11 @@ public:
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& k, const dolfin::GenericFunction& f, const dolfin::GenericFunction& g):
-    dolfin::Form(1, 3), k(*this, 0), f(*this, 1), g(*this, 2)
+  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& f, const dolfin::GenericFunction& g):
+    dolfin::Form(1, 2), f(*this, 0), g(*this, 1)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
-    this->k = k;
     this->f = f;
     this->g = g;
 
@@ -2805,12 +2801,11 @@ public:
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> k, std::shared_ptr<const dolfin::GenericFunction> f, std::shared_ptr<const dolfin::GenericFunction> g):
-    dolfin::Form(1, 3), k(*this, 0), f(*this, 1), g(*this, 2)
+  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> f, std::shared_ptr<const dolfin::GenericFunction> g):
+    dolfin::Form(1, 2), f(*this, 0), g(*this, 1)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
-    this->k = *k;
     this->f = *f;
     this->g = *g;
 
@@ -2819,7 +2814,7 @@ public:
 
   // Constructor
   Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 3), k(*this, 0), f(*this, 1), g(*this, 2)
+    dolfin::Form(1, 2), f(*this, 0), g(*this, 1)
   {
     _function_spaces[0] = V0;
 
@@ -2827,12 +2822,11 @@ public:
   }
 
   // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& k, const dolfin::GenericFunction& f, const dolfin::GenericFunction& g):
-    dolfin::Form(1, 3), k(*this, 0), f(*this, 1), g(*this, 2)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& f, const dolfin::GenericFunction& g):
+    dolfin::Form(1, 2), f(*this, 0), g(*this, 1)
   {
     _function_spaces[0] = V0;
 
-    this->k = k;
     this->f = f;
     this->g = g;
 
@@ -2840,12 +2834,11 @@ public:
   }
 
   // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> k, std::shared_ptr<const dolfin::GenericFunction> f, std::shared_ptr<const dolfin::GenericFunction> g):
-    dolfin::Form(1, 3), k(*this, 0), f(*this, 1), g(*this, 2)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> f, std::shared_ptr<const dolfin::GenericFunction> g):
+    dolfin::Form(1, 2), f(*this, 0), g(*this, 1)
   {
     _function_spaces[0] = V0;
 
-    this->k = *k;
     this->f = *f;
     this->g = *g;
 
@@ -2859,12 +2852,10 @@ public:
   /// Return the number of the coefficient with this name
   virtual std::size_t coefficient_number(const std::string& name) const
   {
-    if (name == "k")
+    if (name == "f")
       return 0;
-    else if (name == "f")
-      return 1;
     else if (name == "g")
-      return 2;
+      return 1;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -2878,10 +2869,8 @@ public:
     switch (i)
     {
     case 0:
-      return "k";
-    case 1:
       return "f";
-    case 2:
+    case 1:
       return "g";
     }
 
@@ -2893,12 +2882,10 @@ public:
 
   // Typedefs
   typedef Form_L_FunctionSpace_0 TestSpace;
-  typedef Form_L_FunctionSpace_1 CoefficientSpace_k;
-  typedef Form_L_FunctionSpace_2 CoefficientSpace_f;
-  typedef Form_L_FunctionSpace_3 CoefficientSpace_g;
+  typedef Form_L_FunctionSpace_1 CoefficientSpace_f;
+  typedef Form_L_FunctionSpace_2 CoefficientSpace_g;
 
   // Coefficients
-  dolfin::CoefficientAssigner k;
   dolfin::CoefficientAssigner f;
   dolfin::CoefficientAssigner g;
 };

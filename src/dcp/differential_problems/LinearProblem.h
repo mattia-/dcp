@@ -344,7 +344,7 @@ namespace dcp
                  *  
                  *  See \c AbstractProblem documentation for more details on the function
                  */
-                virtual void setIntegrationSubdomains (const std::string& formType,
+                virtual void setIntegrationSubdomain (const std::string& formType,
                                                        std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                        const dcp::SubdomainType& subdomainType) override;
 
@@ -460,7 +460,10 @@ namespace dcp
                 //! Solve problem
                 /*!
                  *  This method solves the problem defined. It uses the private members' value to set the problem and then
-                 *  stores the solution in the private member \c solution_. Note that it checks the problem's member
+                 *  stores the solution in the private member \c solution_. See documentation of \c dcp::AbstractProblem
+                 *  for more details on how the protected member \c solution_ works and why it is declared as a 
+                 *  \c std::pair.
+                 *  Note that the method \c solve() checks the problem's member
                  *  \c parameters to decided whether problem's matrix and vector should be reassembled and if
                  *  the values of the parameters \c desired_solver_type, \c desired_solver_method and 
                  *  \c desired_solver_preconditioner match the values of \c current_solver_type, \c current_solver_method
@@ -553,7 +556,7 @@ namespace dcp
 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
 
-            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
 
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
@@ -593,7 +596,7 @@ namespace dcp
 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
-            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
@@ -633,7 +636,7 @@ namespace dcp
 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
-            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
@@ -675,7 +678,7 @@ namespace dcp
 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
-            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
@@ -717,7 +720,7 @@ namespace dcp
 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
-            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
@@ -759,7 +762,7 @@ namespace dcp
 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
-            solution_.emplace_back (dolfin::Function (*functionSpace_));
+            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
@@ -880,7 +883,7 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         void LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        setIntegrationSubdomains (const std::string& formType,
+        setIntegrationSubdomain (const std::string& formType,
                                   std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                   const dcp::SubdomainType& subdomainType)
         {
@@ -1210,7 +1213,7 @@ namespace dcp
                 dolfin::end ();
             }
             
-            solver_ -> solve (*(solution_.back ().vector ()), rhsVector_);
+            solver_ -> solve (*(solution_.back ().second.vector ()), rhsVector_);
             
             if (type == "must_reassemble")
             {

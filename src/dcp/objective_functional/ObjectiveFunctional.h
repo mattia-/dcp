@@ -42,7 +42,7 @@ namespace dcp
      *  
      *  Template arguments are:
      *  \arg T_FunctionalForm_ the functional form type
-     *  \arg T_Gradient_ the gradient type, which must be a class derived from \c dcp::VariableExpression
+     *  \arg T_Gradient_ the gradient type, which must be a class derived from \c dcp::GenericExpression
      */
 
     template <class T_FunctionalForm_, class T_Gradient_>
@@ -160,7 +160,7 @@ namespace dcp
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */
             virtual void setCoefficient (const std::string& coefficientType, 
-                                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                         const std::shared_ptr<dolfin::GenericFunction> coefficientValue,
                                          const std::string& coefficientName) override;
 
             //! Set integration subdomains for the protected member variable \c functional_. 
@@ -168,7 +168,7 @@ namespace dcp
             /*!
              *  See \c AbstractObjectiveFunctional documentation for more details.
              */
-            virtual void setIntegrationSubdomains (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+            virtual void setIntegrationSubdomain (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                    const dcp::SubdomainType& subdomainType) override;
 
 
@@ -179,7 +179,7 @@ namespace dcp
              */
             virtual double evaluateFunctional () const override;
 
-            //! Evaluate at given point in given cell at given point. Overrides method in 
+            //! Evaluate at given point in given cell. Overrides method in 
             //! \c AbstractObjectiveFunctional
             /*!
              *  See \c AbstractObjectiveFunctional documentation for more details.
@@ -203,7 +203,7 @@ namespace dcp
             T_FunctionalForm functional_;
 
             //! The gradient of the functional. Stored as a shared_ptr so that polymorphism can be applied
-            std::shared_ptr <dcp::VariableExpression> gradient_;
+            std::shared_ptr <dcp::GenericExpression> gradient_;
 
             // ---------------------------------------------------------------------------------------------//
 
@@ -319,7 +319,7 @@ namespace dcp
     template <class T_FunctionalForm, class T_Gradient>
         void ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
         setCoefficient (const std::string& coefficientType, 
-                        const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                        const std::shared_ptr<dolfin::GenericFunction> coefficientValue,
                         const std::string& coefficientName)
         {
             if (coefficientType == "functional")
@@ -345,7 +345,7 @@ namespace dcp
 
     template <class T_FunctionalForm, class T_Gradient>
         void ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        setIntegrationSubdomains (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+        setIntegrationSubdomain (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                   const dcp::SubdomainType& subdomainType)
         {
             if (subdomainType == dcp::SubdomainType::INTERNAL_CELLS)

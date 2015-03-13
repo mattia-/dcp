@@ -66,7 +66,7 @@ namespace dcp
 
 
     TimeDependentVariableExpression::TimeDependentVariableExpression 
-        (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+        (const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
          const dcp::TimeDependentVariableExpression::Evaluator& evaluator) 
         : 
         dcp::TimeDependentExpression (variables),
@@ -79,7 +79,7 @@ namespace dcp
 
     TimeDependentVariableExpression::TimeDependentVariableExpression 
         (std::size_t dim,
-         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
          const dcp::TimeDependentVariableExpression::Evaluator& evaluator) 
         : 
         dcp::TimeDependentExpression (dim, variables),
@@ -93,7 +93,7 @@ namespace dcp
     TimeDependentVariableExpression::TimeDependentVariableExpression 
         (std::size_t dim0, 
          std::size_t dim1,
-         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
          const dcp::TimeDependentVariableExpression::Evaluator& evaluator)
         :
         dcp::TimeDependentExpression (dim0, dim1, variables),
@@ -106,7 +106,7 @@ namespace dcp
 
     TimeDependentVariableExpression::TimeDependentVariableExpression 
         (std::vector<std::size_t> value_shape,
-         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
+         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
          const dcp::TimeDependentVariableExpression::Evaluator& evaluator)
         :
         dcp::TimeDependentExpression (value_shape, variables),

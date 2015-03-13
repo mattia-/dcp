@@ -91,7 +91,7 @@ namespace dcp
              *  \param coefficientName string identifying the coefficient to set
              */
             virtual void setCoefficient (const std::string& coefficientType, 
-                                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                         const std::shared_ptr<dolfin::GenericFunction> coefficientValue,
                                          const std::string& coefficientName) = 0;
 
             //! Set integration subdomains for the protected member variable that represent the functional (which must
@@ -103,7 +103,7 @@ namespace dcp
              *  \param subdomainType the type of the subdomains, chosen among those provided by the enumeration
              *  class \c dcp::SubdomainType
              */
-            virtual void setIntegrationSubdomains (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+            virtual void setIntegrationSubdomain (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                    const dcp::SubdomainType& subdomainType) = 0;
 
             /******************* METHODS *******************/

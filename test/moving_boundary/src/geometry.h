@@ -32,11 +32,11 @@ class FreeSurface : public dolfin::SubDomain
     bool inside (const dolfin::Array<double>& x, bool on_boundary) const
     {
         return on_boundary && 
-               !( dolfin::near (x[0], 0)
-               ||
-               dolfin::near (x[1], 0)
-               ||
-               dolfin::near (x[0], 1));
+//               !( dolfin::near (x[0], 0)
+//               ||
+               !(dolfin::near (x[1], 0));
+//               ||
+//               dolfin::near (x[0], 1));
     }
 };
 
@@ -44,11 +44,11 @@ class FixedBoundary : public dolfin::SubDomain
 {
     bool inside (const dolfin::Array<double>& x, bool on_boundary) const
     {
-        return (dolfin::near (x[0], 0) && on_boundary)
-               ||
-               (dolfin::near (x[1], 0) && on_boundary)
-               ||
-               (dolfin::near (x[0], 1) && on_boundary);
+        return //(dolfin::near (x[0], 0) && on_boundary)
+//               ||
+               (dolfin::near (x[1], 0) && on_boundary);
+//               ||
+//               (dolfin::near (x[0], 1) && on_boundary);
     }
 };
 
@@ -416,7 +416,7 @@ dolfin::plot(w_,"la vu doppia");//dolfin::interactive();
   dolfin::interactive();
   }
   */
-dolfin::plot(*functionSpace_->mesh(), "asdjklbw mesh");
+//dolfin::plot(*functionSpace_->mesh(), "asdjklbw mesh");
 //dolfin::interactive();
 dolfin::plot(* (*(*functionSpace_)[0])[0]->mesh(), "asdjklbw [0][0] mesh");
 //dolfin::interactive();

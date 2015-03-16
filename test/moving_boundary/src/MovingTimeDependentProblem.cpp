@@ -19,6 +19,7 @@
 
 //#include <dcp/differential_problems/MovingTimeDependentProblem.h>
 #include "MovingTimeDependentProblem.h"
+#include "computeFreeSurfaceStress.h"
 #include <dcp/differential_problems/differential_problems.h>
 #include <dolfin/log/dolfin_log.h>
 #include <regex>
@@ -576,18 +577,29 @@ namespace Ivan
         
         std::shared_ptr<dolfin::VTKPlotter> plotter;
         
+//lasciarlo qui?? l'importante è che il marking avvenga solo una volta (quindi prima del ciclo temporale)
+// è per calcolare la tensione superficiale
+    dolfin::FacetFunction<std::size_t> meshFacets (meshManager_.mesh());
+    meshFacets.set_all (0);
+    Ivan::TopBoundary freeSurface;
+    freeSurface.mark (meshFacets, 1);
+											
         // start time loop. The loop variable timeStepFlag is true only if the solve type requested is "step" and
         // the first step has already been peformed
         int timeStep = 0;
         bool timeStepFlag = false;
 dolfin::File solutionFile("insideMovingTimeDependentProblem.pvd");
+dolfin::File surfaceStressFile("surfaceTension.pvd");
         while (!isFinished () && timeStepFlag == false)
         {
             timeStep++;
 
+            meshManager_.moveMesh(tmpSolution[0],"normal",dt);
             dolfin::Function& w(meshManager_.displacement());
 dolfin::plot(w,"w in MovingTimeDependentProblem");
+
 //dolfin::interactive();
+//            timeSteppingProblem_->setIntegrationSubdomain ("residual_form", meshFunction, dcp::SubdomainType::BOUNDARY_FACETS);
             timeSteppingProblem_->setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (w), "w");
             timeSteppingProblem_->setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (w), "w");
             
@@ -609,12 +621,28 @@ dolfin::plot(w,"w in MovingTimeDependentProblem");
             tmpSolution = timeSteppingProblem_->solution ();
 solutionFile << std::pair<dolfin::Function*,double>(&tmpSolution,t_);
             
+// Assembling and storing the surface tension term
+computeFreeSurfaceStress::FunctionSpace stressSpace(meshManager_.mesh());
+dolfin::Constant stressGamma (7.3e-1);
+dolfin::Constant stressDt (0.05);
+// CI FOSSE residualForm() COME METODO PER ESTRARRE I COEFFICIENTI...  stressForm.set_coefficient ("gamma",timeSteppingProblem_->residualForm().coefficient("gamma"));
+computeFreeSurfaceStress::LinearForm stressForm(stressSpace,stressDt,stressGamma);
+stressForm.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer(meshFacets));
+dolfin::Vector b;
+assemble(b, stressForm);            
+dolfin::Function bFun(stressSpace);
+* bFun.vector() = b;
+//dolfin::plot(bFun,"bFun"); dolfin::interactive();
+surfaceStressFile << std::pair<dolfin::Function*,double>(&bFun,t_);
+std::cerr << std::endl;
+
             // save solution in solution_ according to time step and store interval.
             storeSolution (tmpSolution, timeStep, storeInterval);
             
             // plot solution according to time step and plot interval
-            plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause);
-            
+ //           plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause);
+            plotSolution (tmpSolution, timeStep, 1, 0, false);
+
             if (oneStepRequested == true)
             {
                 timeStepFlag = true;
@@ -626,8 +654,6 @@ solutionFile << std::pair<dolfin::Function*,double>(&tmpSolution,t_);
                 dolfin::end ();
             }
         
-            meshManager_.moveMesh(tmpSolution[0],"normal",dt);
-
         }
         
         // At this point, we just need to make sure that the solution on the last iteration was saved even though

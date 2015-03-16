@@ -46,6 +46,24 @@
 
 namespace Ivan
 {
+    class TopBoundary : public dolfin::SubDomain
+    {
+        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+        {
+            return on_boundary
+/*                   &&
+                  dolfin::between(x[0],{0.0,0.05})
+*//*  	               && !(
+                      dolfin::near(x[0], 0)
+           		     ||
+             		      dolfin::near(x[0], 0.05)
+          		     ||
+             		    dolfin::near(x[1], 0));*/
+                   &&
+                  (x[1] >= 0.10 - 6.0e-16);
+        }
+    };
+
     /*! \class MovingTimeDependentProblem MovingTimeDependentProblem.h
      *  \brief Class for time dependent differential problems.
      *

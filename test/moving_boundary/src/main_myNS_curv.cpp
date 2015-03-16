@@ -31,11 +31,19 @@ bool geometry::timeNOTcount(true);
 
 namespace myNavierstokesTimeCurv
 {
+    // parameters
+    double yxratio = 2;
+    double lx (0.05), ly (lx*yxratio);
+    std::size_t nx (20), ny (nx*yxratio);
+    double ustar (0.000001);//0.05);
+    double kinematic_viscosity (1e-6);
+
     class LeftBoundary : public dolfin::SubDomain
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return (dolfin::near (x[0], 0) && on_boundary);
+            return dolfin::near (x[0], 0) && on_boundary;
+//            return dolfin::near (x[0], 0) && (x[1]<ly-6e-16) && on_boundary;
         } 
     };
     
@@ -43,7 +51,8 @@ namespace myNavierstokesTimeCurv
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
-            return (dolfin::near (x[0], 1) && on_boundary);
+            return (dolfin::near (x[0], lx) && on_boundary);
+//            return dolfin::near (x[0], lx) && (x[1]<ly-6e-16) && on_boundary;
         } 
     };
     
@@ -68,12 +77,8 @@ namespace myNavierstokesTimeCurv
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
             return on_boundary
-		               && !(
-                      dolfin::near(x[0], 0)
-           		     ||
-             		      dolfin::near(x[0], 1)
-          		     ||
-              		    dolfin::near(x[1], 0));
+                   &&
+                  (x[1] >= 0.10 - 6.0e-16);
         }
     };
 
@@ -103,10 +108,30 @@ namespace myNavierstokesTimeCurv
             void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
             {
                 values[0] = 0;
-                values[1] = sin(2*3.14*t) * 6*x[0]*(1-x[0]);
+//                values[1] = sin(2*3.14*t) * 6*x[0]*(1-x[0]); //firstDrop
+//                values[1] = 0.5 * sin(2*3.14*t) * 4*x[0]*(1-x[0]); //freq1
+                values[1] = ustar * sin(2*3.14*t) * 4/(lx*lx)*x[0]*(lx-x[0]);
             }
     };
     
+    class InitialDisplacement : public dolfin::Expression
+    {
+        void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+        {
+            values[0] = 0.0;
+            values[1] = x[1] * ( 0.1 * 4/(lx*lx)*x[0]*(lx-x[0]) );
+        }
+        
+        std::size_t value_rank() const
+        {
+          return 1;
+        }
+    
+        std::size_t value_dimension(std::size_t i) const
+        {
+          return 2;
+        }
+    };
 }
 
 int main (int argc, char* argv[])
@@ -136,9 +161,23 @@ if (true)
     dolfin::Mesh mesh;
     mshr::generate (mesh, *(rectangle - circle), 50);
 */
-    dolfin::UnitSquareMesh mesh (50,50);
+    //dolfin::UnitSquareMesh mesh (20,20);
+    dolfin::RectangleMesh mesh ( 0.0, 0.0,
+                                 myNavierstokesTimeCurv::lx,  myNavierstokesTimeCurv::ly,
+                                 myNavierstokesTimeCurv::nx,
+                                 myNavierstokesTimeCurv::ny);
+
+    dolfin::ALE meshInitializer;
+    myNavierstokesTimeCurv::InitialDisplacement initialDisplacement;
+    meshInitializer.move(mesh, initialDisplacement);
     
     myNavierstokesTimeCurv::FunctionSpace V (mesh);
+
+/*dolfin::plot(mesh);
+dolfin::plot(* (* V[0])[0]->mesh());
+dolfin::interactive();
+return 0;
+*/
     
     dcp::NonlinearProblem <myNavierstokesTimeCurv::ResidualForm, myNavierstokesTimeCurv::JacobianForm> 
          timeSteppingProblem (dolfin::reference_to_no_delete_pointer (V), 
@@ -147,7 +186,8 @@ if (true)
     // define problem
     double t0 = 0.0;
     double dt = 0.05;
-    double T = 1;
+//    double T = 1; //firstDrop
+    double T = 2;
     std::cout << "Define the problem..." << std::endl;
  /*   Ivan::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (mesh),
                                                    dolfin::reference_to_no_delete_pointer (V),
@@ -173,8 +213,8 @@ if (true)
     
     // define constant
     std::cout << "Define the problem's coefficients..." << std::endl;
-    dolfin::Constant nu (1e-1);
-    dolfin::Constant gamma (7.2e-2);
+    dolfin::Constant nu (myNavierstokesTimeCurv::kinematic_viscosity / ( myNavierstokesTimeCurv::ustar * myNavierstokesTimeCurv::lx ));
+    dolfin::Constant gamma (7.3e-1);
 //    dolfin::Constant p_out (1000.0);
 //    dolfin::Constant p_left (0.0);
  //   dolfin::Constant inflowDirichletBC (0.0, 1.0);
@@ -193,28 +233,30 @@ if (true)
 */
     myNavierstokesTimeCurv::LeftBoundary wallLeft;
     myNavierstokesTimeCurv::RightBoundary wallRight;
-    myNavierstokesTimeCurv::TopBoundary freeSurface;
+    Ivan::TopBoundary freeSurface;
  //   myNavierstokesTimeCurv::BottomBoundary inflowBoundary;
     dcp::Subdomain inflowBoundary ((myNavierstokesTimeCurv::BottomBoundaryEvaluator ()));
-
+	
     //myNavierstokesTimeCurv::InflowDirichletBC inflowDirichletBC;
     dcp::TimeDependentExpression inflowDirichletBC(2,(myNavierstokesTimeCurv::InflowDirichletBCEvaluator ()));
 
  //   navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], inflowDirichletBC, inflowBoundary));
     navierStokesProblem.addTimeDependentDirichletBC (inflowDirichletBC, inflowBoundary, 0);
 //    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, noSlipBoundaryTop, "topological", false));
-    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, wallLeft));
-    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, wallRight));
+/*    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, wallLeft));
+    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, wallRight));*/
+    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[0], symmetryDirichletBC, wallLeft));
+    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[0], symmetryDirichletBC, wallRight));
 //    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], symmetryDirichletBC, gammaSD));
 
     // define neumann boundary conditions 
     dolfin::info ("Define the problem's Neumann boundary conditions...");
 //    poisson::NeumannBoundary neumannBoundary;
-    dolfin::FacetFunction<std::size_t> meshFacets (mesh);
+    dolfin::FacetFunction<std::size_t> meshFacets (* navierStokesProblem.mesh());
     meshFacets.set_all (0);
     freeSurface.mark (meshFacets, 1);
 //    gammaSD.mark(meshFacets, 2);
-    navierStokesProblem.setIntegrationSubdomain ("linear_form",
+    navierStokesProblem.setIntegrationSubdomain ("residual_form",
                                             dolfin::reference_to_no_delete_pointer (meshFacets),
                                             dcp::SubdomainType::BOUNDARY_FACETS);
 
@@ -243,6 +285,7 @@ if (true)
  //       solutionFile << std::pair<const dolfin::Function*, double>(&(*it),t);
         solutionFile << std::pair<const dolfin::Function*, double>(&(it->second),it->first);
     dolfin::plot (* navierStokesProblem.solution().function_space()->mesh(), "Final mesh");
+    dolfin::interactive ();
     dolfin::plot (* solutionsVector[5].second.function_space()->mesh(), "mesh intermedia e' uguale a finale");
     
     dolfin::interactive ();

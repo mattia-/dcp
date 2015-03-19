@@ -34,8 +34,8 @@ namespace myNavierstokesTimeCurv
     // parameters
     double yxratio = 2;
     double lx (0.05), ly (lx*yxratio);
-    std::size_t nx (10), ny (nx*yxratio);
-    double ustar (0.02);//(0.000001);
+    std::size_t nx (20), ny (nx*yxratio);
+    double ustar (0.000001);//0.05);
     double kinematic_viscosity (1e-6);
 
     class LeftBoundary : public dolfin::SubDomain
@@ -82,18 +82,6 @@ namespace myNavierstokesTimeCurv
         }
     };
 
-//sistemare ++
-	class TriplePoints : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return  on_boundary
-                  && ( ( dolfin::near(x[0], 0) && dolfin::near(x[1],ly) )
-           		       ||
-                       ( dolfin::near(x[0], lx) && dolfin::near(x[1],ly)  ) );
-        }
-    };
-	
 /*    class InitialSolution : public dolfin::Expression
     {
         void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
@@ -131,7 +119,7 @@ namespace myNavierstokesTimeCurv
         void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
         {
             values[0] = 0.0;
-            values[1] = 0.0;//05 * x[1] * ( 0.1 * 4/(lx*lx)*x[0]*(lx-x[0]) );
+            values[1] = x[1] * ( 0.1 * 4/(lx*lx)*x[0]*(lx-x[0]) );
         }
         
         std::size_t value_rank() const
@@ -226,7 +214,7 @@ return 0;
     // define constant
     std::cout << "Define the problem's coefficients..." << std::endl;
     dolfin::Constant nu (myNavierstokesTimeCurv::kinematic_viscosity / ( myNavierstokesTimeCurv::ustar * myNavierstokesTimeCurv::lx ));
-    dolfin::Constant gamma (7.3e-5);
+    dolfin::Constant gamma (7.3e-1);
 //    dolfin::Constant p_out (1000.0);
 //    dolfin::Constant p_left (0.0);
  //   dolfin::Constant inflowDirichletBC (0.0, 1.0);
@@ -249,16 +237,6 @@ return 0;
  //   myNavierstokesTimeCurv::BottomBoundary inflowBoundary;
     dcp::Subdomain inflowBoundary ((myNavierstokesTimeCurv::BottomBoundaryEvaluator ()));
 	
-//sistemare ++
-myNavierstokesTimeCurv::TriplePoints triplePoints;
-dolfin::BoundaryMesh bdMesh (* navierStokesProblem.mesh(), "exterior");
-//dolfin::plot(bdMesh.entity_map(2)); dolfin::interactive();
-auto bla1 (bdMesh.entity_map(1));
-auto bla0 (bdMesh.entity_map(0));
-std::cerr << bla1.str(true) << "\n ciao\n" << bla0.str(true) << std::endl;
-dolfin::plot(bla1); dolfin::interactive();
-dolfin::plot(bla0); dolfin::interactive(); //return 0;
-
     //myNavierstokesTimeCurv::InflowDirichletBC inflowDirichletBC;
     dcp::TimeDependentExpression inflowDirichletBC(2,(myNavierstokesTimeCurv::InflowDirichletBCEvaluator ()));
 
@@ -266,46 +244,22 @@ dolfin::plot(bla0); dolfin::interactive(); //return 0;
     navierStokesProblem.addTimeDependentDirichletBC (inflowDirichletBC, inflowBoundary, 0);
 //    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, noSlipBoundaryTop, "topological", false));
 /*    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, wallLeft));
-    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, wallRight));
-*/    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[0], symmetryDirichletBC, wallLeft));
+    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, wallRight));*/
+    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[0], symmetryDirichletBC, wallLeft));
     navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[0], symmetryDirichletBC, wallRight));
 //    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], symmetryDirichletBC, gammaSD));
 
-//sistemare ++
-/*	dolfin::Constant tpDirichletBC (0,1);
-	navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], tpDirichletBC, triplePoints, "pointwise"));*/
-	//CONTINUARE dolfin::VertexFunction ...
-    
     // define neumann boundary conditions 
     dolfin::info ("Define the problem's Neumann boundary conditions...");
 //    poisson::NeumannBoundary neumannBoundary;
     dolfin::FacetFunction<std::size_t> meshFacets (* navierStokesProblem.mesh());
     meshFacets.set_all (0);
     freeSurface.mark (meshFacets, 1);
-inflowBoundary.mark (meshFacets, 2);
 //    gammaSD.mark(meshFacets, 2);
     navierStokesProblem.setIntegrationSubdomain ("residual_form",
                                             dolfin::reference_to_no_delete_pointer (meshFacets),
                                             dcp::SubdomainType::BOUNDARY_FACETS);
-meshFacets.set_value(10,3);
-dolfin::plot(meshFacets);dolfin::interactive();
-dolfin::VertexFunction<std::size_t> meshPoints (* navierStokesProblem.mesh());
-meshPoints.set_all (0);
-//meshPoints.set_value(10,3);
-//triplePoints.mark(meshPoints,8);
-dolfin::plot(meshPoints);dolfin::interactive();
-Ivan::TriplePointLeft triplePointLeft;
-triplePointLeft.mark(meshFacets,4);
-Ivan::TriplePointRight triplePointRight;
-triplePointRight.mark(meshFacets,5);
-dolfin::plot(meshFacets, "meshFacets finale");dolfin::interactive();
-navierStokesProblem.setIntegrationSubdomain ("residual_form",
-                                            dolfin::reference_to_no_delete_pointer (meshPoints),
-                                            dcp::SubdomainType::VERTICES);
-navierStokesProblem.setIntegrationSubdomain ("residual_form",
-                                            dolfin::reference_to_no_delete_pointer (meshFacets),
-                                            dcp::SubdomainType::BOUNDARY_FACETS);
-//return 0;
+
 
     // problem settings
     std::cout << "Set the problem's coefficients..." << std::endl;
@@ -314,11 +268,6 @@ navierStokesProblem.setIntegrationSubdomain ("residual_form",
 //    navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (p_out), "p_out");
 //    navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (p_left), "p_left");
     navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (gamma), "gamma");
-myNavierstokesTimeCurv::CoefficientSpace_deltaDirac deltaFS (* navierStokesProblem.mesh());
-Ivan::DeltaDirac deltaExpr;
-dolfin::Function deltaFun (deltaFS);
-deltaFun = deltaExpr;
-    navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (deltaFun), "deltaDirac");
     
     navierStokesProblem.parameters ["time_stepping_solution_component"] = 0;
     

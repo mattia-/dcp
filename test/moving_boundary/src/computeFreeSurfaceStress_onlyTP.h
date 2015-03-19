@@ -25,8 +25,8 @@
 //   restrict_keyword:               ''
 //   split:                          False
 
-#ifndef __MYNAVIERSTOKESTIMECURV_H
-#define __MYNAVIERSTOKESTIMECURV_H
+#ifndef __COMPUTEFREESURFACESTRESS_ONLYTP_H
+#define __COMPUTEFREESURFACESTRESS_ONLYTP_H
 
 #include <cmath>
 #include <stdexcept>
@@ -35,18 +35,18 @@
 
 /// This class defines the interface for a finite element.
 
-class mynavierstokestimecurv_finite_element_0: public ufc::finite_element
+class computefreesurfacestress_onlytp_finite_element_0: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_finite_element_0() : ufc::finite_element()
+  computefreesurfacestress_onlytp_finite_element_0() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_finite_element_0()
+  virtual ~computefreesurfacestress_onlytp_finite_element_0()
   {
     // Do nothing
   }
@@ -4485,25 +4485,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new mynavierstokestimecurv_finite_element_0();
+    return new computefreesurfacestress_onlytp_finite_element_0();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class mynavierstokestimecurv_finite_element_1: public ufc::finite_element
+class computefreesurfacestress_onlytp_finite_element_1: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_finite_element_1() : ufc::finite_element()
+  computefreesurfacestress_onlytp_finite_element_1() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_finite_element_1()
+  virtual ~computefreesurfacestress_onlytp_finite_element_1()
   {
     // Do nothing
   }
@@ -4780,25 +4780,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new mynavierstokestimecurv_finite_element_1();
+    return new computefreesurfacestress_onlytp_finite_element_1();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class mynavierstokestimecurv_finite_element_2: public ufc::finite_element
+class computefreesurfacestress_onlytp_finite_element_2: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_finite_element_2() : ufc::finite_element()
+  computefreesurfacestress_onlytp_finite_element_2() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_finite_element_2()
+  virtual ~computefreesurfacestress_onlytp_finite_element_2()
   {
     // Do nothing
   }
@@ -6366,25 +6366,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new mynavierstokestimecurv_finite_element_2();
+    return new computefreesurfacestress_onlytp_finite_element_2();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class mynavierstokestimecurv_finite_element_3: public ufc::finite_element
+class computefreesurfacestress_onlytp_finite_element_3: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_finite_element_3() : ufc::finite_element()
+  computefreesurfacestress_onlytp_finite_element_3() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_finite_element_3()
+  virtual ~computefreesurfacestress_onlytp_finite_element_3()
   {
     // Do nothing
   }
@@ -9161,12 +9161,12 @@ public:
     {
     case 0:
       {
-        return new mynavierstokestimecurv_finite_element_2();
+        return new computefreesurfacestress_onlytp_finite_element_2();
         break;
       }
     case 1:
       {
-        return new mynavierstokestimecurv_finite_element_2();
+        return new computefreesurfacestress_onlytp_finite_element_2();
         break;
       }
     }
@@ -9177,25 +9177,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new mynavierstokestimecurv_finite_element_3();
+    return new computefreesurfacestress_onlytp_finite_element_3();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class mynavierstokestimecurv_finite_element_4: public ufc::finite_element
+class computefreesurfacestress_onlytp_finite_element_4: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_finite_element_4() : ufc::finite_element()
+  computefreesurfacestress_onlytp_finite_element_4() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_finite_element_4()
+  virtual ~computefreesurfacestress_onlytp_finite_element_4()
   {
     // Do nothing
   }
@@ -10082,25 +10082,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new mynavierstokestimecurv_finite_element_4();
+    return new computefreesurfacestress_onlytp_finite_element_4();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class mynavierstokestimecurv_finite_element_5: public ufc::finite_element
+class computefreesurfacestress_onlytp_finite_element_5: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_finite_element_5() : ufc::finite_element()
+  computefreesurfacestress_onlytp_finite_element_5() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_finite_element_5()
+  virtual ~computefreesurfacestress_onlytp_finite_element_5()
   {
     // Do nothing
   }
@@ -13395,12 +13395,12 @@ public:
     {
     case 0:
       {
-        return new mynavierstokestimecurv_finite_element_3();
+        return new computefreesurfacestress_onlytp_finite_element_3();
         break;
       }
     case 1:
       {
-        return new mynavierstokestimecurv_finite_element_4();
+        return new computefreesurfacestress_onlytp_finite_element_4();
         break;
       }
     }
@@ -13411,7 +13411,7 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new mynavierstokestimecurv_finite_element_5();
+    return new computefreesurfacestress_onlytp_finite_element_5();
   }
 
 };
@@ -13419,18 +13419,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class mynavierstokestimecurv_dofmap_0: public ufc::dofmap
+class computefreesurfacestress_onlytp_dofmap_0: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_dofmap_0() : ufc::dofmap()
+  computefreesurfacestress_onlytp_dofmap_0() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_dofmap_0()
+  virtual ~computefreesurfacestress_onlytp_dofmap_0()
   {
     // Do nothing
   }
@@ -13725,7 +13725,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new mynavierstokestimecurv_dofmap_0();
+    return new computefreesurfacestress_onlytp_dofmap_0();
   }
 
 };
@@ -13733,18 +13733,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class mynavierstokestimecurv_dofmap_1: public ufc::dofmap
+class computefreesurfacestress_onlytp_dofmap_1: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_dofmap_1() : ufc::dofmap()
+  computefreesurfacestress_onlytp_dofmap_1() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_dofmap_1()
+  virtual ~computefreesurfacestress_onlytp_dofmap_1()
   {
     // Do nothing
   }
@@ -13927,7 +13927,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new mynavierstokestimecurv_dofmap_1();
+    return new computefreesurfacestress_onlytp_dofmap_1();
   }
 
 };
@@ -13935,18 +13935,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class mynavierstokestimecurv_dofmap_2: public ufc::dofmap
+class computefreesurfacestress_onlytp_dofmap_2: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_dofmap_2() : ufc::dofmap()
+  computefreesurfacestress_onlytp_dofmap_2() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_dofmap_2()
+  virtual ~computefreesurfacestress_onlytp_dofmap_2()
   {
     // Do nothing
   }
@@ -14194,7 +14194,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new mynavierstokestimecurv_dofmap_2();
+    return new computefreesurfacestress_onlytp_dofmap_2();
   }
 
 };
@@ -14202,18 +14202,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class mynavierstokestimecurv_dofmap_3: public ufc::dofmap
+class computefreesurfacestress_onlytp_dofmap_3: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_dofmap_3() : ufc::dofmap()
+  computefreesurfacestress_onlytp_dofmap_3() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_dofmap_3()
+  virtual ~computefreesurfacestress_onlytp_dofmap_3()
   {
     // Do nothing
   }
@@ -14494,12 +14494,12 @@ public:
     {
     case 0:
       {
-        return new mynavierstokestimecurv_dofmap_2();
+        return new computefreesurfacestress_onlytp_dofmap_2();
         break;
       }
     case 1:
       {
-        return new mynavierstokestimecurv_dofmap_2();
+        return new computefreesurfacestress_onlytp_dofmap_2();
         break;
       }
     }
@@ -14510,7 +14510,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new mynavierstokestimecurv_dofmap_3();
+    return new computefreesurfacestress_onlytp_dofmap_3();
   }
 
 };
@@ -14518,18 +14518,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class mynavierstokestimecurv_dofmap_4: public ufc::dofmap
+class computefreesurfacestress_onlytp_dofmap_4: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_dofmap_4() : ufc::dofmap()
+  computefreesurfacestress_onlytp_dofmap_4() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_dofmap_4()
+  virtual ~computefreesurfacestress_onlytp_dofmap_4()
   {
     // Do nothing
   }
@@ -14739,7 +14739,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new mynavierstokestimecurv_dofmap_4();
+    return new computefreesurfacestress_onlytp_dofmap_4();
   }
 
 };
@@ -14747,18 +14747,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class mynavierstokestimecurv_dofmap_5: public ufc::dofmap
+class computefreesurfacestress_onlytp_dofmap_5: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_dofmap_5() : ufc::dofmap()
+  computefreesurfacestress_onlytp_dofmap_5() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_dofmap_5()
+  virtual ~computefreesurfacestress_onlytp_dofmap_5()
   {
     // Do nothing
   }
@@ -15058,12 +15058,12 @@ public:
     {
     case 0:
       {
-        return new mynavierstokestimecurv_dofmap_3();
+        return new computefreesurfacestress_onlytp_dofmap_3();
         break;
       }
     case 1:
       {
-        return new mynavierstokestimecurv_dofmap_4();
+        return new computefreesurfacestress_onlytp_dofmap_4();
         break;
       }
     }
@@ -15074,257 +15074,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new mynavierstokestimecurv_dofmap_5();
-  }
-
-};
-
-/// This class defines the interface for the tabulation of the cell
-/// tensor corresponding to the local contribution to a form from
-/// the integral over a cell.
-
-class mynavierstokestimecurv_cell_integral_0_otherwise: public ufc::cell_integral
-{
-public:
-
-  /// Constructor
-  mynavierstokestimecurv_cell_integral_0_otherwise() : ufc::cell_integral()
-  {
-    // Do nothing
-  }
-
-  /// Destructor
-  virtual ~mynavierstokestimecurv_cell_integral_0_otherwise()
-  {
-    // Do nothing
-  }
-
-  /// Tabulate which form coefficients are used by this integral
-  virtual const std::vector<bool> & enabled_coefficients() const
-  {
-    static const std::vector<bool> enabled({true, true, false, true, true, true, false});
-    return enabled;
-  }
-
-  /// Tabulate the tensor for the contribution from a local cell
-  virtual void tabulate_tensor(double*  A,
-                               const double * const *  w,
-                               const double*  vertex_coordinates,
-                               int cell_orientation) const
-  {
-    // Compute Jacobian
-    double J[4];
-    compute_jacobian_triangle_2d(J, vertex_coordinates);
-    
-    // Compute Jacobian inverse and determinant
-    double K[4];
-    double detJ;
-    compute_jacobian_inverse_triangle_2d(K, detJ, J);
-    
-    // Set scale factor
-    const double det = std::abs(detJ);
-    
-    // Compute cell volume
-    
-    
-    // Compute circumradius of triangle in 2D
-    
-    
-    // Array of quadrature weights.
-    static const double W7[7] = {0.1125, 0.0629695902724136, 0.0629695902724136, 0.0629695902724136, 0.0661970763942531, 0.0661970763942531, 0.0661970763942531};
-    // Quadrature points on the UFC reference element: (0.333333333333333, 0.333333333333333), (0.797426985353087, 0.101286507323456), (0.101286507323456, 0.797426985353087), (0.101286507323456, 0.101286507323456), (0.0597158717897698, 0.470142064105115), (0.470142064105115, 0.0597158717897698), (0.470142064105115, 0.470142064105115)
-    
-    // Values of basis functions at quadrature points.
-    static const double FE0_C0[7][3] = \
-    {{0.333333333333333, 0.333333333333333, 0.333333333333333},
-    {0.101286507323456, 0.797426985353087, 0.101286507323456},
-    {0.101286507323457, 0.101286507323456, 0.797426985353087},
-    {0.797426985353087, 0.101286507323456, 0.101286507323456},
-    {0.470142064105115, 0.0597158717897698, 0.470142064105115},
-    {0.470142064105115, 0.470142064105115, 0.0597158717897697},
-    {0.0597158717897699, 0.470142064105115, 0.470142064105115}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc14[3] = {12, 13, 14};
-    
-    static const double FE1_C0[7][6] = \
-    {{-0.111111111111111, -0.111111111111111, -0.111111111111111, 0.444444444444444, 0.444444444444444, 0.444444444444444},
-    {-0.0807685941918872, 0.474352608585538, -0.0807685941918871, 0.323074376767549, 0.0410358262631383, 0.323074376767549},
-    {-0.0807685941918872, -0.0807685941918872, 0.474352608585538, 0.323074376767549, 0.323074376767549, 0.0410358262631383},
-    {0.474352608585539, -0.0807685941918871, -0.0807685941918871, 0.0410358262631383, 0.323074376767549, 0.323074376767549},
-    {-0.0280749432230786, -0.0525839011025453, -0.0280749432230788, 0.112299772892315, 0.884134241764073, 0.112299772892315},
-    {-0.0280749432230787, -0.0280749432230788, -0.0525839011025453, 0.112299772892315, 0.112299772892315, 0.884134241764073},
-    {-0.0525839011025454, -0.0280749432230789, -0.0280749432230788, 0.884134241764072, 0.112299772892315, 0.112299772892315}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc6[6] = {0, 1, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc7[6] = {6, 7, 8, 9, 10, 11};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc8[6] = {0, 1, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc11[6] = {6, 7, 8, 9, 10, 11};
-    
-    static const double FE2_C0_D01[7][5] = \
-    {{-0.333333333333338, 0.333333333333335, 1.33333333333332, 0.0, -1.33333333333333},
-    {0.59485397070617, -0.594853970706174, 3.18970794141233, 1.22124532708767e-14, -3.18970794141235},
-    {0.594853970706169, 2.18970794141235, 0.405146029293808, -2.78456191211851, -0.405146029293824},
-    {-2.18970794141235, -0.594853970706174, 0.405146029293814, 2.78456191211853, -0.405146029293824},
-    {-0.880568256420466, 0.880568256420462, 0.238863487159066, 0.0, -0.238863487159078},
-    {-0.880568256420465, -0.76113651284092, 1.88056825642045, 1.64170476926139, -1.88056825642046},
-    {0.761136512840915, 0.880568256420462, 1.88056825642045, -1.64170476926137, -1.88056825642046}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc9[5] = {0, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc12[5] = {6, 8, 9, 10, 11};
-    
-    static const double FE2_C0_D10[7][5] = \
-    {{-0.333333333333333, 0.333333333333333, 1.33333333333333, -1.33333333333333, 0.0},
-    {0.594853970706177, 2.18970794141235, 0.405146029293824, -0.405146029293824, -2.78456191211853},
-    {0.594853970706173, -0.594853970706176, 3.18970794141234, -3.18970794141234, 0.0},
-    {-2.18970794141235, -0.594853970706177, 0.405146029293824, -0.405146029293824, 2.78456191211853},
-    {-0.880568256420461, -0.761136512840922, 1.88056825642046, -1.88056825642046, 1.64170476926138},
-    {-0.88056825642046, 0.880568256420459, 0.238863487159078, -0.238863487159078, 0.0},
-    {0.761136512840922, 0.880568256420461, 1.88056825642046, -1.88056825642046, -1.64170476926138}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc10[5] = {0, 1, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc13[5] = {6, 7, 9, 10, 11};
-    
-    // Reset values in the element tensor.
-    for (unsigned int r = 0; r < 15; r++)
-    {
-      A[r] = 0.0;
-    } // end loop over 'r'
-    // Number of operations to compute geometry constants: 42.
-    double G[19];
-    G[0] = K[0]*det;
-    G[1] = K[2]*det;
-    G[2] = K[1]*det;
-    G[3] = K[3]*det;
-    G[4] =  - K[0]*det*w[3][0];
-    G[5] = det*w[1][0]*w[3][0]*(K[0]*K[0] + K[1]*K[1]);
-    G[6] = det*w[1][0]*w[3][0]*(K[0]*K[2] + K[1]*K[3]);
-    G[7] =  - K[3]*det*w[3][0];
-    G[8] = det*w[1][0]*w[3][0]*(K[2]*K[2] + K[3]*K[3]);
-    G[9] =  - K[1]*det*w[3][0];
-    G[10] =  - K[2]*det*w[3][0];
-    G[11] = K[0]*det*w[3][0];
-    G[12] = K[1]*det*w[3][0];
-    G[13] =  - K[0]*det;
-    G[14] =  - K[1]*det;
-    G[15] = K[2]*det*w[3][0];
-    G[16] = K[3]*det*w[3][0];
-    G[17] =  - K[2]*det;
-    G[18] =  - K[3]*det;
-    
-    // Compute element tensor using UFL quadrature representation
-    // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
-    
-    // Loop quadrature points for integral.
-    // Number of operations to compute element tensor for following IP loop = 1834
-    for (unsigned int ip = 0; ip < 7; ip++)
-    {
-      
-      // Coefficient declarations.
-      double F0 = 0.0;
-      double F1 = 0.0;
-      double F2 = 0.0;
-      double F3 = 0.0;
-      double F4 = 0.0;
-      double F5 = 0.0;
-      double F6 = 0.0;
-      double F7 = 0.0;
-      double F8 = 0.0;
-      double F9 = 0.0;
-      double F10 = 0.0;
-      
-      // Total number of operations to compute function values = 6
-      for (unsigned int r = 0; r < 3; r++)
-      {
-        F0 += FE0_C0[ip][r]*w[0][nzc14[r]];
-      } // end loop over 'r'
-      
-      // Total number of operations to compute function values = 40
-      for (unsigned int r = 0; r < 5; r++)
-      {
-        F1 += FE2_C0_D10[ip][r]*w[0][nzc10[r]];
-        F2 += FE2_C0_D01[ip][r]*w[0][nzc9[r]];
-        F3 += FE2_C0_D10[ip][r]*w[0][nzc13[r]];
-        F4 += FE2_C0_D01[ip][r]*w[0][nzc12[r]];
-      } // end loop over 'r'
-      
-      // Total number of operations to compute function values = 72
-      for (unsigned int r = 0; r < 6; r++)
-      {
-        F5 += FE1_C0[ip][r]*w[0][nzc8[r]];
-        F6 += FE1_C0[ip][r]*w[0][nzc11[r]];
-        F7 += FE1_C0[ip][r]*w[5][nzc6[r]];
-        F8 += FE1_C0[ip][r]*w[5][nzc7[r]];
-        F9 += FE1_C0[ip][r]*w[4][nzc6[r]];
-        F10 += FE1_C0[ip][r]*w[4][nzc7[r]];
-      } // end loop over 'r'
-      
-      // Number of operations to compute ip constants: 74
-      double I[7];
-      // Number of operations: 8
-      I[0] = W7[ip]*(F1*G[0] + F2*G[1] + F3*G[2] + F4*G[3]);
-      
-      // Number of operations: 6
-      I[1] = W7[ip]*(F0*G[4] + F1*G[5] + F2*G[6]);
-      
-      // Number of operations: 6
-      I[2] = W7[ip]*(F0*G[7] + F3*G[6] + F4*G[8]);
-      
-      // Number of operations: 6
-      I[3] = W7[ip]*(F0*G[9] + F3*G[5] + F4*G[6]);
-      
-      // Number of operations: 6
-      I[4] = W7[ip]*(F0*G[10] + F1*G[6] + F2*G[8]);
-      
-      // Number of operations: 21
-      I[5] = W7[ip]*(F3*(F5*G[11] + F6*G[12] + F7*G[13] + F8*G[14]) + F4*(F5*G[15] + F6*G[16] + F7*G[17] + F8*G[18]) + det*(F6 - F10));
-      
-      // Number of operations: 21
-      I[6] = W7[ip]*(F1*(F5*G[11] + F6*G[12] + F7*G[13] + F8*G[14]) + F2*(F5*G[15] + F6*G[16] + F7*G[17] + F8*G[18]) + det*(F5 - F9));
-      
-      
-      // Number of operations for primary indices: 6
-      for (unsigned int j = 0; j < 3; j++)
-      {
-        // Number of operations to compute entry: 2
-        A[nzc14[j]] += FE0_C0[ip][j]*I[0];
-      } // end loop over 'j'
-      
-      // Number of operations for primary indices: 40
-      for (unsigned int j = 0; j < 5; j++)
-      {
-        // Number of operations to compute entry: 2
-        A[nzc10[j]] += FE2_C0_D10[ip][j]*I[1];
-        // Number of operations to compute entry: 2
-        A[nzc12[j]] += FE2_C0_D01[ip][j]*I[2];
-        // Number of operations to compute entry: 2
-        A[nzc13[j]] += FE2_C0_D10[ip][j]*I[3];
-        // Number of operations to compute entry: 2
-        A[nzc9[j]] += FE2_C0_D01[ip][j]*I[4];
-      } // end loop over 'j'
-      
-      // Number of operations for primary indices: 24
-      for (unsigned int j = 0; j < 6; j++)
-      {
-        // Number of operations to compute entry: 2
-        A[nzc11[j]] += FE1_C0[ip][j]*I[5];
-        // Number of operations to compute entry: 2
-        A[nzc8[j]] += FE1_C0[ip][j]*I[6];
-      } // end loop over 'j'
-    } // end loop over 'ip'
+    return new computefreesurfacestress_onlytp_dofmap_5();
   }
 
 };
@@ -15333,18 +15083,18 @@ public:
 /// exterior facet tensor corresponding to the local contribution to
 /// a form from the integral over an exterior facet.
 
-class mynavierstokestimecurv_exterior_facet_integral_0_1: public ufc::exterior_facet_integral
+class computefreesurfacestress_onlytp_exterior_facet_integral_0_4: public ufc::exterior_facet_integral
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_exterior_facet_integral_0_1() : ufc::exterior_facet_integral()
+  computefreesurfacestress_onlytp_exterior_facet_integral_0_4() : ufc::exterior_facet_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_exterior_facet_integral_0_1()
+  virtual ~computefreesurfacestress_onlytp_exterior_facet_integral_0_4()
   {
     // Do nothing
   }
@@ -15352,239 +15102,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({false, false, true, true, false, false, false});
-    return enabled;
-  }
-
-  /// Tabulate the tensor for the contribution from a local exterior facet
-  virtual void tabulate_tensor(double*  A,
-                               const double * const *  w,
-                               const double*  vertex_coordinates,
-                               std::size_t facet,
-                               int cell_orientation) const
-  {
-    // Compute Jacobian
-    double J[4];
-    compute_jacobian_triangle_2d(J, vertex_coordinates);
-    
-    // Compute Jacobian inverse and determinant
-    double K[4];
-    double detJ;
-    compute_jacobian_inverse_triangle_2d(K, detJ, J);
-    
-    
-    
-    // Get vertices on edge
-    static unsigned int edge_vertices[3][2] = {{1, 2}, {0, 2}, {0, 1}};
-    const unsigned int v0 = edge_vertices[facet][0];
-    const unsigned int v1 = edge_vertices[facet][1];
-    
-    // Compute scale factor (length of edge scaled by length of reference interval)
-    const double dx0 = vertex_coordinates[2*v1 + 0] - vertex_coordinates[2*v0 + 0];
-    const double dx1 = vertex_coordinates[2*v1 + 1] - vertex_coordinates[2*v0 + 1];
-    const double det = std::sqrt(dx0*dx0 + dx1*dx1);
-    
-    
-    const bool direction = dx1*(vertex_coordinates[2*facet] - vertex_coordinates[2*v0]) - dx0*(vertex_coordinates[2*facet + 1] - vertex_coordinates[2*v0 + 1]) < 0;
-    // Compute facet normals from the facet scale factor constants
-    const double n0 = direction ? dx1 / det : -dx1 / det;
-    const double n1 = direction ? -dx0 / det : dx0 / det;
-    
-    // Facet area
-    
-    // Compute cell volume
-    
-    
-    // Compute circumradius of triangle in 2D
-    
-    
-    // Array of quadrature weights.
-    static const double W1 = 1.0;
-    // Quadrature points on the UFC reference element: (0.5)
-    
-    // Values of basis functions at quadrature points.
-    static const double FE0_f0_C0_D01[1][2] = \
-    {{-1.0, 1.0}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc28[2] = {0, 1};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc31[2] = {6, 7};
-    
-    static const double FE1_f0_C0_D01[1][5] = \
-    {{0.999999999999995, 1, 1.99999999999999, -1.99999999999999, -2.0}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc11[5] = {0, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc14[5] = {6, 8, 9, 10, 11};
-    
-    static const double FE1_f0_C0_D10[1][5] = \
-    {{1, 1, 2, -2, -2}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc12[5] = {0, 1, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc15[5] = {6, 7, 9, 10, 11};
-    
-    static const double FE1_f1_C0_D01[1][3] = \
-    {{-1.00000000000001, 1, -1.31561428418081e-14}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc20[3] = {0, 2, 3};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc23[3] = {6, 8, 9};
-    
-    static const double FE1_f1_C0_D10[1][5] = \
-    {{-1.0, -1, 2, -2, 2}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc21[5] = {0, 1, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc24[5] = {6, 7, 9, 10, 11};
-    
-    static const double FE1_f2_C0_D01[1][5] = \
-    {{-1, -1.0, 1.99999999999999, 2.00000000000001, -2}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc27[5] = {0, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc30[5] = {6, 8, 9, 10, 11};
-    
-    // Reset values in the element tensor.
-    for (unsigned int r = 0; r < 15; r++)
-    {
-      A[r] = 0.0;
-    } // end loop over 'r'
-    // Number of operations to compute geometry constants: 36.
-    double G[4];
-    G[0] = W1*det*w[2][0]*w[3][0]*(K[2] - n0*(K[2]*n0 + K[3]*n1));
-    G[1] = W1*det*w[2][0]*w[3][0]*(K[0] - n0*(K[0]*n0 + K[1]*n1));
-    G[2] = W1*det*w[2][0]*w[3][0]*(K[3] - n1*(K[2]*n0 + K[3]*n1));
-    G[3] = W1*det*w[2][0]*w[3][0]*(K[1] - n1*(K[0]*n0 + K[1]*n1));
-    
-    // Compute element tensor using UFL quadrature representation
-    // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
-    switch (facet)
-    {
-    case 0:
-      {
-        // Total number of operations to compute element tensor (from this point): 40
-      
-      // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 40
-      for (unsigned int ip = 0; ip < 1; ip++)
-      {
-        
-        // Number of operations for primary indices: 40
-        for (unsigned int j = 0; j < 5; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc11[j]] += FE1_f0_C0_D01[0][j]*G[0];
-          // Number of operations to compute entry: 2
-          A[nzc12[j]] += FE1_f0_C0_D10[0][j]*G[1];
-          // Number of operations to compute entry: 2
-          A[nzc14[j]] += FE1_f0_C0_D01[0][j]*G[2];
-          // Number of operations to compute entry: 2
-          A[nzc15[j]] += FE1_f0_C0_D10[0][j]*G[3];
-        } // end loop over 'j'
-      } // end loop over 'ip'
-        break;
-      }
-    case 1:
-      {
-        // Total number of operations to compute element tensor (from this point): 32
-      
-      // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 32
-      for (unsigned int ip = 0; ip < 1; ip++)
-      {
-        
-        // Number of operations for primary indices: 12
-        for (unsigned int j = 0; j < 3; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc20[j]] += FE1_f1_C0_D01[0][j]*G[0];
-          // Number of operations to compute entry: 2
-          A[nzc23[j]] += FE1_f1_C0_D01[0][j]*G[2];
-        } // end loop over 'j'
-        
-        // Number of operations for primary indices: 20
-        for (unsigned int j = 0; j < 5; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc21[j]] += FE1_f1_C0_D10[0][j]*G[1];
-          // Number of operations to compute entry: 2
-          A[nzc24[j]] += FE1_f1_C0_D10[0][j]*G[3];
-        } // end loop over 'j'
-      } // end loop over 'ip'
-        break;
-      }
-    case 2:
-      {
-        // Total number of operations to compute element tensor (from this point): 28
-      
-      // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 28
-      for (unsigned int ip = 0; ip < 1; ip++)
-      {
-        
-        // Number of operations for primary indices: 8
-        for (unsigned int j = 0; j < 2; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc28[j]] += FE0_f0_C0_D01[0][j]*G[1];
-          // Number of operations to compute entry: 2
-          A[nzc31[j]] += FE0_f0_C0_D01[0][j]*G[3];
-        } // end loop over 'j'
-        
-        // Number of operations for primary indices: 20
-        for (unsigned int j = 0; j < 5; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc27[j]] += FE1_f2_C0_D01[0][j]*G[0];
-          // Number of operations to compute entry: 2
-          A[nzc30[j]] += FE1_f2_C0_D01[0][j]*G[2];
-        } // end loop over 'j'
-      } // end loop over 'ip'
-        break;
-      }
-    }
-    
-  }
-
-};
-
-/// This class defines the interface for the tabulation of the
-/// exterior facet tensor corresponding to the local contribution to
-/// a form from the integral over an exterior facet.
-
-class mynavierstokestimecurv_exterior_facet_integral_0_4: public ufc::exterior_facet_integral
-{
-public:
-
-  /// Constructor
-  mynavierstokestimecurv_exterior_facet_integral_0_4() : ufc::exterior_facet_integral()
-  {
-    // Do nothing
-  }
-
-  /// Destructor
-  virtual ~mynavierstokestimecurv_exterior_facet_integral_0_4()
-  {
-    // Do nothing
-  }
-
-  /// Tabulate which form coefficients are used by this integral
-  virtual const std::vector<bool> & enabled_coefficients() const
-  {
-    static const std::vector<bool> enabled({false, false, true, true, false, false, true});
+    static const std::vector<bool> enabled({true, true, true});
     return enabled;
   }
 
@@ -15661,105 +15179,29 @@ public:
     static const unsigned int nzc13[3] = {1, 2, 3};
     
     // Array of non-zero columns
-    static const unsigned int nzc16[3] = {7, 8, 9};
+    static const unsigned int nzc14[3] = {7, 8, 9};
     
     // Array of non-zero columns
-    static const unsigned int nzc22[3] = {0, 2, 4};
+    static const unsigned int nzc16[3] = {0, 2, 4};
     
     // Array of non-zero columns
-    static const unsigned int nzc25[3] = {6, 8, 10};
+    static const unsigned int nzc17[3] = {6, 8, 10};
     
     // Array of non-zero columns
-    static const unsigned int nzc29[3] = {0, 1, 5};
+    static const unsigned int nzc19[3] = {0, 1, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc32[3] = {6, 7, 11};
-    
-    static const double FE2_f0_C0_D01[4][5] = \
-    {{0.999999999999995, -0.722272623188105, 3.72227262318809, -0.277727376811882, -3.72227262318811},
-    {0.999999999999995, 0.320037912830289, 2.6799620871697, -1.32003791283028, -2.67996208716971},
-    {0.999999999999995, 1.67996208716971, 1.32003791283027, -2.6799620871697, -1.32003791283029},
-    {0.999999999999995, 2.72227262318811, 0.277727376811876, -3.72227262318809, -0.277727376811892}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc14[5] = {0, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc17[5] = {6, 8, 9, 10, 11};
-    
-    static const double FE2_f0_C0_D10[4][5] = \
-    {{1, 2.72227262318811, 0.277727376811893, -0.277727376811893, -3.72227262318811},
-    {1, 1.67996208716971, 1.32003791283029, -1.32003791283029, -2.67996208716972},
-    {1.0, 0.320037912830288, 2.67996208716971, -2.67996208716971, -1.32003791283029},
-    {1.0, -0.722272623188107, 3.7222726231881, -3.7222726231881, -0.277727376811893}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc15[5] = {0, 1, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc18[5] = {6, 7, 9, 10, 11};
-    
-    static const double FE2_f1_C0_D01[4][4] = \
-    {{-2.72227262318811, -0.722272623188105, -1.04360964314765e-14, 3.44454524637622},
-    {-1.67996208716972, 0.320037912830289, -1.17683640610267e-14, 1.35992417433943},
-    {-0.320037912830293, 1.67996208716971, -1.50990331349021e-14, -1.35992417433942},
-    {0.722272623188099, 2.72227262318811, -1.90958360235527e-14, -3.4445452463762}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc23[4] = {0, 2, 3, 4};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc26[4] = {6, 8, 9, 10};
-    
-    static const double FE2_f1_C0_D10[4][5] = \
-    {{-2.72227262318811, -1, 0.277727376811893, -0.277727376811893, 3.72227262318811},
-    {-1.67996208716971, -1, 1.32003791283029, -1.32003791283029, 2.67996208716971},
-    {-0.320037912830289, -1, 2.67996208716971, -2.67996208716971, 1.32003791283029},
-    {0.722272623188103, -1, 3.7222726231881, -3.7222726231881, 0.277727376811898}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc24[5] = {0, 1, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc27[5] = {6, 7, 9, 10, 11};
-    
-    static const double FE2_f2_C0_D01[4][5] = \
-    {{-2.72227262318811, -1.0, 0.277727376811885, 3.72227262318811, -0.277727376811893},
-    {-1.67996208716972, -0.999999999999999, 1.32003791283028, 2.67996208716972, -1.32003791283029},
-    {-0.320037912830292, -1.0, 2.6799620871697, 1.3200379128303, -2.67996208716971},
-    {0.7222726231881, -1.0, 3.72227262318809, 0.277727376811908, -3.72227262318811}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc30[5] = {0, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc33[5] = {6, 8, 9, 10, 11};
-    
-    static const double FE2_f2_C0_D10[4][3] = \
-    {{-2.7222726231881, -0.722272623188108, 3.44454524637621},
-    {-1.67996208716971, 0.320037912830285, 1.35992417433943},
-    {-0.320037912830286, 1.67996208716971, -1.35992417433943},
-    {0.722272623188108, 2.72227262318811, -3.44454524637621}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc31[3] = {0, 1, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc34[3] = {6, 7, 11};
+    static const unsigned int nzc20[3] = {6, 7, 11};
     
     // Reset values in the element tensor.
     for (unsigned int r = 0; r < 15; r++)
     {
       A[r] = 0.0;
     } // end loop over 'r'
-    // Number of operations to compute geometry constants: 40.
-    double G[6];
-    G[0] = det*n1*w[2][0]*w[3][0]/facet_area;
-    G[1] =  - det*n0*w[2][0]*w[3][0]/facet_area;
-    G[2] = det*w[2][0]*w[3][0]*(K[2] - n0*(K[2]*n0 + K[3]*n1));
-    G[3] = det*w[2][0]*w[3][0]*(K[0] - n0*(K[0]*n0 + K[1]*n1));
-    G[4] = det*w[2][0]*w[3][0]*(K[3] - n1*(K[2]*n0 + K[3]*n1));
-    G[5] = det*w[2][0]*w[3][0]*(K[1] - n1*(K[0]*n0 + K[1]*n1));
+    // Number of operations to compute geometry constants: 8.
+    double G[2];
+    G[0] =  - det*n1*w[0][0]*w[1][0]/facet_area;
+    G[1] = det*n0*w[0][0]*w[1][0]/facet_area;
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
@@ -15767,10 +15209,10 @@ public:
     {
     case 0:
       {
-        // Total number of operations to compute element tensor (from this point): 280
+        // Total number of operations to compute element tensor (from this point): 104
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 280
+      // Number of operations to compute element tensor for following IP loop = 104
       for (unsigned int ip = 0; ip < 4; ip++)
       {
         
@@ -15780,28 +15222,16 @@ public:
         // Total number of operations to compute function values = 10
         for (unsigned int r = 0; r < 5; r++)
         {
-          F0 += FE0_f0[ip][r]*w[6][nzc0[r]];
+          F0 += FE0_f0[ip][r]*w[2][nzc0[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 8
-        double I[6];
+        // Number of operations to compute ip constants: 4
+        double I[2];
         // Number of operations: 2
         I[0] = F0*G[0]*W4[ip];
         
         // Number of operations: 2
         I[1] = F0*G[1]*W4[ip];
-        
-        // Number of operations: 1
-        I[2] = G[2]*W4[ip];
-        
-        // Number of operations: 1
-        I[3] = G[3]*W4[ip];
-        
-        // Number of operations: 1
-        I[4] = G[4]*W4[ip];
-        
-        // Number of operations: 1
-        I[5] = G[5]*W4[ip];
         
         
         // Number of operations for primary indices: 12
@@ -15810,30 +15240,17 @@ public:
           // Number of operations to compute entry: 2
           A[nzc13[j]] += FE2_f0_C0[ip][j]*I[0];
           // Number of operations to compute entry: 2
-          A[nzc16[j]] += FE2_f0_C0[ip][j]*I[1];
-        } // end loop over 'j'
-        
-        // Number of operations for primary indices: 40
-        for (unsigned int j = 0; j < 5; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc14[j]] += FE2_f0_C0_D01[ip][j]*I[2];
-          // Number of operations to compute entry: 2
-          A[nzc15[j]] += FE2_f0_C0_D10[ip][j]*I[3];
-          // Number of operations to compute entry: 2
-          A[nzc17[j]] += FE2_f0_C0_D01[ip][j]*I[4];
-          // Number of operations to compute entry: 2
-          A[nzc18[j]] += FE2_f0_C0_D10[ip][j]*I[5];
+          A[nzc14[j]] += FE2_f0_C0[ip][j]*I[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
       }
     case 1:
       {
-        // Total number of operations to compute element tensor (from this point): 264
+        // Total number of operations to compute element tensor (from this point): 104
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 264
+      // Number of operations to compute element tensor for following IP loop = 104
       for (unsigned int ip = 0; ip < 4; ip++)
       {
         
@@ -15843,65 +15260,35 @@ public:
         // Total number of operations to compute function values = 10
         for (unsigned int r = 0; r < 5; r++)
         {
-          F0 += FE0_f0[ip][r]*w[6][nzc1[r]];
+          F0 += FE0_f0[ip][r]*w[2][nzc1[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 8
-        double I[6];
+        // Number of operations to compute ip constants: 4
+        double I[2];
         // Number of operations: 2
         I[0] = F0*G[0]*W4[ip];
         
         // Number of operations: 2
         I[1] = F0*G[1]*W4[ip];
         
-        // Number of operations: 1
-        I[2] = G[2]*W4[ip];
-        
-        // Number of operations: 1
-        I[3] = G[4]*W4[ip];
-        
-        // Number of operations: 1
-        I[4] = G[3]*W4[ip];
-        
-        // Number of operations: 1
-        I[5] = G[5]*W4[ip];
-        
         
         // Number of operations for primary indices: 12
         for (unsigned int j = 0; j < 3; j++)
         {
           // Number of operations to compute entry: 2
-          A[nzc22[j]] += FE2_f0_C0[ip][j]*I[0];
+          A[nzc16[j]] += FE2_f0_C0[ip][j]*I[0];
           // Number of operations to compute entry: 2
-          A[nzc25[j]] += FE2_f0_C0[ip][j]*I[1];
-        } // end loop over 'j'
-        
-        // Number of operations for primary indices: 16
-        for (unsigned int j = 0; j < 4; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc23[j]] += FE2_f1_C0_D01[ip][j]*I[2];
-          // Number of operations to compute entry: 2
-          A[nzc26[j]] += FE2_f1_C0_D01[ip][j]*I[3];
-        } // end loop over 'j'
-        
-        // Number of operations for primary indices: 20
-        for (unsigned int j = 0; j < 5; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc24[j]] += FE2_f1_C0_D10[ip][j]*I[4];
-          // Number of operations to compute entry: 2
-          A[nzc27[j]] += FE2_f1_C0_D10[ip][j]*I[5];
+          A[nzc17[j]] += FE2_f0_C0[ip][j]*I[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
       }
     case 2:
       {
-        // Total number of operations to compute element tensor (from this point): 248
+        // Total number of operations to compute element tensor (from this point): 104
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 248
+      // Number of operations to compute element tensor for following IP loop = 104
       for (unsigned int ip = 0; ip < 4; ip++)
       {
         
@@ -15911,50 +15298,25 @@ public:
         // Total number of operations to compute function values = 10
         for (unsigned int r = 0; r < 5; r++)
         {
-          F0 += FE0_f0[ip][r]*w[6][nzc2[r]];
+          F0 += FE0_f0[ip][r]*w[2][nzc2[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 8
-        double I[6];
+        // Number of operations to compute ip constants: 4
+        double I[2];
         // Number of operations: 2
         I[0] = F0*G[0]*W4[ip];
         
-        // Number of operations: 1
-        I[1] = G[3]*W4[ip];
-        
         // Number of operations: 2
-        I[2] = F0*G[1]*W4[ip];
-        
-        // Number of operations: 1
-        I[3] = G[5]*W4[ip];
-        
-        // Number of operations: 1
-        I[4] = G[2]*W4[ip];
-        
-        // Number of operations: 1
-        I[5] = G[4]*W4[ip];
+        I[1] = F0*G[1]*W4[ip];
         
         
-        // Number of operations for primary indices: 24
+        // Number of operations for primary indices: 12
         for (unsigned int j = 0; j < 3; j++)
         {
           // Number of operations to compute entry: 2
-          A[nzc29[j]] += FE2_f0_C0[ip][j]*I[0];
+          A[nzc19[j]] += FE2_f0_C0[ip][j]*I[0];
           // Number of operations to compute entry: 2
-          A[nzc31[j]] += FE2_f2_C0_D10[ip][j]*I[1];
-          // Number of operations to compute entry: 2
-          A[nzc32[j]] += FE2_f0_C0[ip][j]*I[2];
-          // Number of operations to compute entry: 2
-          A[nzc34[j]] += FE2_f2_C0_D10[ip][j]*I[3];
-        } // end loop over 'j'
-        
-        // Number of operations for primary indices: 20
-        for (unsigned int j = 0; j < 5; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc30[j]] += FE2_f2_C0_D01[ip][j]*I[4];
-          // Number of operations to compute entry: 2
-          A[nzc33[j]] += FE2_f2_C0_D01[ip][j]*I[5];
+          A[nzc20[j]] += FE2_f0_C0[ip][j]*I[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
@@ -15969,18 +15331,18 @@ public:
 /// exterior facet tensor corresponding to the local contribution to
 /// a form from the integral over an exterior facet.
 
-class mynavierstokestimecurv_exterior_facet_integral_0_5: public ufc::exterior_facet_integral
+class computefreesurfacestress_onlytp_exterior_facet_integral_0_5: public ufc::exterior_facet_integral
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_exterior_facet_integral_0_5() : ufc::exterior_facet_integral()
+  computefreesurfacestress_onlytp_exterior_facet_integral_0_5() : ufc::exterior_facet_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_exterior_facet_integral_0_5()
+  virtual ~computefreesurfacestress_onlytp_exterior_facet_integral_0_5()
   {
     // Do nothing
   }
@@ -15988,7 +15350,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({false, false, true, true, false, false, true});
+    static const std::vector<bool> enabled({true, true, true});
     return enabled;
   }
 
@@ -16065,105 +15427,29 @@ public:
     static const unsigned int nzc13[3] = {1, 2, 3};
     
     // Array of non-zero columns
-    static const unsigned int nzc16[3] = {7, 8, 9};
+    static const unsigned int nzc14[3] = {7, 8, 9};
     
     // Array of non-zero columns
-    static const unsigned int nzc22[3] = {0, 2, 4};
+    static const unsigned int nzc16[3] = {0, 2, 4};
     
     // Array of non-zero columns
-    static const unsigned int nzc25[3] = {6, 8, 10};
+    static const unsigned int nzc17[3] = {6, 8, 10};
     
     // Array of non-zero columns
-    static const unsigned int nzc29[3] = {0, 1, 5};
+    static const unsigned int nzc19[3] = {0, 1, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc32[3] = {6, 7, 11};
-    
-    static const double FE2_f0_C0_D01[4][5] = \
-    {{0.999999999999995, -0.722272623188105, 3.72227262318809, -0.277727376811882, -3.72227262318811},
-    {0.999999999999995, 0.320037912830289, 2.6799620871697, -1.32003791283028, -2.67996208716971},
-    {0.999999999999995, 1.67996208716971, 1.32003791283027, -2.6799620871697, -1.32003791283029},
-    {0.999999999999995, 2.72227262318811, 0.277727376811876, -3.72227262318809, -0.277727376811892}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc14[5] = {0, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc17[5] = {6, 8, 9, 10, 11};
-    
-    static const double FE2_f0_C0_D10[4][5] = \
-    {{1, 2.72227262318811, 0.277727376811893, -0.277727376811893, -3.72227262318811},
-    {1, 1.67996208716971, 1.32003791283029, -1.32003791283029, -2.67996208716972},
-    {1.0, 0.320037912830288, 2.67996208716971, -2.67996208716971, -1.32003791283029},
-    {1.0, -0.722272623188107, 3.7222726231881, -3.7222726231881, -0.277727376811893}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc15[5] = {0, 1, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc18[5] = {6, 7, 9, 10, 11};
-    
-    static const double FE2_f1_C0_D01[4][4] = \
-    {{-2.72227262318811, -0.722272623188105, -1.04360964314765e-14, 3.44454524637622},
-    {-1.67996208716972, 0.320037912830289, -1.17683640610267e-14, 1.35992417433943},
-    {-0.320037912830293, 1.67996208716971, -1.50990331349021e-14, -1.35992417433942},
-    {0.722272623188099, 2.72227262318811, -1.90958360235527e-14, -3.4445452463762}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc23[4] = {0, 2, 3, 4};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc26[4] = {6, 8, 9, 10};
-    
-    static const double FE2_f1_C0_D10[4][5] = \
-    {{-2.72227262318811, -1, 0.277727376811893, -0.277727376811893, 3.72227262318811},
-    {-1.67996208716971, -1, 1.32003791283029, -1.32003791283029, 2.67996208716971},
-    {-0.320037912830289, -1, 2.67996208716971, -2.67996208716971, 1.32003791283029},
-    {0.722272623188103, -1, 3.7222726231881, -3.7222726231881, 0.277727376811898}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc24[5] = {0, 1, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc27[5] = {6, 7, 9, 10, 11};
-    
-    static const double FE2_f2_C0_D01[4][5] = \
-    {{-2.72227262318811, -1.0, 0.277727376811885, 3.72227262318811, -0.277727376811893},
-    {-1.67996208716972, -0.999999999999999, 1.32003791283028, 2.67996208716972, -1.32003791283029},
-    {-0.320037912830292, -1.0, 2.6799620871697, 1.3200379128303, -2.67996208716971},
-    {0.7222726231881, -1.0, 3.72227262318809, 0.277727376811908, -3.72227262318811}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc30[5] = {0, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc33[5] = {6, 8, 9, 10, 11};
-    
-    static const double FE2_f2_C0_D10[4][3] = \
-    {{-2.7222726231881, -0.722272623188108, 3.44454524637621},
-    {-1.67996208716971, 0.320037912830285, 1.35992417433943},
-    {-0.320037912830286, 1.67996208716971, -1.35992417433943},
-    {0.722272623188108, 2.72227262318811, -3.44454524637621}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc31[3] = {0, 1, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc34[3] = {6, 7, 11};
+    static const unsigned int nzc20[3] = {6, 7, 11};
     
     // Reset values in the element tensor.
     for (unsigned int r = 0; r < 15; r++)
     {
       A[r] = 0.0;
     } // end loop over 'r'
-    // Number of operations to compute geometry constants: 40.
-    double G[6];
-    G[0] =  - det*n1*w[2][0]*w[3][0]/facet_area;
-    G[1] = det*n0*w[2][0]*w[3][0]/facet_area;
-    G[2] = det*w[2][0]*w[3][0]*(K[2] - n0*(K[2]*n0 + K[3]*n1));
-    G[3] = det*w[2][0]*w[3][0]*(K[0] - n0*(K[0]*n0 + K[1]*n1));
-    G[4] = det*w[2][0]*w[3][0]*(K[3] - n1*(K[2]*n0 + K[3]*n1));
-    G[5] = det*w[2][0]*w[3][0]*(K[1] - n1*(K[0]*n0 + K[1]*n1));
+    // Number of operations to compute geometry constants: 8.
+    double G[2];
+    G[0] = det*n1*w[0][0]*w[1][0]/facet_area;
+    G[1] =  - det*n0*w[0][0]*w[1][0]/facet_area;
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
@@ -16171,10 +15457,10 @@ public:
     {
     case 0:
       {
-        // Total number of operations to compute element tensor (from this point): 280
+        // Total number of operations to compute element tensor (from this point): 104
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 280
+      // Number of operations to compute element tensor for following IP loop = 104
       for (unsigned int ip = 0; ip < 4; ip++)
       {
         
@@ -16184,28 +15470,16 @@ public:
         // Total number of operations to compute function values = 10
         for (unsigned int r = 0; r < 5; r++)
         {
-          F0 += FE0_f0[ip][r]*w[6][nzc0[r]];
+          F0 += FE0_f0[ip][r]*w[2][nzc0[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 8
-        double I[6];
+        // Number of operations to compute ip constants: 4
+        double I[2];
         // Number of operations: 2
         I[0] = F0*G[0]*W4[ip];
         
         // Number of operations: 2
         I[1] = F0*G[1]*W4[ip];
-        
-        // Number of operations: 1
-        I[2] = G[2]*W4[ip];
-        
-        // Number of operations: 1
-        I[3] = G[3]*W4[ip];
-        
-        // Number of operations: 1
-        I[4] = G[4]*W4[ip];
-        
-        // Number of operations: 1
-        I[5] = G[5]*W4[ip];
         
         
         // Number of operations for primary indices: 12
@@ -16214,30 +15488,17 @@ public:
           // Number of operations to compute entry: 2
           A[nzc13[j]] += FE2_f0_C0[ip][j]*I[0];
           // Number of operations to compute entry: 2
-          A[nzc16[j]] += FE2_f0_C0[ip][j]*I[1];
-        } // end loop over 'j'
-        
-        // Number of operations for primary indices: 40
-        for (unsigned int j = 0; j < 5; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc14[j]] += FE2_f0_C0_D01[ip][j]*I[2];
-          // Number of operations to compute entry: 2
-          A[nzc15[j]] += FE2_f0_C0_D10[ip][j]*I[3];
-          // Number of operations to compute entry: 2
-          A[nzc17[j]] += FE2_f0_C0_D01[ip][j]*I[4];
-          // Number of operations to compute entry: 2
-          A[nzc18[j]] += FE2_f0_C0_D10[ip][j]*I[5];
+          A[nzc14[j]] += FE2_f0_C0[ip][j]*I[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
       }
     case 1:
       {
-        // Total number of operations to compute element tensor (from this point): 264
+        // Total number of operations to compute element tensor (from this point): 104
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 264
+      // Number of operations to compute element tensor for following IP loop = 104
       for (unsigned int ip = 0; ip < 4; ip++)
       {
         
@@ -16247,65 +15508,35 @@ public:
         // Total number of operations to compute function values = 10
         for (unsigned int r = 0; r < 5; r++)
         {
-          F0 += FE0_f0[ip][r]*w[6][nzc1[r]];
+          F0 += FE0_f0[ip][r]*w[2][nzc1[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 8
-        double I[6];
+        // Number of operations to compute ip constants: 4
+        double I[2];
         // Number of operations: 2
         I[0] = F0*G[0]*W4[ip];
         
         // Number of operations: 2
         I[1] = F0*G[1]*W4[ip];
         
-        // Number of operations: 1
-        I[2] = G[2]*W4[ip];
-        
-        // Number of operations: 1
-        I[3] = G[4]*W4[ip];
-        
-        // Number of operations: 1
-        I[4] = G[3]*W4[ip];
-        
-        // Number of operations: 1
-        I[5] = G[5]*W4[ip];
-        
         
         // Number of operations for primary indices: 12
         for (unsigned int j = 0; j < 3; j++)
         {
           // Number of operations to compute entry: 2
-          A[nzc22[j]] += FE2_f0_C0[ip][j]*I[0];
+          A[nzc16[j]] += FE2_f0_C0[ip][j]*I[0];
           // Number of operations to compute entry: 2
-          A[nzc25[j]] += FE2_f0_C0[ip][j]*I[1];
-        } // end loop over 'j'
-        
-        // Number of operations for primary indices: 16
-        for (unsigned int j = 0; j < 4; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc23[j]] += FE2_f1_C0_D01[ip][j]*I[2];
-          // Number of operations to compute entry: 2
-          A[nzc26[j]] += FE2_f1_C0_D01[ip][j]*I[3];
-        } // end loop over 'j'
-        
-        // Number of operations for primary indices: 20
-        for (unsigned int j = 0; j < 5; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc24[j]] += FE2_f1_C0_D10[ip][j]*I[4];
-          // Number of operations to compute entry: 2
-          A[nzc27[j]] += FE2_f1_C0_D10[ip][j]*I[5];
+          A[nzc17[j]] += FE2_f0_C0[ip][j]*I[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
       }
     case 2:
       {
-        // Total number of operations to compute element tensor (from this point): 248
+        // Total number of operations to compute element tensor (from this point): 104
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 248
+      // Number of operations to compute element tensor for following IP loop = 104
       for (unsigned int ip = 0; ip < 4; ip++)
       {
         
@@ -16315,384 +15546,31 @@ public:
         // Total number of operations to compute function values = 10
         for (unsigned int r = 0; r < 5; r++)
         {
-          F0 += FE0_f0[ip][r]*w[6][nzc2[r]];
+          F0 += FE0_f0[ip][r]*w[2][nzc2[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 8
-        double I[6];
+        // Number of operations to compute ip constants: 4
+        double I[2];
         // Number of operations: 2
         I[0] = F0*G[0]*W4[ip];
         
-        // Number of operations: 1
-        I[1] = G[3]*W4[ip];
-        
         // Number of operations: 2
-        I[2] = F0*G[1]*W4[ip];
-        
-        // Number of operations: 1
-        I[3] = G[5]*W4[ip];
-        
-        // Number of operations: 1
-        I[4] = G[2]*W4[ip];
-        
-        // Number of operations: 1
-        I[5] = G[4]*W4[ip];
+        I[1] = F0*G[1]*W4[ip];
         
         
-        // Number of operations for primary indices: 24
+        // Number of operations for primary indices: 12
         for (unsigned int j = 0; j < 3; j++)
         {
           // Number of operations to compute entry: 2
-          A[nzc29[j]] += FE2_f0_C0[ip][j]*I[0];
+          A[nzc19[j]] += FE2_f0_C0[ip][j]*I[0];
           // Number of operations to compute entry: 2
-          A[nzc31[j]] += FE2_f2_C0_D10[ip][j]*I[1];
-          // Number of operations to compute entry: 2
-          A[nzc32[j]] += FE2_f0_C0[ip][j]*I[2];
-          // Number of operations to compute entry: 2
-          A[nzc34[j]] += FE2_f2_C0_D10[ip][j]*I[3];
-        } // end loop over 'j'
-        
-        // Number of operations for primary indices: 20
-        for (unsigned int j = 0; j < 5; j++)
-        {
-          // Number of operations to compute entry: 2
-          A[nzc30[j]] += FE2_f2_C0_D01[ip][j]*I[4];
-          // Number of operations to compute entry: 2
-          A[nzc33[j]] += FE2_f2_C0_D01[ip][j]*I[5];
+          A[nzc20[j]] += FE2_f0_C0[ip][j]*I[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
       }
     }
     
-  }
-
-};
-
-/// This class defines the interface for the tabulation of the cell
-/// tensor corresponding to the local contribution to a form from
-/// the integral over a cell.
-
-class mynavierstokestimecurv_cell_integral_1_otherwise: public ufc::cell_integral
-{
-public:
-
-  /// Constructor
-  mynavierstokestimecurv_cell_integral_1_otherwise() : ufc::cell_integral()
-  {
-    // Do nothing
-  }
-
-  /// Destructor
-  virtual ~mynavierstokestimecurv_cell_integral_1_otherwise()
-  {
-    // Do nothing
-  }
-
-  /// Tabulate which form coefficients are used by this integral
-  virtual const std::vector<bool> & enabled_coefficients() const
-  {
-    static const std::vector<bool> enabled({true, true, true, true});
-    return enabled;
-  }
-
-  /// Tabulate the tensor for the contribution from a local cell
-  virtual void tabulate_tensor(double*  A,
-                               const double * const *  w,
-                               const double*  vertex_coordinates,
-                               int cell_orientation) const
-  {
-    // Compute Jacobian
-    double J[4];
-    compute_jacobian_triangle_2d(J, vertex_coordinates);
-    
-    // Compute Jacobian inverse and determinant
-    double K[4];
-    double detJ;
-    compute_jacobian_inverse_triangle_2d(K, detJ, J);
-    
-    // Set scale factor
-    const double det = std::abs(detJ);
-    
-    // Compute cell volume
-    
-    
-    // Compute circumradius of triangle in 2D
-    
-    
-    // Array of quadrature weights.
-    static const double W7[7] = {0.1125, 0.0629695902724136, 0.0629695902724136, 0.0629695902724136, 0.0661970763942531, 0.0661970763942531, 0.0661970763942531};
-    // Quadrature points on the UFC reference element: (0.333333333333333, 0.333333333333333), (0.797426985353087, 0.101286507323456), (0.101286507323456, 0.797426985353087), (0.101286507323456, 0.101286507323456), (0.0597158717897698, 0.470142064105115), (0.470142064105115, 0.0597158717897698), (0.470142064105115, 0.470142064105115)
-    
-    // Values of basis functions at quadrature points.
-    static const double FE0_C0[7][3] = \
-    {{0.333333333333333, 0.333333333333333, 0.333333333333333},
-    {0.101286507323456, 0.797426985353087, 0.101286507323456},
-    {0.101286507323457, 0.101286507323456, 0.797426985353087},
-    {0.797426985353087, 0.101286507323456, 0.101286507323456},
-    {0.470142064105115, 0.0597158717897698, 0.470142064105115},
-    {0.470142064105115, 0.470142064105115, 0.0597158717897697},
-    {0.0597158717897699, 0.470142064105115, 0.470142064105115}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc14[3] = {12, 13, 14};
-    
-    static const double FE1_C0[7][6] = \
-    {{-0.111111111111111, -0.111111111111111, -0.111111111111111, 0.444444444444444, 0.444444444444444, 0.444444444444444},
-    {-0.0807685941918872, 0.474352608585538, -0.0807685941918871, 0.323074376767549, 0.0410358262631383, 0.323074376767549},
-    {-0.0807685941918872, -0.0807685941918872, 0.474352608585538, 0.323074376767549, 0.323074376767549, 0.0410358262631383},
-    {0.474352608585539, -0.0807685941918871, -0.0807685941918871, 0.0410358262631383, 0.323074376767549, 0.323074376767549},
-    {-0.0280749432230786, -0.0525839011025453, -0.0280749432230788, 0.112299772892315, 0.884134241764073, 0.112299772892315},
-    {-0.0280749432230787, -0.0280749432230788, -0.0525839011025453, 0.112299772892315, 0.112299772892315, 0.884134241764073},
-    {-0.0525839011025454, -0.0280749432230789, -0.0280749432230788, 0.884134241764072, 0.112299772892315, 0.112299772892315}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc6[6] = {0, 1, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc7[6] = {6, 7, 8, 9, 10, 11};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc8[6] = {0, 1, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc11[6] = {6, 7, 8, 9, 10, 11};
-    
-    static const double FE2_C0_D01[7][5] = \
-    {{-0.333333333333338, 0.333333333333335, 1.33333333333332, 0.0, -1.33333333333333},
-    {0.59485397070617, -0.594853970706174, 3.18970794141233, 1.22124532708767e-14, -3.18970794141235},
-    {0.594853970706169, 2.18970794141235, 0.405146029293808, -2.78456191211851, -0.405146029293824},
-    {-2.18970794141235, -0.594853970706174, 0.405146029293814, 2.78456191211853, -0.405146029293824},
-    {-0.880568256420466, 0.880568256420462, 0.238863487159066, 0.0, -0.238863487159078},
-    {-0.880568256420465, -0.76113651284092, 1.88056825642045, 1.64170476926139, -1.88056825642046},
-    {0.761136512840915, 0.880568256420462, 1.88056825642045, -1.64170476926137, -1.88056825642046}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc9[5] = {0, 2, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc12[5] = {6, 8, 9, 10, 11};
-    
-    static const double FE2_C0_D10[7][5] = \
-    {{-0.333333333333333, 0.333333333333333, 1.33333333333333, -1.33333333333333, 0.0},
-    {0.594853970706177, 2.18970794141235, 0.405146029293824, -0.405146029293824, -2.78456191211853},
-    {0.594853970706173, -0.594853970706176, 3.18970794141234, -3.18970794141234, 0.0},
-    {-2.18970794141235, -0.594853970706177, 0.405146029293824, -0.405146029293824, 2.78456191211853},
-    {-0.880568256420461, -0.761136512840922, 1.88056825642046, -1.88056825642046, 1.64170476926138},
-    {-0.88056825642046, 0.880568256420459, 0.238863487159078, -0.238863487159078, 0.0},
-    {0.761136512840922, 0.880568256420461, 1.88056825642046, -1.88056825642046, -1.64170476926138}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc10[5] = {0, 1, 3, 4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc13[5] = {6, 7, 9, 10, 11};
-    
-    // Reset values in the element tensor.
-    for (unsigned int r = 0; r < 225; r++)
-    {
-      A[r] = 0.0;
-    } // end loop over 'r'
-    // Number of operations to compute geometry constants: 42.
-    double G[19];
-    G[0] = K[0]*det;
-    G[1] = K[3]*det;
-    G[2] = K[1]*det;
-    G[3] = K[2]*det;
-    G[4] =  - K[0]*det*w[2][0];
-    G[5] =  - K[3]*det*w[2][0];
-    G[6] =  - K[1]*det*w[2][0];
-    G[7] =  - K[2]*det*w[2][0];
-    G[8] = det*w[1][0]*w[2][0]*(K[0]*K[0] + K[1]*K[1]);
-    G[9] = det*w[1][0]*w[2][0]*(K[0]*K[2] + K[1]*K[3]);
-    G[10] = det*w[1][0]*w[2][0]*(K[2]*K[2] + K[3]*K[3]);
-    G[11] = K[2]*det*w[2][0];
-    G[12] = K[3]*det*w[2][0];
-    G[13] =  - K[2]*det;
-    G[14] =  - K[3]*det;
-    G[15] = K[0]*det*w[2][0];
-    G[16] = K[1]*det*w[2][0];
-    G[17] =  - K[0]*det;
-    G[18] =  - K[1]*det;
-    
-    // Compute element tensor using UFL quadrature representation
-    // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
-    
-    // Loop quadrature points for integral.
-    // Number of operations to compute element tensor for following IP loop = 13195
-    for (unsigned int ip = 0; ip < 7; ip++)
-    {
-      
-      // Coefficient declarations.
-      double F0 = 0.0;
-      double F1 = 0.0;
-      double F2 = 0.0;
-      double F3 = 0.0;
-      double F4 = 0.0;
-      double F5 = 0.0;
-      double F6 = 0.0;
-      double F7 = 0.0;
-      
-      // Total number of operations to compute function values = 40
-      for (unsigned int r = 0; r < 5; r++)
-      {
-        F2 += FE2_C0_D10[ip][r]*w[0][nzc10[r]];
-        F3 += FE2_C0_D01[ip][r]*w[0][nzc9[r]];
-        F4 += FE2_C0_D10[ip][r]*w[0][nzc13[r]];
-        F5 += FE2_C0_D01[ip][r]*w[0][nzc12[r]];
-      } // end loop over 'r'
-      
-      // Total number of operations to compute function values = 48
-      for (unsigned int r = 0; r < 6; r++)
-      {
-        F0 += FE1_C0[ip][r]*w[0][nzc8[r]];
-        F1 += FE1_C0[ip][r]*w[0][nzc11[r]];
-        F6 += FE1_C0[ip][r]*w[3][nzc6[r]];
-        F7 += FE1_C0[ip][r]*w[3][nzc7[r]];
-      } // end loop over 'r'
-      
-      // Number of operations to compute ip constants: 45
-      double I[17];
-      // Number of operations: 1
-      I[0] = G[0]*W7[ip];
-      
-      // Number of operations: 1
-      I[1] = G[1]*W7[ip];
-      
-      // Number of operations: 1
-      I[2] = G[2]*W7[ip];
-      
-      // Number of operations: 1
-      I[3] = G[3]*W7[ip];
-      
-      // Number of operations: 1
-      I[4] = G[4]*W7[ip];
-      
-      // Number of operations: 1
-      I[5] = G[5]*W7[ip];
-      
-      // Number of operations: 1
-      I[6] = G[6]*W7[ip];
-      
-      // Number of operations: 1
-      I[7] = G[7]*W7[ip];
-      
-      // Number of operations: 1
-      I[8] = G[8]*W7[ip];
-      
-      // Number of operations: 1
-      I[9] = G[9]*W7[ip];
-      
-      // Number of operations: 1
-      I[10] = G[10]*W7[ip];
-      
-      // Number of operations: 8
-      I[11] = W7[ip]*(F0*G[11] + F1*G[12] + F6*G[13] + F7*G[14]);
-      
-      // Number of operations: 8
-      I[12] = W7[ip]*(F0*G[15] + F1*G[16] + F6*G[17] + F7*G[18]);
-      
-      // Number of operations: 5
-      I[13] = W7[ip]*(det + F4*G[16] + F5*G[12]);
-      
-      // Number of operations: 4
-      I[14] = W7[ip]*(F4*G[15] + F5*G[11]);
-      
-      // Number of operations: 4
-      I[15] = W7[ip]*(F2*G[16] + F3*G[12]);
-      
-      // Number of operations: 5
-      I[16] = W7[ip]*(det + F2*G[15] + F3*G[11]);
-      
-      
-      // Number of operations for primary indices: 180
-      for (unsigned int j = 0; j < 3; j++)
-      {
-        for (unsigned int k = 0; k < 5; k++)
-        {
-          // Number of operations to compute entry: 3
-          A[nzc14[j]*15 + nzc10[k]] += FE0_C0[ip][j]*FE2_C0_D10[ip][k]*I[0];
-          // Number of operations to compute entry: 3
-          A[nzc14[j]*15 + nzc12[k]] += FE0_C0[ip][j]*FE2_C0_D01[ip][k]*I[1];
-          // Number of operations to compute entry: 3
-          A[nzc14[j]*15 + nzc13[k]] += FE0_C0[ip][j]*FE2_C0_D10[ip][k]*I[2];
-          // Number of operations to compute entry: 3
-          A[nzc14[j]*15 + nzc9[k]] += FE0_C0[ip][j]*FE2_C0_D01[ip][k]*I[3];
-        } // end loop over 'k'
-      } // end loop over 'j'
-      
-      // Number of operations for primary indices: 180
-      for (unsigned int j = 0; j < 5; j++)
-      {
-        for (unsigned int k = 0; k < 3; k++)
-        {
-          // Number of operations to compute entry: 3
-          A[nzc10[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D10[ip][j]*I[4];
-          // Number of operations to compute entry: 3
-          A[nzc12[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D01[ip][j]*I[5];
-          // Number of operations to compute entry: 3
-          A[nzc13[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D10[ip][j]*I[6];
-          // Number of operations to compute entry: 3
-          A[nzc9[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D01[ip][j]*I[7];
-        } // end loop over 'k'
-      } // end loop over 'j'
-      
-      // Number of operations for primary indices: 600
-      for (unsigned int j = 0; j < 5; j++)
-      {
-        for (unsigned int k = 0; k < 5; k++)
-        {
-          // Number of operations to compute entry: 3
-          A[nzc10[j]*15 + nzc10[k]] += FE2_C0_D10[ip][j]*FE2_C0_D10[ip][k]*I[8];
-          // Number of operations to compute entry: 3
-          A[nzc10[j]*15 + nzc9[k]] += FE2_C0_D01[ip][k]*FE2_C0_D10[ip][j]*I[9];
-          // Number of operations to compute entry: 3
-          A[nzc12[j]*15 + nzc12[k]] += FE2_C0_D01[ip][j]*FE2_C0_D01[ip][k]*I[10];
-          // Number of operations to compute entry: 3
-          A[nzc12[j]*15 + nzc13[k]] += FE2_C0_D01[ip][j]*FE2_C0_D10[ip][k]*I[9];
-          // Number of operations to compute entry: 3
-          A[nzc13[j]*15 + nzc12[k]] += FE2_C0_D01[ip][k]*FE2_C0_D10[ip][j]*I[9];
-          // Number of operations to compute entry: 3
-          A[nzc13[j]*15 + nzc13[k]] += FE2_C0_D10[ip][j]*FE2_C0_D10[ip][k]*I[8];
-          // Number of operations to compute entry: 3
-          A[nzc9[j]*15 + nzc10[k]] += FE2_C0_D01[ip][j]*FE2_C0_D10[ip][k]*I[9];
-          // Number of operations to compute entry: 3
-          A[nzc9[j]*15 + nzc9[k]] += FE2_C0_D01[ip][j]*FE2_C0_D01[ip][k]*I[10];
-        } // end loop over 'k'
-      } // end loop over 'j'
-      
-      // Number of operations for primary indices: 360
-      for (unsigned int j = 0; j < 6; j++)
-      {
-        for (unsigned int k = 0; k < 5; k++)
-        {
-          // Number of operations to compute entry: 3
-          A[nzc11[j]*15 + nzc12[k]] += FE1_C0[ip][j]*FE2_C0_D01[ip][k]*I[11];
-          // Number of operations to compute entry: 3
-          A[nzc11[j]*15 + nzc13[k]] += FE1_C0[ip][j]*FE2_C0_D10[ip][k]*I[12];
-          // Number of operations to compute entry: 3
-          A[nzc8[j]*15 + nzc10[k]] += FE1_C0[ip][j]*FE2_C0_D10[ip][k]*I[12];
-          // Number of operations to compute entry: 3
-          A[nzc8[j]*15 + nzc9[k]] += FE1_C0[ip][j]*FE2_C0_D01[ip][k]*I[11];
-        } // end loop over 'k'
-      } // end loop over 'j'
-      
-      // Number of operations for primary indices: 432
-      for (unsigned int j = 0; j < 6; j++)
-      {
-        for (unsigned int k = 0; k < 6; k++)
-        {
-          // Number of operations to compute entry: 3
-          A[nzc11[j]*15 + nzc11[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[13];
-          // Number of operations to compute entry: 3
-          A[nzc11[j]*15 + nzc8[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[14];
-          // Number of operations to compute entry: 3
-          A[nzc8[j]*15 + nzc11[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[15];
-          // Number of operations to compute entry: 3
-          A[nzc8[j]*15 + nzc8[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[16];
-        } // end loop over 'k'
-      } // end loop over 'j'
-    } // end loop over 'ip'
   }
 
 };
@@ -16712,18 +15590,18 @@ public:
 /// sequence of basis functions of Vj and w1, w2, ..., wn are given
 /// fixed functions (coefficients).
 
-class mynavierstokestimecurv_form_0: public ufc::form
+class computefreesurfacestress_onlytp_form_0: public ufc::form
 {
 public:
 
   /// Constructor
-  mynavierstokestimecurv_form_0() : ufc::form()
+  computefreesurfacestress_onlytp_form_0() : ufc::form()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~mynavierstokestimecurv_form_0()
+  virtual ~computefreesurfacestress_onlytp_form_0()
   {
     // Do nothing
   }
@@ -16731,13 +15609,13 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "d8c283687b4cf6aaec39319abc4866947c30e6edcd147bfcc82d544213af699f4420751a086d898156dfd6f93bac6da58081c025681d22067b93b82f6ba43617";
+    return "09a7655c71f970c6bdbe8a7d60158c4a8e42eeee3af9e7357e9feb0744590a2dd7e2d4b23ff61335d6137dba9331b208fd99ccf3a5d89f5cd1eef3fd61dcfe09";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
   virtual std::size_t original_coefficient_position(std::size_t i) const
   {
-    static const std::vector<std::size_t> position({0, 1, 2, 3, 4, 5, 6});
+    static const std::vector<std::size_t> position({0, 1, 2});
     return position[i];
   }
 
@@ -16750,7 +15628,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 7;
+    return 3;
   }
 
   /// Return the number of cell domains
@@ -16786,7 +15664,7 @@ public:
   /// Return whether the form has any cell integrals
   virtual bool has_cell_integrals() const
   {
-    return true;
+    return false;
   }
 
   /// Return whether the form has any exterior facet integrals
@@ -16820,42 +15698,22 @@ public:
     {
     case 0:
       {
-        return new mynavierstokestimecurv_finite_element_5();
+        return new computefreesurfacestress_onlytp_finite_element_5();
         break;
       }
     case 1:
       {
-        return new mynavierstokestimecurv_finite_element_5();
+        return new computefreesurfacestress_onlytp_finite_element_1();
         break;
       }
     case 2:
       {
-        return new mynavierstokestimecurv_finite_element_1();
+        return new computefreesurfacestress_onlytp_finite_element_1();
         break;
       }
     case 3:
       {
-        return new mynavierstokestimecurv_finite_element_1();
-        break;
-      }
-    case 4:
-      {
-        return new mynavierstokestimecurv_finite_element_1();
-        break;
-      }
-    case 5:
-      {
-        return new mynavierstokestimecurv_finite_element_3();
-        break;
-      }
-    case 6:
-      {
-        return new mynavierstokestimecurv_finite_element_3();
-        break;
-      }
-    case 7:
-      {
-        return new mynavierstokestimecurv_finite_element_0();
+        return new computefreesurfacestress_onlytp_finite_element_0();
         break;
       }
     }
@@ -16870,42 +15728,22 @@ public:
     {
     case 0:
       {
-        return new mynavierstokestimecurv_dofmap_5();
+        return new computefreesurfacestress_onlytp_dofmap_5();
         break;
       }
     case 1:
       {
-        return new mynavierstokestimecurv_dofmap_5();
+        return new computefreesurfacestress_onlytp_dofmap_1();
         break;
       }
     case 2:
       {
-        return new mynavierstokestimecurv_dofmap_1();
+        return new computefreesurfacestress_onlytp_dofmap_1();
         break;
       }
     case 3:
       {
-        return new mynavierstokestimecurv_dofmap_1();
-        break;
-      }
-    case 4:
-      {
-        return new mynavierstokestimecurv_dofmap_1();
-        break;
-      }
-    case 5:
-      {
-        return new mynavierstokestimecurv_dofmap_3();
-        break;
-      }
-    case 6:
-      {
-        return new mynavierstokestimecurv_dofmap_3();
-        break;
-      }
-    case 7:
-      {
-        return new mynavierstokestimecurv_dofmap_0();
+        return new computefreesurfacestress_onlytp_dofmap_0();
         break;
       }
     }
@@ -16924,19 +15762,14 @@ public:
   {
     switch (i)
     {
-    case 1:
-      {
-        return new mynavierstokestimecurv_exterior_facet_integral_0_1();
-        break;
-      }
     case 4:
       {
-        return new mynavierstokestimecurv_exterior_facet_integral_0_4();
+        return new computefreesurfacestress_onlytp_exterior_facet_integral_0_4();
         break;
       }
     case 5:
       {
-        return new mynavierstokestimecurv_exterior_facet_integral_0_5();
+        return new computefreesurfacestress_onlytp_exterior_facet_integral_0_5();
         break;
       }
     }
@@ -16965,265 +15798,7 @@ public:
   /// Create a new cell integral on everywhere else
   virtual ufc::cell_integral* create_default_cell_integral() const
   {
-    return new mynavierstokestimecurv_cell_integral_0_otherwise();
-  }
-
-  /// Create a new exterior facet integral on everywhere else
-  virtual ufc::exterior_facet_integral* create_default_exterior_facet_integral() const
-  {
     return 0;
-  }
-
-  /// Create a new interior facet integral on everywhere else
-  virtual ufc::interior_facet_integral* create_default_interior_facet_integral() const
-  {
-    return 0;
-  }
-
-  /// Create a new point integral on everywhere else
-  virtual ufc::point_integral* create_default_point_integral() const
-  {
-    return 0;
-  }
-
-  /// Create a new custom integral on everywhere else
-  virtual ufc::custom_integral* create_default_custom_integral() const
-  {
-    return 0;
-  }
-
-};
-
-/// This class defines the interface for the assembly of the global
-/// tensor corresponding to a form with r + n arguments, that is, a
-/// mapping
-///
-///     a : V1 x V2 x ... Vr x W1 x W2 x ... x Wn -> R
-///
-/// with arguments v1, v2, ..., vr, w1, w2, ..., wn. The rank r
-/// global tensor A is defined by
-///
-///     A = a(V1, V2, ..., Vr, w1, w2, ..., wn),
-///
-/// where each argument Vj represents the application to the
-/// sequence of basis functions of Vj and w1, w2, ..., wn are given
-/// fixed functions (coefficients).
-
-class mynavierstokestimecurv_form_1: public ufc::form
-{
-public:
-
-  /// Constructor
-  mynavierstokestimecurv_form_1() : ufc::form()
-  {
-    // Do nothing
-  }
-
-  /// Destructor
-  virtual ~mynavierstokestimecurv_form_1()
-  {
-    // Do nothing
-  }
-
-  /// Return a string identifying the form
-  virtual const char* signature() const
-  {
-    return "356b1d1dc7723aac7ee78a406c0832cf0e041127dc77cc2f38d156ebba9fc5bfd5f5786cd056eeb5e7cb0081369d6b88ce10899bca20cdf8f21cf2c38166058e";
-  }
-
-  /// Return original coefficient position for each coefficient (0 <= i < n)
-  virtual std::size_t original_coefficient_position(std::size_t i) const
-  {
-    static const std::vector<std::size_t> position({0, 1, 2, 3});
-    return position[i];
-  }
-
-  /// Return the rank of the global tensor (r)
-  virtual std::size_t rank() const
-  {
-    return 2;
-  }
-
-  /// Return the number of coefficients (n)
-  virtual std::size_t num_coefficients() const
-  {
-    return 4;
-  }
-
-  /// Return the number of cell domains
-  virtual std::size_t num_cell_domains() const
-  {
-    return 0;
-  }
-
-  /// Return the number of exterior facet domains
-  virtual std::size_t num_exterior_facet_domains() const
-  {
-    return 0;
-  }
-
-  /// Return the number of interior facet domains
-  virtual std::size_t num_interior_facet_domains() const
-  {
-    return 0;
-  }
-
-  /// Return the number of point domains
-  virtual std::size_t num_point_domains() const
-  {
-    return 0;
-  }
-
-  /// Return the number of custom domains
-  virtual std::size_t num_custom_domains() const
-  {
-    return 0;
-  }
-
-  /// Return whether the form has any cell integrals
-  virtual bool has_cell_integrals() const
-  {
-    return true;
-  }
-
-  /// Return whether the form has any exterior facet integrals
-  virtual bool has_exterior_facet_integrals() const
-  {
-    return false;
-  }
-
-  /// Return whether the form has any interior facet integrals
-  virtual bool has_interior_facet_integrals() const
-  {
-    return false;
-  }
-
-  /// Return whether the form has any point integrals
-  virtual bool has_point_integrals() const
-  {
-    return false;
-  }
-
-  /// Return whether the form has any custom integrals
-  virtual bool has_custom_integrals() const
-  {
-    return false;
-  }
-
-  /// Create a new finite element for argument function i
-  virtual ufc::finite_element* create_finite_element(std::size_t i) const
-  {
-    switch (i)
-    {
-    case 0:
-      {
-        return new mynavierstokestimecurv_finite_element_5();
-        break;
-      }
-    case 1:
-      {
-        return new mynavierstokestimecurv_finite_element_5();
-        break;
-      }
-    case 2:
-      {
-        return new mynavierstokestimecurv_finite_element_5();
-        break;
-      }
-    case 3:
-      {
-        return new mynavierstokestimecurv_finite_element_1();
-        break;
-      }
-    case 4:
-      {
-        return new mynavierstokestimecurv_finite_element_1();
-        break;
-      }
-    case 5:
-      {
-        return new mynavierstokestimecurv_finite_element_3();
-        break;
-      }
-    }
-    
-    return 0;
-  }
-
-  /// Create a new dofmap for argument function i
-  virtual ufc::dofmap* create_dofmap(std::size_t i) const
-  {
-    switch (i)
-    {
-    case 0:
-      {
-        return new mynavierstokestimecurv_dofmap_5();
-        break;
-      }
-    case 1:
-      {
-        return new mynavierstokestimecurv_dofmap_5();
-        break;
-      }
-    case 2:
-      {
-        return new mynavierstokestimecurv_dofmap_5();
-        break;
-      }
-    case 3:
-      {
-        return new mynavierstokestimecurv_dofmap_1();
-        break;
-      }
-    case 4:
-      {
-        return new mynavierstokestimecurv_dofmap_1();
-        break;
-      }
-    case 5:
-      {
-        return new mynavierstokestimecurv_dofmap_3();
-        break;
-      }
-    }
-    
-    return 0;
-  }
-
-  /// Create a new cell integral on sub domain i
-  virtual ufc::cell_integral* create_cell_integral(std::size_t i) const
-  {
-    return 0;
-  }
-
-  /// Create a new exterior facet integral on sub domain i
-  virtual ufc::exterior_facet_integral* create_exterior_facet_integral(std::size_t i) const
-  {
-    return 0;
-  }
-
-  /// Create a new interior facet integral on sub domain i
-  virtual ufc::interior_facet_integral* create_interior_facet_integral(std::size_t i) const
-  {
-    return 0;
-  }
-
-  /// Create a new point integral on sub domain i
-  virtual ufc::point_integral* create_point_integral(std::size_t i) const
-  {
-    return 0;
-  }
-
-  /// Create a new custom integral on sub domain i
-  virtual ufc::custom_integral* create_custom_integral(std::size_t i) const
-  {
-    return 0;
-  }
-
-  /// Create a new cell integral on everywhere else
-  virtual ufc::cell_integral* create_default_cell_integral() const
-  {
-    return new mynavierstokestimecurv_cell_integral_1_otherwise();
   }
 
   /// Create a new exterior facet integral on everywhere else
@@ -17268,7 +15843,7 @@ public:
 #include <dolfin/adaptivity/ErrorControl.h>
 #include <dolfin/adaptivity/GoalFunctional.h>
 
-namespace myNavierstokesTimeCurv
+namespace computeFreeSurfaceStress_onlyTP
 {
 
 class CoefficientSpace_deltaDirac: public dolfin::FunctionSpace
@@ -17280,8 +15855,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_deltaDirac(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_0()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh)))
   {
     // Do nothing
   }
@@ -17289,8 +15864,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_deltaDirac(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_0()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh)))
   {
     // Do nothing
   }
@@ -17300,8 +15875,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_deltaDirac(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_0()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -17310,8 +15885,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_deltaDirac(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_0()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -17327,8 +15902,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_dt(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_1()), mesh)))
   {
     // Do nothing
   }
@@ -17336,8 +15911,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_1()), *mesh)))
   {
     // Do nothing
   }
@@ -17347,8 +15922,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_dt(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_1()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -17357,8 +15932,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_1()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -17374,8 +15949,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_gamma(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_1()), mesh)))
   {
     // Do nothing
   }
@@ -17383,8 +15958,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_gamma(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_1()), *mesh)))
   {
     // Do nothing
   }
@@ -17394,8 +15969,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_gamma(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_1()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -17404,34 +15979,34 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_gamma(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_1()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
 
 };
 
-class CoefficientSpace_nu: public dolfin::FunctionSpace
+class Form_L_FunctionSpace_0: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_nu(const dolfin::Mesh& mesh):
+  Form_L_FunctionSpace_0(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_5()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_5()), mesh)))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_nu(std::shared_ptr<const dolfin::Mesh> mesh):
+  Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_5()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_5()), *mesh)))
   {
     // Do nothing
   }
@@ -17439,339 +16014,119 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_nu(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  Form_L_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_5()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_5()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_nu(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_1()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_1()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_5()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_5()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
 
 };
 
-class CoefficientSpace_trial: public dolfin::FunctionSpace
-{
-public:
+typedef CoefficientSpace_dt Form_L_FunctionSpace_1;
 
-  //--- Constructors for standard function space, 2 different versions ---
+typedef CoefficientSpace_gamma Form_L_FunctionSpace_2;
 
-  // Create standard function space (reference version)
-  CoefficientSpace_trial(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), mesh)))
-  {
-    // Do nothing
-  }
+typedef CoefficientSpace_deltaDirac Form_L_FunctionSpace_3;
 
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_trial(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_trial(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_trial(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class CoefficientSpace_u_old: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_u_old(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_3()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_u_old(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_3()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_u_old(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_3()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_u_old(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_3()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class CoefficientSpace_w: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_w(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_3()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_w(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_3()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_w(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_3()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_w(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_3()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class Form_F_FunctionSpace_0: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  Form_F_FunctionSpace_0(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  Form_F_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  Form_F_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  Form_F_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-typedef CoefficientSpace_trial Form_F_FunctionSpace_1;
-
-typedef CoefficientSpace_nu Form_F_FunctionSpace_2;
-
-typedef CoefficientSpace_gamma Form_F_FunctionSpace_3;
-
-typedef CoefficientSpace_dt Form_F_FunctionSpace_4;
-
-typedef CoefficientSpace_u_old Form_F_FunctionSpace_5;
-
-typedef CoefficientSpace_w Form_F_FunctionSpace_6;
-
-typedef CoefficientSpace_deltaDirac Form_F_FunctionSpace_7;
-
-class Form_F: public dolfin::Form
+class Form_L: public dolfin::Form
 {
 public:
 
   // Constructor
-  Form_F(const dolfin::FunctionSpace& V0):
-    dolfin::Form(1, 7), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), deltaDirac(*this, 6)
+  Form_L(const dolfin::FunctionSpace& V0):
+    dolfin::Form(1, 3), dt(*this, 0), gamma(*this, 1), deltaDirac(*this, 2)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
   }
 
   // Constructor
-  Form_F(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& w, const dolfin::GenericFunction& deltaDirac):
-    dolfin::Form(1, 7), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), deltaDirac(*this, 6)
+  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& deltaDirac):
+    dolfin::Form(1, 3), dt(*this, 0), gamma(*this, 1), deltaDirac(*this, 2)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
-    this->trial = trial;
-    this->nu = nu;
-    this->gamma = gamma;
     this->dt = dt;
-    this->u_old = u_old;
-    this->w = w;
+    this->gamma = gamma;
     this->deltaDirac = deltaDirac;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
   }
 
   // Constructor
-  Form_F(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> w, std::shared_ptr<const dolfin::GenericFunction> deltaDirac):
-    dolfin::Form(1, 7), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), deltaDirac(*this, 6)
+  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> deltaDirac):
+    dolfin::Form(1, 3), dt(*this, 0), gamma(*this, 1), deltaDirac(*this, 2)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
-    this->trial = *trial;
-    this->nu = *nu;
-    this->gamma = *gamma;
     this->dt = *dt;
-    this->u_old = *u_old;
-    this->w = *w;
+    this->gamma = *gamma;
     this->deltaDirac = *deltaDirac;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
   }
 
   // Constructor
-  Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 7), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), deltaDirac(*this, 6)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0):
+    dolfin::Form(1, 3), dt(*this, 0), gamma(*this, 1), deltaDirac(*this, 2)
   {
     _function_spaces[0] = V0;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
   }
 
   // Constructor
-  Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& w, const dolfin::GenericFunction& deltaDirac):
-    dolfin::Form(1, 7), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), deltaDirac(*this, 6)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& deltaDirac):
+    dolfin::Form(1, 3), dt(*this, 0), gamma(*this, 1), deltaDirac(*this, 2)
   {
     _function_spaces[0] = V0;
 
-    this->trial = trial;
-    this->nu = nu;
-    this->gamma = gamma;
     this->dt = dt;
-    this->u_old = u_old;
-    this->w = w;
+    this->gamma = gamma;
     this->deltaDirac = deltaDirac;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
   }
 
   // Constructor
-  Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> w, std::shared_ptr<const dolfin::GenericFunction> deltaDirac):
-    dolfin::Form(1, 7), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), deltaDirac(*this, 6)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> deltaDirac):
+    dolfin::Form(1, 3), dt(*this, 0), gamma(*this, 1), deltaDirac(*this, 2)
   {
     _function_spaces[0] = V0;
 
-    this->trial = *trial;
-    this->nu = *nu;
-    this->gamma = *gamma;
     this->dt = *dt;
-    this->u_old = *u_old;
-    this->w = *w;
+    this->gamma = *gamma;
     this->deltaDirac = *deltaDirac;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
   }
 
   // Destructor
-  ~Form_F()
+  ~Form_L()
   {}
 
   /// Return the number of the coefficient with this name
   virtual std::size_t coefficient_number(const std::string& name) const
   {
-    if (name == "trial")
+    if (name == "dt")
       return 0;
-    else if (name == "nu")
-      return 1;
     else if (name == "gamma")
-      return 2;
-    else if (name == "dt")
-      return 3;
-    else if (name == "u_old")
-      return 4;
-    else if (name == "w")
-      return 5;
+      return 1;
     else if (name == "deltaDirac")
-      return 6;
+      return 2;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -17785,18 +16140,10 @@ public:
     switch (i)
     {
     case 0:
-      return "trial";
-    case 1:
-      return "nu";
-    case 2:
-      return "gamma";
-    case 3:
       return "dt";
-    case 4:
-      return "u_old";
-    case 5:
-      return "w";
-    case 6:
+    case 1:
+      return "gamma";
+    case 2:
       return "deltaDirac";
     }
 
@@ -17807,275 +16154,21 @@ public:
   }
 
   // Typedefs
-  typedef Form_F_FunctionSpace_0 TestSpace;
-  typedef Form_F_FunctionSpace_1 CoefficientSpace_trial;
-  typedef Form_F_FunctionSpace_2 CoefficientSpace_nu;
-  typedef Form_F_FunctionSpace_3 CoefficientSpace_gamma;
-  typedef Form_F_FunctionSpace_4 CoefficientSpace_dt;
-  typedef Form_F_FunctionSpace_5 CoefficientSpace_u_old;
-  typedef Form_F_FunctionSpace_6 CoefficientSpace_w;
-  typedef Form_F_FunctionSpace_7 CoefficientSpace_deltaDirac;
+  typedef Form_L_FunctionSpace_0 TestSpace;
+  typedef Form_L_FunctionSpace_1 CoefficientSpace_dt;
+  typedef Form_L_FunctionSpace_2 CoefficientSpace_gamma;
+  typedef Form_L_FunctionSpace_3 CoefficientSpace_deltaDirac;
 
   // Coefficients
-  dolfin::CoefficientAssigner trial;
-  dolfin::CoefficientAssigner nu;
-  dolfin::CoefficientAssigner gamma;
   dolfin::CoefficientAssigner dt;
-  dolfin::CoefficientAssigner u_old;
-  dolfin::CoefficientAssigner w;
+  dolfin::CoefficientAssigner gamma;
   dolfin::CoefficientAssigner deltaDirac;
 };
 
-class Form_J_FunctionSpace_0: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  Form_J_FunctionSpace_0(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  Form_J_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  Form_J_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  Form_J_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class Form_J_FunctionSpace_1: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  Form_J_FunctionSpace_1(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  Form_J_FunctionSpace_1(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  Form_J_FunctionSpace_1(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  Form_J_FunctionSpace_1(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_5()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_5()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-typedef CoefficientSpace_trial Form_J_FunctionSpace_2;
-
-typedef CoefficientSpace_nu Form_J_FunctionSpace_3;
-
-typedef CoefficientSpace_dt Form_J_FunctionSpace_4;
-
-typedef CoefficientSpace_w Form_J_FunctionSpace_5;
-
-class Form_J: public dolfin::Form
-{
-public:
-
-  // Constructor
-  Form_J(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
-  {
-    _function_spaces[0] = reference_to_no_delete_pointer(V0);
-    _function_spaces[1] = reference_to_no_delete_pointer(V1);
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_1());
-  }
-
-  // Constructor
-  Form_J(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& w):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
-  {
-    _function_spaces[0] = reference_to_no_delete_pointer(V0);
-    _function_spaces[1] = reference_to_no_delete_pointer(V1);
-
-    this->trial = trial;
-    this->nu = nu;
-    this->dt = dt;
-    this->w = w;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_1());
-  }
-
-  // Constructor
-  Form_J(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> w):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
-  {
-    _function_spaces[0] = reference_to_no_delete_pointer(V0);
-    _function_spaces[1] = reference_to_no_delete_pointer(V1);
-
-    this->trial = *trial;
-    this->nu = *nu;
-    this->dt = *dt;
-    this->w = *w;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_1());
-  }
-
-  // Constructor
-  Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
-  {
-    _function_spaces[0] = V0;
-    _function_spaces[1] = V1;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_1());
-  }
-
-  // Constructor
-  Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& w):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
-  {
-    _function_spaces[0] = V0;
-    _function_spaces[1] = V1;
-
-    this->trial = trial;
-    this->nu = nu;
-    this->dt = dt;
-    this->w = w;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_1());
-  }
-
-  // Constructor
-  Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> w):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
-  {
-    _function_spaces[0] = V0;
-    _function_spaces[1] = V1;
-
-    this->trial = *trial;
-    this->nu = *nu;
-    this->dt = *dt;
-    this->w = *w;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_1());
-  }
-
-  // Destructor
-  ~Form_J()
-  {}
-
-  /// Return the number of the coefficient with this name
-  virtual std::size_t coefficient_number(const std::string& name) const
-  {
-    if (name == "trial")
-      return 0;
-    else if (name == "nu")
-      return 1;
-    else if (name == "dt")
-      return 2;
-    else if (name == "w")
-      return 3;
-
-    dolfin::dolfin_error("generated code for class Form",
-                         "access coefficient data",
-                         "Invalid coefficient");
-    return 0;
-  }
-
-  /// Return the name of the coefficient with this number
-  virtual std::string coefficient_name(std::size_t i) const
-  {
-    switch (i)
-    {
-    case 0:
-      return "trial";
-    case 1:
-      return "nu";
-    case 2:
-      return "dt";
-    case 3:
-      return "w";
-    }
-
-    dolfin::dolfin_error("generated code for class Form",
-                         "access coefficient data",
-                         "Invalid coefficient");
-    return "unnamed";
-  }
-
-  // Typedefs
-  typedef Form_J_FunctionSpace_0 TestSpace;
-  typedef Form_J_FunctionSpace_1 TrialSpace;
-  typedef Form_J_FunctionSpace_2 CoefficientSpace_trial;
-  typedef Form_J_FunctionSpace_3 CoefficientSpace_nu;
-  typedef Form_J_FunctionSpace_4 CoefficientSpace_dt;
-  typedef Form_J_FunctionSpace_5 CoefficientSpace_w;
-
-  // Coefficients
-  dolfin::CoefficientAssigner trial;
-  dolfin::CoefficientAssigner nu;
-  dolfin::CoefficientAssigner dt;
-  dolfin::CoefficientAssigner w;
-};
-
 // Class typedefs
-typedef Form_J BilinearForm;
-typedef Form_J JacobianForm;
-typedef Form_F LinearForm;
-typedef Form_F ResidualForm;
-typedef Form_F::TestSpace FunctionSpace;
+typedef Form_L LinearForm;
+typedef Form_L ResidualForm;
+typedef Form_L::TestSpace FunctionSpace;
 
 }
 

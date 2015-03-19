@@ -44,15 +44,5 @@ A = as_matrix ([ [0 , -1] , [1 , 0] ])
 
 # OPPOSITE w.r.t. myNavierstokesTimeCurv.ufl
 # because there we move this term to the lhs
-L =  - dt * gamma * div (v) * ds(1) \
-     + dt * gamma * inner (grad(v), outer (n,n)) * ds(1) \
-     - dt * gamma * div (v) * ds(4) \
-     + dt * gamma * inner (grad(v), outer (n,n)) * ds(4) \
-     - dt * gamma * div (v) * ds(5) \
-     + dt * gamma * inner (grad(v), outer (n,n)) * ds(5) \
-     + (1.0/h) * dt * deltaDirac * gamma * inner (v, A*n) * ds(4) \
-     - (1.0/h) * dt * deltaDirac * gamma * inner (v, A*n) * ds(5)
-  #   + (1.0/h) * deltaDirac * dt * gamma * inner (v, A*n) * ds(4) \
-  #   - (1.0/h) * deltaDirac * dt * gamma * inner (v, A*n) * ds(5)
-     #+ dt * gamma * inner (v, A*n) * ds(4) \
-     #- dt * gamma * inner (v, A*n) * ds(5)
+L =   (1.0/h) * dt * deltaDirac * gamma * inner (v, A*n) * ds(4) \
+    - (1.0/h) * dt * deltaDirac * gamma * inner (v, A*n) * ds(5)

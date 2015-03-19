@@ -1,5 +1,6 @@
 /* 
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
+ *  Modified      2015, Ivan Fumagalli, ivan.fumagalli@polimi.it
  * 
  *  This file is part of the DCP library
  *   
@@ -773,6 +774,11 @@ namespace dcp
                     dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on BOUNDARY_FACETS...");
                     residualForm_.set_exterior_facet_domains (meshFunction);
                 }
+                else if (subdomainType == dcp::SubdomainType::VERTICES)
+                {
+                    dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on VERTICES...");
+                    residualForm_.set_vertex_domains (meshFunction);
+                }
                 else
                 {
                     dolfin::warning ("unknown subdomain type requested while trying to apply mesh function to residual form"); 
@@ -794,6 +800,11 @@ namespace dcp
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on BOUNDARY_FACETS...");
                     jacobianForm_.set_exterior_facet_domains (meshFunction);
+                }
+                else if (subdomainType == dcp::SubdomainType::VERTICES)
+                {
+                    dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on VERTICES...");
+                    jacobianForm_.set_vertex_domains (meshFunction);
                 }
                 else
                 {

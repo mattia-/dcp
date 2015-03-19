@@ -1,5 +1,6 @@
 /* 
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
+ *  Modified      2015, Ivan Fumagalli, ivan.fumagalli@polimi.it
  * 
  *  This file is part of the DCP library
  *   
@@ -32,8 +33,9 @@ namespace dcp
      *  boundary of the mesh
      *  \li INTERNAL_FACETS: sets integration subdomains of dimension mesh_dimension - 1 inside
      *  the mesh
+     *  \li VERTICES: sets integration subdomains of dimension 0
      */
-    enum class SubdomainType {INTERNAL_CELLS, BOUNDARY_FACETS, INTERNAL_FACETS};
+    enum class SubdomainType {INTERNAL_CELLS, BOUNDARY_FACETS, INTERNAL_FACETS, VERTICES};
 }
                 
 #endif

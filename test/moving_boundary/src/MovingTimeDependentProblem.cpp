@@ -20,9 +20,20 @@
 //#include <dcp/differential_problems/MovingTimeDependentProblem.h>
 #include "MovingTimeDependentProblem.h"
 #include "computeFreeSurfaceStress.h"
+#include "computeFreeSurfaceStress_onlyTP.h"
 #include <dcp/differential_problems/differential_problems.h>
 #include <dolfin/log/dolfin_log.h>
+#include <dolfin/geometry/Point.h>
 #include <regex>
+
+dolfin::Point extractPoint (dolfin::MeshFunction<std::size_t>& mf, size_t value)
+{
+    std::vector<std::size_t> vec;
+    vec.assign (mf.values(), mf.values()+mf.size());
+    std::vector<std::size_t>::iterator itP1 = find (vec.begin(),vec.end(),value);
+    std::size_t idxP1 = std::distance (vec.begin(), itP1);
+    return (mf.mesh()->geometry().point(idxP1));
+}
 
 namespace Ivan
 {
@@ -583,6 +594,32 @@ namespace Ivan
     meshFacets.set_all (0);
     Ivan::TopBoundary freeSurface;
     freeSurface.mark (meshFacets, 1);
+Ivan::TriplePoints triplePoints;
+Ivan::TriplePointLeft triplePointLeft;
+triplePointLeft.mark(meshFacets,4);
+Ivan::TriplePointRight triplePointRight;
+triplePointRight.mark(meshFacets,5);
+dolfin::plot(meshFacets);dolfin::interactive();
+/*dolfin::VertexFunction<std::size_t> meshPoints (meshManager_.mesh());
+meshPoints.set_all (0);
+triplePointLeft.mark(meshPoints,4);
+triplePointRight.mark(meshPoints,5);
+triplePoints.mark(meshPoints,6);
+meshPoints.set_value(220,10);
+meshPoints.set_value(230,20);
+dolfin::Point tpLeft (extractPoint(meshPoints,10));
+dolfin::Point tpRight (extractPoint(meshPoints,20));
+dolfin::plot(meshPoints, "meshPoints"); dolfin::interactive();*/
+this->setIntegrationSubdomain ("residual_form",
+                                            dolfin::reference_to_no_delete_pointer (meshFacets),
+                                            dcp::SubdomainType::BOUNDARY_FACETS);
+computeFreeSurfaceStress::Form_L::CoefficientSpace_deltaDirac deltaFS (this->mesh());
+//dolfin::PointSource deltaDirac (deltaFS,tpLeft);
+Ivan::DeltaDirac deltaExpr;
+dolfin::Function deltaFun (deltaFS);
+deltaFun = deltaExpr;
+dolfin::plot(deltaFun,"la delta fun"); dolfin::interactive();
+dolfin::plot(deltaExpr,meshManager_.mesh(),"la delta expr");
 											
         // start time loop. The loop variable timeStepFlag is true only if the solve type requested is "step" and
         // the first step has already been peformed
@@ -590,6 +627,7 @@ namespace Ivan
         bool timeStepFlag = false;
 dolfin::File solutionFile("insideMovingTimeDependentProblem.pvd");
 dolfin::File surfaceStressFile("surfaceTension.pvd");
+dolfin::File surfaceStressFile_onlyTP("surfaceTension_onlyTP.pvd");
         while (!isFinished () && timeStepFlag == false)
         {
             timeStep++;
@@ -622,18 +660,25 @@ dolfin::plot(w,"w in MovingTimeDependentProblem");
 solutionFile << std::pair<dolfin::Function*,double>(&tmpSolution,t_);
             
 // Assembling and storing the surface tension term
+dolfin::plot(deltaFun,"la delta fun"); 
 computeFreeSurfaceStress::FunctionSpace stressSpace(meshManager_.mesh());
 dolfin::Constant stressGamma (7.3e-1);
 dolfin::Constant stressDt (0.05);
 // CI FOSSE residualForm() COME METODO PER ESTRARRE I COEFFICIENTI...  stressForm.set_coefficient ("gamma",timeSteppingProblem_->residualForm().coefficient("gamma"));
-computeFreeSurfaceStress::LinearForm stressForm(stressSpace,stressDt,stressGamma);
+computeFreeSurfaceStress::LinearForm stressForm(stressSpace,stressDt,stressGamma,deltaFun);
+computeFreeSurfaceStress_onlyTP::LinearForm stressForm_onlyTP(stressSpace,stressDt,stressGamma,deltaFun);
 stressForm.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer(meshFacets));
+stressForm_onlyTP.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer(meshFacets));
+//stressForm.set_vertex_domains (dolfin::reference_to_no_delete_pointer(meshPoints));
 dolfin::Vector b;
 assemble(b, stressForm);            
 dolfin::Function bFun(stressSpace);
 * bFun.vector() = b;
 //dolfin::plot(bFun,"bFun"); dolfin::interactive();
 surfaceStressFile << std::pair<dolfin::Function*,double>(&bFun,t_);
+assemble(b, stressForm_onlyTP);            
+* bFun.vector() = b;
+surfaceStressFile_onlyTP << std::pair<dolfin::Function*,double>(&bFun,t_);
 std::cerr << std::endl;
 
             // save solution in solution_ according to time step and store interval.
@@ -641,7 +686,7 @@ std::cerr << std::endl;
             
             // plot solution according to time step and plot interval
  //           plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause);
-            plotSolution (tmpSolution, timeStep, 1, 0, false);
+            plotSolution (tmpSolution, timeStep, 1, 0, false);//dolfin::interactive();
 
             if (oneStepRequested == true)
             {

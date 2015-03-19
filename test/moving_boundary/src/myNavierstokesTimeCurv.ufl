@@ -25,6 +25,7 @@ cell = triangle
 # define function spaces
 V = VectorElement ("Lagrange", cell, 2)
 Q = FiniteElement ("Lagrange", cell, 1)
+CQ = FiniteElement ("Lagrange", cell, 4)
 T = V * Q
 
 # define test and trial functions
@@ -39,8 +40,14 @@ nu = Constant (cell)
 gamma = Constant (cell)
 dt = Constant (cell)
 n = FacetNormal(cell)
+h = MaxFacetEdgeLength(cell)
 u_old = Coefficient (V)
 w = Coefficient(V)
+deltaDirac = Coefficient (CQ)
+
+#th = pi/2
+#A = as_matrix([[cos(th) , -sin(th)] , [sin(th) , cos(th)]])
+A = as_matrix ([ [0 , -1] , [1 , 0] ])
 
 # define non linear equation
 F = inner (u, v) * dx \
@@ -51,7 +58,15 @@ F = inner (u, v) * dx \
     - dt * inner (p, div (v)) * dx \
     + inner (div (u), q) * dx \
     + dt * gamma * div (v) * ds(1) \
-    - dt * gamma * inner (grad(v), outer (n,n)) * ds(1)
+    - dt * gamma * inner (grad(v), outer (n,n)) * ds(1) \
+    + dt * gamma * div (v) * ds(4) \
+    - dt * gamma * inner (grad(v), outer (n,n)) * ds(4) \
+    + dt * gamma * div (v) * ds(5) \
+    - dt * gamma * inner (grad(v), outer (n,n)) * ds(5) \
+    - (1.0/h) * dt * gamma * deltaDirac * inner (v, A*n) * ds(4) \
+    + (1.0/h) * dt * gamma * deltaDirac * inner (v, A*n) * ds(5)
+    #- (1.0/h) * dt * gamma * inner (v, A*n) * ds(4) \
+    #+ (1.0/h) * dt * gamma * inner (v, A*n) * ds(5)
 #-outer NON SI PUO'    + gamma * dt * tr ((Identity-outer(n,n)) * grad(v))  * ds(1)
 
 # define test and trial function for jacobian

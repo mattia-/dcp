@@ -46,6 +46,69 @@
 
 namespace Ivan
 {
+    class LateralInterior : public dolfin::SubDomain
+    {
+        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+        {
+            return on_boundary
+                   && ( dolfin::near (x[0],0.0) || dolfin::near(x[0],0.05) )
+                   && ( x[1] <= 0.1-6e-16);
+        }
+
+        friend class TriplePoints;
+        friend class TriplePointLeft;
+        friend class TriplePointRight;
+    };
+
+  	class TriplePoints : public dolfin::SubDomain
+    {
+        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+        {
+            return on_boundary
+                  && ( ( dolfin::near(x[0],0,0.006) && dolfin::near(x[1],0.1,0.006) )
+                    ||
+                   ( dolfin::near(x[0],0.05,0.006) && dolfin::near(x[1],0.1,0.006) ) )
+                  && !( lateralInterior.inside(x, on_boundary) );
+            return  ( dolfin::near(x[0], 0) && (x[1]<0.01-6e-16) && (x[1]>6e-16)) //dolfin::near(x[1],0.005) )
+           		     ||
+                 		( dolfin::near(x[0], 0.05) && (x[1]<0.01-6e-16) && (x[1]>6e-16)); //dolfin::near(x[1],0.005) );
+        }
+
+        LateralInterior lateralInterior;
+        friend class DeltaDirac;
+    };
+    class DeltaDirac : public dolfin::Expression
+    {
+        void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+        {
+            values[0] = 5 * ( ( ( dolfin::near(x[0],0.0) && dolfin::near(x[1],0.1) ) || ( dolfin::near(x[0],0.05) && dolfin::near(x[1],0.1) ) )
+                ? 1.0 : 0.0);
+        }
+        Ivan::TriplePoints tp;
+    };
+  	class TriplePointLeft : public dolfin::SubDomain
+    {
+        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+        {
+            return on_boundary
+                  && ( dolfin::near(x[0],0,0.006) && dolfin::near(x[1],0.1,0.006) )
+                  && !( lateralInterior.inside(x, on_boundary) );
+        }
+
+        LateralInterior lateralInterior;
+    };
+  	class TriplePointRight : public dolfin::SubDomain
+    {
+        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+        {
+            return on_boundary
+                  && ( dolfin::near(x[0],0.05,0.006) && dolfin::near(x[1],0.1,0.006) )
+                  && !( lateralInterior.inside(x, on_boundary) );
+        }
+
+        LateralInterior lateralInterior;
+    };
+
     class TopBoundary : public dolfin::SubDomain
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const

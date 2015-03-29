@@ -243,6 +243,17 @@ return 0;
     navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, noSlipBoundary, "topological", false));
     navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], symmetryDirichletBC, gammaSD));
 */
+
+// NB: from FEniCS 1.5.0 C++ documentation for dolfin::DirichletBC
+// The boundary indicators may be specified in a number of different ways.
+// The simplest approach is to specify the boundary by a SubDomain object, using the inside() function to specify 
+// on which facets the boundary conditions should be applied. The boundary facets will then be searched for and 
+// marked only on the first call to apply.
+// This means that the mesh could be moved after the first apply and the boundary markers would still remain intact.
+// Alternatively, the boundary may be specified by a MeshFunction over facets labeling all mesh facets together
+// with a number that specifies which facets should be included in the boundary.
+// The third option is to attach the boundary information to the mesh.
+// This is handled automatically when exporting a mesh from for example VMTK.
     myNavierstokesTimeCurv::LeftBoundary wallLeft;
     myNavierstokesTimeCurv::RightBoundary wallRight;
     Ivan::TopBoundary freeSurface;

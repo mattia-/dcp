@@ -12,6 +12,9 @@ Steps to launch the code:
     cmake ..
     make
 
+You may have to adjust the directories where cmake looks for header files and libraries if you installed 
+DCP in a non-default location. To do this, use the variables INCLUDE_DIRS and LINK_DIRS when invoking cmake
+
 2) run the executable::
 
     ./src/main

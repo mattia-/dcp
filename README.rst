@@ -24,10 +24,14 @@ various options can be passed to ``cmake``:
   compile time (see CMake documentation for more details)
 
 - ``LIB_INSTALL_DIR`` : directory for the installation of the library. 
-  Default value: the directory `lib` in the root directory of the source tree
+  Default value: the directory `${CMAKE_INSTALL_PREFIX}/lib`. Note that the variable
+  `CMAKE_INSTALL_PREFIX` contains `/usr/local` by default, but its value can be
+  changed by passing it to ``cmake`` upon invocation.
 
 - ``HEADER_INSTALL_DIR`` : directory for the installation of the header files. 
-  Default value: the directory `include` in the root directory of the source tree 
+  Default value: the directory `${CMAKE_INSTALL_PREFIX}/include`. Note that the variable
+  `CMAKE_INSTALL_PREFIX` contains `/usr/local` by default, but its value can be
+  changed by passing it to ``cmake`` upon invocation.
 
 All option can be set from command line using the flag ``-D`` : ::
 

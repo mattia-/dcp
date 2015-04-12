@@ -93,12 +93,15 @@ SET (CMAKE_SKIP_RPATH TRUE)
 
 # set directory for installation
 IF (NOT DEFINED LIB_INSTALL_DIR)
-    SET (LIB_INSTALL_DIR "${CMAKE_SOURCE_DIR}/lib")
+    SET (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 ENDIF (NOT DEFINED LIB_INSTALL_DIR)
 
 IF (NOT DEFINED HEADER_INSTALL_DIR)
-    SET (HEADER_INSTALL_DIR "${CMAKE_SOURCE_DIR}/include")
+    SET (HEADER_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include")
 ENDIF (NOT DEFINED HEADER_INSTALL_DIR)
+
+MESSAGE (STATUS "Library installation directory is ${LIB_INSTALL_DIR}")
+MESSAGE (STATUS "Header files installation directory is ${HEADER_INSTALL_DIR}")
 
 # define macro to install header files preserving folder structure
 # </====================================

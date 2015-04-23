@@ -28,3 +28,6 @@ lib
 # temporary files
 *.swp
 *~
+
+# helper files
+*.install

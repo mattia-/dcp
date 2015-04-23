@@ -119,3 +119,8 @@ ENDMACRO (INSTALL_HEADERS_WITH_DIRECTORY)
 
 # enter subdirectories
 ADD_SUBDIRECTORY (src)
+
+# write installation directories to file
+MESSAGE (STATUS "Writing installation configuration to file")
+FILE (WRITE "${CMAKE_SOURCE_DIR}/test/cmake_header_dir.install" "${HEADER_INSTALL_DIR}")
+FILE (WRITE "${CMAKE_SOURCE_DIR}/test/cmake_lib_dir.install" "${LIB_INSTALL_DIR}")

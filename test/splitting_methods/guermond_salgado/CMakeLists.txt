@@ -13,22 +13,9 @@ PROJECT (${PROJECT_NAME})
 
 SET (CMAKE_SKIP_RPATH TRUE)
 
-#IF (NOT CMAKE_COMPILER_IS_GNUCXX)
-#    MESSAGE (WARNING "-- *** Compiler ID is not GNU. 
-#    Proceed, but this may cause problems")
-#ENDIF (NOT CMAKE_COMPILER_IS_GNUCXX)
-#
-#IF (NOT CMAKE_COMPILER_IS_GNUCC)
-#    MESSAGE (WARNING "-- *** Linker ID is not GNU. 
-#    Proceed, but this may cause problems")
-#ENDIF (NOT CMAKE_COMPILER_IS_GNUCC)
-    
-IF (NOT DEFINED INCLUDE_DIRS)
-    SET (INCLUDE_DIRS "/usr/local/include")
-ENDIF (NOT DEFINED INCLUDE_DIRS)
-
-IF (NOT DEFINED LINK_DIRS)
-    SET (LINK_DIRS "/usr/local/lib")
-ENDIF (NOT DEFINED LINK_DIRS)
+FILE (READ "../../cmake_header_dir.install" INCLUDE_DIRS)
+FILE (READ "../../cmake_lib_dir.install" LINK_DIRS)
+MESSAGE (STATUS "DCP header files are in " ${INCLUDE_DIRS})
+MESSAGE (STATUS "DCP library files are in " ${LINK_DIRS})
 
 ADD_SUBDIRECTORY (src)

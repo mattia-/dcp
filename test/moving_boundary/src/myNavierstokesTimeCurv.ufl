@@ -42,6 +42,8 @@ n = FacetNormal(cell)
 h = MaxFacetEdgeLength(cell)
 u_old = Coefficient (V)
 w = Coefficient(V)
+beta = Constant (cell)
+stress = Coefficient (V)
 
 #th = pi/2
 #A = as_matrix([[cos(th) , -sin(th)] , [sin(th) , cos(th)]])
@@ -50,13 +52,15 @@ A = as_matrix ([ [0 , -1] , [1 , 0] ])
 # define non linear equation
 F = inner (u, v) * dx \
     - inner (u_old, v) * dx \
-    + dt * nu * inner (grad (u), grad (v)) * dx \
+    + dt * nu/2.0 * inner (grad (u)+nabla_grad(u), grad (v)+nabla_grad(v)) * dx \
     + dt * inner (dot (grad (u), u), v) * dx \
     - inner (dot (grad (u), w), v) * dx \
     - dt * inner (p, div (v)) * dx \
-    + inner (div (u), q) * dx \
+    - dt * inner (div (u), q) * dx \
     + dt * gamma * div (v) * ds(1) \
-    - dt * gamma * inner (grad(v), outer (n,n)) * ds(1)
+    - dt * gamma * inner (grad(v), outer (n,n)) * ds(1) \
+    + dt * beta * inner (u, v) * ds(2) \
+    - dt * inner (stress, v) * ds(3)
 #-outer NON SI PUO'    + gamma * dt * tr ((Identity-outer(n,n)) * grad(v))  * ds(1)
 
 # define test and trial function for jacobian
@@ -64,10 +68,11 @@ dtrial = TrialFunction (T)
 du, dp = split (dtrial)
 
 # define jacobian
-J = inner (du, v) * dx \
-    + dt * nu * inner (grad (du), grad (v)) * dx \
-    + dt * inner (dot (grad (u), du), v) * dx \
-    + dt * inner (dot (grad (du), u), v) * dx \
-    - inner (dot (grad (du), w), v) * dx \
-    - dt * inner (dp, div (v)) * dx \
-    + inner (div (du), q) * dx 
+J = derivative (F,trial,dtrial)
+#J = inner (du, v) * dx \
+#    + dt * nu/2.0 * inner (grad (du)+nabla_grad(du), grad (v)+nabla_grad(v)) * dx \
+#    + dt * inner (dot (grad (u), du), v) * dx \
+#    + dt * inner (dot (grad (du), u), v) * dx \
+#    - dt * inner (dp, div (v)) * dx \
+#    - dt * inner (div (du), q) * dx 
+##    - inner (dot (grad (du), w), v) * dx \

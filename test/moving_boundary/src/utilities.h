@@ -23,11 +23,18 @@
 #include <dolfin.h>
 
 // parameters
-double yxratio = 1;
-double lx (1), ly (lx*yxratio);
-double ustar (0.02);//(0.000001);
-double kinematic_viscosity (1e-6);
-double TP_EPS (lx/2+6e-16);
+#define yxratio 2
+//#define lx 0.05
+#define nx 20
+#define lx 0.05
+#define ly lx*yxratio
+//#define ustar 0.005
+#define ustar 0.02
+#define TP_EPS lx/nx+6e-16
+/*double yxratio = 2;
+double lx (0.05), ly (lx*yxratio);
+double ustar (0.005);
+double TP_EPS (lx/40+6e-16);*/
 
 class MovingLid : public dolfin::SubDomain
 {
@@ -111,7 +118,7 @@ class LateralInterior : public dolfin::SubDomain
     {
         return on_boundary
                && ( dolfin::near (x[0],0.0) || dolfin::near(x[0],lx) )
-               && ( x[1] <= ly-6e-16);
+               && ( x[1] < ly-6e-16);
     }
 
     friend class TriplePoints;
@@ -126,7 +133,7 @@ class LateralWall : public dolfin::SubDomain
                && ( dolfin::near (x[0],0.0) || dolfin::near(x[0],lx) );
     }
 };
-class TriplePoints : public dolfin::SubDomain
+/*class TriplePoints : public dolfin::SubDomain
 {
     bool inside (const dolfin::Array<double>& x, bool on_boundary) const
     {
@@ -141,7 +148,7 @@ class TriplePoints : public dolfin::SubDomain
     }
 
     LateralInterior lateralInterior;
-};
+};*/
 class TriplePointLeft : public dolfin::SubDomain
 {
     bool inside (const dolfin::Array<double>& x, bool on_boundary) const
@@ -188,7 +195,12 @@ class TopBoundary : public dolfin::SubDomain
     {
         return on_boundary
                &&
-              (x[1] >= ly - 6.0e-16);
+              ( x[1] >= ly - 6.0e-16 );
+/*          //what follows takes away the triple points
+               &&
+             !( dolfin::near(x[0],0) )
+               &&
+             !( dolfin::near(x[0],lx) );*/
     }
 };
 class BottomBoundary : public dolfin::SubDomain
@@ -205,7 +217,7 @@ class InflowDirichletData : public dolfin::Expression
     void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
     {
         values[0] = 0.0;
-        values[1] = 0.1 * 4/(lx*lx)*x[0]*(lx-x[0]) ;
+        values[1] = ustar;// * 4/(lx*lx)*x[0]*(lx-x[0]) ;
     }
     
     std::size_t value_rank() const
@@ -237,6 +249,26 @@ class XY : public dolfin::Expression
     {
       return 3;
     }
+};
+
+class BottomBoundaryEvaluator
+{ 
+    public:
+        bool operator() (const dolfin::Array<double>& x, bool on_boundary)
+        {
+            return dolfin::near (x[1], 0) && on_boundary;
+        }
+}; 
+class InflowDirichletBCEvaluator
+{
+    public:
+        void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
+        {
+            values[0] = 0;
+//            values[1] = sin(2*3.14*t) * 6*x[0]*(1-x[0]); //firstDrop
+//            values[1] = 0.5 * sin(2*3.14*t) * 4*x[0]*(1-x[0]); //freq1
+            values[1] = ustar * sin(t* 2*3.14) * 4/(lx*lx)*x[0]*(lx-x[0]);
+        }
 };
 
 #endif

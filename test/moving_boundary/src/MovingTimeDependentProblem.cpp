@@ -19,12 +19,14 @@
 
 //#include <dcp/differential_problems/MovingTimeDependentProblem.h>
 #include "MovingTimeDependentProblem.h"
-#include "computeFreeSurfaceStress.h"
 #include "computeFreeSurfaceStress_onlyTP.h"
+#include "computeFreeSurfaceStress_noTP.h"
 #include <dcp/differential_problems/differential_problems.h>
 #include <dolfin/log/dolfin_log.h>
 #include <dolfin/geometry/Point.h>
 #include <regex>
+#include "UflToNewton.h"
+#include "myNavierstokesTimeCurv.h"
 
 dolfin::Point extractPoint (dolfin::MeshFunction<std::size_t>& mf, size_t value)
 {
@@ -45,6 +47,7 @@ namespace Ivan
          const double& endTime,
          std::initializer_list<std::string> dtCoefficientTypes,
          std::initializer_list<std::string> previousSolutionCoefficientTypes,
+//current//         std::initializer_list<std::string> currentSolutionCoefficientTypes,
          const unsigned int& nTimeSchemeSteps)
         : 
             AbstractProblem (timeSteppingProblem->functionSpace ()),
@@ -82,9 +85,13 @@ namespace Ivan
         parameters.add ("problem_type", "time_dependent");
         parameters.add ("dt_name", "dt");
         parameters.add ("previous_solution_name", "u_old");
+        parameters.add ("current_solution_name", "trial");
         parameters.add ("store_interval", 1);
         parameters.add ("plot_interval", 0);
-        parameters.add ("time_stepping_solution_component", -1);
+//        parameters.add ("time_stepping_solution_component", -1);
+        parameters.add ("time_stepping_solution_component", 0);
+          // TODO rimettere default a -1 e capire come passarlo da fuori
+        parameters.add ("time_stepping_current_solution_component", -1);
         parameters.add ("pause", false);
         parameters.add ("previous_solution_is_set_externally", false);
         
@@ -102,6 +109,13 @@ namespace Ivan
         }
         parameters.add (previousSolutionCoefficientTypesParameter);
         
+//current//        dolfin::Parameters currentSolutionCoefficientTypesParameter ("current_solution_coefficient_types");
+//current//        for (auto& i : currentSolutionCoefficientTypes)
+//current//        {
+//current//            currentSolutionCoefficientTypesParameter.add<std::string> (i);
+//current//        }
+//current//        parameters.add (currentSolutionCoefficientTypesParameter);
+
         parameters ["plot_title"] = "";
 
         dolfin::end ();
@@ -114,7 +128,8 @@ namespace Ivan
     /******************* GETTERS *******************/
     std::shared_ptr<const dolfin::Mesh> MovingTimeDependentProblem::mesh () const
     {
-        return timeSteppingProblem_ -> mesh ();
+//        return timeSteppingProblem_ -> mesh ();
+        return dolfin::reference_to_no_delete_pointer(meshManager_.mesh ());
     }
 
 
@@ -592,49 +607,56 @@ namespace Ivan
 // è per calcolare la tensione superficiale
     dolfin::FacetFunction<std::size_t> meshFacets (meshManager_.mesh());
     meshFacets.set_all (0);
-    Ivan::TopBoundary freeSurface;
+    TopBoundary freeSurface;
     freeSurface.mark (meshFacets, 1);
-Ivan::TriplePoints triplePoints;
+    LateralWall wallBoundary;
+    wallBoundary.mark (meshFacets, 2);
 Ivan::TriplePointLeft triplePointLeft;
 triplePointLeft.mark(meshFacets,4);
 Ivan::TriplePointRight triplePointRight;
 triplePointRight.mark(meshFacets,5);
-dolfin::plot(meshFacets);dolfin::interactive();
+dolfin::plot(meshFacets,"MovingTimeDepPb meshFacets");//dolfin::interactive();
 /*dolfin::VertexFunction<std::size_t> meshPoints (meshManager_.mesh());
 meshPoints.set_all (0);
 triplePointLeft.mark(meshPoints,4);
 triplePointRight.mark(meshPoints,5);
-triplePoints.mark(meshPoints,6);
 meshPoints.set_value(220,10);
 meshPoints.set_value(230,20);
 dolfin::Point tpLeft (extractPoint(meshPoints,10));
 dolfin::Point tpRight (extractPoint(meshPoints,20));
 dolfin::plot(meshPoints, "meshPoints"); dolfin::interactive();*/
-this->setIntegrationSubdomain ("residual_form",
+/*this->setIntegrationSubdomain ("residual_form",
                                             dolfin::reference_to_no_delete_pointer (meshFacets),
-                                            dcp::SubdomainType::BOUNDARY_FACETS);
-computeFreeSurfaceStress::Form_L::CoefficientSpace_deltaDirac deltaFS (this->mesh());
+                                            dcp::SubdomainType::BOUNDARY_FACETS);*/
+/* delta// computeFreeSurfaceStress::Form_L::CoefficientSpace_deltaDirac deltaFS (this->mesh());
 //dolfin::PointSource deltaDirac (deltaFS,tpLeft);
 Ivan::DeltaDirac deltaExpr;
 dolfin::Function deltaFun (deltaFS);
 deltaFun = deltaExpr;
 dolfin::plot(deltaFun,"la delta fun"); dolfin::interactive();
 dolfin::plot(deltaExpr,meshManager_.mesh(),"la delta expr");
+delta// */
 											
         // start time loop. The loop variable timeStepFlag is true only if the solve type requested is "step" and
         // the first step has already been peformed
         int timeStep = 0;
         bool timeStepFlag = false;
-dolfin::File solutionFile("insideMovingTimeDependentProblem.pvd");
-dolfin::File surfaceStressFile("surfaceTension.pvd");
-dolfin::File surfaceStressFile_onlyTP("surfaceTension_onlyTP.pvd");
+dolfin::File solutionFile("/u/laureandi/ifumagalli/dcp_test_output/insideMovingTimeDependentProblem.pvd");
+solutionFile << std::pair<dolfin::Function*,double>(&tmpSolution,t_);
+dolfin::File surfaceStressFile("/u/laureandi/ifumagalli/dcp_test_output/surfaceTension.pvd");
+dolfin::File surfaceStressFile_onlyTP("/u/laureandi/ifumagalli/dcp_test_output/surfaceTension_onlyTP.pvd");
+std::ofstream surfaceStressFile_onlyTP_csv; surfaceStressFile_onlyTP_csv.open("/u/laureandi/ifumagalli/dcp_test_output/surfaceTension_onlyTP.csv",std::ios::out|std::ios::app);
+dolfin::File surfaceStressFile_noTP("/u/laureandi/ifumagalli/dcp_test_output/surfaceTension_noTP.pvd");
+dolfin::File provaFile("/u/laureandi/ifumagalli/dcp_test_output/provaFile.pvd");
         while (!isFinished () && timeStepFlag == false)
         {
             timeStep++;
 
             meshManager_.moveMesh(tmpSolution[0],"normal",dt);
             dolfin::Function& w(meshManager_.displacement());
-dolfin::plot(w,"w in MovingTimeDependentProblem");
+//dolfin::plot(w,"w in MovingTimeDependentProblem");
+//            dolfin::Constant w(0.0,0.0001);
+//dolfin::plot(w,meshManager_.mesh(),"w in MovingTimeDependentProblem");
 
 //dolfin::interactive();
 //            timeSteppingProblem_->setIntegrationSubdomain ("residual_form", meshFunction, dcp::SubdomainType::BOUNDARY_FACETS);
@@ -653,32 +675,48 @@ dolfin::plot(w,"w in MovingTimeDependentProblem");
             setTimeDependentDirichletBCs ();
             
             dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
+provaFile << timeSteppingProblem_->solution ();
             timeSteppingProblem_->solve ();
             dolfin::end ();
             
             tmpSolution = timeSteppingProblem_->solution ();
+provaFile << tmpSolution;
+dolfin::Function newTimeStep (* tmpSolution.function_space());
+newTimeStep = dolfin::Constant (-0.001,0,0);
+provaFile << newTimeStep;
 solutionFile << std::pair<dolfin::Function*,double>(&tmpSolution,t_);
             
 // Assembling and storing the surface tension term
-dolfin::plot(deltaFun,"la delta fun"); 
-computeFreeSurfaceStress::FunctionSpace stressSpace(meshManager_.mesh());
-dolfin::Constant stressGamma (7.3e-1);
+//delta// dolfin::plot(deltaFun,"la delta fun"); 
+computeFreeSurfaceStress_noTP::FunctionSpace stressSpace_noTP(meshManager_.mesh());
+computeFreeSurfaceStress_onlyTP::FunctionSpace stressSpace(meshManager_.mesh());
+dolfin::Constant stressGamma (7.3e-5);
 dolfin::Constant stressDt (0.05);
 // CI FOSSE residualForm() COME METODO PER ESTRARRE I COEFFICIENTI...  stressForm.set_coefficient ("gamma",timeSteppingProblem_->residualForm().coefficient("gamma"));
-computeFreeSurfaceStress::LinearForm stressForm(stressSpace,stressDt,stressGamma,deltaFun);
-computeFreeSurfaceStress_onlyTP::LinearForm stressForm_onlyTP(stressSpace,stressDt,stressGamma,deltaFun);
-stressForm.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer(meshFacets));
+//delta// computeFreeSurfaceStress::LinearForm stressForm(stressSpace,stressDt,stressGamma);//,deltaFun);
+dolfin::Constant beta (1.0e-5);
+dolfin::Constant cosThetaS (cos(3.14159265/3.0));
+dolfin::Constant t_partialOmega(0,1);
+computeFreeSurfaceStress_noTP::LinearForm stressForm_noTP(stressSpace_noTP,tmpSolution,stressDt,stressGamma,beta);//,deltaFun);
+computeFreeSurfaceStress_onlyTP::LinearForm stressForm_onlyTP(stressSpace,stressDt,stressGamma,cosThetaS,t_partialOmega);//,deltaFun);
+//delta// stressForm.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer(meshFacets));
+stressForm_noTP.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer(meshFacets));
 stressForm_onlyTP.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer(meshFacets));
 //stressForm.set_vertex_domains (dolfin::reference_to_no_delete_pointer(meshPoints));
 dolfin::Vector b;
-assemble(b, stressForm);            
 dolfin::Function bFun(stressSpace);
+/* delta// assemble(b, stressForm);            
 * bFun.vector() = b;
 //dolfin::plot(bFun,"bFun"); dolfin::interactive();
 surfaceStressFile << std::pair<dolfin::Function*,double>(&bFun,t_);
+delta// */
 assemble(b, stressForm_onlyTP);            
 * bFun.vector() = b;
 surfaceStressFile_onlyTP << std::pair<dolfin::Function*,double>(&bFun,t_);
+for (std::size_t i=0; i!=b.size(); ++i) surfaceStressFile_onlyTP_csv << b[i] << ","; surfaceStressFile_onlyTP_csv << std::endl;
+dolfin::Function bFun_noTP(stressSpace_noTP);
+assemble(* bFun_noTP.vector(), stressForm_noTP);
+surfaceStressFile_noTP << std::pair<dolfin::Function*,double>(&bFun_noTP,t_);
 std::cerr << std::endl;
 
             // save solution in solution_ according to time step and store interval.
@@ -705,6 +743,7 @@ std::cerr << std::endl;
         // timeStep % storeInterval != 0 (but it must not be saved twice!)
         storeLastStepSolution (tmpSolution, timeStep, storeInterval);
 
+surfaceStressFile_onlyTP_csv.close();
         dolfin::end ();
     }
     
@@ -787,7 +826,7 @@ std::cerr << std::endl;
             // note that we pass an empty initializer_list to the constructor as dtCoefficientTypes and 
             // previousSolutionCoefficientTypes, because they will be copied when the parameters are copied anyway
             clonedProblem = 
-                new Ivan::MovingTimeDependentProblem (this->timeSteppingProblem_, startTime_, dt_, endTime_, {}, {});
+                new Ivan::MovingTimeDependentProblem (this->timeSteppingProblem_, startTime_, dt_, endTime_, {}, {}, {});
             clonedProblem->timeDependentDirichletBCs_ = this->timeDependentDirichletBCs_;
         }
         else if (cloneMethod == "deep_clone")
@@ -795,7 +834,7 @@ std::cerr << std::endl;
             // note that we pass an empty initializer_list to the constructor as dtCoefficientTypes and 
             // previousSolutionCoefficientTypes, because they will be copied when the parameters are copied anyway
             clonedProblem = 
-                new Ivan::MovingTimeDependentProblem (this->timeSteppingProblem_, startTime_, dt_, endTime_, {}, {});
+                new Ivan::MovingTimeDependentProblem (this->timeSteppingProblem_, startTime_, dt_, endTime_, {}, {}, {});
         }
         else
         {
@@ -864,6 +903,7 @@ std::cerr << std::endl;
                 unsigned int index = solution_.size () - step;
                 for (auto& previousSolutionCoefficientType : previousSolutionCoefficientTypes)
                 {
+std::cerr << previousSolutionName << " : COMPONENTE " << timeSteppingSolutionComponent << std::endl;
                     if (timeSteppingSolutionComponent >= 0)
                     {
                         timeSteppingProblem_ -> setCoefficient 
@@ -886,6 +926,34 @@ std::cerr << std::endl;
         {
             dolfin::log (dolfin::DBG, "Skipping previous solution setting loop since it is set externally.");
         }
+
+/*current//        std::string currentSolutionName = parameters ["current_solution_name"];
+        std::vector<std::string> currentSolutionCoefficientTypes;
+        parameters ("current_solution_coefficient_types").get_parameter_keys (currentSolutionCoefficientTypes);
+        int timeSteppingCurrentSolutionComponent = parameters ["time_stepping_current_solution_component"];
+
+        dolfin::begin (dolfin::DBG, "Setting current solution as coefficient (nonlinear solver)...");
+          // TODO bisogna vedere meglio dove mettere questa cosa...
+        for (auto& currentSolutionCoefficientType : currentSolutionCoefficientTypes)
+        {
+std::cerr << currentSolutionName << " : COMPONENTE " << timeSteppingCurrentSolutionComponent << std::endl;
+            if (timeSteppingCurrentSolutionComponent >= 0)
+            {
+                timeSteppingProblem_ -> setCoefficient 
+                    (currentSolutionCoefficientType, 
+                     dolfin::reference_to_no_delete_pointer ((solution_.back().second) [timeSteppingCurrentSolutionComponent]), 
+                     currentSolutionName);
+            }
+            else
+            {
+                timeSteppingProblem_ -> setCoefficient 
+                    (currentSolutionCoefficientType, 
+                     dolfin::reference_to_no_delete_pointer (solution_.back().second),
+                     currentSolutionName);
+            }
+        }
+        dolfin::end ();
+//current*/
     }
             
     

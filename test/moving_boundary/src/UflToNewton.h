@@ -22,77 +22,66 @@
 
 #include <dolfin.h>
 #include <dcp/differential_problems/SubdomainType.h>
+#include <dcp/differential_problems/NonlinearProblem.h>
 #include "utilities.h"
+
+#define DAI_STAMPA false
+#define ALG_STAMPA false
 
 namespace Ivan
 {
 
   // User defined nonlinear problem
   template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_ResidualForm, class T_JacobianForm, class T_AdditionalForm>
-  class UflToNewton : public dolfin::NonlinearProblem
+  class UflToNewton : public dcp::NonlinearProblem<T_ResidualForm,T_JacobianForm>,
+                      public dolfin::NonlinearProblem
   {
 
     public:
   
       // Constructor
-      UflToNewton (const dolfin::Mesh& mesh) :
+/*      UflToNewton (const dolfin::Mesh& mesh) :
           functionSpace_ (new T_FunctionSpace(mesh)),
           additionalFunctionSpace_ (new T_AdditionalFunctionSpace(mesh)),
           residualForm_ (T_ResidualForm (*functionSpace_)),
           jacobianForm_ (T_JacobianForm (*functionSpace_, *functionSpace_)),
           additionalForm_ (T_AdditionalForm (*additionalFunctionSpace_)),
           solution_ (new dolfin::Function(functionSpace_)),
-          previousSolution_ (new dolfin::Function(functionSpace_))
+          previousSolution_ (new dolfin::Function(functionSpace_))*/
+      UflToNewton (const dolfin::FunctionSpace& functionSpace,
+                   const std::string& residualFormSolutionName,
+                   const std::string& jacobianFormSolutionName = "" ) :
+          dcp::NonlinearProblem<T_ResidualForm,T_JacobianForm> (functionSpace,residualFormSolutionName,jacobianFormSolutionName),
+          additionalFunctionSpace_ (new T_AdditionalFunctionSpace(this->functionSpace_->mesh())),
+          additionalForm_ (T_AdditionalForm (*(this->additionalFunctionSpace_))),
+//          dummy_ (this->functionSpace_),
+          bCheckFile("/u/laureandi/ifumagalli/dcp_test_output/NewtonCheck_b.pvd"),
+          xCheckFile("/u/laureandi/ifumagalli/dcp_test_output/NewtonCheck_x.pvd"),
+          solAlgFile("/u/laureandi/ifumagalli/dcp_test_output/solAlg.pvd"),
+          solVarFile("/u/laureandi/ifumagalli/dcp_test_output/solVar.pvd"),
+          timeSolAlgFile("/u/laureandi/ifumagalli/dcp_test_output/timeSolAlg.pvd"),
+          timeSolVarFile("/u/laureandi/ifumagalli/dcp_test_output/timeSolVar.pvd")
       {
   /*      // Initialize class
         // Unfortunately C++ does not allow namespaces as template arguments
         init<simpleNavierStokes::FunctionSpace, simpleNavierStokes::JacobianForm,
              simpleNavierStokes::ResidualForm>(mesh, nu, gamma, dt, w);
   */
+//          this->solution_.push_back (std::make_pair (0,dummy_));
       }
   
-      void addDirichletBC (std::string&& str, dolfin::DirichletBC&& dirichletBC)
+/*      void addDirichletBC (dolfin::DirichletBC&& dirichletBC, std::string&& str)
       {
           dirichletBCs_.insert (std::make_pair(str,dirichletBC));
-      }
+      }*/
   
       // User defined residual vector
-      void F(dolfin::GenericVector& b, const dolfin::GenericVector& x)
-      {
-        // Assemble RHS (Neumann boundary conditions)
-        dolfin::Assembler assembler;
-        assembler.assemble (b, residualForm_);
-        dolfin::Vector vec(MPI_COMM_WORLD,b.size());
-        assembler.assemble (vec, additionalForm_);
-std::cerr << ".h OK fino a " << __LINE__ << std::endl;
-        processAdditionalVector (vec);
-std::cerr << ".h OK fino a " << __LINE__ << std::endl;
-for (auto i=0; i!=vec.size(); ++i) std::cerr << vec[i] << ", "; std::cerr << std::endl;
-for (auto i=0; i!=b.size(); ++i) std::cerr << b[i] << ", "; std::cerr << std::endl;
-        b -= vec;
-std::cerr << ".h OK fino a " << __LINE__ << std::endl;
-        for (auto it = dirichletBCs_.begin(); it != dirichletBCs_.end(); it++)
-            (it->second).apply (b, x);
-std::cerr << ".h OK fino a " << __LINE__ << std::endl;
-dolfin::Function bFun (*additionalFunctionSpace_);
-* bFun.vector() = b;
-dolfin::plot (bFun[0], "velocity");
-dolfin::plot (bFun[0][0],"x velocity");
-dolfin::plot (bFun[0][1],"y velocity"); dolfin::interactive();
-std::cerr << std::endl; exit(0);
-      }
+      void F (dolfin::GenericVector& b, const dolfin::GenericVector& x);
   
       // User defined assemble of Jacobian
-      void J(dolfin::GenericMatrix& A, const dolfin::GenericVector& x)
-      {
-        // Assemble system
-        dolfin::Assembler assembler;
-        assembler.assemble(A, jacobianForm_);
-        for (auto it = dirichletBCs_.begin(); it != dirichletBCs_.end(); it++)
-            (it->second).apply (A);
-      }
+      void J (dolfin::GenericMatrix& A, const dolfin::GenericVector& x);
   
-      // Return solution function
+/*      // Return solution function
       dolfin::Function& solution()
       { return *solution_; }
   
@@ -101,15 +90,61 @@ std::cerr << std::endl; exit(0);
       { return *previousSolution_; }
   
       dolfin::FunctionSpace& functionSpace()
-      { return *functionSpace_; }
+      { return *functionSpace_; }*/
+
+      virtual bool setNonlinearSolver (std::shared_ptr<dolfin::NewtonSolver> solver)
+        //TODO templatizzare/altre opzioni per avere generico solutore
+      {
+          this->nonlinear_solver_.reset(new dolfin::NewtonSolver);
+          // TODO sarebbe meglio una cosa tipo la riga seguente...
+          // this->nonlinear_solver_.reset (solver);
+          nonlinear_solver_set_ = true;
+//  nonlinear_solver_->parameters["linear_solver"] = "lu";
+  nonlinear_solver_->parameters["convergence_criterion"] = "residual";
+  nonlinear_solver_->parameters["maximum_iterations"] = 50;
+//  nonlinear_solver_->parameters["error_on_nonconvergence"] = false;
+  nonlinear_solver_->parameters["relative_tolerance"] = 1e-5;
+  nonlinear_solver_->parameters["absolute_tolerance"] = 1e-9;
+          return nonlinear_solver_set_;
+      }
+
+      //! Solve problem
+      /*!
+       *  This method solves the problem defined. It uses the private members' value to set the problem and then
+       *  stores the solution in the private member \c solution_. See documentation of \c dcp::AbstractProblem
+       *  for more details on how the protected member \c solution_ works and why it is declared as a 
+       *  \c std::pair.
+       *
+       *  \param type the solution type requested. In this class, the only possibility is to set
+       *  \c type equal to \c "default".
+       */
+      virtual void solve (const std::string& type = "default") override;
+
+      // Return previous solution function
+      dolfin::Function& previousSolution()
+      {
+/*          if (this->solution_.empty())
+              return dummy_;*/
+          if (this->solution_.size() < 2)
+              return this->solution_.back ().second;
+          return this->solution_[this->solution_.size()-2].second;
+      }
+
+      // Return solution function (non const version)
+      // TODO sarebbe meglio tenere solo quella const di dcp::NonlinearProblem;
+      //      per il momento questa serve per poter passare *solution_.vector() a dolfin::NewtonSolver
+      dolfin::Function& solution ()
+      {
+          return this->solution_.back ().second;
+      }
   
       virtual void setCoefficient (const std::string& coefficientType, 
                                    const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-                                   const std::string& coefficientName = "default");// override;
+                                   const std::string& coefficientName = "default") override;
 
       virtual void setIntegrationSubdomain (const std::string& formType,
                                              std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                             const dcp::SubdomainType& subdomainType);// override;
+                                             const dcp::SubdomainType& subdomainType) override;
                 
     private:
   
@@ -145,14 +180,24 @@ std::cerr << std::endl; exit(0);
       virtual void processAdditionalVector (dolfin::Vector& vec);
   
       // Function space, forms and functions
-      std::shared_ptr<dolfin::FunctionSpace> functionSpace_;
+//      std::shared_ptr<dolfin::FunctionSpace> functionSpace_;
       std::shared_ptr<dolfin::FunctionSpace> additionalFunctionSpace_;
-      T_ResidualForm residualForm_;
-      T_JacobianForm jacobianForm_;
+/*      T_ResidualForm residualForm_;
+      T_JacobianForm jacobianForm_;*/
       T_AdditionalForm additionalForm_;
-      std::shared_ptr<dolfin::Function> solution_;
-      std::shared_ptr<dolfin::Function> previousSolution_;
-      std::map <std::string, dolfin::DirichletBC> dirichletBCs_;
+/*      std::shared_ptr<dolfin::Function> solution_;
+      std::shared_ptr<dolfin::Function> previousSolution_;*/
+//      std::map <std::string, dolfin::DirichletBC> dirichletBCs_;
+//      dolfin::Function dummy_;
+      std::shared_ptr<dolfin::NewtonSolver> nonlinear_solver_;
+      bool nonlinear_solver_set_;
+        //TODO templatizzare/altre opzioni per avere generico solutore
+dolfin::File bCheckFile;
+dolfin::File xCheckFile;
+dolfin::File solAlgFile;
+dolfin::File solVarFile;
+dolfin::File timeSolAlgFile;
+dolfin::File timeSolVarFile;
   };
 
 
@@ -169,15 +214,18 @@ std::cerr << std::endl; exit(0);
                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                         const std::string& coefficientName)
         {
+/*std::cerr << "Setting coefficient " << coefficientName << " in " << coefficientType << "(0 to continue)" << std::endl;
+int bla;
+std::cin >> bla;*/
             if (coefficientType == "residual_form")
             {
                 dolfin::log (dolfin::DBG, "Setting residual form coefficient \"%s\"...", coefficientName.c_str ());
-                residualForm_.set_coefficient (coefficientName, coefficientValue);
+                this->residualForm_.set_coefficient (coefficientName, coefficientValue);
             }
             else if (coefficientType == "jacobian_form")
             {
                 dolfin::log (dolfin::DBG, "Setting jacobian form coefficient \"%s\"...", coefficientName.c_str ());
-                jacobianForm_.set_coefficient (coefficientName, coefficientValue);
+                this->jacobianForm_.set_coefficient (coefficientName, coefficientValue);
             }
 /*            else if (coefficientType == "initial_guess")
             {
@@ -199,7 +247,7 @@ std::cerr << std::endl; exit(0);
             else if (coefficientType == "additional_form")
             {
                 dolfin::log (dolfin::DBG, "Setting jacobian form coefficient \"%s\"...", coefficientName.c_str ());
-                additionalForm_.set_coefficient (coefficientName, coefficientValue);
+                this->additionalForm_.set_coefficient (coefficientName, coefficientValue);
             }
             else
             {
@@ -219,22 +267,22 @@ std::cerr << std::endl; exit(0);
                 if (subdomainType == dcp::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on INTERNAL_CELLS...");
-                    residualForm_.set_cell_domains (meshFunction);
+                    this->residualForm_.set_cell_domains (meshFunction);
                 }
                 else if (subdomainType == dcp::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on INTERNAL_FACETS...");
-                    residualForm_.set_interior_facet_domains (meshFunction);
+                    this->residualForm_.set_interior_facet_domains (meshFunction);
                 }
                 else if (subdomainType == dcp::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on BOUNDARY_FACETS...");
-                    residualForm_.set_exterior_facet_domains (meshFunction);
+                    this->residualForm_.set_exterior_facet_domains (meshFunction);
                 }
                 else if (subdomainType == dcp::SubdomainType::VERTICES)
                 {
                     dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on VERTICES...");
-                    residualForm_.set_vertex_domains (meshFunction);
+                    this->residualForm_.set_vertex_domains (meshFunction);
                 }
                 else
                 {
@@ -246,22 +294,22 @@ std::cerr << std::endl; exit(0);
                 if (subdomainType == dcp::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on INTERNAL_CELLS...");
-                    jacobianForm_.set_cell_domains (meshFunction);
+                    this->jacobianForm_.set_cell_domains (meshFunction);
                 }
                 else if (subdomainType == dcp::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on INTERNAL_FACETS...");
-                    jacobianForm_.set_interior_facet_domains (meshFunction);
+                    this->jacobianForm_.set_interior_facet_domains (meshFunction);
                 }
                 else if (subdomainType == dcp::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on BOUNDARY_FACETS...");
-                    jacobianForm_.set_exterior_facet_domains (meshFunction);
+                    this->jacobianForm_.set_exterior_facet_domains (meshFunction);
                 }
                 else if (subdomainType == dcp::SubdomainType::VERTICES)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on VERTICES...");
-                    jacobianForm_.set_vertex_domains (meshFunction);
+                    this->jacobianForm_.set_vertex_domains (meshFunction);
                 }
                 else
                 {
@@ -273,22 +321,22 @@ std::cerr << std::endl; exit(0);
                 if (subdomainType == dcp::SubdomainType::INTERNAL_CELLS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on INTERNAL_CELLS...");
-                    additionalForm_.set_cell_domains (meshFunction);
+                    this->additionalForm_.set_cell_domains (meshFunction);
                 }
                 else if (subdomainType == dcp::SubdomainType::INTERNAL_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on INTERNAL_FACETS...");
-                    additionalForm_.set_interior_facet_domains (meshFunction);
+                    this->additionalForm_.set_interior_facet_domains (meshFunction);
                 }
                 else if (subdomainType == dcp::SubdomainType::BOUNDARY_FACETS)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on BOUNDARY_FACETS...");
-                    additionalForm_.set_exterior_facet_domains (meshFunction);
+                    this->additionalForm_.set_exterior_facet_domains (meshFunction);
                 }
                 else if (subdomainType == dcp::SubdomainType::VERTICES)
                 {
                     dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on VERTICES...");
-                    additionalForm_.set_vertex_domains (meshFunction);
+                    this->additionalForm_.set_vertex_domains (meshFunction);
                 }
                 else
                 {
@@ -305,72 +353,131 @@ std::cerr << std::endl; exit(0);
 
   template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_ResidualForm, class T_JacobianForm, class T_AdditionalForm>
         void UflToNewton <T_FunctionSpace, T_AdditionalFunctionSpace, T_ResidualForm, T_JacobianForm, T_AdditionalForm>::
+      F (dolfin::GenericVector& b, const dolfin::GenericVector& x)
+      {
+        // Assemble RHS (Neumann boundary conditions)
+        dolfin::Assembler assembler;
+        assembler.assemble (b, this->residualForm_);
+std::cerr << ".h OK fino a " << __LINE__ << std::endl;
+
+        // Take triple point into account
+        dolfin::Vector vec(MPI_COMM_WORLD,b.size());
+/*T_AdditionalFunctionSpace tmpFunctionSpace (this->functionSpace_->mesh());
+T_AdditionalForm tmpForm (tmpFunctionSpace);
+for (std::size_t i=0; i != this->additionalForm_.num_coefficients(); ++i)
+{
+    dolfin::Function tmpCoefficient (tmpFunctionSpace);
+    tmpCoefficient = * this->additionalForm_.coefficient(i);
+    tmpForm.set_coefficient (this->additionalForm_.coefficient_name(i),dolfin::reference_to_no_delete_pointer(tmpCoefficient));
+}
+std::cerr << ".h OK fino a " << __LINE__ << std::endl;
+tmpForm.set_cell_domains (this->additionalForm_.cell_domains());
+tmpForm.set_exterior_facet_domains (this->additionalForm_.exterior_facet_domains());
+tmpForm.set_interior_facet_domains (this->additionalForm_.interior_facet_domains());
+tmpForm.set_vertex_domains (this->additionalForm_.vertex_domains());
+std::cerr << ".h OK fino a " << __LINE__ << std::endl;
+//TODO sistemare: additionalFunctionSpace non subisce il mesh-moving
+//     forse e' il caso di introdurre un TimeDependentFunctionSpace, cosi' tutto passa attraverso di lui...
+        assembler.assemble (vec, tmpForm);*/
+        assembler.assemble (vec, this->additionalForm_);
+std::cerr << ".h OK fino a " << __LINE__ << std::endl;
+        processAdditionalVector (vec);
+if (DAI_STAMPA || ALG_STAMPA) {
+std::cerr << "Norma residuo solo form = " << b.norm("l2") << std::endl;}
+        b -= vec;
+//!!! controllare segno: += oppure -=
+
+        // Apply Dirichlet boundary conditions
+if (DAI_STAMPA || ALG_STAMPA) {
+std::cerr << "Norma residuo pre-BC = " << b.norm("l2") << std::endl;}
+        for (auto it = this->dirichletBCs_.begin(); it != this->dirichletBCs_.end(); it++)
+            {(it->second).apply (b,x); std::cerr<<"TimeBC "<<it->first<<std::endl;}
+//  b.apply();
+//!!! CI VUOLE (b,x) perché così metto inflow=0 nei passi interni del Newton
+//!!! non faccio apply(b,x) perche' pare (a me) che quello serva se risolvo un sistema non lineare
+//    tenendo come incognita la x, mentre qui, con Newton, l'incognita e' il DELTA x
+//            {(it->second).apply (b, x); std::cerr<<"TimeBC "<<it->first<<std::endl;}
+std::cerr << ".h OK fino a " << __LINE__ << std::endl;
+dolfin::Function bFun (*this->additionalFunctionSpace_);
+* bFun.vector() = b;
+bCheckFile << bFun;
+* bFun.vector() = x;
+xCheckFile << bFun;
+//dolfin::plot (bFun[0], "rhs");
+/*dolfin::plot (bFun[0][0],"x rhs");
+dolfin::plot (bFun[0][1],"y rhs"); dolfin::interactive();*/
+if (DAI_STAMPA || ALG_STAMPA) {
+std::cerr << " vec (size = " << vec.size() << ") = "; for (auto i=0; i!=vec.size(); ++i) std::cerr << vec[i] << ", "; std::cerr << std::endl;
+std::cerr << "   b (size = " <<   b.size() << ") = "; for (auto i=0; i!=b.size(); ++i) std::cerr << b[i] << ", "; std::cerr << std::endl;
+std::cerr << "Norma residuo = " << b.norm("l2") << std::endl;
+std::ofstream vecFile; vecFile.open("/u/laureandi/ifumagalli/dcp_test_output/vec.csv",std::ios::out|std::ios::app);
+for (auto i=0; i!=vec.size(); ++i) vecFile << vec[i] << ","; vecFile << std::endl; vecFile.close();
+std::ofstream bFile; bFile.open("/u/laureandi/ifumagalli/dcp_test_output/b.csv",std::ios::out|std::ios::app);
+for (auto i=0; i!=  b.size(); ++i)   bFile <<   b[i] << ",";   bFile << std::endl; bFile.close();}
+      }
+  template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_ResidualForm, class T_JacobianForm, class T_AdditionalForm>
+        void UflToNewton <T_FunctionSpace, T_AdditionalFunctionSpace, T_ResidualForm, T_JacobianForm, T_AdditionalForm>::
+      J (dolfin::GenericMatrix& A, const dolfin::GenericVector& x)
+      {
+        // Assemble system
+        dolfin::Assembler assembler;
+        assembler.assemble(A, this->jacobianForm_);
+if (DAI_STAMPA || ALG_STAMPA) {
+std::ofstream A_pre_bcFile; A_pre_bcFile.open("/u/laureandi/ifumagalli/dcp_test_output/A_pre_bc.csv",std::ios::out|std::ios::app);
+for (auto i=0; i!=A.size(0); ++i) {for (auto j=0; j!=A.size(1); ++j) A_pre_bcFile << A(i,j) << ","; A_pre_bcFile << std::endl;} A_pre_bcFile << std::endl; A_pre_bcFile.close();
+std::cerr << "Norma jacobiana pre-BC = " << A.norm("frobenius") << std::endl;}
+        for (auto it = this->dirichletBCs_.begin(); it != this->dirichletBCs_.end(); it++)
+            (it->second).apply (A);
+//  A.apply();
+if (DAI_STAMPA || ALG_STAMPA) {
+std::ofstream AFile; AFile.open("/u/laureandi/ifumagalli/dcp_test_output/A.csv",std::ios::out|std::ios::app);
+for (auto i=0; i!=A.size(0); ++i) {for (auto j=0; j!=A.size(1); ++j) AFile << A(i,j) << ","; AFile << std::endl;} AFile << std::endl; AFile.close();
+std::cerr << "   A (size = " << A.size(0) << "," << A.size(1) << ") = "; for (auto i=0; i!=A.size(0); ++i) for (auto j=0; j!=A.size(1); ++j) std::cerr << A(i,j) << ", "; std::cerr << std::endl;
+std::cerr << "   A is symmetric : " << A.is_symmetric(1e-10) << std::endl;
+std::cerr << "Norma jacobiana = " << A.norm("frobenius") << std::endl;}
+      }
+
+  template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_ResidualForm, class T_JacobianForm, class T_AdditionalForm>
+        void UflToNewton <T_FunctionSpace, T_AdditionalFunctionSpace, T_ResidualForm, T_JacobianForm, T_AdditionalForm>::
+      solve (const std::string& type)
+      {
+/*          std::vector<const dolfin::DirichletBC*> tmpDirichletBCs (this->dirichletBCs_.size (), nullptr);
+          std::size_t counter = 0;
+          for (auto i = this->dirichletBCs_.begin (); i != this->dirichletBCs_.end (); ++i)
+          {
+              tmpDirichletBCs[counter] = &(i->second);
+              counter++;
+          }
+
+*//*          dolfin::Function solVar (* this->functionSpace_);
+          * solVar.vector() = * this->solution_.back().second.vector();
+      dolfin::solve (this->residualForm_==0, solVar, tmpDirichletBCs, this->jacobianForm_);//, parameters);
+*//*      dolfin::solve (this->residualForm_==0, this->solution_.back().second, tmpDirichletBCs, this->jacobianForm_);//, parameters);
+      return;
+COSI FUNZIONA!
+*/
+
+std::cerr << "STAI USANDO L'ALGEBRICO" << std::endl;
+            nonlinear_solver_->solve(*this, * this->solution_.back().second.vector());
+            solAlgFile << this->solution_.back().second;
+      }
+
+  template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_ResidualForm, class T_JacobianForm, class T_AdditionalForm>
+        void UflToNewton <T_FunctionSpace, T_AdditionalFunctionSpace, T_ResidualForm, T_JacobianForm, T_AdditionalForm>::
         processAdditionalVector (dolfin::Vector& vec)
         {
-            //const dolfin::MeshFunction<std::size_t>& meshFunction (* additionalForm_.vertex_domains());
-            auto& meshFunctionVertex (* additionalForm_.vertex_domains());
-            auto& meshFunctionFacet (* additionalForm_.exterior_facet_domains());
-/*            const dolfin::Mesh& mesh (* meshFunction.mesh());
+            const dolfin::GenericDofMap& dofMap (* this->additionalFunctionSpace_->dofmap());
+dolfin::plot(* this->additionalFunctionSpace_->mesh(), "additional mesh"); //dolfin::interactive();
+dolfin::plot(* this->functionSpace_->mesh(), " non additional mesh"); //dolfin::interactive();
 std::cerr << ".h OK fino a " << __LINE__ << std::endl;
-!!! GIVES SEGMENTATION FAULT*/
-            const dolfin::Mesh& mesh (* additionalFunctionSpace_->mesh());
-            additionalFunctionSpace_->print_dofmap();
-(*additionalFunctionSpace_)[0]->print_dofmap();
-(*(*additionalFunctionSpace_)[0])[0]->print_dofmap();
-(*additionalFunctionSpace_)[1]->print_dofmap();
+            std::vector<double> coordinates (dofMap.tabulate_all_coordinates(* this->additionalFunctionSpace_->mesh()));
 std::cerr << ".h OK fino a " << __LINE__ << std::endl;
-            const dolfin::GenericDofMap& dofMap (* additionalFunctionSpace_->dofmap());
-std::cerr << "dofmap dimension " << dofMap.geometric_dimension() << std::endl;
-            std::vector<double> coordinates (dofMap.tabulate_all_coordinates(mesh));
-std::cerr << "coordinates size " << coordinates.size() << std::endl;
-std::ostream_iterator<double> out_it (std::cerr,", ");
-std::ostream_iterator<std::size_t> out_it_int (std::cerr,", ");
-std::copy ( coordinates.begin(), coordinates.end(), out_it );
-            std::vector<dolfin::la_index> dofs (dofMap.dofs());
-std::cerr << std::endl << "dofs size " << dofs.size() << std::endl;
-std::copy ( dofs.begin(), dofs.end(), out_it_int );
-/* !!! SEGFAULT IN WHAT FOLLOWS
-            const dolfin::GenericDofMap& velocityDofMap (* dofMap.extract_sub_dofmap({0},mesh));
-            const dolfin::GenericDofMap& velocityDofMap (* (*additionalFunctionSpace_)[0]->dofmap());
-std::cerr << "\nVELOCITY" << std::endl;
-            coordinates = velocityDofMap.tabulate_all_coordinates(mesh);
-std::cerr << "coordinates size " << coordinates.size() << std::endl;
-std::copy ( coordinates.begin(), coordinates.end(), out_it );
-            dofs = velocityDofMap.dofs();
-std::cerr << std::endl << "dofs size " << dofs.size() << std::endl;
-            const dolfin::GenericDofMap& pressureDofMap (* dofMap.extract_sub_dofmap({1},mesh));
-std::cerr << "\nPRESSURE" << std::endl;
-            coordinates = pressureDofMap.tabulate_all_coordinates(mesh);
-std::cerr << "coordinates size " << coordinates.size() << std::endl;
-std::copy ( coordinates.begin(), coordinates.end(), out_it );
-            dofs = pressureDofMap.dofs();
-std::cerr << std::endl << "dofs size " << dofs.size() << std::endl;*/
-dolfin::Function xy (* additionalFunctionSpace_);
-xy = XY();
-const dolfin::GenericVector& xyvec (* xy.vector());
-std::cerr << std::endl << "XY function vector (size = " << xyvec.size() << ")" << std::endl;
-for (std::size_t i=0; i!= xyvec.size(); ++i) std::cerr << xyvec[i] << ", ";
-const std::vector<double>& xx (mesh.geometry().x());
-std::cerr << std::endl << "xx vector (size = " << xx.size() << ")" << std::endl;
-std::copy ( xx.begin(), xx.end(), out_it );
-if (! meshFunctionVertex.empty())
-  {std::cerr << std::endl << "mesh function vertex values (size = " << meshFunctionVertex.size() << ")" << std::endl;
-  for (std::size_t i=0; i!= meshFunctionVertex.size(); ++i) std::cerr << meshFunctionVertex[i] << ", ";}
-else std::cerr << std::endl << "meshFunctionVertex is empty" << std::endl;
-if (! meshFunctionFacet.empty())
-  {std::cerr << std::endl << "mesh function facet values (size = " << meshFunctionFacet.size() << ")" << std::endl;
-  for (std::size_t i=0; i!= meshFunctionFacet.size(); ++i) std::cerr << meshFunctionFacet[i] << ", ";}
-else std::cerr << std::endl << "meshFunctionFacet is empty" << std::endl;
-std::cerr << std::endl 
-          << std::endl
-          << std::endl;
-const dolfin::GenericDofMap& dofmapComponent (*(*additionalFunctionSpace_)[0]->dofmap());
-const std::vector<unsigned int>& meshcells (mesh.cells());
-std::cerr << "mesh cells" << std::endl; std::copy (meshcells.begin(), meshcells.end(), out_it); std::cerr << std::endl;
-/*std::vector<double> dmCompCoords (dofmapComponent.tabulate_all_coordinates(mesh));
-std::cerr << "component coordinates" << std::endl; std::copy (dmCompCoords.begin(), dmCompCoords.end(), out_it); std::cerr << std::endl;*/
+//TODO sistemare: additionalFunctionSpace non subisce il mesh-moving (vedi i due plot precedenti)
+//                  (a questa riga uso additionalFunctionSpace proprio perche' ha la mesh fissa, quindi posso usare
+//                   SubDomains che non si muovono; il problema e' piu' su, dove c'e' un TODO simile a questo)
+//     forse e' il caso di introdurre un TimeDependentFunctionSpace, cosi' tutto passa attraverso di lui...
+const dolfin::GenericDofMap& dofmapComponent (*(*this->additionalFunctionSpace_)[0]->dofmap());
             std::vector<dolfin::la_index> dmCompDofs (dofmapComponent.dofs());
-std::cerr << "component dofs (size " << dmCompDofs.size() << ")" << std::endl; std::copy (dmCompDofs.begin(), dmCompDofs.end(), out_it); std::cerr << std::endl;
 std::vector<dolfin::la_index> okDofs;
 dolfin::Array<double> pointCoords (2);
 TriplePointLeftVertex tplv;
@@ -389,34 +496,8 @@ for (auto it=dmCompDofs.begin(); it!=dmCompDofs.end(); it++)
   else
     std::cerr << pointCoords[0] << "  " << pointCoords[1] << std::endl;
 }
-std::cerr << "selected dofs (size " << okDofs.size() << ")" << std::endl;
-std::copy (okDofs.begin(), okDofs.end(), out_it_int);
+std::cerr << "neglected dofs (size " << okDofs.size() << ")" << std::endl;
 std::cerr << std::endl;
-
-/*for (auto it = meshcells.begin(); it!=meshcells.end(); it++)
-{
-  
-}
-for (std::size_t cellIdx = 0; cellIdx!=mesh.size(dofmapComponent.geometric_dimension()); ++cellIdx)
-{
-  const std::vector<dolfin::la_index>& cellDofs (dofmapComponent.cell_dofs(cellIdx));
-std::cerr << "cell " << cellIdx << std::endl;
-std::copy (cellDofs.begin(),cellDofs.end(),out_it);
-std::cerr << std::endl;
-  boost::multi_array<double,2> coords;
-  double vCoords[3*2];
-  dolfin::Cell cell (mesh, cellIdx);
-  cell.get_vertex_coordinates (vCoords);
-  std::vector<double> vertexCoords (vCoords, vCoords + sizeof(vCoords)/sizeof(double));
-  dofmapComponent.tabulate_coordinates (coords,vertexCoords,cell);
-std::cerr << "coords " << std::endl;
-std::copy (coords.begin(),coords.end(),out_it);
-std::cerr << std::endl;
-std::cerr << "vertexCoords " << std::endl;
-//for (std::size_t i=0; i!=2; ++i) for (std::size_t j=0; j!=coords.size()/2; ++j) std::cerr << coords[i][j] << ", ";
-std::cerr << coords[0][1] << " ";
-std::cerr << std::endl;
-}*/
         }
 
 } //end of namespace

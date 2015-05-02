@@ -44,19 +44,22 @@ int main(int argc, char* argv[])
   double T = 10*dt;
 
   // Create user-defined nonlinear problem
+  myNavierstokesTimeCurv::FunctionSpace V (mesh);
   Ivan::UflToNewton < myNavierstokesTimeCurv::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
                       myNavierstokesTimeCurv::ResidualForm, myNavierstokesTimeCurv::JacobianForm,
                       computeFreeSurfaceStress_onlyTP::LinearForm >
-       nonlinearProblem(mesh);
+       nonlinearProblem(V,"trial");
 std::cerr << "OK fino a " << __LINE__ << std::endl;
   nonlinearProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nu),"nu");
   nonlinearProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (dt),"dt");
   nonlinearProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (gamma),"gamma");
   nonlinearProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nonlinearProblem.previousSolution()[0]),"u_old");
   nonlinearProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nonlinearProblem.solution()),"trial");
+std::cerr << "OK fino a " << __LINE__ << std::endl;
   nonlinearProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu),"nu");
   nonlinearProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (dt),"dt");
   nonlinearProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nonlinearProblem.solution()),"trial");
+std::cerr << "OK fino a " << __LINE__ << std::endl;
   nonlinearProblem.setCoefficient ("additional_form", dolfin::reference_to_no_delete_pointer (dt),"dt");
   nonlinearProblem.setCoefficient ("additional_form", dolfin::reference_to_no_delete_pointer (gamma),"gamma");
 
@@ -73,10 +76,12 @@ std::cerr << "OK fino a " << __LINE__ << std::endl;
   TriplePointLeftVertex triplePointLeftVertex;
   TriplePointRightVertex triplePointRightVertex;
 
-  nonlinearProblem.addDirichletBC (std::string("inflow"),
-        dolfin::DirichletBC (* nonlinearProblem.functionSpace()[0], inflowDirichletBC, inflowBoundary));
-  nonlinearProblem.addDirichletBC (std::string("wall"),
-        dolfin::DirichletBC (* (* nonlinearProblem.functionSpace()[0])[0], freeSlipDirichletBC, wallBoundary));
+  nonlinearProblem.addDirichletBC (
+        dolfin::DirichletBC (* (* nonlinearProblem.functionSpace())[0], inflowDirichletBC, inflowBoundary),
+        std::string("inflow"));
+  nonlinearProblem.addDirichletBC (
+        dolfin::DirichletBC (* (* (* nonlinearProblem.functionSpace())[0])[0], freeSlipDirichletBC, wallBoundary),
+        std::string("wall"));
 //  nonlinearProblem.addDirichletBC (std::string("moving"), dolfin::DirichletBC (* nonlinearProblem.functionSpace()[0], movingLidVelocity, movingLid));
 //  nonlinearProblem.addDirichletBC (std::string("fixed"), dolfin::DirichletBC (* nonlinearProblem.functionSpace()[0], noSlipDirichletBC, fixedWalls));
 
@@ -99,11 +104,15 @@ std::cerr << "OK fino a " << __LINE__ << std::endl;
   nonlinearProblem.setIntegrationSubdomain ("additional_form",
         dolfin::reference_to_no_delete_pointer (additionalMeshVertices), dcp::SubdomainType::VERTICES);
 std::cerr << "OK fino a " << __LINE__ << std::endl;
-dolfin::plot(meshFacets, "meshFacets");dolfin::plot(additionalMeshFacets, "additionalMeshFacets");//dolfin::interactive();
+//dolfin::plot(meshFacets, "meshFacets");
+std::cerr << "OK fino a " << __LINE__ << std::endl;
+//dolfin::plot(additionalMeshFacets, "additionalMeshFacets");//dolfin::interactive();
+dolfin::plot(nonlinearProblem.solution());//dolfin::interactive();
+std::cerr << "OK fino a " << __LINE__ << std::endl;
 
   // Solution functions
   dolfin::Function& solution = nonlinearProblem.solution();
-  dolfin::Function& previousSolution = nonlinearProblem.solution();
+  dolfin::Function& previousSolution = nonlinearProblem.previousSolution();
 
   // Create nonlinear solver and set parameters
   dolfin::NewtonSolver newton_solver;
@@ -115,7 +124,7 @@ dolfin::plot(meshFacets, "meshFacets");dolfin::plot(additionalMeshFacets, "addit
 
   // Save initial condition to file
   dolfin::Constant initialCondition (0,0,0);
-  previousSolution = ( solution = initialCondition );
+//prev//  previousSolution = ( solution = initialCondition );
   dolfin::File file("cahn_hilliard.pvd");
   file << std::make_pair(&solution, t);
 
@@ -124,7 +133,7 @@ dolfin::plot(meshFacets, "meshFacets");dolfin::plot(additionalMeshFacets, "addit
   {
     // Update for next time step
     t += dt;
-    *previousSolution.vector() = *solution.vector();
+//prev//    *previousSolution.vector() = *solution.vector();
 
     // Updating coefficients
     nonlinearProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (w), "w");

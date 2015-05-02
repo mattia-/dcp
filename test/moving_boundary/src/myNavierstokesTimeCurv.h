@@ -10331,7 +10331,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({true, true, false, true, true, true});
+    static const std::vector<bool> enabled({true, true, false, true, true, true, false, false});
     return enabled;
   }
 
@@ -10432,33 +10432,36 @@ public:
     {
       A[r] = 0.0;
     } // end loop over 'r'
-    // Number of operations to compute geometry constants: 42.
-    double G[19];
-    G[0] = K[0]*det;
-    G[1] = K[2]*det;
-    G[2] = K[1]*det;
-    G[3] = K[3]*det;
-    G[4] =  - K[0]*det*w[3][0];
-    G[5] = det*w[1][0]*w[3][0]*(K[0]*K[0] + K[1]*K[1]);
-    G[6] = det*w[1][0]*w[3][0]*(K[0]*K[2] + K[1]*K[3]);
-    G[7] =  - K[3]*det*w[3][0];
-    G[8] = det*w[1][0]*w[3][0]*(K[2]*K[2] + K[3]*K[3]);
-    G[9] =  - K[1]*det*w[3][0];
-    G[10] =  - K[2]*det*w[3][0];
-    G[11] = K[0]*det*w[3][0];
-    G[12] = K[1]*det*w[3][0];
-    G[13] =  - K[0]*det;
-    G[14] =  - K[1]*det;
-    G[15] = K[2]*det*w[3][0];
-    G[16] = K[3]*det*w[3][0];
-    G[17] =  - K[2]*det;
-    G[18] =  - K[3]*det;
+    // Number of operations to compute geometry constants: 78.
+    double G[22];
+    G[0] =  - K[0]*det*w[3][0];
+    G[1] =  - K[2]*det*w[3][0];
+    G[2] =  - K[1]*det*w[3][0];
+    G[3] =  - K[3]*det*w[3][0];
+    G[4] = det*w[1][0]*w[3][0]*(2.0*K[0]*K[0] + K[1]*K[1]);
+    G[5] = det*w[1][0]*w[3][0]*(2.0*K[0]*K[2] + K[1]*K[3]);
+    G[6] = K[0]*K[1]*det*w[1][0]*w[3][0];
+    G[7] = K[1]*K[2]*det*w[1][0]*w[3][0];
+    G[8] = K[2]*K[3]*det*w[1][0]*w[3][0];
+    G[9] = det*w[1][0]*w[3][0]*(2.0*K[1]*K[3] + K[0]*K[2]);
+    G[10] = det*w[1][0]*w[3][0]*(2.0*K[3]*K[3] + K[2]*K[2]);
+    G[11] = K[0]*K[3]*det*w[1][0]*w[3][0];
+    G[12] = det*w[1][0]*w[3][0]*(2.0*K[1]*K[1] + K[0]*K[0]);
+    G[13] = det*w[1][0]*w[3][0]*(2.0*K[2]*K[2] + K[3]*K[3]);
+    G[14] = K[0]*det*w[3][0];
+    G[15] = K[1]*det*w[3][0];
+    G[16] =  - K[0]*det;
+    G[17] =  - K[1]*det;
+    G[18] = K[2]*det*w[3][0];
+    G[19] = K[3]*det*w[3][0];
+    G[20] =  - K[2]*det;
+    G[21] =  - K[3]*det;
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
     
     // Loop quadrature points for integral.
-    // Number of operations to compute element tensor for following IP loop = 1834
+    // Number of operations to compute element tensor for following IP loop = 1946
     for (unsigned int ip = 0; ip < 7; ip++)
     {
       
@@ -10501,28 +10504,28 @@ public:
         F10 += FE1_C0[ip][r]*w[4][nzc7[r]];
       } // end loop over 'r'
       
-      // Number of operations to compute ip constants: 74
+      // Number of operations to compute ip constants: 90
       double I[7];
       // Number of operations: 8
       I[0] = W7[ip]*(F1*G[0] + F2*G[1] + F3*G[2] + F4*G[3]);
       
-      // Number of operations: 6
-      I[1] = W7[ip]*(F0*G[4] + F1*G[5] + F2*G[6]);
+      // Number of operations: 10
+      I[1] = W7[ip]*(F0*G[0] + F1*G[4] + F2*G[5] + F3*G[6] + F4*G[7]);
       
-      // Number of operations: 6
-      I[2] = W7[ip]*(F0*G[7] + F3*G[6] + F4*G[8]);
+      // Number of operations: 10
+      I[2] = W7[ip]*(F0*G[3] + F1*G[7] + F2*G[8] + F3*G[9] + F4*G[10]);
       
-      // Number of operations: 6
-      I[3] = W7[ip]*(F0*G[9] + F3*G[5] + F4*G[6]);
+      // Number of operations: 10
+      I[3] = W7[ip]*(F0*G[2] + F1*G[6] + F2*G[11] + F3*G[12] + F4*G[9]);
       
-      // Number of operations: 6
-      I[4] = W7[ip]*(F0*G[10] + F1*G[6] + F2*G[8]);
-      
-      // Number of operations: 21
-      I[5] = W7[ip]*(F3*(F5*G[11] + F6*G[12] + F7*G[13] + F8*G[14]) + F4*(F5*G[15] + F6*G[16] + F7*G[17] + F8*G[18]) + det*(F6 - F10));
+      // Number of operations: 10
+      I[4] = W7[ip]*(F0*G[1] + F1*G[5] + F2*G[13] + F3*G[11] + F4*G[8]);
       
       // Number of operations: 21
-      I[6] = W7[ip]*(F1*(F5*G[11] + F6*G[12] + F7*G[13] + F8*G[14]) + F2*(F5*G[15] + F6*G[16] + F7*G[17] + F8*G[18]) + det*(F5 - F9));
+      I[5] = W7[ip]*(F3*(F5*G[14] + F6*G[15] + F7*G[16] + F8*G[17]) + F4*(F5*G[18] + F6*G[19] + F7*G[20] + F8*G[21]) + det*(F6 - F10));
+      
+      // Number of operations: 21
+      I[6] = W7[ip]*(F1*(F5*G[14] + F6*G[15] + F7*G[16] + F8*G[17]) + F2*(F5*G[18] + F6*G[19] + F7*G[20] + F8*G[21]) + det*(F5 - F9));
       
       
       // Number of operations for primary indices: 6
@@ -10581,7 +10584,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({false, false, true, true, false, false});
+    static const std::vector<bool> enabled({false, false, true, true, false, false, false, false});
     return enabled;
   }
 
@@ -10790,6 +10793,284 @@ public:
 
 };
 
+/// This class defines the interface for the tabulation of the
+/// exterior facet tensor corresponding to the local contribution to
+/// a form from the integral over an exterior facet.
+
+class mynavierstokestimecurv_exterior_facet_integral_0_2: public ufc::exterior_facet_integral
+{
+public:
+
+  /// Constructor
+  mynavierstokestimecurv_exterior_facet_integral_0_2() : ufc::exterior_facet_integral()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~mynavierstokestimecurv_exterior_facet_integral_0_2()
+  {
+    // Do nothing
+  }
+
+  /// Tabulate which form coefficients are used by this integral
+  virtual const std::vector<bool> & enabled_coefficients() const
+  {
+    static const std::vector<bool> enabled({true, false, false, true, false, false, true, false});
+    return enabled;
+  }
+
+  /// Tabulate the tensor for the contribution from a local exterior facet
+  virtual void tabulate_tensor(double*  A,
+                               const double * const *  w,
+                               const double*  vertex_coordinates,
+                               std::size_t facet,
+                               int cell_orientation) const
+  {
+    // Number of operations (multiply-add pairs) for Jacobian data:      10
+    // Number of operations (multiply-add pairs) for geometry tensor:    24
+    // Number of operations (multiply-add pairs) for tensor contraction: 45
+    // Total number of operations (multiply-add pairs):                  79
+    
+    // Compute Jacobian
+    double J[4];
+    compute_jacobian_triangle_2d(J, vertex_coordinates);
+    
+    // Compute Jacobian inverse and determinant
+    double K[4];
+    double detJ;
+    compute_jacobian_inverse_triangle_2d(K, detJ, J);
+    
+    // Get vertices on edge
+    static unsigned int edge_vertices[3][2] = {{1, 2}, {0, 2}, {0, 1}};
+    const unsigned int v0 = edge_vertices[facet][0];
+    const unsigned int v1 = edge_vertices[facet][1];
+    
+    // Compute scale factor (length of edge scaled by length of reference interval)
+    const double dx0 = vertex_coordinates[2*v1 + 0] - vertex_coordinates[2*v0 + 0];
+    const double dx1 = vertex_coordinates[2*v1 + 1] - vertex_coordinates[2*v0 + 1];
+    const double det = std::sqrt(dx0*dx0 + dx1*dx1);
+    
+    
+    // Compute geometry tensor
+    const double G0_0_0_0 = det*w[0][0]*w[3][0]*w[6][0]*(1.0);
+    const double G0_1_0_0 = det*w[0][1]*w[3][0]*w[6][0]*(1.0);
+    const double G0_2_0_0 = det*w[0][2]*w[3][0]*w[6][0]*(1.0);
+    const double G0_3_0_0 = det*w[0][3]*w[3][0]*w[6][0]*(1.0);
+    const double G0_4_0_0 = det*w[0][4]*w[3][0]*w[6][0]*(1.0);
+    const double G0_5_0_0 = det*w[0][5]*w[3][0]*w[6][0]*(1.0);
+    const double G1_6_0_0 = det*w[0][6]*w[3][0]*w[6][0]*(1.0);
+    const double G1_7_0_0 = det*w[0][7]*w[3][0]*w[6][0]*(1.0);
+    const double G1_8_0_0 = det*w[0][8]*w[3][0]*w[6][0]*(1.0);
+    const double G1_9_0_0 = det*w[0][9]*w[3][0]*w[6][0]*(1.0);
+    const double G1_10_0_0 = det*w[0][10]*w[3][0]*w[6][0]*(1.0);
+    const double G1_11_0_0 = det*w[0][11]*w[3][0]*w[6][0]*(1.0);
+    
+    // Compute element tensor
+    switch (facet)
+    {
+    case 0:
+      {
+        A[0] = 0.0;
+      A[1] = 0.133333333333333*G0_1_0_0 - 0.0333333333333333*G0_2_0_0 + 0.0666666666666666*G0_3_0_0;
+      A[2] = -0.0333333333333333*G0_1_0_0 + 0.133333333333333*G0_2_0_0 + 0.0666666666666666*G0_3_0_0;
+      A[3] = 0.0666666666666666*G0_1_0_0 + 0.0666666666666666*G0_2_0_0 + 0.533333333333333*G0_3_0_0;
+      A[4] = 0.0;
+      A[5] = 0.0;
+      A[6] = 0.0;
+      A[7] = 0.133333333333333*G1_7_0_0 - 0.0333333333333333*G1_8_0_0 + 0.0666666666666666*G1_9_0_0;
+      A[8] = -0.0333333333333333*G1_7_0_0 + 0.133333333333333*G1_8_0_0 + 0.0666666666666666*G1_9_0_0;
+      A[9] = 0.0666666666666666*G1_7_0_0 + 0.0666666666666666*G1_8_0_0 + 0.533333333333333*G1_9_0_0;
+      A[10] = 0.0;
+      A[11] = 0.0;
+      A[12] = 0.0;
+      A[13] = 0.0;
+      A[14] = 0.0;
+        break;
+      }
+    case 1:
+      {
+        A[0] = 0.133333333333333*G0_0_0_0 - 0.0333333333333333*G0_2_0_0 + 0.0666666666666666*G0_4_0_0;
+      A[1] = 0.0;
+      A[2] = -0.0333333333333333*G0_0_0_0 + 0.133333333333333*G0_2_0_0 + 0.0666666666666666*G0_4_0_0;
+      A[3] = 0.0;
+      A[4] = 0.0666666666666666*G0_0_0_0 + 0.0666666666666666*G0_2_0_0 + 0.533333333333333*G0_4_0_0;
+      A[5] = 0.0;
+      A[6] = 0.133333333333333*G1_6_0_0 - 0.0333333333333333*G1_8_0_0 + 0.0666666666666666*G1_10_0_0;
+      A[7] = 0.0;
+      A[8] = -0.0333333333333333*G1_6_0_0 + 0.133333333333333*G1_8_0_0 + 0.0666666666666666*G1_10_0_0;
+      A[9] = 0.0;
+      A[10] = 0.0666666666666666*G1_6_0_0 + 0.0666666666666666*G1_8_0_0 + 0.533333333333333*G1_10_0_0;
+      A[11] = 0.0;
+      A[12] = 0.0;
+      A[13] = 0.0;
+      A[14] = 0.0;
+        break;
+      }
+    case 2:
+      {
+        A[0] = 0.133333333333333*G0_0_0_0 - 0.0333333333333333*G0_1_0_0 + 0.0666666666666666*G0_5_0_0;
+      A[1] = -0.0333333333333333*G0_0_0_0 + 0.133333333333333*G0_1_0_0 + 0.0666666666666666*G0_5_0_0;
+      A[2] = 0.0;
+      A[3] = 0.0;
+      A[4] = 0.0;
+      A[5] = 0.0666666666666666*G0_0_0_0 + 0.0666666666666666*G0_1_0_0 + 0.533333333333333*G0_5_0_0;
+      A[6] = 0.133333333333333*G1_6_0_0 - 0.0333333333333333*G1_7_0_0 + 0.0666666666666666*G1_11_0_0;
+      A[7] = -0.0333333333333333*G1_6_0_0 + 0.133333333333333*G1_7_0_0 + 0.0666666666666666*G1_11_0_0;
+      A[8] = 0.0;
+      A[9] = 0.0;
+      A[10] = 0.0;
+      A[11] = 0.0666666666666666*G1_6_0_0 + 0.0666666666666666*G1_7_0_0 + 0.533333333333333*G1_11_0_0;
+      A[12] = 0.0;
+      A[13] = 0.0;
+      A[14] = 0.0;
+        break;
+      }
+    }
+    
+  }
+
+};
+
+/// This class defines the interface for the tabulation of the
+/// exterior facet tensor corresponding to the local contribution to
+/// a form from the integral over an exterior facet.
+
+class mynavierstokestimecurv_exterior_facet_integral_0_3: public ufc::exterior_facet_integral
+{
+public:
+
+  /// Constructor
+  mynavierstokestimecurv_exterior_facet_integral_0_3() : ufc::exterior_facet_integral()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~mynavierstokestimecurv_exterior_facet_integral_0_3()
+  {
+    // Do nothing
+  }
+
+  /// Tabulate which form coefficients are used by this integral
+  virtual const std::vector<bool> & enabled_coefficients() const
+  {
+    static const std::vector<bool> enabled({false, false, false, true, false, false, false, true});
+    return enabled;
+  }
+
+  /// Tabulate the tensor for the contribution from a local exterior facet
+  virtual void tabulate_tensor(double*  A,
+                               const double * const *  w,
+                               const double*  vertex_coordinates,
+                               std::size_t facet,
+                               int cell_orientation) const
+  {
+    // Number of operations (multiply-add pairs) for Jacobian data:      10
+    // Number of operations (multiply-add pairs) for geometry tensor:    18
+    // Number of operations (multiply-add pairs) for tensor contraction: 45
+    // Total number of operations (multiply-add pairs):                  73
+    
+    // Compute Jacobian
+    double J[4];
+    compute_jacobian_triangle_2d(J, vertex_coordinates);
+    
+    // Compute Jacobian inverse and determinant
+    double K[4];
+    double detJ;
+    compute_jacobian_inverse_triangle_2d(K, detJ, J);
+    
+    // Get vertices on edge
+    static unsigned int edge_vertices[3][2] = {{1, 2}, {0, 2}, {0, 1}};
+    const unsigned int v0 = edge_vertices[facet][0];
+    const unsigned int v1 = edge_vertices[facet][1];
+    
+    // Compute scale factor (length of edge scaled by length of reference interval)
+    const double dx0 = vertex_coordinates[2*v1 + 0] - vertex_coordinates[2*v0 + 0];
+    const double dx1 = vertex_coordinates[2*v1 + 1] - vertex_coordinates[2*v0 + 1];
+    const double det = std::sqrt(dx0*dx0 + dx1*dx1);
+    
+    
+    // Compute geometry tensor
+    const double G0_0_0 = det*w[3][0]*w[7][0]*(1.0);
+    const double G0_0_1 = det*w[3][0]*w[7][1]*(1.0);
+    const double G0_0_2 = det*w[3][0]*w[7][2]*(1.0);
+    const double G0_0_3 = det*w[3][0]*w[7][3]*(1.0);
+    const double G0_0_4 = det*w[3][0]*w[7][4]*(1.0);
+    const double G0_0_5 = det*w[3][0]*w[7][5]*(1.0);
+    const double G1_0_6 = det*w[3][0]*w[7][6]*(1.0);
+    const double G1_0_7 = det*w[3][0]*w[7][7]*(1.0);
+    const double G1_0_8 = det*w[3][0]*w[7][8]*(1.0);
+    const double G1_0_9 = det*w[3][0]*w[7][9]*(1.0);
+    const double G1_0_10 = det*w[3][0]*w[7][10]*(1.0);
+    const double G1_0_11 = det*w[3][0]*w[7][11]*(1.0);
+    
+    // Compute element tensor
+    switch (facet)
+    {
+    case 0:
+      {
+        A[0] = 0.0;
+      A[1] = -0.133333333333333*G0_0_1 + 0.0333333333333333*G0_0_2 - 0.0666666666666666*G0_0_3;
+      A[2] = 0.0333333333333333*G0_0_1 - 0.133333333333333*G0_0_2 - 0.0666666666666666*G0_0_3;
+      A[3] = -0.0666666666666666*G0_0_1 - 0.0666666666666666*G0_0_2 - 0.533333333333333*G0_0_3;
+      A[4] = 0.0;
+      A[5] = 0.0;
+      A[6] = 0.0;
+      A[7] = -0.133333333333333*G1_0_7 + 0.0333333333333333*G1_0_8 - 0.0666666666666666*G1_0_9;
+      A[8] = 0.0333333333333333*G1_0_7 - 0.133333333333333*G1_0_8 - 0.0666666666666666*G1_0_9;
+      A[9] = -0.0666666666666666*G1_0_7 - 0.0666666666666666*G1_0_8 - 0.533333333333333*G1_0_9;
+      A[10] = 0.0;
+      A[11] = 0.0;
+      A[12] = 0.0;
+      A[13] = 0.0;
+      A[14] = 0.0;
+        break;
+      }
+    case 1:
+      {
+        A[0] = -0.133333333333333*G0_0_0 + 0.0333333333333333*G0_0_2 - 0.0666666666666666*G0_0_4;
+      A[1] = 0.0;
+      A[2] = 0.0333333333333333*G0_0_0 - 0.133333333333333*G0_0_2 - 0.0666666666666666*G0_0_4;
+      A[3] = 0.0;
+      A[4] = -0.0666666666666666*G0_0_0 - 0.0666666666666666*G0_0_2 - 0.533333333333333*G0_0_4;
+      A[5] = 0.0;
+      A[6] = -0.133333333333333*G1_0_6 + 0.0333333333333333*G1_0_8 - 0.0666666666666666*G1_0_10;
+      A[7] = 0.0;
+      A[8] = 0.0333333333333333*G1_0_6 - 0.133333333333333*G1_0_8 - 0.0666666666666666*G1_0_10;
+      A[9] = 0.0;
+      A[10] = -0.0666666666666666*G1_0_6 - 0.0666666666666666*G1_0_8 - 0.533333333333333*G1_0_10;
+      A[11] = 0.0;
+      A[12] = 0.0;
+      A[13] = 0.0;
+      A[14] = 0.0;
+        break;
+      }
+    case 2:
+      {
+        A[0] = -0.133333333333333*G0_0_0 + 0.0333333333333333*G0_0_1 - 0.0666666666666666*G0_0_5;
+      A[1] = 0.0333333333333333*G0_0_0 - 0.133333333333333*G0_0_1 - 0.0666666666666666*G0_0_5;
+      A[2] = 0.0;
+      A[3] = 0.0;
+      A[4] = 0.0;
+      A[5] = -0.0666666666666666*G0_0_0 - 0.0666666666666666*G0_0_1 - 0.533333333333333*G0_0_5;
+      A[6] = -0.133333333333333*G1_0_6 + 0.0333333333333333*G1_0_7 - 0.0666666666666666*G1_0_11;
+      A[7] = 0.0333333333333333*G1_0_6 - 0.133333333333333*G1_0_7 - 0.0666666666666666*G1_0_11;
+      A[8] = 0.0;
+      A[9] = 0.0;
+      A[10] = 0.0;
+      A[11] = -0.0666666666666666*G1_0_6 - 0.0666666666666666*G1_0_7 - 0.533333333333333*G1_0_11;
+      A[12] = 0.0;
+      A[13] = 0.0;
+      A[14] = 0.0;
+        break;
+      }
+    }
+    
+  }
+
+};
+
 /// This class defines the interface for the tabulation of the cell
 /// tensor corresponding to the local contribution to a form from
 /// the integral over a cell.
@@ -10813,7 +11094,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({true, true, true, true});
+    static const std::vector<bool> enabled({true, true, true, true, false});
     return enabled;
   }
 
@@ -10914,33 +11195,36 @@ public:
     {
       A[r] = 0.0;
     } // end loop over 'r'
-    // Number of operations to compute geometry constants: 42.
-    double G[19];
-    G[0] = K[0]*det;
-    G[1] = K[3]*det;
-    G[2] = K[1]*det;
-    G[3] = K[2]*det;
-    G[4] =  - K[0]*det*w[2][0];
-    G[5] =  - K[3]*det*w[2][0];
-    G[6] =  - K[1]*det*w[2][0];
-    G[7] =  - K[2]*det*w[2][0];
-    G[8] = det*w[1][0]*w[2][0]*(K[0]*K[0] + K[1]*K[1]);
-    G[9] = det*w[1][0]*w[2][0]*(K[0]*K[2] + K[1]*K[3]);
-    G[10] = det*w[1][0]*w[2][0]*(K[2]*K[2] + K[3]*K[3]);
-    G[11] = K[2]*det*w[2][0];
-    G[12] = K[3]*det*w[2][0];
-    G[13] =  - K[2]*det;
-    G[14] =  - K[3]*det;
-    G[15] = K[0]*det*w[2][0];
-    G[16] = K[1]*det*w[2][0];
-    G[17] =  - K[0]*det;
-    G[18] =  - K[1]*det;
+    // Number of operations to compute geometry constants: 78.
+    double G[22];
+    G[0] =  - K[0]*det*w[2][0];
+    G[1] =  - K[3]*det*w[2][0];
+    G[2] =  - K[1]*det*w[2][0];
+    G[3] =  - K[2]*det*w[2][0];
+    G[4] = det*w[1][0]*w[2][0]*(2.0*K[0]*K[0] + K[1]*K[1]);
+    G[5] = K[1]*K[2]*det*w[1][0]*w[2][0];
+    G[6] = K[0]*K[1]*det*w[1][0]*w[2][0];
+    G[7] = det*w[1][0]*w[2][0]*(2.0*K[0]*K[2] + K[1]*K[3]);
+    G[8] = det*w[1][0]*w[2][0]*(2.0*K[3]*K[3] + K[2]*K[2]);
+    G[9] = det*w[1][0]*w[2][0]*(2.0*K[1]*K[3] + K[0]*K[2]);
+    G[10] = K[2]*K[3]*det*w[1][0]*w[2][0];
+    G[11] = det*w[1][0]*w[2][0]*(2.0*K[1]*K[1] + K[0]*K[0]);
+    G[12] = K[0]*K[3]*det*w[1][0]*w[2][0];
+    G[13] = det*w[1][0]*w[2][0]*(2.0*K[2]*K[2] + K[3]*K[3]);
+    G[14] = K[2]*det*w[2][0];
+    G[15] = K[3]*det*w[2][0];
+    G[16] =  - K[2]*det;
+    G[17] =  - K[3]*det;
+    G[18] = K[0]*det*w[2][0];
+    G[19] = K[1]*det*w[2][0];
+    G[20] =  - K[0]*det;
+    G[21] =  - K[1]*det;
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
     
     // Loop quadrature points for integral.
-    // Number of operations to compute element tensor for following IP loop = 13195
+    // Number of operations to compute element tensor for following IP loop = 17416
     for (unsigned int ip = 0; ip < 7; ip++)
     {
       
@@ -10957,8 +11241,8 @@ public:
       // Total number of operations to compute function values = 40
       for (unsigned int r = 0; r < 5; r++)
       {
-        F2 += FE2_C0_D10[ip][r]*w[0][nzc10[r]];
-        F3 += FE2_C0_D01[ip][r]*w[0][nzc9[r]];
+        F1 += FE2_C0_D10[ip][r]*w[0][nzc10[r]];
+        F2 += FE2_C0_D01[ip][r]*w[0][nzc9[r]];
         F4 += FE2_C0_D10[ip][r]*w[0][nzc13[r]];
         F5 += FE2_C0_D01[ip][r]*w[0][nzc12[r]];
       } // end loop over 'r'
@@ -10967,13 +11251,13 @@ public:
       for (unsigned int r = 0; r < 6; r++)
       {
         F0 += FE1_C0[ip][r]*w[0][nzc8[r]];
-        F1 += FE1_C0[ip][r]*w[0][nzc11[r]];
+        F3 += FE1_C0[ip][r]*w[0][nzc11[r]];
         F6 += FE1_C0[ip][r]*w[3][nzc6[r]];
         F7 += FE1_C0[ip][r]*w[3][nzc7[r]];
       } // end loop over 'r'
       
-      // Number of operations to compute ip constants: 45
-      double I[17];
+      // Number of operations to compute ip constants: 48
+      double I[20];
       // Number of operations: 1
       I[0] = G[0]*W7[ip];
       
@@ -11007,23 +11291,32 @@ public:
       // Number of operations: 1
       I[10] = G[10]*W7[ip];
       
-      // Number of operations: 8
-      I[11] = W7[ip]*(F0*G[11] + F1*G[12] + F6*G[13] + F7*G[14]);
+      // Number of operations: 1
+      I[11] = G[11]*W7[ip];
+      
+      // Number of operations: 1
+      I[12] = G[12]*W7[ip];
+      
+      // Number of operations: 1
+      I[13] = G[13]*W7[ip];
       
       // Number of operations: 8
-      I[12] = W7[ip]*(F0*G[15] + F1*G[16] + F6*G[17] + F7*G[18]);
+      I[14] = W7[ip]*(F0*G[14] + F3*G[15] + F6*G[16] + F7*G[17]);
+      
+      // Number of operations: 8
+      I[15] = W7[ip]*(F0*G[18] + F3*G[19] + F6*G[20] + F7*G[21]);
       
       // Number of operations: 5
-      I[13] = W7[ip]*(det + F4*G[16] + F5*G[12]);
+      I[16] = W7[ip]*(det + F4*G[19] + F5*G[15]);
       
       // Number of operations: 4
-      I[14] = W7[ip]*(F4*G[15] + F5*G[11]);
+      I[17] = W7[ip]*(F4*G[18] + F5*G[14]);
       
       // Number of operations: 4
-      I[15] = W7[ip]*(F2*G[16] + F3*G[12]);
+      I[18] = W7[ip]*(F1*G[19] + F2*G[15]);
       
       // Number of operations: 5
-      I[16] = W7[ip]*(det + F2*G[15] + F3*G[11]);
+      I[19] = W7[ip]*(det + F1*G[18] + F2*G[14]);
       
       
       // Number of operations for primary indices: 180
@@ -11048,37 +11341,53 @@ public:
         for (unsigned int k = 0; k < 3; k++)
         {
           // Number of operations to compute entry: 3
-          A[nzc10[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D10[ip][j]*I[4];
+          A[nzc10[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D10[ip][j]*I[0];
           // Number of operations to compute entry: 3
-          A[nzc12[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D01[ip][j]*I[5];
+          A[nzc12[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D01[ip][j]*I[1];
           // Number of operations to compute entry: 3
-          A[nzc13[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D10[ip][j]*I[6];
+          A[nzc13[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D10[ip][j]*I[2];
           // Number of operations to compute entry: 3
-          A[nzc9[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D01[ip][j]*I[7];
+          A[nzc9[j]*15 + nzc14[k]] += FE0_C0[ip][k]*FE2_C0_D01[ip][j]*I[3];
         } // end loop over 'k'
       } // end loop over 'j'
       
-      // Number of operations for primary indices: 600
+      // Number of operations for primary indices: 1200
       for (unsigned int j = 0; j < 5; j++)
       {
         for (unsigned int k = 0; k < 5; k++)
         {
           // Number of operations to compute entry: 3
-          A[nzc10[j]*15 + nzc10[k]] += FE2_C0_D10[ip][j]*FE2_C0_D10[ip][k]*I[8];
+          A[nzc10[j]*15 + nzc10[k]] += FE2_C0_D10[ip][j]*FE2_C0_D10[ip][k]*I[4];
           // Number of operations to compute entry: 3
-          A[nzc10[j]*15 + nzc9[k]] += FE2_C0_D01[ip][k]*FE2_C0_D10[ip][j]*I[9];
+          A[nzc10[j]*15 + nzc12[k]] += FE2_C0_D01[ip][k]*FE2_C0_D10[ip][j]*I[5];
           // Number of operations to compute entry: 3
-          A[nzc12[j]*15 + nzc12[k]] += FE2_C0_D01[ip][j]*FE2_C0_D01[ip][k]*I[10];
+          A[nzc10[j]*15 + nzc13[k]] += FE2_C0_D10[ip][j]*FE2_C0_D10[ip][k]*I[6];
+          // Number of operations to compute entry: 3
+          A[nzc10[j]*15 + nzc9[k]] += FE2_C0_D01[ip][k]*FE2_C0_D10[ip][j]*I[7];
+          // Number of operations to compute entry: 3
+          A[nzc12[j]*15 + nzc10[k]] += FE2_C0_D01[ip][j]*FE2_C0_D10[ip][k]*I[5];
+          // Number of operations to compute entry: 3
+          A[nzc12[j]*15 + nzc12[k]] += FE2_C0_D01[ip][j]*FE2_C0_D01[ip][k]*I[8];
           // Number of operations to compute entry: 3
           A[nzc12[j]*15 + nzc13[k]] += FE2_C0_D01[ip][j]*FE2_C0_D10[ip][k]*I[9];
           // Number of operations to compute entry: 3
+          A[nzc12[j]*15 + nzc9[k]] += FE2_C0_D01[ip][j]*FE2_C0_D01[ip][k]*I[10];
+          // Number of operations to compute entry: 3
+          A[nzc13[j]*15 + nzc10[k]] += FE2_C0_D10[ip][j]*FE2_C0_D10[ip][k]*I[6];
+          // Number of operations to compute entry: 3
           A[nzc13[j]*15 + nzc12[k]] += FE2_C0_D01[ip][k]*FE2_C0_D10[ip][j]*I[9];
           // Number of operations to compute entry: 3
-          A[nzc13[j]*15 + nzc13[k]] += FE2_C0_D10[ip][j]*FE2_C0_D10[ip][k]*I[8];
+          A[nzc13[j]*15 + nzc13[k]] += FE2_C0_D10[ip][j]*FE2_C0_D10[ip][k]*I[11];
           // Number of operations to compute entry: 3
-          A[nzc9[j]*15 + nzc10[k]] += FE2_C0_D01[ip][j]*FE2_C0_D10[ip][k]*I[9];
+          A[nzc13[j]*15 + nzc9[k]] += FE2_C0_D01[ip][k]*FE2_C0_D10[ip][j]*I[12];
           // Number of operations to compute entry: 3
-          A[nzc9[j]*15 + nzc9[k]] += FE2_C0_D01[ip][j]*FE2_C0_D01[ip][k]*I[10];
+          A[nzc9[j]*15 + nzc10[k]] += FE2_C0_D01[ip][j]*FE2_C0_D10[ip][k]*I[7];
+          // Number of operations to compute entry: 3
+          A[nzc9[j]*15 + nzc12[k]] += FE2_C0_D01[ip][j]*FE2_C0_D01[ip][k]*I[10];
+          // Number of operations to compute entry: 3
+          A[nzc9[j]*15 + nzc13[k]] += FE2_C0_D01[ip][j]*FE2_C0_D10[ip][k]*I[12];
+          // Number of operations to compute entry: 3
+          A[nzc9[j]*15 + nzc9[k]] += FE2_C0_D01[ip][j]*FE2_C0_D01[ip][k]*I[13];
         } // end loop over 'k'
       } // end loop over 'j'
       
@@ -11088,13 +11397,13 @@ public:
         for (unsigned int k = 0; k < 5; k++)
         {
           // Number of operations to compute entry: 3
-          A[nzc11[j]*15 + nzc12[k]] += FE1_C0[ip][j]*FE2_C0_D01[ip][k]*I[11];
+          A[nzc11[j]*15 + nzc12[k]] += FE1_C0[ip][j]*FE2_C0_D01[ip][k]*I[14];
           // Number of operations to compute entry: 3
-          A[nzc11[j]*15 + nzc13[k]] += FE1_C0[ip][j]*FE2_C0_D10[ip][k]*I[12];
+          A[nzc11[j]*15 + nzc13[k]] += FE1_C0[ip][j]*FE2_C0_D10[ip][k]*I[15];
           // Number of operations to compute entry: 3
-          A[nzc8[j]*15 + nzc10[k]] += FE1_C0[ip][j]*FE2_C0_D10[ip][k]*I[12];
+          A[nzc8[j]*15 + nzc10[k]] += FE1_C0[ip][j]*FE2_C0_D10[ip][k]*I[15];
           // Number of operations to compute entry: 3
-          A[nzc8[j]*15 + nzc9[k]] += FE1_C0[ip][j]*FE2_C0_D01[ip][k]*I[11];
+          A[nzc8[j]*15 + nzc9[k]] += FE1_C0[ip][j]*FE2_C0_D01[ip][k]*I[14];
         } // end loop over 'k'
       } // end loop over 'j'
       
@@ -11104,16 +11413,775 @@ public:
         for (unsigned int k = 0; k < 6; k++)
         {
           // Number of operations to compute entry: 3
-          A[nzc11[j]*15 + nzc11[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[13];
+          A[nzc11[j]*15 + nzc11[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[16];
           // Number of operations to compute entry: 3
-          A[nzc11[j]*15 + nzc8[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[14];
+          A[nzc11[j]*15 + nzc8[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[17];
           // Number of operations to compute entry: 3
-          A[nzc8[j]*15 + nzc11[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[15];
+          A[nzc8[j]*15 + nzc11[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[18];
           // Number of operations to compute entry: 3
-          A[nzc8[j]*15 + nzc8[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[16];
+          A[nzc8[j]*15 + nzc8[k]] += FE1_C0[ip][j]*FE1_C0[ip][k]*I[19];
         } // end loop over 'k'
       } // end loop over 'j'
     } // end loop over 'ip'
+  }
+
+};
+
+/// This class defines the interface for the tabulation of the
+/// exterior facet tensor corresponding to the local contribution to
+/// a form from the integral over an exterior facet.
+
+class mynavierstokestimecurv_exterior_facet_integral_1_2: public ufc::exterior_facet_integral
+{
+public:
+
+  /// Constructor
+  mynavierstokestimecurv_exterior_facet_integral_1_2() : ufc::exterior_facet_integral()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~mynavierstokestimecurv_exterior_facet_integral_1_2()
+  {
+    // Do nothing
+  }
+
+  /// Tabulate which form coefficients are used by this integral
+  virtual const std::vector<bool> & enabled_coefficients() const
+  {
+    static const std::vector<bool> enabled({false, false, true, false, true});
+    return enabled;
+  }
+
+  /// Tabulate the tensor for the contribution from a local exterior facet
+  virtual void tabulate_tensor(double*  A,
+                               const double * const *  w,
+                               const double*  vertex_coordinates,
+                               std::size_t facet,
+                               int cell_orientation) const
+  {
+    // Number of operations (multiply-add pairs) for Jacobian data:      10
+    // Number of operations (multiply-add pairs) for geometry tensor:    3
+    // Number of operations (multiply-add pairs) for tensor contraction: 27
+    // Total number of operations (multiply-add pairs):                  40
+    
+    // Compute Jacobian
+    double J[4];
+    compute_jacobian_triangle_2d(J, vertex_coordinates);
+    
+    // Compute Jacobian inverse and determinant
+    double K[4];
+    double detJ;
+    compute_jacobian_inverse_triangle_2d(K, detJ, J);
+    
+    // Get vertices on edge
+    static unsigned int edge_vertices[3][2] = {{1, 2}, {0, 2}, {0, 1}};
+    const unsigned int v0 = edge_vertices[facet][0];
+    const unsigned int v1 = edge_vertices[facet][1];
+    
+    // Compute scale factor (length of edge scaled by length of reference interval)
+    const double dx0 = vertex_coordinates[2*v1 + 0] - vertex_coordinates[2*v0 + 0];
+    const double dx1 = vertex_coordinates[2*v1 + 1] - vertex_coordinates[2*v0 + 1];
+    const double det = std::sqrt(dx0*dx0 + dx1*dx1);
+    
+    
+    // Compute geometry tensor
+    const double G0_0_0 = det*w[2][0]*w[4][0]*(1.0);
+    const double G1_0_0 = det*w[2][0]*w[4][0]*(1.0);
+    
+    // Compute element tensor
+    switch (facet)
+    {
+    case 0:
+      {
+        A[0] = 0.0;
+      A[1] = 0.0;
+      A[2] = 0.0;
+      A[3] = 0.0;
+      A[4] = 0.0;
+      A[5] = 0.0;
+      A[6] = 0.0;
+      A[7] = 0.0;
+      A[8] = 0.0;
+      A[9] = 0.0;
+      A[10] = 0.0;
+      A[11] = 0.0;
+      A[12] = 0.0;
+      A[13] = 0.0;
+      A[14] = 0.0;
+      A[15] = 0.0;
+      A[16] = 0.133333333333333*G0_0_0;
+      A[17] = -0.0333333333333333*G0_0_0;
+      A[18] = 0.0666666666666666*G0_0_0;
+      A[19] = 0.0;
+      A[20] = 0.0;
+      A[21] = 0.0;
+      A[22] = 0.0;
+      A[23] = 0.0;
+      A[24] = 0.0;
+      A[25] = 0.0;
+      A[26] = 0.0;
+      A[27] = 0.0;
+      A[28] = 0.0;
+      A[29] = 0.0;
+      A[30] = 0.0;
+      A[31] = -0.0333333333333333*G0_0_0;
+      A[32] = 0.133333333333333*G0_0_0;
+      A[33] = 0.0666666666666666*G0_0_0;
+      A[34] = 0.0;
+      A[35] = 0.0;
+      A[36] = 0.0;
+      A[37] = 0.0;
+      A[38] = 0.0;
+      A[39] = 0.0;
+      A[40] = 0.0;
+      A[41] = 0.0;
+      A[42] = 0.0;
+      A[43] = 0.0;
+      A[44] = 0.0;
+      A[45] = 0.0;
+      A[46] = 0.0666666666666666*G0_0_0;
+      A[47] = 0.0666666666666666*G0_0_0;
+      A[48] = 0.533333333333333*G0_0_0;
+      A[49] = 0.0;
+      A[50] = 0.0;
+      A[51] = 0.0;
+      A[52] = 0.0;
+      A[53] = 0.0;
+      A[54] = 0.0;
+      A[55] = 0.0;
+      A[56] = 0.0;
+      A[57] = 0.0;
+      A[58] = 0.0;
+      A[59] = 0.0;
+      A[60] = 0.0;
+      A[61] = 0.0;
+      A[62] = 0.0;
+      A[63] = 0.0;
+      A[64] = 0.0;
+      A[65] = 0.0;
+      A[66] = 0.0;
+      A[67] = 0.0;
+      A[68] = 0.0;
+      A[69] = 0.0;
+      A[70] = 0.0;
+      A[71] = 0.0;
+      A[72] = 0.0;
+      A[73] = 0.0;
+      A[74] = 0.0;
+      A[75] = 0.0;
+      A[76] = 0.0;
+      A[77] = 0.0;
+      A[78] = 0.0;
+      A[79] = 0.0;
+      A[80] = 0.0;
+      A[81] = 0.0;
+      A[82] = 0.0;
+      A[83] = 0.0;
+      A[84] = 0.0;
+      A[85] = 0.0;
+      A[86] = 0.0;
+      A[87] = 0.0;
+      A[88] = 0.0;
+      A[89] = 0.0;
+      A[90] = 0.0;
+      A[91] = 0.0;
+      A[92] = 0.0;
+      A[93] = 0.0;
+      A[94] = 0.0;
+      A[95] = 0.0;
+      A[96] = 0.0;
+      A[97] = 0.0;
+      A[98] = 0.0;
+      A[99] = 0.0;
+      A[100] = 0.0;
+      A[101] = 0.0;
+      A[102] = 0.0;
+      A[103] = 0.0;
+      A[104] = 0.0;
+      A[105] = 0.0;
+      A[106] = 0.0;
+      A[107] = 0.0;
+      A[108] = 0.0;
+      A[109] = 0.0;
+      A[110] = 0.0;
+      A[111] = 0.0;
+      A[112] = 0.133333333333333*G1_0_0;
+      A[113] = -0.0333333333333333*G1_0_0;
+      A[114] = 0.0666666666666666*G1_0_0;
+      A[115] = 0.0;
+      A[116] = 0.0;
+      A[117] = 0.0;
+      A[118] = 0.0;
+      A[119] = 0.0;
+      A[120] = 0.0;
+      A[121] = 0.0;
+      A[122] = 0.0;
+      A[123] = 0.0;
+      A[124] = 0.0;
+      A[125] = 0.0;
+      A[126] = 0.0;
+      A[127] = -0.0333333333333333*G1_0_0;
+      A[128] = 0.133333333333333*G1_0_0;
+      A[129] = 0.0666666666666666*G1_0_0;
+      A[130] = 0.0;
+      A[131] = 0.0;
+      A[132] = 0.0;
+      A[133] = 0.0;
+      A[134] = 0.0;
+      A[135] = 0.0;
+      A[136] = 0.0;
+      A[137] = 0.0;
+      A[138] = 0.0;
+      A[139] = 0.0;
+      A[140] = 0.0;
+      A[141] = 0.0;
+      A[142] = 0.0666666666666666*G1_0_0;
+      A[143] = 0.0666666666666666*G1_0_0;
+      A[144] = 0.533333333333333*G1_0_0;
+      A[145] = 0.0;
+      A[146] = 0.0;
+      A[147] = 0.0;
+      A[148] = 0.0;
+      A[149] = 0.0;
+      A[150] = 0.0;
+      A[151] = 0.0;
+      A[152] = 0.0;
+      A[153] = 0.0;
+      A[154] = 0.0;
+      A[155] = 0.0;
+      A[156] = 0.0;
+      A[157] = 0.0;
+      A[158] = 0.0;
+      A[159] = 0.0;
+      A[160] = 0.0;
+      A[161] = 0.0;
+      A[162] = 0.0;
+      A[163] = 0.0;
+      A[164] = 0.0;
+      A[165] = 0.0;
+      A[166] = 0.0;
+      A[167] = 0.0;
+      A[168] = 0.0;
+      A[169] = 0.0;
+      A[170] = 0.0;
+      A[171] = 0.0;
+      A[172] = 0.0;
+      A[173] = 0.0;
+      A[174] = 0.0;
+      A[175] = 0.0;
+      A[176] = 0.0;
+      A[177] = 0.0;
+      A[178] = 0.0;
+      A[179] = 0.0;
+      A[180] = 0.0;
+      A[181] = 0.0;
+      A[182] = 0.0;
+      A[183] = 0.0;
+      A[184] = 0.0;
+      A[185] = 0.0;
+      A[186] = 0.0;
+      A[187] = 0.0;
+      A[188] = 0.0;
+      A[189] = 0.0;
+      A[190] = 0.0;
+      A[191] = 0.0;
+      A[192] = 0.0;
+      A[193] = 0.0;
+      A[194] = 0.0;
+      A[195] = 0.0;
+      A[196] = 0.0;
+      A[197] = 0.0;
+      A[198] = 0.0;
+      A[199] = 0.0;
+      A[200] = 0.0;
+      A[201] = 0.0;
+      A[202] = 0.0;
+      A[203] = 0.0;
+      A[204] = 0.0;
+      A[205] = 0.0;
+      A[206] = 0.0;
+      A[207] = 0.0;
+      A[208] = 0.0;
+      A[209] = 0.0;
+      A[210] = 0.0;
+      A[211] = 0.0;
+      A[212] = 0.0;
+      A[213] = 0.0;
+      A[214] = 0.0;
+      A[215] = 0.0;
+      A[216] = 0.0;
+      A[217] = 0.0;
+      A[218] = 0.0;
+      A[219] = 0.0;
+      A[220] = 0.0;
+      A[221] = 0.0;
+      A[222] = 0.0;
+      A[223] = 0.0;
+      A[224] = 0.0;
+        break;
+      }
+    case 1:
+      {
+        A[0] = 0.133333333333333*G0_0_0;
+      A[1] = 0.0;
+      A[2] = -0.0333333333333333*G0_0_0;
+      A[3] = 0.0;
+      A[4] = 0.0666666666666666*G0_0_0;
+      A[5] = 0.0;
+      A[6] = 0.0;
+      A[7] = 0.0;
+      A[8] = 0.0;
+      A[9] = 0.0;
+      A[10] = 0.0;
+      A[11] = 0.0;
+      A[12] = 0.0;
+      A[13] = 0.0;
+      A[14] = 0.0;
+      A[15] = 0.0;
+      A[16] = 0.0;
+      A[17] = 0.0;
+      A[18] = 0.0;
+      A[19] = 0.0;
+      A[20] = 0.0;
+      A[21] = 0.0;
+      A[22] = 0.0;
+      A[23] = 0.0;
+      A[24] = 0.0;
+      A[25] = 0.0;
+      A[26] = 0.0;
+      A[27] = 0.0;
+      A[28] = 0.0;
+      A[29] = 0.0;
+      A[30] = -0.0333333333333333*G0_0_0;
+      A[31] = 0.0;
+      A[32] = 0.133333333333333*G0_0_0;
+      A[33] = 0.0;
+      A[34] = 0.0666666666666666*G0_0_0;
+      A[35] = 0.0;
+      A[36] = 0.0;
+      A[37] = 0.0;
+      A[38] = 0.0;
+      A[39] = 0.0;
+      A[40] = 0.0;
+      A[41] = 0.0;
+      A[42] = 0.0;
+      A[43] = 0.0;
+      A[44] = 0.0;
+      A[45] = 0.0;
+      A[46] = 0.0;
+      A[47] = 0.0;
+      A[48] = 0.0;
+      A[49] = 0.0;
+      A[50] = 0.0;
+      A[51] = 0.0;
+      A[52] = 0.0;
+      A[53] = 0.0;
+      A[54] = 0.0;
+      A[55] = 0.0;
+      A[56] = 0.0;
+      A[57] = 0.0;
+      A[58] = 0.0;
+      A[59] = 0.0;
+      A[60] = 0.0666666666666666*G0_0_0;
+      A[61] = 0.0;
+      A[62] = 0.0666666666666666*G0_0_0;
+      A[63] = 0.0;
+      A[64] = 0.533333333333333*G0_0_0;
+      A[65] = 0.0;
+      A[66] = 0.0;
+      A[67] = 0.0;
+      A[68] = 0.0;
+      A[69] = 0.0;
+      A[70] = 0.0;
+      A[71] = 0.0;
+      A[72] = 0.0;
+      A[73] = 0.0;
+      A[74] = 0.0;
+      A[75] = 0.0;
+      A[76] = 0.0;
+      A[77] = 0.0;
+      A[78] = 0.0;
+      A[79] = 0.0;
+      A[80] = 0.0;
+      A[81] = 0.0;
+      A[82] = 0.0;
+      A[83] = 0.0;
+      A[84] = 0.0;
+      A[85] = 0.0;
+      A[86] = 0.0;
+      A[87] = 0.0;
+      A[88] = 0.0;
+      A[89] = 0.0;
+      A[90] = 0.0;
+      A[91] = 0.0;
+      A[92] = 0.0;
+      A[93] = 0.0;
+      A[94] = 0.0;
+      A[95] = 0.0;
+      A[96] = 0.133333333333333*G1_0_0;
+      A[97] = 0.0;
+      A[98] = -0.0333333333333333*G1_0_0;
+      A[99] = 0.0;
+      A[100] = 0.0666666666666666*G1_0_0;
+      A[101] = 0.0;
+      A[102] = 0.0;
+      A[103] = 0.0;
+      A[104] = 0.0;
+      A[105] = 0.0;
+      A[106] = 0.0;
+      A[107] = 0.0;
+      A[108] = 0.0;
+      A[109] = 0.0;
+      A[110] = 0.0;
+      A[111] = 0.0;
+      A[112] = 0.0;
+      A[113] = 0.0;
+      A[114] = 0.0;
+      A[115] = 0.0;
+      A[116] = 0.0;
+      A[117] = 0.0;
+      A[118] = 0.0;
+      A[119] = 0.0;
+      A[120] = 0.0;
+      A[121] = 0.0;
+      A[122] = 0.0;
+      A[123] = 0.0;
+      A[124] = 0.0;
+      A[125] = 0.0;
+      A[126] = -0.0333333333333333*G1_0_0;
+      A[127] = 0.0;
+      A[128] = 0.133333333333333*G1_0_0;
+      A[129] = 0.0;
+      A[130] = 0.0666666666666666*G1_0_0;
+      A[131] = 0.0;
+      A[132] = 0.0;
+      A[133] = 0.0;
+      A[134] = 0.0;
+      A[135] = 0.0;
+      A[136] = 0.0;
+      A[137] = 0.0;
+      A[138] = 0.0;
+      A[139] = 0.0;
+      A[140] = 0.0;
+      A[141] = 0.0;
+      A[142] = 0.0;
+      A[143] = 0.0;
+      A[144] = 0.0;
+      A[145] = 0.0;
+      A[146] = 0.0;
+      A[147] = 0.0;
+      A[148] = 0.0;
+      A[149] = 0.0;
+      A[150] = 0.0;
+      A[151] = 0.0;
+      A[152] = 0.0;
+      A[153] = 0.0;
+      A[154] = 0.0;
+      A[155] = 0.0;
+      A[156] = 0.0666666666666666*G1_0_0;
+      A[157] = 0.0;
+      A[158] = 0.0666666666666666*G1_0_0;
+      A[159] = 0.0;
+      A[160] = 0.533333333333333*G1_0_0;
+      A[161] = 0.0;
+      A[162] = 0.0;
+      A[163] = 0.0;
+      A[164] = 0.0;
+      A[165] = 0.0;
+      A[166] = 0.0;
+      A[167] = 0.0;
+      A[168] = 0.0;
+      A[169] = 0.0;
+      A[170] = 0.0;
+      A[171] = 0.0;
+      A[172] = 0.0;
+      A[173] = 0.0;
+      A[174] = 0.0;
+      A[175] = 0.0;
+      A[176] = 0.0;
+      A[177] = 0.0;
+      A[178] = 0.0;
+      A[179] = 0.0;
+      A[180] = 0.0;
+      A[181] = 0.0;
+      A[182] = 0.0;
+      A[183] = 0.0;
+      A[184] = 0.0;
+      A[185] = 0.0;
+      A[186] = 0.0;
+      A[187] = 0.0;
+      A[188] = 0.0;
+      A[189] = 0.0;
+      A[190] = 0.0;
+      A[191] = 0.0;
+      A[192] = 0.0;
+      A[193] = 0.0;
+      A[194] = 0.0;
+      A[195] = 0.0;
+      A[196] = 0.0;
+      A[197] = 0.0;
+      A[198] = 0.0;
+      A[199] = 0.0;
+      A[200] = 0.0;
+      A[201] = 0.0;
+      A[202] = 0.0;
+      A[203] = 0.0;
+      A[204] = 0.0;
+      A[205] = 0.0;
+      A[206] = 0.0;
+      A[207] = 0.0;
+      A[208] = 0.0;
+      A[209] = 0.0;
+      A[210] = 0.0;
+      A[211] = 0.0;
+      A[212] = 0.0;
+      A[213] = 0.0;
+      A[214] = 0.0;
+      A[215] = 0.0;
+      A[216] = 0.0;
+      A[217] = 0.0;
+      A[218] = 0.0;
+      A[219] = 0.0;
+      A[220] = 0.0;
+      A[221] = 0.0;
+      A[222] = 0.0;
+      A[223] = 0.0;
+      A[224] = 0.0;
+        break;
+      }
+    case 2:
+      {
+        A[0] = 0.133333333333333*G0_0_0;
+      A[1] = -0.0333333333333333*G0_0_0;
+      A[2] = 0.0;
+      A[3] = 0.0;
+      A[4] = 0.0;
+      A[5] = 0.0666666666666666*G0_0_0;
+      A[6] = 0.0;
+      A[7] = 0.0;
+      A[8] = 0.0;
+      A[9] = 0.0;
+      A[10] = 0.0;
+      A[11] = 0.0;
+      A[12] = 0.0;
+      A[13] = 0.0;
+      A[14] = 0.0;
+      A[15] = -0.0333333333333333*G0_0_0;
+      A[16] = 0.133333333333333*G0_0_0;
+      A[17] = 0.0;
+      A[18] = 0.0;
+      A[19] = 0.0;
+      A[20] = 0.0666666666666666*G0_0_0;
+      A[21] = 0.0;
+      A[22] = 0.0;
+      A[23] = 0.0;
+      A[24] = 0.0;
+      A[25] = 0.0;
+      A[26] = 0.0;
+      A[27] = 0.0;
+      A[28] = 0.0;
+      A[29] = 0.0;
+      A[30] = 0.0;
+      A[31] = 0.0;
+      A[32] = 0.0;
+      A[33] = 0.0;
+      A[34] = 0.0;
+      A[35] = 0.0;
+      A[36] = 0.0;
+      A[37] = 0.0;
+      A[38] = 0.0;
+      A[39] = 0.0;
+      A[40] = 0.0;
+      A[41] = 0.0;
+      A[42] = 0.0;
+      A[43] = 0.0;
+      A[44] = 0.0;
+      A[45] = 0.0;
+      A[46] = 0.0;
+      A[47] = 0.0;
+      A[48] = 0.0;
+      A[49] = 0.0;
+      A[50] = 0.0;
+      A[51] = 0.0;
+      A[52] = 0.0;
+      A[53] = 0.0;
+      A[54] = 0.0;
+      A[55] = 0.0;
+      A[56] = 0.0;
+      A[57] = 0.0;
+      A[58] = 0.0;
+      A[59] = 0.0;
+      A[60] = 0.0;
+      A[61] = 0.0;
+      A[62] = 0.0;
+      A[63] = 0.0;
+      A[64] = 0.0;
+      A[65] = 0.0;
+      A[66] = 0.0;
+      A[67] = 0.0;
+      A[68] = 0.0;
+      A[69] = 0.0;
+      A[70] = 0.0;
+      A[71] = 0.0;
+      A[72] = 0.0;
+      A[73] = 0.0;
+      A[74] = 0.0;
+      A[75] = 0.0666666666666666*G0_0_0;
+      A[76] = 0.0666666666666666*G0_0_0;
+      A[77] = 0.0;
+      A[78] = 0.0;
+      A[79] = 0.0;
+      A[80] = 0.533333333333333*G0_0_0;
+      A[81] = 0.0;
+      A[82] = 0.0;
+      A[83] = 0.0;
+      A[84] = 0.0;
+      A[85] = 0.0;
+      A[86] = 0.0;
+      A[87] = 0.0;
+      A[88] = 0.0;
+      A[89] = 0.0;
+      A[90] = 0.0;
+      A[91] = 0.0;
+      A[92] = 0.0;
+      A[93] = 0.0;
+      A[94] = 0.0;
+      A[95] = 0.0;
+      A[96] = 0.133333333333333*G1_0_0;
+      A[97] = -0.0333333333333333*G1_0_0;
+      A[98] = 0.0;
+      A[99] = 0.0;
+      A[100] = 0.0;
+      A[101] = 0.0666666666666666*G1_0_0;
+      A[102] = 0.0;
+      A[103] = 0.0;
+      A[104] = 0.0;
+      A[105] = 0.0;
+      A[106] = 0.0;
+      A[107] = 0.0;
+      A[108] = 0.0;
+      A[109] = 0.0;
+      A[110] = 0.0;
+      A[111] = -0.0333333333333333*G1_0_0;
+      A[112] = 0.133333333333333*G1_0_0;
+      A[113] = 0.0;
+      A[114] = 0.0;
+      A[115] = 0.0;
+      A[116] = 0.0666666666666666*G1_0_0;
+      A[117] = 0.0;
+      A[118] = 0.0;
+      A[119] = 0.0;
+      A[120] = 0.0;
+      A[121] = 0.0;
+      A[122] = 0.0;
+      A[123] = 0.0;
+      A[124] = 0.0;
+      A[125] = 0.0;
+      A[126] = 0.0;
+      A[127] = 0.0;
+      A[128] = 0.0;
+      A[129] = 0.0;
+      A[130] = 0.0;
+      A[131] = 0.0;
+      A[132] = 0.0;
+      A[133] = 0.0;
+      A[134] = 0.0;
+      A[135] = 0.0;
+      A[136] = 0.0;
+      A[137] = 0.0;
+      A[138] = 0.0;
+      A[139] = 0.0;
+      A[140] = 0.0;
+      A[141] = 0.0;
+      A[142] = 0.0;
+      A[143] = 0.0;
+      A[144] = 0.0;
+      A[145] = 0.0;
+      A[146] = 0.0;
+      A[147] = 0.0;
+      A[148] = 0.0;
+      A[149] = 0.0;
+      A[150] = 0.0;
+      A[151] = 0.0;
+      A[152] = 0.0;
+      A[153] = 0.0;
+      A[154] = 0.0;
+      A[155] = 0.0;
+      A[156] = 0.0;
+      A[157] = 0.0;
+      A[158] = 0.0;
+      A[159] = 0.0;
+      A[160] = 0.0;
+      A[161] = 0.0;
+      A[162] = 0.0;
+      A[163] = 0.0;
+      A[164] = 0.0;
+      A[165] = 0.0;
+      A[166] = 0.0;
+      A[167] = 0.0;
+      A[168] = 0.0;
+      A[169] = 0.0;
+      A[170] = 0.0;
+      A[171] = 0.0666666666666666*G1_0_0;
+      A[172] = 0.0666666666666666*G1_0_0;
+      A[173] = 0.0;
+      A[174] = 0.0;
+      A[175] = 0.0;
+      A[176] = 0.533333333333333*G1_0_0;
+      A[177] = 0.0;
+      A[178] = 0.0;
+      A[179] = 0.0;
+      A[180] = 0.0;
+      A[181] = 0.0;
+      A[182] = 0.0;
+      A[183] = 0.0;
+      A[184] = 0.0;
+      A[185] = 0.0;
+      A[186] = 0.0;
+      A[187] = 0.0;
+      A[188] = 0.0;
+      A[189] = 0.0;
+      A[190] = 0.0;
+      A[191] = 0.0;
+      A[192] = 0.0;
+      A[193] = 0.0;
+      A[194] = 0.0;
+      A[195] = 0.0;
+      A[196] = 0.0;
+      A[197] = 0.0;
+      A[198] = 0.0;
+      A[199] = 0.0;
+      A[200] = 0.0;
+      A[201] = 0.0;
+      A[202] = 0.0;
+      A[203] = 0.0;
+      A[204] = 0.0;
+      A[205] = 0.0;
+      A[206] = 0.0;
+      A[207] = 0.0;
+      A[208] = 0.0;
+      A[209] = 0.0;
+      A[210] = 0.0;
+      A[211] = 0.0;
+      A[212] = 0.0;
+      A[213] = 0.0;
+      A[214] = 0.0;
+      A[215] = 0.0;
+      A[216] = 0.0;
+      A[217] = 0.0;
+      A[218] = 0.0;
+      A[219] = 0.0;
+      A[220] = 0.0;
+      A[221] = 0.0;
+      A[222] = 0.0;
+      A[223] = 0.0;
+      A[224] = 0.0;
+        break;
+      }
+    }
+    
   }
 
 };
@@ -11152,13 +12220,13 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "84ad4fd257cc8d822ec9a52fbe8b7bc968dd51575201d23276a79ce2af89416d9599e9be690f648b1073145e00d887a6bd48139d7520b9db33ca5a57154f8747";
+    return "e7c5a8460647ddbf5f5a32904fdcc5e93c18be8bc67f75d7a0f99750fe1f538654ca1fb6240b6a13968178d20b837be04483923b1b514e7f6947eed22539dc85";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
   virtual std::size_t original_coefficient_position(std::size_t i) const
   {
-    static const std::vector<std::size_t> position({0, 1, 2, 3, 4, 5});
+    static const std::vector<std::size_t> position({0, 1, 2, 3, 4, 5, 6, 7});
     return position[i];
   }
 
@@ -11171,7 +12239,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 6;
+    return 8;
   }
 
   /// Return the number of cell domains
@@ -11183,7 +12251,7 @@ public:
   /// Return the number of exterior facet domains
   virtual std::size_t num_exterior_facet_domains() const
   {
-    return 2;
+    return 4;
   }
 
   /// Return the number of interior facet domains
@@ -11274,6 +12342,16 @@ public:
         return new mynavierstokestimecurv_finite_element_2();
         break;
       }
+    case 7:
+      {
+        return new mynavierstokestimecurv_finite_element_0();
+        break;
+      }
+    case 8:
+      {
+        return new mynavierstokestimecurv_finite_element_2();
+        break;
+      }
     }
     
     return 0;
@@ -11319,6 +12397,16 @@ public:
         return new mynavierstokestimecurv_dofmap_2();
         break;
       }
+    case 7:
+      {
+        return new mynavierstokestimecurv_dofmap_0();
+        break;
+      }
+    case 8:
+      {
+        return new mynavierstokestimecurv_dofmap_2();
+        break;
+      }
     }
     
     return 0;
@@ -11338,6 +12426,16 @@ public:
     case 1:
       {
         return new mynavierstokestimecurv_exterior_facet_integral_0_1();
+        break;
+      }
+    case 2:
+      {
+        return new mynavierstokestimecurv_exterior_facet_integral_0_2();
+        break;
+      }
+    case 3:
+      {
+        return new mynavierstokestimecurv_exterior_facet_integral_0_3();
         break;
       }
     }
@@ -11429,13 +12527,13 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "356b1d1dc7723aac7ee78a406c0832cf0e041127dc77cc2f38d156ebba9fc5bfd5f5786cd056eeb5e7cb0081369d6b88ce10899bca20cdf8f21cf2c38166058e";
+    return "f0f02eca2597a42a2d53fc0f375a5f26f1fd489f2c01af8552357c3f308de798955024156467df2c5ff3c85ff75c29b90e9790efc4856d50e92def089071062d";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
   virtual std::size_t original_coefficient_position(std::size_t i) const
   {
-    static const std::vector<std::size_t> position({0, 1, 2, 3});
+    static const std::vector<std::size_t> position({0, 1, 3, 5, 6});
     return position[i];
   }
 
@@ -11448,7 +12546,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 4;
+    return 5;
   }
 
   /// Return the number of cell domains
@@ -11460,7 +12558,7 @@ public:
   /// Return the number of exterior facet domains
   virtual std::size_t num_exterior_facet_domains() const
   {
-    return 0;
+    return 3;
   }
 
   /// Return the number of interior facet domains
@@ -11490,7 +12588,7 @@ public:
   /// Return whether the form has any exterior facet integrals
   virtual bool has_exterior_facet_integrals() const
   {
-    return false;
+    return true;
   }
 
   /// Return whether the form has any interior facet integrals
@@ -11546,6 +12644,11 @@ public:
         return new mynavierstokestimecurv_finite_element_2();
         break;
       }
+    case 6:
+      {
+        return new mynavierstokestimecurv_finite_element_0();
+        break;
+      }
     }
     
     return 0;
@@ -11586,6 +12689,11 @@ public:
         return new mynavierstokestimecurv_dofmap_2();
         break;
       }
+    case 6:
+      {
+        return new mynavierstokestimecurv_dofmap_0();
+        break;
+      }
     }
     
     return 0;
@@ -11600,6 +12708,15 @@ public:
   /// Create a new exterior facet integral on sub domain i
   virtual ufc::exterior_facet_integral* create_exterior_facet_integral(std::size_t i) const
   {
+    switch (i)
+    {
+    case 2:
+      {
+        return new mynavierstokestimecurv_exterior_facet_integral_1_2();
+        break;
+      }
+    }
+    
     return 0;
   }
 
@@ -11671,6 +12788,53 @@ public:
 
 namespace myNavierstokesTimeCurv
 {
+
+class CoefficientSpace_beta: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_beta(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_0()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_beta(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_0()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_beta(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_0()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_beta(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_0()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+};
 
 class CoefficientSpace_dt: public dolfin::FunctionSpace
 {
@@ -11807,6 +12971,53 @@ public:
     dolfin::FunctionSpace(mesh,
                           std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_0()))),
                           std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_0()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+};
+
+class CoefficientSpace_stress: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_stress(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_2()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_stress(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_2()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_stress(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_2()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_stress(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurv_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurv_dofmap_2()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -12013,13 +13224,17 @@ typedef CoefficientSpace_u_old Form_F_FunctionSpace_5;
 
 typedef CoefficientSpace_w Form_F_FunctionSpace_6;
 
+typedef CoefficientSpace_beta Form_F_FunctionSpace_7;
+
+typedef CoefficientSpace_stress Form_F_FunctionSpace_8;
+
 class Form_F: public dolfin::Form
 {
 public:
 
   // Constructor
   Form_F(const dolfin::FunctionSpace& V0):
-    dolfin::Form(1, 6), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5)
+    dolfin::Form(1, 8), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), beta(*this, 6), stress(*this, 7)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
@@ -12027,8 +13242,8 @@ public:
   }
 
   // Constructor
-  Form_F(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& w):
-    dolfin::Form(1, 6), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5)
+  Form_F(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& w, const dolfin::GenericFunction& beta, const dolfin::GenericFunction& stress):
+    dolfin::Form(1, 8), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), beta(*this, 6), stress(*this, 7)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
@@ -12038,13 +13253,15 @@ public:
     this->dt = dt;
     this->u_old = u_old;
     this->w = w;
+    this->beta = beta;
+    this->stress = stress;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_0());
   }
 
   // Constructor
-  Form_F(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> w):
-    dolfin::Form(1, 6), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5)
+  Form_F(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> w, std::shared_ptr<const dolfin::GenericFunction> beta, std::shared_ptr<const dolfin::GenericFunction> stress):
+    dolfin::Form(1, 8), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), beta(*this, 6), stress(*this, 7)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
@@ -12054,13 +13271,15 @@ public:
     this->dt = *dt;
     this->u_old = *u_old;
     this->w = *w;
+    this->beta = *beta;
+    this->stress = *stress;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_0());
   }
 
   // Constructor
   Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 6), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5)
+    dolfin::Form(1, 8), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), beta(*this, 6), stress(*this, 7)
   {
     _function_spaces[0] = V0;
 
@@ -12068,8 +13287,8 @@ public:
   }
 
   // Constructor
-  Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& w):
-    dolfin::Form(1, 6), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5)
+  Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& w, const dolfin::GenericFunction& beta, const dolfin::GenericFunction& stress):
+    dolfin::Form(1, 8), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), beta(*this, 6), stress(*this, 7)
   {
     _function_spaces[0] = V0;
 
@@ -12079,13 +13298,15 @@ public:
     this->dt = dt;
     this->u_old = u_old;
     this->w = w;
+    this->beta = beta;
+    this->stress = stress;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_0());
   }
 
   // Constructor
-  Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> w):
-    dolfin::Form(1, 6), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5)
+  Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> w, std::shared_ptr<const dolfin::GenericFunction> beta, std::shared_ptr<const dolfin::GenericFunction> stress):
+    dolfin::Form(1, 8), trial(*this, 0), nu(*this, 1), gamma(*this, 2), dt(*this, 3), u_old(*this, 4), w(*this, 5), beta(*this, 6), stress(*this, 7)
   {
     _function_spaces[0] = V0;
 
@@ -12095,6 +13316,8 @@ public:
     this->dt = *dt;
     this->u_old = *u_old;
     this->w = *w;
+    this->beta = *beta;
+    this->stress = *stress;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_0());
   }
@@ -12118,6 +13341,10 @@ public:
       return 4;
     else if (name == "w")
       return 5;
+    else if (name == "beta")
+      return 6;
+    else if (name == "stress")
+      return 7;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -12142,6 +13369,10 @@ public:
       return "u_old";
     case 5:
       return "w";
+    case 6:
+      return "beta";
+    case 7:
+      return "stress";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -12158,6 +13389,8 @@ public:
   typedef Form_F_FunctionSpace_4 CoefficientSpace_dt;
   typedef Form_F_FunctionSpace_5 CoefficientSpace_u_old;
   typedef Form_F_FunctionSpace_6 CoefficientSpace_w;
+  typedef Form_F_FunctionSpace_7 CoefficientSpace_beta;
+  typedef Form_F_FunctionSpace_8 CoefficientSpace_stress;
 
   // Coefficients
   dolfin::CoefficientAssigner trial;
@@ -12166,6 +13399,8 @@ public:
   dolfin::CoefficientAssigner dt;
   dolfin::CoefficientAssigner u_old;
   dolfin::CoefficientAssigner w;
+  dolfin::CoefficientAssigner beta;
+  dolfin::CoefficientAssigner stress;
 };
 
 class Form_J_FunctionSpace_0: public dolfin::FunctionSpace
@@ -12270,13 +13505,15 @@ typedef CoefficientSpace_dt Form_J_FunctionSpace_4;
 
 typedef CoefficientSpace_w Form_J_FunctionSpace_5;
 
+typedef CoefficientSpace_beta Form_J_FunctionSpace_6;
+
 class Form_J: public dolfin::Form
 {
 public:
 
   // Constructor
   Form_J(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
+    dolfin::Form(2, 5), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3), beta(*this, 4)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
     _function_spaces[1] = reference_to_no_delete_pointer(V1);
@@ -12285,8 +13522,8 @@ public:
   }
 
   // Constructor
-  Form_J(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& w):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
+  Form_J(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& w, const dolfin::GenericFunction& beta):
+    dolfin::Form(2, 5), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3), beta(*this, 4)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
     _function_spaces[1] = reference_to_no_delete_pointer(V1);
@@ -12295,13 +13532,14 @@ public:
     this->nu = nu;
     this->dt = dt;
     this->w = w;
+    this->beta = beta;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_1());
   }
 
   // Constructor
-  Form_J(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> w):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
+  Form_J(const dolfin::FunctionSpace& V1, const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> w, std::shared_ptr<const dolfin::GenericFunction> beta):
+    dolfin::Form(2, 5), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3), beta(*this, 4)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
     _function_spaces[1] = reference_to_no_delete_pointer(V1);
@@ -12310,13 +13548,14 @@ public:
     this->nu = *nu;
     this->dt = *dt;
     this->w = *w;
+    this->beta = *beta;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_1());
   }
 
   // Constructor
   Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
+    dolfin::Form(2, 5), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3), beta(*this, 4)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
@@ -12325,8 +13564,8 @@ public:
   }
 
   // Constructor
-  Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& w):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
+  Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& trial, const dolfin::GenericFunction& nu, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& w, const dolfin::GenericFunction& beta):
+    dolfin::Form(2, 5), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3), beta(*this, 4)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
@@ -12335,13 +13574,14 @@ public:
     this->nu = nu;
     this->dt = dt;
     this->w = w;
+    this->beta = beta;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_1());
   }
 
   // Constructor
-  Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> w):
-    dolfin::Form(2, 4), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3)
+  Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> trial, std::shared_ptr<const dolfin::GenericFunction> nu, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> w, std::shared_ptr<const dolfin::GenericFunction> beta):
+    dolfin::Form(2, 5), trial(*this, 0), nu(*this, 1), dt(*this, 2), w(*this, 3), beta(*this, 4)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
@@ -12350,6 +13590,7 @@ public:
     this->nu = *nu;
     this->dt = *dt;
     this->w = *w;
+    this->beta = *beta;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurv_form_1());
   }
@@ -12369,6 +13610,8 @@ public:
       return 2;
     else if (name == "w")
       return 3;
+    else if (name == "beta")
+      return 4;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -12389,6 +13632,8 @@ public:
       return "dt";
     case 3:
       return "w";
+    case 4:
+      return "beta";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -12404,12 +13649,14 @@ public:
   typedef Form_J_FunctionSpace_3 CoefficientSpace_nu;
   typedef Form_J_FunctionSpace_4 CoefficientSpace_dt;
   typedef Form_J_FunctionSpace_5 CoefficientSpace_w;
+  typedef Form_J_FunctionSpace_6 CoefficientSpace_beta;
 
   // Coefficients
   dolfin::CoefficientAssigner trial;
   dolfin::CoefficientAssigner nu;
   dolfin::CoefficientAssigner dt;
   dolfin::CoefficientAssigner w;
+  dolfin::CoefficientAssigner beta;
 };
 
 // Class typedefs

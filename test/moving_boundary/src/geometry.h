@@ -44,11 +44,11 @@ class FixedBoundary : public dolfin::SubDomain
 {
     bool inside (const dolfin::Array<double>& x, bool on_boundary) const
     {
-        return //(dolfin::near (x[0], 0) && on_boundary)
-//               ||
-               (dolfin::near (x[1], 0) && on_boundary);
-//               ||
-//               (dolfin::near (x[0], 1) && on_boundary);
+        return (dolfin::near (x[0], 0) && on_boundary)
+               ||
+               (dolfin::near (x[1], 0) && on_boundary)
+               ||
+               (dolfin::near (x[0], 1) && on_boundary);
     }
 };
 
@@ -269,8 +269,8 @@ class MeshManager
     MeshManager (const T_MeshMover& meshMover, T_FunctionSpace& functionSpace);
     // !!! servono altri costruttori?
 
-    const T_FunctionSpace& functionSpace();
-    const dolfin::Mesh& mesh();
+    const T_FunctionSpace& functionSpace() const;
+    const dolfin::Mesh& mesh() const;
 
     void moveMesh (const dolfin::GenericFunction& displacement, const std::string& component="all", const double dt=1.0);
 //move//    std::shared_ptr<dolfin::MeshDisplacement> moveMesh (const dolfin::GenericFunction& boundaryDisplacement);
@@ -348,12 +348,12 @@ MeshManager<T_MeshMover,T_FunctionSpace>::MeshManager (const T_MeshMover& meshMo
   }
 
 template <class T_MeshMover, class T_FunctionSpace>
-const T_FunctionSpace& MeshManager<T_MeshMover,T_FunctionSpace>::functionSpace()
+const T_FunctionSpace& MeshManager<T_MeshMover,T_FunctionSpace>::functionSpace() const
   {
     return *functionSpace_;
   }
 template <class T_MeshMover, class T_FunctionSpace>
-const dolfin::Mesh& MeshManager<T_MeshMover,T_FunctionSpace>::mesh()
+const dolfin::Mesh& MeshManager<T_MeshMover,T_FunctionSpace>::mesh() const
   {
     return *mesh_;
   }

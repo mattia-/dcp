@@ -35,6 +35,8 @@ dt = Constant (cell)
 gamma = Constant (cell)
 n = FacetNormal(cell)
 h = MaxFacetEdgeLength(cell)
+cosThetaS = Constant(cell)
+t_partialOmega = Coefficient(V)
 
 #th = pi/2
 #A = as_matrix([[cos(th) , -sin(th)] , [sin(th) , cos(th)]])
@@ -42,5 +44,10 @@ A = as_matrix ([ [0 , -1] , [1 , 0] ])
 
 # OPPOSITE w.r.t. myNavierstokesTimeCurv.ufl
 # because there we move this term to the lhs
-L =   (6.0/h) * dt * gamma * inner (v, A*n) * ds(4) \
-    - (6.0/h) * dt * gamma * inner (v, A*n) * ds(5)
+#
+# with free-slip
+#L =   (6.0/h) * dt * gamma * inner (v, A*n) * ds(4) \
+#    - (6.0/h) * dt * gamma * inner (v, A*n) * ds(5)
+# with GNBC
+L =   (6.0/h) * dt * gamma * cosThetaS * inner(t_partialOmega, v) * ds(4) \
+    + (6.0/h) * dt * gamma * cosThetaS * inner(t_partialOmega, v) * ds(5) \

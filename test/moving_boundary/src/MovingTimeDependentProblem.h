@@ -43,6 +43,7 @@
 #include <dcp/expressions/TimeDependentExpression.h>
 #include <dcp/subdomains/Subdomain.h>
 #include "geometry.h"
+#include <math.h>
 
 namespace Ivan
 {
@@ -240,6 +241,7 @@ namespace Ivan
                                   const double& endTime,
                                   std::initializer_list<std::string> dtCoefficientTypes,
                                   std::initializer_list<std::string> previousSolutionCoefficientTypes,
+//current//                                  std::initializer_list<std::string> currentSolutionCoefficientTypes,
                                   const unsigned int& nTimeSchemeSteps = 1);
 
 

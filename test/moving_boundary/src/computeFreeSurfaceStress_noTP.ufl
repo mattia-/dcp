@@ -24,19 +24,18 @@
 cell = triangle
 V = VectorElement ("Lagrange", cell, 2)
 Q = FiniteElement ("Lagrange", cell, 1)
-CQ = FiniteElement ("Lagrange", cell, 4)
 T = V * Q
 
-#up = Coefficient (T)
+up = Coefficient (T)
 test = TestFunction (T)
 
-#u, p = split (up)
+u, p = split (up)
 v, q = split (test)
 dt = Constant (cell)
 gamma = Constant (cell)
 n = FacetNormal(cell)
 h = MaxFacetEdgeLength(cell)
-deltaDirac = Coefficient (CQ)
+beta = Constant (cell)
 
 #th = pi/2
 #A = as_matrix([[cos(th) , -sin(th)] , [sin(th) , cos(th)]])
@@ -50,9 +49,4 @@ L =  - dt * gamma * div (v) * ds(1) \
      + dt * gamma * inner (grad(v), outer (n,n)) * ds(4) \
      - dt * gamma * div (v) * ds(5) \
      + dt * gamma * inner (grad(v), outer (n,n)) * ds(5) \
-     + (1.0/h) * dt * deltaDirac * gamma * inner (v, A*n) * ds(4) \
-     - (1.0/h) * dt * deltaDirac * gamma * inner (v, A*n) * ds(5)
-  #   + (1.0/h) * deltaDirac * dt * gamma * inner (v, A*n) * ds(4) \
-  #   - (1.0/h) * deltaDirac * dt * gamma * inner (v, A*n) * ds(5)
-     #+ dt * gamma * inner (v, A*n) * ds(4) \
-     #- dt * gamma * inner (v, A*n) * ds(5)
+     - dt * beta * inner (u, v) * ds(2) 

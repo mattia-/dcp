@@ -518,7 +518,7 @@ namespace dcp
     void TimeDependentProblem::solve (const std::string& type) 
     {
         // parse solve type
-        if (type != "default" && type != "step" && type != "clear_default" && type != "clear_step")
+        if (type != "default" && type != "step" && type != "clear+default" && type != "clear+step")
         {
             dolfin::dolfin_error ("dcp: TimeDependentProblem.h", 
                                   "solve",

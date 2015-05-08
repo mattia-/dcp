@@ -555,8 +555,8 @@ namespace dcp
              *  \param type the solution type requested. Possible values are:
              *  \li \c "default" the entire time loop is performed
              *  \li \c "step" only one step of the time loop is performed
-             *  \li <tt> "clear_default" </tt> \c clear method is called before performing the entire time loop
-             *  \li <tt> "clear_step" </tt> \c clear method is called before performing one time step of the time loop
+             *  \li <tt> "clear+default" </tt> \c clear method is called before performing the entire time loop
+             *  \li <tt> "clear+step" </tt> \c clear method is called before performing one time step of the time loop
              */
             virtual void solve (const std::string& type = "default") override;
 

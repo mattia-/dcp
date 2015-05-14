@@ -294,10 +294,10 @@ namespace dcp
              * It is a pure virtual method that needs to be overridden
              * in any concrete instance of the class.
              * 
-             * \param type the solve type requested. It may be useful to differentiate among different behaviours in
+             * \param solveType the solve type requested. It may be useful to differentiate among different behaviours in
              * the derived classes
              */
-            virtual void solve (const std::string& type = "default") = 0;
+            virtual void solve (const std::string& solveType = "default") = 0;
             
             //! Method to plot the solution
             virtual void plotSolution ();

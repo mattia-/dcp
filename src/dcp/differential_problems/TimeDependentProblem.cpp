@@ -508,23 +508,75 @@ namespace dcp
     
 
 
-    void TimeDependentProblem::step ()
+    void TimeDependentProblem::advanceTime ()
     {
-        solve ("step");
-    }
-    
+        t_ += dt_;
+        
+        dolfin::log (dolfin::INFO, "TIME = %f s", t_);
 
-    
-    void TimeDependentProblem::solve (const std::string& type) 
+        std::string previousSolutionName = parameters ["previous_solution_name"];
+        std::vector<std::string> previousSolutionCoefficientTypes;
+        parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
+        int timeSteppingSolutionComponent = parameters ["time_stepping_solution_component"];
+        
+        bool previousSolutionIsSetExternally = parameters ["previous_solution_is_set_externally"];
+        if (previousSolutionIsSetExternally == false)
+        {
+            dolfin::begin (dolfin::DBG, "Setting previous solution coefficients...");
+            for (unsigned int step = 1; step <= nTimeSchemeSteps_; ++step)
+            {
+                // if step > 1, append step number to the name of the coefficient to set 
+                if (step > 1)
+                {
+                    previousSolutionName = previousSolutionName + "_" + std::to_string (step);
+                }
+                
+                // get the index of the function in solution_ to use to set the coefficient
+                unsigned int index = solution_.size () - step;
+                for (auto& previousSolutionCoefficientType : previousSolutionCoefficientTypes)
+                {
+                    if (timeSteppingSolutionComponent >= 0)
+                    {
+                        timeSteppingProblem_ -> setCoefficient 
+                            (previousSolutionCoefficientType, 
+                             dolfin::reference_to_no_delete_pointer ((solution_ [index].second) [timeSteppingSolutionComponent]), 
+                             previousSolutionName);
+                    }
+                    else
+                    {
+                        timeSteppingProblem_ -> setCoefficient 
+                            (previousSolutionCoefficientType, 
+                             dolfin::reference_to_no_delete_pointer (solution_ [index].second),
+                             previousSolutionName);
+                    }
+                } 
+            }
+            dolfin::end ();
+        }
+        else
+        {
+            dolfin::log (dolfin::DBG, "Skipping previous solution setting loop since it is set externally.");
+        }
+    }
+
+
+
+    void TimeDependentProblem::solve (const std::string& solveType) 
     {
-        // parse solve type
-        if (type != "default" && type != "step" && type != "clear+default" && type != "clear+step")
+        // check solve type
+        if (solveType != "default" && 
+            solveType != "step" && 
+            solveType != "clear+default" && 
+            solveType != "clear+step" &&
+            solveType != "steady")
         {
             dolfin::dolfin_error ("dcp: TimeDependentProblem.h", 
                                   "solve",
                                   "Unknown solve type \"%s\" requested",
-                                  type.c_str ());
+                                  solveType.c_str ());
         }
+        
+        dolfin::log (dolfin::DBG, "Selected solve type: %s", solveType.c_str ());
         
         // check if we are already at the end of time loop
         if (isFinished ())
@@ -532,30 +584,16 @@ namespace dcp
             printFinishedWarning ();
             return;
         }
-
-        dolfin::log (dolfin::DBG, "Solve type: %s", type.c_str ());
             
-        if (std::regex_match (type, std::regex (".*clear.*")))
-        {
-            clear ();
-        }
-        
-        // ---- Problem settings ---- //
-        dolfin::begin (dolfin::DBG, "Setting up time dependent problem...");
-        
-        // flag to check if the solver must perform just one time step
-        bool oneStepRequested = std::regex_match (type, std::regex (".*step.*"));
+        // ---- Set dt value in time stepping problem ---- //
+        dolfin::begin (dolfin::DBG, "Setting dt value in time dependent problem...");
         
         // get parameters' values
         dolfin::Constant dt (dt_);
         std::string dtName = parameters ["dt_name"];
         std::vector<std::string> dtCoefficientTypes;
         parameters ("dt_coefficient_types").get_parameter_keys (dtCoefficientTypes);
-        int storeInterval = parameters ["store_interval"];
-        int plotInterval = parameters ["plot_interval"];
-        int plotComponent = parameters ["plot_component"];
-        bool pause = parameters ["pause"];
-        
+       
         for (auto& i : dtCoefficientTypes)
         {
             timeSteppingProblem_->setCoefficient (i, dolfin::reference_to_no_delete_pointer (dt), dtName);
@@ -563,64 +601,26 @@ namespace dcp
         
         dolfin::end ();
         
-        
-        // ---- Problem solution ---- //
-        dolfin::begin (dolfin::DBG, "Solving time dependent problem...");
-        
-        
-        // function used to step through the time loop
-        dolfin::Function tmpSolution = solution_.back ().second;
-        
-        std::shared_ptr<dolfin::VTKPlotter> plotter;
-        
-        // start time loop. The loop variable timeStepFlag is true only if the solve type requested is "step" and
-        // the first step has already been peformed
-        int timeStep = 0;
-        bool timeStepFlag = false;
-        while (!isFinished () && timeStepFlag == false)
+        // call clear() if needed ()
+        if (std::regex_match (solveType, std::regex (".*clear.*")))
         {
-            timeStep++;
-            
-            if (oneStepRequested == false)
-            {
-                dolfin::begin (dolfin::INFO, "===== Timestep %d =====", timeStep);
-            }
-            
-            advanceTime ();
-            
-            setTimeDependentCoefficients ();
-            
-            setTimeDependentDirichletBCs ();
-            
-            dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
-            timeSteppingProblem_->solve ();
-            dolfin::end ();
-            
-            tmpSolution = timeSteppingProblem_->solution ();
-            
-            // save solution in solution_ according to time step and store interval.
-            storeSolution (tmpSolution, timeStep, storeInterval);
-            
-            // plot solution according to time step and plot interval
-            plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause);
-            
-            if (oneStepRequested == true)
-            {
-                timeStepFlag = true;
-            }
-             
-            // dolfin::end matching dolfin::begin inside if statement
-            if (oneStepRequested == false)
-            {
-                dolfin::end ();
-            }
+            clear ();
         }
         
-        // At this point, we just need to make sure that the solution on the last iteration was saved even though
-        // timeStep % storeInterval != 0 (but it must not be saved twice!)
-        storeLastStepSolution (tmpSolution, timeStep, storeInterval);
+        // call right method depending on solveType
+        if (solveType == "default" || solveType == "clear+default")
+        {
+             solveLoop (); 
+        }
+        else if (solveType == "step" || solveType == "clear+step")
+        {
+             step ();
+        }
+        if (solveType == "steady")
+        {
+             steadySolve ();
+        }
         
-        dolfin::end ();
     }
     
     
@@ -645,6 +645,7 @@ namespace dcp
         for (auto& timeSolutionPair : solution_)
         {
             double time = timeSolutionPair.first;
+            
             // get right function to plot
             if (plotComponent == -1)
             {
@@ -752,58 +753,71 @@ namespace dcp
 
 
     /******************* PROTECTED METHODS *******************/
-    void TimeDependentProblem::advanceTime ()
+    void TimeDependentProblem::steadySolve ()
     {
-        t_ += dt_;
-        
-        dolfin::log (dolfin::INFO, "TIME = %f s", t_);
+        setTimeDependentCoefficients ();
 
-        std::string previousSolutionName = parameters ["previous_solution_name"];
-        std::vector<std::string> previousSolutionCoefficientTypes;
-        parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
-        int timeSteppingSolutionComponent = parameters ["time_stepping_solution_component"];
+        setTimeDependentDirichletBCs ();
+
+        dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
+        timeSteppingProblem_->solve ();
+        dolfin::end ();
+    }
+
+    void TimeDependentProblem::step ()
+    {
+        advanceTime ();
         
-        bool previousSolutionIsSetExternally = parameters ["previous_solution_is_set_externally"];
-        if (previousSolutionIsSetExternally == false)
+        steadySolve ();
+    }
+
+    
+    
+    void TimeDependentProblem::solveLoop ()
+    {
+        // ---- Problem settings ---- //
+        int storeInterval = parameters ["store_interval"];
+        int plotInterval = parameters ["plot_interval"];
+        int plotComponent = parameters ["plot_component"];
+        bool pause = parameters ["pause"];
+
+
+        // ---- Problem solution ---- //
+        dolfin::begin (dolfin::DBG, "Solving time dependent problem...");
+        
+        
+        // function used to step through the time loop
+        dolfin::Function tmpSolution = solution_.back ().second;
+        
+        // start time loop
+        int timeStep = 0;
+        while (!isFinished ())
         {
-            dolfin::begin (dolfin::DBG, "Setting previous solution coefficients...");
-            for (unsigned int step = 1; step <= nTimeSchemeSteps_; ++step)
-            {
-                // if step > 1, append step number to the name of the coefficient to set 
-                if (step > 1)
-                {
-                    previousSolutionName = previousSolutionName + "_" + std::to_string (step);
-                }
-                
-                // get the index of the function in solution_ to use to set the coefficient
-                unsigned int index = solution_.size () - step;
-                for (auto& previousSolutionCoefficientType : previousSolutionCoefficientTypes)
-                {
-                    if (timeSteppingSolutionComponent >= 0)
-                    {
-                        timeSteppingProblem_ -> setCoefficient 
-                            (previousSolutionCoefficientType, 
-                             dolfin::reference_to_no_delete_pointer ((solution_ [index].second) [timeSteppingSolutionComponent]), 
-                             previousSolutionName);
-                    }
-                    else
-                    {
-                        timeSteppingProblem_ -> setCoefficient 
-                            (previousSolutionCoefficientType, 
-                             dolfin::reference_to_no_delete_pointer (solution_ [index].second),
-                             previousSolutionName);
-                    }
-                } 
-            }
+            timeStep++;
+            
+            dolfin::begin (dolfin::INFO, "===== Timestep %d =====", timeStep);
+            
+            step ();
+            
+            tmpSolution = timeSteppingProblem_->solution ();
+            
+            // save solution in solution_ according to time step and store interval.
+            storeSolution (tmpSolution, timeStep, storeInterval);
+            
+            // plot solution according to time step and plot interval
+            plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause);
+            
             dolfin::end ();
         }
-        else
-        {
-            dolfin::log (dolfin::DBG, "Skipping previous solution setting loop since it is set externally.");
-        }
+        
+        // At this point, we just need to make sure that the solution on the last iteration was saved even though
+        // timeStep % storeInterval != 0 (but it must not be saved twice!)
+        storeLastStepSolution (tmpSolution, timeStep, storeInterval);
+        
+        dolfin::end ();
     }
-            
-    
+
+
 
     void TimeDependentProblem::setTimeDependentDirichletBCs ()
     {

@@ -473,7 +473,7 @@ namespace dcp
                  *  \li \c "default" : the normal solution process
                  *  \li \c "must_reassemble" : force system reassembly
                  */
-                virtual void solve (const std::string& type = "default") override;
+                virtual void solve (const std::string& solveType = "default") override;
 
                 //! Clone method. Overrides method in \c AbstractProblem
                 /*!
@@ -1155,17 +1155,17 @@ namespace dcp
     
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         void LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        solve (const std::string& type) 
+        solve (const std::string& solveType) 
         {
-            if (type != "default" && type != "must_reassemble")
+            if (solveType != "default" && solveType != "must_reassemble")
             {
                 dolfin::dolfin_error ("dcp: LinearProblem.h", 
                                       "solve",
                                       "Unknown solve type \"%s\" requested",
-                                      type.c_str ());
+                                      solveType.c_str ());
             }
             
-            dolfin::log (dolfin::DBG, "Solve type: %s", type.c_str ());
+            dolfin::log (dolfin::DBG, "Solve type: %s", solveType.c_str ());
             
             update ();
             
@@ -1173,7 +1173,7 @@ namespace dcp
             
             // variable to save current value of parameter force_reassemble_system
             bool forceReassembleSystemBackup = parameters ["force_reassemble_system"];
-            if (type == "must_reassemble")
+            if (solveType == "must_reassemble")
             {
                 // overwrite parameter force_reassemble_system with input value and solve problem
                 parameters ["force_reassemble_system"] = true;
@@ -1215,7 +1215,7 @@ namespace dcp
             
             solver_ -> solve (*(solution_.back ().second.vector ()), rhsVector_);
             
-            if (type == "must_reassemble")
+            if (solveType == "must_reassemble")
             {
                 // restore value of parameter force_reassemble_system
                 parameters ["force_reassemble_system"] = forceReassembleSystemBackup;

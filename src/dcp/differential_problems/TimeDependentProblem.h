@@ -527,17 +527,10 @@ namespace dcp
              */  
             virtual void clear ();
              
-            //! Perform one step of the time loop
-            /*!
-             *  This method performes one step of the time loop. It uses the protected members' value to set the problem
-             *  and then stores the solution in the private member \c solution_ (which is inherited from the base
-             *  class), adding to its existing elements (see method \c clear to delete any element stored in 
-             *  \c solution_).  The last element of \c solution_ will be used as the previous time step solution. To
-             *  change it, use the method \c setInitialSolution.  The protected member \c t_ will be incremented by 
-             *  \c parameters["dt"]
-             */
-            virtual void step ();
-
+            //! Advance time value \c t_. It just performs the increment <tt>t += parameters ["dt"]</tt>.
+            //! This allows us to automatically have a backwards time dependent problem if \c dt is negative.
+            virtual void advanceTime ();
+            
             //! Solve the problem
             /*!
              *  This method solves the problem defined. It uses the protected members' value to set the problem and then
@@ -552,13 +545,14 @@ namespace dcp
              *  set <tt>parameters ["plot_component"]</tt> accordingly. By default, this parameter is set to -1 
              *  (a placeholder that stands for "all the components").
              *  
-             *  \param type the solution type requested. Possible values are:
+             *  \param solveType the solution type requested. Possible values are:
              *  \li \c "default" the entire time loop is performed
              *  \li \c "step" only one step of the time loop is performed
+             *  \li \c "steady" the problem is solved (once), but time is not incremented
              *  \li <tt> "clear+default" </tt> \c clear method is called before performing the entire time loop
              *  \li <tt> "clear+step" </tt> \c clear method is called before performing one time step of the time loop
              */
-            virtual void solve (const std::string& type = "default") override;
+            virtual void solve (const std::string& solveType = "default") override;
 
             //! Plot method. Overrides the one in \c dcp::AbstractProblem to take into account the fact that 
             //! \c solution_ is now a vector with size greater than one). It uses the value of the parameter \c pause
@@ -626,10 +620,40 @@ namespace dcp
             //! \c addTimeDependentDirichletBC() is left empty
             int timeDependentDirichletBCsCounter_;
             
-            //! Advance time value \c t_. It just performs the increment <tt>t += parameters ["dt"]</tt>.
-            //! This allows us to automatically have a backwards time dependent problem if \c dt is negative.
-            virtual void advanceTime ();
+            //! Solve the time stepping problem just once without incrementing \c t_
+            /*!
+             *  This method solves the time stepping problem one time without incrementing the value stored in \c t_.
+             *  It uses the protected members' value to set the problem
+             *  and then stores the solution in the private member \c solution_ (which is inherited from the base
+             *  class), adding to its existing elements (see method \c clear to delete any element stored in 
+             *  \c solution_).  The last element of \c solution_ will be used as the previous time step solution. To
+             *  change it, use the method \c setInitialSolution.
+             */ 
+            virtual void steadySolve ();
             
+            //! Perform one step of the time loop
+            /*!
+             *  This method performes one step of the time loop. It uses the protected members' value to set the problem
+             *  and then stores the solution in the private member \c solution_ (which is inherited from the base
+             *  class), adding to its existing elements (see method \c clear to delete any element stored in 
+             *  \c solution_).  The last element of \c solution_ will be used as the previous time step solution. To
+             *  change it, use the method \c setInitialSolution.  The protected member \c t_ will be incremented using 
+             *  the value stored in \c parameters["dt"]
+             */
+            virtual void step ();
+
+            //! Solve the time problem looping through time from \c startTime_ to \c endTime_
+            /*!
+             *  This method solves the time problem at every time step between \c startTime_ and \c endTime_.
+             *  It uses the protected members' value to set the problem and then stores the solution in the private
+             *  member \c solution_ (which is inherited from the base class), adding to its existing elements (see
+             *  method \c clear to delete any element stored in \c solution_).  The last element of \c solution_ will be
+             *  used as the previous solution at each time step. To change the initial solution, use the method 
+             *  \c setInitialSolution. The protected member \c t_ will be incremented using the value stored 
+             *  in \c parameters["dt"]
+             */
+            virtual void solveLoop ();
+
             //! Set the time dependent Dirichlet boundary conditions at every step of the solve loop
             /*
              *  For each \c element in \c timeDependentDirichletBCs_ , it will set the boundary condition's time 

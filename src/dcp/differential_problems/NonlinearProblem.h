@@ -814,17 +814,17 @@ namespace dcp
 
     template <class T_ResidualForm, class T_JacobianForm>
         void NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        solve (const std::string& type) 
+        solve (const std::string& solveType) 
         {
-            if (type != "default")
+            if (solveType != "default")
             {
                 dolfin::dolfin_error ("dcp: NonlinearProblem.h", 
                                       "solve",
                                       "Unknown solve type \"%s\" requested",
-                                      type.c_str ());
+                                      solveType.c_str ());
             }
             
-            dolfin::log (dolfin::DBG, "Solve type: %s", type.c_str ());
+            dolfin::log (dolfin::DBG, "Solve type: %s", solveType.c_str ());
             
             dolfin::begin (dolfin::INFO, "Solving problem...");
             

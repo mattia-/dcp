@@ -74,7 +74,7 @@ namespace dcp
                      "Inserting problem in problems map with name \"%s\"...", 
                      problemName.c_str ());
         auto result = storedProblems_.insert 
-            (std::make_pair (problemName, dolfin::reference_to_no_delete_pointer (problem)));
+            (std::make_pair (problemName, std::shared_ptr<dcp::AbstractProblem> (problem.clone ())));
         
         // if problem was not inserted in list, issue a warning; else, add it also to the vector solveOrder_
         if (result.second == false)

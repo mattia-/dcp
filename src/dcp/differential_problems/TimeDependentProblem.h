@@ -129,7 +129,7 @@ namespace dcp
              *        \c <"previous_solution_name">_3 and so on.
              *        Default value for \c "previous_solution_name": "u_old"
              *      - \c "store_interval" the interval of time steps to store the solution. Basically, the solution will
-             *        be stored in \c solution_ every \c store_interval time steps. A value less than or equal to 0
+             *        be saved to file every \c store_interval time steps. A value less than or equal to 0
              *        means that the solution should never be stored. Default value: 1
              *      - \c "plot_interval" the interval of time steps to plot the solution. Basically, the solution will
              *        be plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
@@ -539,11 +539,10 @@ namespace dcp
              *  The initial value for the time loop will be whatever function is stored as the last element of 
              *  \c solution_ when the method is called. To change the initial value, use the method \c setInitialSolution.
              *  Note that the value of the solution on the intermediate time steps will be saved int the protected
-             *  member \c solution_. The storing interval is given by <tt>parameters ["store_interval"]</tt>.
-             *  The solution will be plotted every \c plotInterval time steps. This value is read from
-             *  <tt>parameters ["plot_interval"]</tt>. To change the component of the solution that will be plotted 
-             *  set <tt>parameters ["plot_component"]</tt> accordingly. By default, this parameter is set to -1 
-             *  (a placeholder that stands for "all the components").
+             *  member \c solution_.  The solution will be plotted every \c plotInterval time steps. 
+             *  This value is read from  <tt>parameters ["plot_interval"]</tt>. To change the component of the solution 
+             *  that will be plotted  set <tt>parameters ["plot_component"]</tt> accordingly. By default, this parameter 
+             *  is set to -1 (a placeholder that stands for "all the components").
              *  
              *  \param solveType the solution type requested. Possible values are:
              *  \li \c "default" the entire time loop is performed
@@ -623,11 +622,8 @@ namespace dcp
             //! Solve the time stepping problem just once without incrementing \c t_
             /*!
              *  This method solves the time stepping problem one time without incrementing the value stored in \c t_.
-             *  It uses the protected members' value to set the problem
-             *  and then stores the solution in the private member \c solution_ (which is inherited from the base
-             *  class), adding to its existing elements (see method \c clear to delete any element stored in 
-             *  \c solution_).  The last element of \c solution_ will be used as the previous time step solution. To
-             *  change it, use the method \c setInitialSolution.
+             *  It uses the protected members' value to set the problem. The last element of \c solution_ will be used 
+             *  as the previous time step solution. To change it, use the method \c setInitialSolution.
              */ 
             virtual void steadySolve ();
             
@@ -644,13 +640,10 @@ namespace dcp
 
             //! Solve the time problem looping through time from \c startTime_ to \c endTime_
             /*!
-             *  This method solves the time problem at every time step between \c startTime_ and \c endTime_.
-             *  It uses the protected members' value to set the problem and then stores the solution in the private
-             *  member \c solution_ (which is inherited from the base class), adding to its existing elements (see
-             *  method \c clear to delete any element stored in \c solution_).  The last element of \c solution_ will be
-             *  used as the previous solution at each time step. To change the initial solution, use the method 
-             *  \c setInitialSolution. The protected member \c t_ will be incremented using the value stored 
-             *  in \c parameters["dt"]
+             *  This method solves the time problem at every time step between \c startTime_ and \c endTime_ by calling
+             *  \c step() on each time step. It will also save the solution to file and plot it according to the values 
+             *  stored in \c parameters["store_interval"] and \c parameters["plot_interval"]
+             * 
              */
             virtual void solveLoop ();
 

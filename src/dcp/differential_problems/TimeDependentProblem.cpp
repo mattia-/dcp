@@ -19,6 +19,7 @@
 
 #include <dcp/differential_problems/TimeDependentProblem.h>
 #include <dolfin/log/dolfin_log.h>
+#include <dolfin/io/File.h>
 #include <regex>
 
 namespace dcp
@@ -512,9 +513,6 @@ namespace dcp
     {
         t_ += dt_;
         
-        dolfin::log (dolfin::INFO, "TIME = %f s", t_);
-
-        std::string previousSolutionName = parameters ["previous_solution_name"];
         std::vector<std::string> previousSolutionCoefficientTypes;
         parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
         int timeSteppingSolutionComponent = parameters ["time_stepping_solution_component"];
@@ -525,6 +523,7 @@ namespace dcp
             dolfin::begin (dolfin::DBG, "Setting previous solution coefficients...");
             for (unsigned int step = 1; step <= nTimeSchemeSteps_; ++step)
             {
+                std::string previousSolutionName = parameters ["previous_solution_name"];
                 // if step > 1, append step number to the name of the coefficient to set 
                 if (step > 1)
                 {
@@ -616,7 +615,7 @@ namespace dcp
         {
              step ();
         }
-        if (solveType == "steady")
+        else if (solveType == "steady")
         {
              steadySolve ();
         }
@@ -762,13 +761,23 @@ namespace dcp
         dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
         timeSteppingProblem_->solve ();
         dolfin::end ();
+        
+        // TODO how does one store the last solution computed if he is subiterating with steadySolve()?
+        // and more importantly, does one need to?
     }
 
     void TimeDependentProblem::step ()
     {
         advanceTime ();
         
+        dolfin::log (dolfin::INFO, "TIME = %f s", t_);
+        
         steadySolve ();
+        
+        solution_.push_back (std::make_pair (t_, timeSteppingProblem_->solution ()));
+        // TODO save only the number of soultions needed to advance in time (i.e. one if the method is a one-step time
+        // scheme, two for 2-steps time scheme....). This will force us to come up with a way to store the solution 
+        // even when we do not call solveLoop though
     }
 
     
@@ -801,7 +810,7 @@ namespace dcp
             
             tmpSolution = timeSteppingProblem_->solution ();
             
-            // save solution in solution_ according to time step and store interval.
+            // save solution to file according to time step and store interval.
             storeSolution (tmpSolution, timeStep, storeInterval);
             
             // plot solution according to time step and plot interval
@@ -917,7 +926,7 @@ namespace dcp
         if (storeInterval > 0 && timeStep % storeInterval == 0)
         {
             dolfin::log (dolfin::DBG, "Saving time stepping problem solution in solutions vector...");
-            solution_.push_back (std::make_pair (t_, solution));
+            // solution_.push_back (std::make_pair (t_, solution)); TODO PRINT TO FILE
         }
     } 
     
@@ -930,7 +939,7 @@ namespace dcp
         if (!(storeInterval > 0 && timeStep % storeInterval == 0))
         {
             dolfin::log (dolfin::DBG, "Saving last time step solution in solutions vector...");
-            solution_.push_back (std::make_pair (t_, solution));
+            // solution_.push_back (std::make_pair (t_, solution)); TODO PRINT TO FILE
         }
     }
 

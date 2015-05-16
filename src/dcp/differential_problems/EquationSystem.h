@@ -55,32 +55,14 @@ namespace dcp
 
             /******************** METHODS *********************/
             //! Solve all the problems in the order specified by the private member \c solveOrder_
-            /*!
-             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
-             *  member variable needsLinksScanning_. Default value is \c false
-             */
-            virtual void solve (const bool& forceRelinking = false) override;
+            virtual void solve () override;
             
             //! Solve the problem corresponding to the name given [1]
             /*!
              *  \param problemName a string identifying the problem to be solved. If no problem with that name
              *  is found, a warning is issued
-             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
-             *  member variable needsLinksScanning_. Default value is \c false
              */
-            virtual void solve (const std::string& problemName, const bool& forceRelinking = false) override;
-            
-            //! Solve the problem corresponding to the name given [2]
-            /*!
-             *  This method is provided only to allow calls like
-             *  \code
-             *  solve ("foo_problem");
-             *  \endcode
-             *  In this case, the compiler would in fact otherwise call \c solve \c (const \c bool&) which is the 
-             *  best-matching implicit conversion for a parameter of type \c const \c char*. Using this method,
-             *  the version of \c solve that takes a \c std::string is called as expected.
-             */
-            virtual void solve (const char* problemName, const bool& forceRelinking = false) override;
+            virtual void solve (const std::string& problemName) override;
             
         // ---------------------------------------------------------------------------------------------//  
 

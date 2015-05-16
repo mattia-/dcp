@@ -181,35 +181,19 @@ namespace dcp
             virtual dcp::TimeDependentProblem& operator[] (const std::size_t& position) override;
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_. 
-            //! The single problems will be solved calling the \c solve method with \c type argument equal to \c "step"
-            /*!
-             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
-             *  member variable needsLinksScanning_. Default value is \c false
+            /*! 
+             *  The single problems will be solved calling the \c solve method with \c solveType argument equal 
+             *  to \c "step"
              */
-            virtual void solve (const bool& forceRelinking = false) override;
+            virtual void solve () override;
             
-            //! Solve the problem corresponding to the name given [1].
-            //! The problem will be solved calling the \c solve method with \c type argument equal to \c "step"
+            //! Solve the problem corresponding to the name given
             /*!
+             *  The problem will be solved calling the \c solve method with \c type argument equal to \c "step".
              *  \param problemName a string identifying the problem to be solved. If no problem with that name
              *  is found, a warning is issued
-             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
-             *  member variable needsLinksScanning_. Default value is \c false
              */
-            virtual void solve (const std::string& problemName, const bool& forceRelinking = false) override;
-            
-            //! Solve the problem corresponding to the name given [2]
-            //! The problem will be solved calling the \c solve method with \c type argument equal to \c "step"
-            /*!
-             *  This method is provided only to allow calls like
-             *  \code
-             *  solve ("foo_problem");
-             *  \endcode
-             *  In this case, the compiler would in fact otherwise call \c solve \c (const \c bool&) which is the 
-             *  best-matching implicit conversion for a parameter of type \c const \c char*. Using this method,
-             *  the version of \c solve that takes a \c std::string is called as expected.
-             */
-            virtual void solve (const char* problemName, const bool& forceRelinking = false) override;
+            virtual void solve (const std::string& problemName) override;
             
         // ---------------------------------------------------------------------------------------------//  
 

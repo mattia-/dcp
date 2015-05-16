@@ -36,7 +36,7 @@ namespace dcp
     
 
     /******************* METHODS *******************/
-    void EquationSystem::solve (const bool& forceRelinking)
+    void EquationSystem::solve ()
     {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving
@@ -44,7 +44,7 @@ namespace dcp
         
         for (auto problem : solveOrder_)
         {
-            solve (problem, forceRelinking);
+            solve (problem);
         }
         
         dolfin::end ();
@@ -52,7 +52,7 @@ namespace dcp
 
 
 
-    void EquationSystem::solve (const std::string& problemName, const bool& forceRelinking)
+    void EquationSystem::solve (const std::string& problemName)
     {
         dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
 
@@ -70,25 +70,22 @@ namespace dcp
         dcp::AbstractProblem& problem = *(problemIterator->second);
 
         // 1)
-        // if forceRelinking is true, loop over problemsLinks_. 
-        // Remember it is a map. Elements in it are order according to the default
-        // lexicographical ordering
-        if (forceRelinking == true)
-        {
-            dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
+        // loop over problemsLinks_ to reset all links to take changes to coefficients 
+        // into account. Remember it is a map: elements in it are order according to 
+        // the default lexicographical ordering
+        dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
 
-            auto linksIterator = problemsLinks_.begin ();
-            while (linksIterator != problemsLinks_.end () && std::get<0> (linksIterator->first) <= problemName)
+        auto linksIterator = problemsLinks_.begin ();
+        while (linksIterator != problemsLinks_.end () && std::get<0> (linksIterator->first) <= problemName)
+        {
+            if (std::get<0> (linksIterator->first) == problemName)
             {
-                if (std::get<0> (linksIterator->first) == problemName)
-                {
-                    linkProblems (*linksIterator);
-                }
-                ++linksIterator;
+                linkProblems (*linksIterator);
             }
-            
-            dolfin::end ();
+            ++linksIterator;
         }
+
+        dolfin::end ();
 
         // 2)
         // solve problem
@@ -96,12 +93,5 @@ namespace dcp
         problem.solve ();
         
         dolfin::end ();
-    }
-
-
-
-    void EquationSystem::solve (const char* problemName, const bool& forceRelinking)
-    {
-        solve (std::string (problemName), forceRelinking);
     }
 }

@@ -146,7 +146,6 @@ namespace dcp
              *  existence of such problem
              *  \param linkToComponent identifies the component of the solution of the problem indentified by \c linkTo
              *  that should be used as coefficient in the problem identified by \c linkFrom
-             *  \c forceRelinking is true, and not relinked if it is false (but issuing a warning in this case)
              *  \param forceRelinking boolean value (default \c false). If the tuple identifying the coefficient already
              *  appears in the protected member variable \c problemsLinks_, it will be relinked using the \c std::pair
              *  passed as first argument if \c forceRelinking is true, and not relinked if it is false (but issuing a
@@ -211,31 +210,16 @@ namespace dcp
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_
             /*!
-             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
-             *  member variable needsLinksScanning_. Default value is \c false
+             *  This is be performed by calling \c solve() on each problem
              */
-            virtual void solve (const bool& forceRelinking = false) = 0;
+            virtual void solve () = 0;
             
-            //! Solve the problem corresponding to the name given [1]
+            //! Solve the problem corresponding to the name given
             /*!
              *  \param problemName a string identifying the problem to be solved. If no problem with that name
              *  is found, a warning is issued
-             *  \param forceRelinking a boolean flag which, if set to \c true, overrides the current value of protected 
-             *  member variable needsLinksScanning_. Default value is \c false
              */
-            virtual void solve (const std::string& problemName, const bool& forceRelinking = false) = 0;
-            
-            //! Solve the problem corresponding to the name given [2]
-            /*!
-             *  This method is provided only to allow calls like
-             *  \code
-             *  solve ("foo_problem");
-             *  \endcode
-             *  In this case, the compiler would in fact otherwise call \c solve \c (const \c bool&) which is the 
-             *  best-matching implicit conversion for a parameter of type \c const \c char*. Using this method,
-             *  the version of \c solve that takes a \c std::string is called as expected.
-             */
-            virtual void solve (const char* problemName, const bool& forceRelinking = false) = 0;
+            virtual void solve (const std::string& problemName) = 0;
             
             //! Access solution of the problem identified by given name
             /*!

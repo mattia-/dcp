@@ -224,6 +224,6 @@ namespace dcp
     /********************** METHODS ***********************/
     void AbstractSplittingMethod::apply (const std::string& type)
     {
-        differentialSystem_ -> solve (true);
+        differentialSystem_ -> solve ();
     } 
 }

@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OPTIMIZERS_DIRICHLETCONTROLVALUEUPDATER_H_INCLUDE_GUARD
-#define SRC_OPTIMIZERS_DIRICHLETCONTROLVALUEUPDATER_H_INCLUDE_GUARD
+#ifndef SRC_OPTIMIZERS_DIRICHLETCONTROLUPDATER_H_INCLUDE_GUARD
+#define SRC_OPTIMIZERS_DIRICHLETCONTROLUPDATER_H_INCLUDE_GUARD
 
 #include <dcp/differential_problems/EquationSystem.h>
 #include <dolfin/function/GenericFunction.h>
@@ -28,22 +28,22 @@
 
 namespace dcp
 {
-    /*! \class DirichletControlValueUpdater DirichletControlValueUpdater.h
+    /*! \class DirichletControlUpdater DirichletControlUpdater.h
      *  \brief Class to update the value of the control variable in Dirichlet boundary control problems.
      *  
      *  This class is a functor which can be passed to the method \c apply() of any class
-     *  of the \c AbstractOptimizer hierarchy, which will use it to update the value of
+     *  of the \c AbstractDescentMethod hierarchy, which will use it to update the value of
      *  the control parameter in the \c EquationSystem (also passed to the method \c apply()
      *  of the same class) as the optimization proceeds.
      */
-    class DirichletControlValueUpdater
+    class DirichletControlUpdater
     {
         // ---------------------------------------------------------------------------------------------//
 
         public:
             /************************* CONSTRUCTORS ********************/
             //! Default constructor is deleted
-            DirichletControlValueUpdater () = delete;
+            DirichletControlUpdater () = delete;
             
             //! Constructor
             /*! 
@@ -55,10 +55,10 @@ namespace dcp
              *  \param dirichletBoundary the boundary over which the control Dirichlet condition should be enforced
              *  \param functionSpace the function space (possibly a subspace) on which the dirichlet condition should be enforced.
              */
-            DirichletControlValueUpdater (const std::string& problemName, 
-                                          const std::string& dirichletBCName,
-                                          const dolfin::SubDomain& dirichletBoundary,
-                                          std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
+            DirichletControlUpdater (const std::string& problemName, 
+                                     const std::string& dirichletBCName,
+                                     const dolfin::SubDomain& dirichletBoundary,
+                                     std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
 
 
             /************************* OPERATORS ********************/

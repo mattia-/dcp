@@ -17,28 +17,34 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/optimizers/NeumannControlValueUpdater.h>
+#include <dcp/optimizers/DirichletControlUpdater.h>
 #include <dcp/differential_problems/AbstractProblem.h>
+#include <dolfin/fem/DirichletBC.h>
 
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    NeumannControlValueUpdater::NeumannControlValueUpdater (const std::string& problemName, 
-                                                            const std::string& coefficientType,
-                                                            const std::string& coefficientName) :
+    DirichletControlUpdater::DirichletControlUpdater (const std::string& problemName, 
+                                                      const std::string& dirichletBCName,
+                                                      const dolfin::SubDomain& dirichletBoundary,
+                                                      std::shared_ptr<const dolfin::FunctionSpace> functionSpace) : 
         problemName_ (problemName),
-        coefficientType_ (coefficientType),
-        coefficientName_ (coefficientName)
-    {   }
+        dirichletBCName_ (dirichletBCName),
+        dirichletBoundary_ (dirichletBoundary),
+        functionSpace_ (functionSpace)
+    {  }
 
 
 
     /************************* OPERATORS ********************/
-    void NeumannControlValueUpdater::operator() (dcp::EquationSystem& compositeProblem, 
-                                                 const std::shared_ptr <const dolfin::GenericFunction> coefficientValue) const
+    void DirichletControlUpdater::operator() (dcp::EquationSystem& compositeProblem, 
+                                              const dolfin::GenericFunction& dirichletBCValue) const
     {
         dcp::AbstractProblem& problem = compositeProblem [problemName_];
-
-        problem.setCoefficient (coefficientType_, coefficientValue, coefficientName_);
+        
+        problem.removeDirichletBC (dirichletBCName_);
+        
+        problem.addDirichletBC (dolfin::DirichletBC (*(functionSpace_), dirichletBCValue, dirichletBoundary_),
+                                dirichletBCName_);
     }
 }

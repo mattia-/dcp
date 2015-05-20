@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OPTIMIZERS_NEUMANNCONTROLVALUEUPDATER_H_INCLUDE_GUARD
-#define SRC_OPTIMIZERS_NEUMANNCONTROLVALUEUPDATER_H_INCLUDE_GUARD
+#ifndef SRC_OPTIMIZERS_NEUMANNCONTROLUPDATER_H_INCLUDE_GUARD
+#define SRC_OPTIMIZERS_NEUMANNCONTROLUPDATER_H_INCLUDE_GUARD
 
 #include <dcp/differential_problems/EquationSystem.h>
 #include <dolfin/function/GenericFunction.h>
@@ -26,22 +26,22 @@
 
 namespace dcp
 {
-    /*! \class NeumannControlValueUpdater NeumannControlValueUpdater.h
+    /*! \class NeumannControlUpdater NeumannControlUpdater.h
      *  \brief Class to update the value of the control variable in Neumann boundary control problems.
      *  
      *  This class is a functor which can be passed to the method \c apply() of any class
-     *  of the \c AbstractOptimizer hierarchy, which will use it to update the value of
+     *  of the \c AbstractDescentMethod hierarchy, which will use it to update the value of
      *  the control parameter in the \c EquationSystem (also passed to the method \c apply()
      *  of the same class) as the optimization proceeds.
      */
-    class NeumannControlValueUpdater
+    class NeumannControlUpdater
     {
         // ---------------------------------------------------------------------------------------------//
 
         public:
             /************************* CONSTRUCTORS ********************/
             //! Default constructor is deleted
-            NeumannControlValueUpdater () = delete;
+            NeumannControlUpdater () = delete;
             
             //! Constructor
             /*! 
@@ -53,9 +53,9 @@ namespace dcp
              *  \param coefficientName the name of the coefficient representing the control parameter in the problem 
              *  passed as first argument
              */
-            NeumannControlValueUpdater (const std::string& problemName, 
-                                        const std::string& coefficientType,
-                                        const std::string& coefficientName);
+            NeumannControlUpdater (const std::string& problemName, 
+                                   const std::string& coefficientType,
+                                   const std::string& coefficientName);
             
             
             /************************* OPERATORS ********************/
@@ -66,7 +66,7 @@ namespace dcp
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
             void operator() (dcp::EquationSystem& compositeProblem, 
-                             const std::shared_ptr <const dolfin::GenericFunction> coefficientValue) const;
+                             const dolfin::GenericFunction& coefficientValue) const;
  
         // ---------------------------------------------------------------------------------------------//
         

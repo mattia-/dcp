@@ -18,7 +18,6 @@
  */ 
 
 #include <dcp/optimizers/BacktrackingOptimizer.h>
-#include <dcp/optimizers/dotproduct.h>
 #include <dolfin/parameter/Parameters.h>
 #include <dolfin/log/dolfin_log.h>
 #include <dolfin/function/Function.h>
@@ -29,11 +28,12 @@
 #include <functional>
 #include <cmath>
 #include <iomanip>
+#include <dcp/utils/dotproductforms.h>
 
 namespace dcp
 {
     BacktrackingOptimizer::BacktrackingOptimizer ():
-        AbstractOptimizer (),
+        AbstractDescentMethod (),
         dotProductComputer_ ()
     {
         dolfin::begin (dolfin::DBG, "Creating BacktrackingOptimizer object...");
@@ -646,7 +646,7 @@ namespace dcp
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 1D form to compute dot products and norms");
                     std::shared_ptr <dolfin::Form> tmp = nullptr;
-                    tmp.reset (new dotproduct::Form_scalar1D_dotProduct (controlVariableMesh));
+                    tmp.reset (new dotproductforms::Form_scalar1D_dotProduct (controlVariableMesh));
                     return tmp;
                 }
                 else
@@ -666,14 +666,14 @@ namespace dcp
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 2D form to compute dot products and norms");
                     std::shared_ptr <dolfin::Form> tmp = nullptr;
-                    tmp.reset (new dotproduct::Form_scalar2D_dotProduct (controlVariableMesh));
+                    tmp.reset (new dotproductforms::Form_scalar2D_dotProduct (controlVariableMesh));
                     return tmp;
                 }
                 else if (controlVariableRank == 1)
                 {
                     dolfin::log (dolfin::DBG, "Selected vector 2D form to compute dot products and norms");
                     std::shared_ptr <dolfin::Form> tmp = nullptr;
-                    tmp.reset (new dotproduct::Form_vector2D_dotProduct (controlVariableMesh));
+                    tmp.reset (new dotproductforms::Form_vector2D_dotProduct (controlVariableMesh));
                     return tmp;
                 }
                 else
@@ -693,14 +693,14 @@ namespace dcp
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 3D form to compute dot products and norms");
                     std::shared_ptr <dolfin::Form> tmp = nullptr;
-                    tmp.reset (new dotproduct::Form_scalar3D_dotProduct (controlVariableMesh));
+                    tmp.reset (new dotproductforms::Form_scalar3D_dotProduct (controlVariableMesh));
                     return tmp;
                 }
                 else if (controlVariableRank == 1)
                 {
                     dolfin::log (dolfin::DBG, "Selected vector 3D form to compute dot products and norms");
                     std::shared_ptr <dolfin::Form> tmp = nullptr;
-                    tmp.reset (new dotproduct::Form_vector3D_dotProduct (controlVariableMesh));
+                    tmp.reset (new dotproductforms::Form_vector3D_dotProduct (controlVariableMesh));
                     return tmp;
                 }
                 else

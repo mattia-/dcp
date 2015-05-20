@@ -17,14 +17,14 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/optimizers/AbstractOptimizer.h>
+#include <dcp/optimizers/AbstractDescentMethod.h>
 #include <dolfin/log/dolfin_log.h>
 
 namespace dcp
 {
-    AbstractOptimizer::AbstractOptimizer () : 
+    AbstractDescentMethod::AbstractDescentMethod () : 
         parameters ("optimizer_parameters")
     {
-        dolfin::log (dolfin::DBG, "AbstractOptimizer object created");
+        dolfin::log (dolfin::DBG, "AbstractDescentMethod object created");
     }
 }

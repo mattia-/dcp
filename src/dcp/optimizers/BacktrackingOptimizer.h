@@ -20,7 +20,7 @@
 #ifndef SRC_OPTIMIZERS_BACKTRACKINGOPTIMIZER_H_INCLUDE_GUARD
 #define SRC_OPTIMIZERS_BACKTRACKINGOPTIMIZER_H_INCLUDE_GUARD
 
-#include <dcp/optimizers/AbstractOptimizer.h>
+#include <dcp/optimizers/AbstractDescentMethod.h>
 #include <dcp/objective_functional/AbstractObjectiveFunctional.h>
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Function.h>
@@ -33,7 +33,7 @@ namespace dcp
      *  \brief Class that implements the gradient method with backtracking.
      *  
      *  This class provides the implementation of the gradient method as a descent method
-     *  for optimazation of funcionals. It is derived from \c dcp::AbstractOptimizer.
+     *  for optimazation of funcionals. It is derived from \c dcp::AbstractDescentMethod.
      *  Let \f$ J \f$ be the functional to be minimized and \f$ \psi \left( \alpha \right) \f$ the function defined as:
      *  \f[
      *      \psi \left( \alpha \right) = J \left( \mathbf{u} + \alpha\,\mathbf{d} \right)
@@ -66,7 +66,7 @@ namespace dcp
      *  \li \f$ \alpha^{\left(0\right)} = 0.5 \f$
      *  \li \f$ \rho = 0.5 \f$
      */
-    class BacktrackingOptimizer : public dcp::AbstractOptimizer
+    class BacktrackingOptimizer : public dcp::AbstractDescentMethod
     {
         // ---------------------------------------------------------------------------------------------//
         

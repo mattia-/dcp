@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OPTIMIZERS_ABSTRACTOPTIMIZER_H_INCLUDE_GUARD
-#define SRC_OPTIMIZERS_ABSTRACTOPTIMIZER_H_INCLUDE_GUARD
+#ifndef SRC_OPTIMIZERS_ABSTRACTDESCENTMETHOD_H_INCLUDE_GUARD
+#define SRC_OPTIMIZERS_ABSTRACTDESCENTMETHOD_H_INCLUDE_GUARD
 
 #include <dolfin/parameter/Parameters.h>
 #include <dolfin/function/GenericFunction.h>
@@ -30,7 +30,7 @@
 
 namespace dcp
 {
-    /*! \class AbstractOptimizer AbstractOptimizer.h
+    /*! \class AbstractDescentMethod AbstractDescentMethod.h
      *  \brief Abstract base class for descent methods.
      * 
      *  This class defines the base interface for all descent methods.
@@ -39,14 +39,14 @@ namespace dcp
      *  can be populated by derived classes to store concrete methods' settings
      */
     
-    class AbstractOptimizer
+    class AbstractDescentMethod
     {
         // ---------------------------------------------------------------------------------------------//
         
         public:
             /************************* CONSTRUCTORS ********************/
             //! Default constructor
-            AbstractOptimizer ();
+            AbstractDescentMethod ();
             
 
             /************************* DESTRUCTOR ********************/
@@ -54,7 +54,7 @@ namespace dcp
             /*! Default destructor, since members of the class are trivially 
              * destructible.
              */
-            virtual ~AbstractOptimizer () {};
+            virtual ~AbstractDescentMethod () {};
             
             
             /********************** METHODS ***********************/
@@ -76,8 +76,6 @@ namespace dcp
              *  \f[
              *      \mathbf{d}_k = -B_k\,\nabla J_k
              *  \f]
-             *  The default value is the member function \c gradientSearchDirection(), that basically uses the above 
-             *  formula with \f$ B_k = I \f$.
              *  The input arguments for \c searchDirectionComputer are:
              *  \li the dolfin function that will contain the search direction after the function exits
              *  \li the dolfin function containing the gradient

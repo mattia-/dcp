@@ -132,7 +132,7 @@ namespace dcp
              *  Functors for the most common types of update are provided: see \c dcp::DirichletControlUpdater,
              *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
              */
-            virtual void apply (dcp::EquationSystem& problem,
+            virtual void apply (dcp::AbstractEquationSystem& problem,
                                 const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const dcp::AbstractDescentMethod::Updater& updater) override;
@@ -174,7 +174,7 @@ namespace dcp
                                    dolfin::Function& controlVariable,
                                    const dolfin::Function& previousControlVariable,
                                    const dolfin::Function& searchDirection,
-                                   dcp::EquationSystem& problem,
+                                   dcp::AbstractEquationSystem& problem,
                                    const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                    const dcp::AbstractDescentMethod::Updater& updater);
             

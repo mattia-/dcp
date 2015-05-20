@@ -56,7 +56,7 @@ namespace dcp
     
 
 
-    void BacktrackingOptimizer::apply (dcp::EquationSystem& problem,
+    void BacktrackingOptimizer::apply (dcp::AbstractEquationSystem& problem,
                                        const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                        dolfin::Function& initialGuess,
                                        const dcp::AbstractDescentMethod::Updater& updater)
@@ -323,7 +323,7 @@ namespace dcp
                                                    dolfin::Function& controlVariable,
                                                    const dolfin::Function& previousControlVariable,
                                                    const dolfin::Function& searchDirection,
-                                                   dcp::EquationSystem& problem,
+                                                   dcp::AbstractEquationSystem& problem,
                                                    const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                                    const dcp::AbstractDescentMethod::Updater& updater)
     {

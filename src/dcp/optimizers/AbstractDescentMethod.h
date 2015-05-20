@@ -25,7 +25,7 @@
 #include <dolfin/function/Function.h>
 #include <dolfin/function/Expression.h>
 #include <dcp/objective_functional/AbstractObjectiveFunctional.h>
-#include <dcp/differential_problems/EquationSystem.h>
+#include <dcp/differential_problems/AbstractEquationSystem.h>
 #include <dcp/optimizers/GradientSearchDirection.h>
 #include <dcp/utils/DotProduct.h>
 #include <functional>
@@ -47,8 +47,8 @@ namespace dcp
         
         public:
             /************************* TYPEDEFS ************************/
-            typedef std::function<void (dcp::EquationSystem&, const dolfin::GenericFunction&)> Updater;
-            typedef std::function<void (dolfin::Function&, const dolfin::Function&)>           SearchDirectionComputer;
+            typedef std::function<void (dcp::AbstractEquationSystem&, const dolfin::GenericFunction&)> Updater;
+            typedef std::function<void (dolfin::Function&, const dolfin::Function&)> SearchDirectionComputer;
             
             /************************* CONSTRUCTORS ********************/
             //! Default constructor
@@ -82,7 +82,7 @@ namespace dcp
              *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
              *  
              */
-            virtual void apply (dcp::EquationSystem& problem,
+            virtual void apply (dcp::AbstractEquationSystem& problem,
                                 const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const dcp::AbstractDescentMethod::Updater& updater) = 0;

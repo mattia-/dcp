@@ -24,5 +24,6 @@
 #include "DirichletControlValueUpdater.h"
 #include "DistributedControlValueUpdater.h"
 #include "NeumannControlValueUpdater.h"
+#include "GradientSearchDirection.h"
 
 #endif

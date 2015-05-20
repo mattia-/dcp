@@ -55,12 +55,12 @@ namespace dcp
             
             
             /********************** METHODS ***********************/
-            //! Sets the form used to compute dot products and norms. 
+            //! Set the form used to compute dot products and norms. 
             /*!
              *  \param dotProductComputer the form to be stored in the protected member \c dotProductComputer_ and
              *  to be used when \c compute() is called
              */
-            virtual void setDotProductComputer (const std::shared_ptr<dolfin::Form> dotProductComputer);
+            virtual void setDotProductComputer (const dolfin::Form& dotProductComputer);
             
             //! Reset the value of the protected membet \c dotProductComputer_ so that the default form will be used
             virtual void resetDotProductComputer ();
@@ -78,7 +78,7 @@ namespace dcp
              */
             virtual double compute (const dolfin::GenericFunction& first, 
                                     const dolfin::GenericFunction& second,
-                                    const std::shared_ptr<const dolfin::Mesh> mesh = nullptr);
+                                    const dolfin::Mesh& mesh);
             
             //! Function to compute the norm of a \c dolfin::GenericFunction object.
             /*! 
@@ -88,11 +88,12 @@ namespace dcp
              *  the mesh stored in \c function will be used.
              */
             virtual double norm (const dolfin::GenericFunction& function, 
-                                 const std::shared_ptr<const dolfin::Mesh> mesh = nullptr);
+                                 const dolfin::Mesh& mesh);
             
             // ---------------------------------------------------------------------------------------------//
 
         protected:
+            /********************** METHODS ***********************/
             //! Function to get the right dotProductComputer
             /*!
              *  \param first the first function of the dot product
@@ -103,8 +104,9 @@ namespace dcp
              */
             std::shared_ptr<dolfin::Form> getDotProductComputer (const dolfin::GenericFunction& first,
                                                                  const dolfin::GenericFunction& second,
-                                                                 const std::shared_ptr<const dolfin::Mesh> mesh);
+                                                                 const dolfin::Mesh& mesh);
             
+            /********************** MEMBERS ***********************/
             //! The form that will be used to compute the dot product
             /*! 
              *  The default value is \c nullptr, in which case the function will use one  of the forms in 

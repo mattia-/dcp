@@ -26,6 +26,8 @@
 #include <dolfin/function/Expression.h>
 #include <dcp/objective_functional/AbstractObjectiveFunctional.h>
 #include <dcp/differential_problems/EquationSystem.h>
+#include <dcp/optimizers/GradientSearchDirection.h>
+#include <dcp/utils/DotProduct.h>
 #include <functional>
 
 namespace dcp
@@ -44,6 +46,10 @@ namespace dcp
         // ---------------------------------------------------------------------------------------------//
         
         public:
+            /************************* TYPEDEFS ************************/
+            typedef std::function<void (dcp::EquationSystem&, const dolfin::GenericFunction&)> Updater;
+            typedef std::function<void (dolfin::Function&, const dolfin::Function&)>           SearchDirectionComputer;
+            
             /************************* CONSTRUCTORS ********************/
             //! Default constructor
             AbstractDescentMethod ();
@@ -52,7 +58,9 @@ namespace dcp
             /************************* DESTRUCTOR ********************/
             //! Destructor
             /*! Default destructor, since members of the class are trivially 
-             * destructible.
+             *  destructible.
+             *  The protected member will all be initialized with default parameters (see specific members documentation
+             *  for details).
              */
             virtual ~AbstractDescentMethod () {};
             
@@ -69,29 +77,27 @@ namespace dcp
              *  pointer, a function object or a lambda expression. Its input argument are:
              *  \li the composite differential problem to update
              *  \li the new value of the control function
+             * 
+             *  Functors for the most common types of update are provided: see \c dcp::DirichletControlUpdater,
+             *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
              *  
-             *  \param searchDirectionComputer callable object to compute the search direction. It can either be a 
-             *  function pointer, a function object or a lambda expression. In general the search direction is computed
-             *  as: 
-             *  \f[
-             *      \mathbf{d}_k = -B_k\,\nabla J_k
-             *  \f]
-             *  The input arguments for \c searchDirectionComputer are:
-             *  \li the dolfin function that will contain the search direction after the function exits
-             *  \li the dolfin function containing the gradient
              */
             virtual void apply (dcp::EquationSystem& problem,
                                 const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
-                                const std::function 
-                                <
-                                    void (dcp::EquationSystem&, const dolfin::GenericFunction&)
-                                >& updater,
-                                const std::function
-                                <
-                                    void (dolfin::Function&, const dolfin::Function&)
-                                >& searchDirectionComputer) = 0;
+                                const dcp::AbstractDescentMethod::Updater& updater) = 0;
             
+            //! Set the dot product to be used
+            /*!
+             *  \param dotProductForm the form to be used when computing the dot product 
+             */
+            virtual void setDotProduct (const dolfin::Form& dotProductForm);
+            
+            //! Set the way the search direction is computed on every loop iteration during minimization
+            /*!
+             *  \param searchDirectionComputer the object to be used to compute the search direction
+             */
+            virtual void setSearchDirection (const SearchDirectionComputer& searchDirectionComputer);
 
             /********************** VARIABLES ***********************/
             //! the problem parameters
@@ -100,6 +106,21 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//
 
         protected:
+            //! The form that will be used to compute the dot product between the gradient and the search direction. 
+            /*! 
+             *  The default value is on object of type \c dcp::DotProduct default-constructed, which will try to
+             *  determine the right form to use by checking the geometrical dimensions of the input objects. 
+             *  However, sometimes it may be useful to have a user-defined object to compute the dot product.
+             *  o do so, use the function \c setDotProduct
+             */
+            dcp::DotProduct dotProduct_;
+            
+            //! The object used to compute the search direction for every loop iteration.
+            /*!
+             *  By default, it is set equal to an object of type dcp::GradientSearchDirection defaul-constructed,
+             *  but it can be changed using the function \c setSearchDirection
+             */
+             SearchDirectionComputer searchDirectionComputer_;
 
             // ---------------------------------------------------------------------------------------------//
 

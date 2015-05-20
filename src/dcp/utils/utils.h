@@ -21,6 +21,7 @@
 #define SRC_UTILS_UTILS_H_INCLUDE_GUARD
 
 #include "DotProduct.h"
+#include "dotproductforms.h"
 
 #endif
 

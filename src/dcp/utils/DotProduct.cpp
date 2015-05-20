@@ -4,17 +4,18 @@
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    DotProduct::DotProduct () : dotProductComputer_ (nullptr)
+    DotProduct::DotProduct () : 
+        dotProductComputer_ (nullptr)
     {
-        
+        dolfin::log (dolfin::DBG, "DotProduct object created");
     };
     
 
     
     /********************** METHODS ***********************/
-    void DotProduct::setDotProductComputer (const std::shared_ptr<dolfin::Form> dotProductComputer)
+    void DotProduct::setDotProductComputer (const dolfin::Form& dotProductComputer)
     {
-        dotProductComputer_ = dotProductComputer;
+        dotProductComputer_.reset (new dolfin::Form (dotProductComputer));
     }
     
 
@@ -28,7 +29,7 @@ namespace dcp
 
     double DotProduct::compute (const dolfin::GenericFunction& first, 
                                 const dolfin::GenericFunction& second,
-                                const std::shared_ptr<const dolfin::Mesh> mesh)
+                                const dolfin::Mesh& mesh)
     {
         std::shared_ptr<dolfin::Form> dotProductComputer = getDotProductComputer (first, second, mesh);
         
@@ -41,26 +42,30 @@ namespace dcp
 
 
     double DotProduct::norm (const dolfin::GenericFunction& function, 
-                             const std::shared_ptr<const dolfin::Mesh> mesh)
+                             const dolfin::Mesh& mesh)
     {
         return sqrt (compute (function, function, mesh));
     }
     
 
 
+    // ---------------------------------------------------------------------------------------------//
+
+
+
     std::shared_ptr<dolfin::Form> DotProduct::getDotProductComputer (const dolfin::GenericFunction& first,
                                                                      const dolfin::GenericFunction& second,
-                                                                     const std::shared_ptr<const dolfin::Mesh> mesh)
+                                                                     const dolfin::Mesh& mesh)
     {
         if (dotProductComputer_ != nullptr)
         {
-            dolfin::log (dolfin::DBG, "Using protected member variable to compute dot products and norms");
+            dolfin::log (dolfin::DBG, "Using externally set protected member variable to compute dot products and norms");
             return dotProductComputer_;
         }
         else
         {
             // get type of cells in mesh
-            std::string meshCellType = dolfin::CellType::type2string (mesh->type ().cell_type ());
+            std::string meshCellType = dolfin::CellType::type2string (mesh.type ().cell_type ());
             dolfin::log (dolfin::DBG, "Mesh cell type is: %s", meshCellType.c_str ());
 
             // get rank of first function
@@ -88,7 +93,7 @@ namespace dcp
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 1D form to compute dot products and norms");
                     std::shared_ptr <dolfin::Form> tmp = nullptr;
-                    tmp.reset (new dotproductforms::Form_scalar1D_dotProduct (*mesh));
+                    tmp.reset (new dotproductforms::Form_scalar1D_dotProduct (mesh));
                     return tmp;
                 }
                 else

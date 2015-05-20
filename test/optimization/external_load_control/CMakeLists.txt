@@ -13,8 +13,8 @@ PROJECT (${PROJECT_NAME})
 
 SET (CMAKE_SKIP_RPATH TRUE)
 
-FILE (READ "../cmake_header_dir.install" INCLUDE_DIRS)
-FILE (READ "../cmake_lib_dir.install" LINK_DIRS)
+FILE (READ "../../cmake_header_dir.install" INCLUDE_DIRS)
+FILE (READ "../../cmake_lib_dir.install" LINK_DIRS)
 MESSAGE (STATUS "DCP header files are in " ${INCLUDE_DIRS})
 MESSAGE (STATUS "DCP library files are in " ${LINK_DIRS})
 

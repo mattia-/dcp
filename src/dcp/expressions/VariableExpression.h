@@ -210,12 +210,11 @@ namespace dcp
             virtual dcp::VariableExpression* clone () const override;
 
             // ---------------------------------------------------------------------------------------------//  
-        protected:
-            //! The map that associates variables' names and values
-            std::map <std::string, std::shared_ptr<dolfin::GenericFunction> > variables_;
 
+        protected:
 
             // ---------------------------------------------------------------------------------------------//  
+
         private:
             //! The evaluator to use when the \c eval() method is called. Made private so that it cannot be used in
             //! derived classes, since it would make no sense. Derived classes should define their own evaluator

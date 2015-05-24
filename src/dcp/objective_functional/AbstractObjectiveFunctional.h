@@ -91,7 +91,7 @@ namespace dcp
              *  \param coefficientName string identifying the coefficient to set
              */
             virtual void setCoefficient (const std::string& coefficientType, 
-                                         const std::shared_ptr<dolfin::GenericFunction> coefficientValue,
+                                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                          const std::string& coefficientName) = 0;
 
             //! Set integration subdomains for the protected member variable that represent the functional (which must

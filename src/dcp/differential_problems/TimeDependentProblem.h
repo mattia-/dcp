@@ -40,6 +40,7 @@
 #include <dcp/differential_problems/SubdomainType.h>
 #include <dcp/expressions/TimeDependentExpression.h>
 #include <dcp/subdomains/Subdomain.h>
+#include <dcp/time/Time.h>
 
 namespace dcp
 {
@@ -69,10 +70,12 @@ namespace dcp
 
         public:
             /******************* TYPEDEFS **********************/
-            typedef std::pair <std::string, std::string>            TimeDependentCoefficientKey;
-            typedef std::shared_ptr <dcp::TimeDependentExpression>  TimeDependentCoefficientValue;
-            typedef std::string                                     TimeDependentDirichletBCKey;
-            typedef std::tuple <std::shared_ptr <dcp::TimeDependentExpression>, std::shared_ptr <dcp::Subdomain>, int> 
+            typedef std::pair <std::string, std::string>                    TimeDependentCoefficientKey;
+            typedef std::shared_ptr <const dcp::TimeDependentExpression>    TimeDependentCoefficientValue;
+            typedef std::string                                             TimeDependentDirichletBCKey;
+            typedef std::tuple <std::shared_ptr <const dcp::TimeDependentExpression>, 
+                                std::shared_ptr <const dcp::Subdomain>, 
+                                int>
                     TimeDependentDirichletBCValue;
 
 
@@ -80,8 +83,96 @@ namespace dcp
             //! Default constructor is deleted. The class is not default constructable.
             TimeDependentProblem () = delete;
 
-            //!  Constructor
+            //!  Constructor [1]
             /*!
+             *  \param timeSteppingProblem the problem to be solved on each time step
+             *  \param time a pointer to the time object that holds the current time value. Note that, since the class 
+             *  will store a new shared pointer created from the input argument, modifications to the time value made 
+             *  by any object that share this time pointer (be it another \c TimeDependentProblem or a 
+             *  \c TimeDependentExpression) are seen by all other objects created using the same pointer. Note also that
+             *  the time value stored in the object pointed by \c time will be set to \c startTime (see next 
+             *  input argument)
+             *  \param startTime the initial time for the simulation
+             *  \param dt the length of the time step to be used
+             *  \param endTime the final time for the simulation
+             *  \param dtCoefficientTypes an \c initializer_list of strings containing the types of the forms in which 
+             *  the parameter whose name is stored in the member variable \c dtName should be set. 
+             *  These strings will be used to call the function \c setCoefficient
+             *  on the member variable \c timeSteppingProblem_, so they need to be suitable for that kind of problem.
+             *  See the documentation of the function \c setCoefficient in the class \c LinearProblem a
+             *  and \c NonlinearProblem for suitable values for this variable.
+             *  The values contained in \c dtCoefficientTypes will be saved in the member variable \c parameters.
+             *  \param previousSolutionCoefficientTypes an \c initializer_list of strings containing the types of the
+             *  forms in which the parameter whose name is stored in the member variable\c previousSolutionName should
+             *  be set.  These strings will be used to call the function \c setCoefficient on the member variable \c
+             *  timeSteppingProblem_, so they need to be suitable for that kind of problem.  See the documentation of
+             *  the function \c setCoefficient in the class \c LinearProblem a and \c NonlinearProblem for suitable
+             *  values for this variable.
+             *  The values contained in \c previousSolutionCoefficientTypes will be saved in the member variable 
+             *  \c parameters.
+             *  Note that, during the time stepping process, the \c dolfin::Function stored (maybe temporarily) 
+             *  in the protected member \c solution_ will be used to set the coefficient in the equation whose name is
+             *  stored in the parameter \c previous_solution_name.  If such \c dolfin::Function has more than one
+             *  component (i.e. it is a vector function) all of its components will be used by default. To change this
+             *  behaviour, one needs to change the value of the parameter \c time_stepping_solution_component.  This
+             *  parameter's default value is -1 (which is a placeholder that stands for "use all the solution's
+             *  components", but any negative integer will work), but it can be changed to any non-negative integer to
+             *  indicate the specific component the time loop should use.
+             *  \param nTimeSchemeSteps the number of time steps involved in the time stepping problem solution. 
+             *  For example, implicit Euler is a one-step scheme, so \c nTimeSchemeSteps should be set to 1. BDF2, 
+             *  on the other *  hand, is a two-steps time scheme, so \c nTimeSchemeSteps should be set to 2. 
+             *  The default value is 1.
+             *  
+             *  The constructors also sets the following parameters:
+             *      - \c "problem_type" a string describing the problem. Default value: \c "time_dependent"
+             *      - \c "dt_name" the name of the variable representing the time step in the ufl file describing the
+             *        problem. Default value: "dt"
+             *      - \c "previous_solution_name" the name of the variable representing the solution at the previous 
+             *        time step in the ufl file describing the problem. Note that if the problem is a multi-step problem
+             *        (that is, if \c nTimeSchemeSteps is greater than 1) the value of \c "previous_solution_name" will 
+             *        be used as a basename and it will be concatenated with a number ranging from 2 to 
+             *        \c nTimeSchemeSteps.
+             *        This means that in a one-step method the solution at the previous step in the ufl file must have
+             *        the name stored in \c "previous_solution_name", while in a n-step method the previous solutions
+             *        used must be called \c <"previous_solution_name">, \c <"previous_solution_name">_2, 
+             *        \c <"previous_solution_name">_3 and so on.
+             *        Default value for \c "previous_solution_name": "u_old"
+             *      - \c "store_interval" the interval of time steps to store the solution. Basically, the solution will
+             *        be saved to file every \c store_interval time steps. A value less than or equal to 0
+             *        means that the solution should never be stored. Default value: 1
+             *      - \c "plot_interval" the interval of time steps to plot the solution. Basically, the solution will
+             *        be plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
+             *        solution should never be plotted. Default value: 0
+             *      - \c "time_stepping_solution_component" the component of the solution to be used when advancing the 
+             *        time loop (if the solution is vectorial). The function whose name is stored in the parameter
+             *        \c "previous_solution_name" will be set using only the component of \c solution_ set in this 
+             *        parameter. A negative value stands for all the components. Default value: -1
+             *      - \c "pause" if set to \c true, the time stepping loop will stop at each plot and waits for the user
+             *        to close the plot window before proceeding. Default value: \c false
+             *      - \c "dt_coefficient_types" (see input arguments documentation)
+             *      - \c "previous_solution_coefficient_types" (see input arguments documentation)
+             *      - \c "previous_solution_is_set_externally" a boolean flag, if set to \c true the problem will not
+             *        set the coefficient whose name is stored in the parameter \c "previous_solution_name" at every
+             *        time step but will assume that it has already been set externally, for example with a link in
+             *        a \c dcp::TimeDependentEquationSystem. Default value: \c false
+             *  Furthermore, the constructor modifies the \c AbstractProblem parameter \c plot_title and sets its 
+             *  default value to the empty string, so that by default the plot title contains only the value of the 
+             *  current time when the plot method is called.
+             */
+            TimeDependentProblem (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
+                                  const std::shared_ptr<dcp::Time> time,
+                                  const double& startTime,
+                                  const double& dt,
+                                  const double& endTime,
+                                  std::initializer_list<std::string> dtCoefficientTypes,
+                                  std::initializer_list<std::string> previousSolutionCoefficientTypes,
+                                  const unsigned int& nTimeSchemeSteps = 1);
+
+
+            //!  Constructor [2]
+            /*!
+             *  In this constructor, no time object is given, so a new one is created (which will then be 
+             *  unique to this object, at least as long as another object is created using this object's time)
              *  \param timeSteppingProblem the problem to be solved on each time step
              *  \param startTime the initial time for the simulation
              *  \param dt the length of the time step to be used
@@ -157,8 +248,9 @@ namespace dcp
                                   std::initializer_list<std::string> dtCoefficientTypes,
                                   std::initializer_list<std::string> previousSolutionCoefficientTypes,
                                   const unsigned int& nTimeSchemeSteps = 1);
+            
 
-
+            
             /******************* DESTRUCTOR *******************/
             //! Destructor
             /*! 
@@ -213,11 +305,13 @@ namespace dcp
              */
             virtual const std::vector <std::pair <double, dolfin::Function> >& solutionsVector () const;  
             
-            //! Get const reference to the current simulation time
+            //! Get shared pointer to the current simulation time
             /*!
-             *  \return a const reference to \c t_
+             *  \return the shared pointer stored in the protected member \c time_. The shared pointer is returned as
+             *  non-const since one may want to use this function to set a different value for the time or to 
+             *  build a new time dependent object sharing the same time object.
              */
-            virtual const double& time () const;
+            virtual std::shared_ptr<dcp::Time> time () const;
             
             //! Get a reference to the simulation start time
             /*!
@@ -514,21 +608,22 @@ namespace dcp
             /******************* METHODS *******************/
             //! Checks if the time loop has ended
             /*!
-             *  \return \c true if the time loop has ended, that is if \c t_ >= \c parameters["end_time"],
-             *  \c false otherwise
+             *  \return \c true if the time loop has ended, that is if current time is greater than or equal to
+             *  \c parameters["end_time"], \c false otherwise
              */
             virtual bool isFinished ();
             
             //! Clear solutions vector
             /*!
              *  This methos clears the protected member \c solution_ and creates a zero function as its first element,
-             *  as if the class had just been created. Protected member \c t_ will be reset to \c startTime_.
+             *  as if the class had just been created. Protected member \c time_ will be reset to \c startTime_.
              *  Finally, the time value in time dependent Dirichlet BCs will be reset to \c startTime_ as well.
              */  
             virtual void clear ();
              
-            //! Advance time value \c t_. It just performs the increment <tt>t += parameters ["dt"]</tt>.
-            //! This allows us to automatically have a backwards time dependent problem if \c dt is negative.
+            //! Advance time value \c time_. It just calls the increment function <tt>time_ -> add ()</tt> 
+            //! with <tt>parameters ["dt"]</tt> as input argument.
+            //! This allows us to automatically have a backwards time dependent problem if \c dt_ is negative.
             virtual void advanceTime ();
             
             //! Solve the problem
@@ -581,6 +676,18 @@ namespace dcp
             //! The problem to be solved on each time step
             std::shared_ptr <dcp::AbstractProblem> timeSteppingProblem_;
             
+            //! Pointer to the object keeping time for this problem
+            std::shared_ptr <dcp::Time> time_;
+            
+            //! The start time of the simulation
+            double startTime_;
+            
+            //! The time step of the simulation
+            double dt_;
+            
+            //! The end time of the simulation
+            double endTime_;
+            
             //! A map containing the time dependent expressions needed for the time dependent problem
             /*!
              *  If for example a problem had an external force that depends on time, its corresponding coefficient in
@@ -595,20 +702,6 @@ namespace dcp
             //! <time dependent expression, boundary, solution component> identifying the condition itself. 
             //! If the condition should be enforced on all the function space components, \c -1 is used as a placeholder
             std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue> timeDependentDirichletBCs_;
-
-            //! The time during the simulation. It takes into account also previous calls to \c solve since it is
-            //! not reset after such function is called. It can be reset to the value of the parameter \c t0 
-            //! calling the method \c clear
-            double t_;
-            
-            //! The start time of the simulation
-            double startTime_;
-            
-            //! The time step of the simulation
-            double dt_;
-            
-            //! The end time of the simulation
-            double endTime_;
             
             //! The number of steps in the time scheme. For example, implicit Euler method is a 1-step scheme, while
             //! BDF2 is a 2-steps scheme.
@@ -619,9 +712,9 @@ namespace dcp
             //! \c addTimeDependentDirichletBC() is left empty
             int timeDependentDirichletBCsCounter_;
             
-            //! Solve the time stepping problem just once without incrementing \c t_
+            //! Solve the time stepping problem just once without incrementing \c time_
             /*!
-             *  This method solves the time stepping problem one time without incrementing the value stored in \c t_.
+             *  This method solves the time stepping problem one time without incrementing the value stored in \c time_.
              *  It uses the protected members' value to set the problem. The last element of \c solution_ will be used 
              *  as the previous time step solution. To change it, use the method \c setInitialSolution.
              */ 
@@ -633,7 +726,7 @@ namespace dcp
              *  and then stores the solution in the private member \c solution_ (which is inherited from the base
              *  class), adding to its existing elements (see method \c clear to delete any element stored in 
              *  \c solution_).  The last element of \c solution_ will be used as the previous time step solution. To
-             *  change it, use the method \c setInitialSolution.  The protected member \c t_ will be incremented using 
+             *  change it, use the method \c setInitialSolution.  The protected member \c time_ will be incremented using 
              *  the value stored in \c parameters["dt"]
              */
             virtual void step ();
@@ -648,7 +741,7 @@ namespace dcp
             virtual void solveLoop ();
 
             //! Set the time dependent Dirichlet boundary conditions at every step of the solve loop
-            /*
+            /* TODO POSSIAMO AVERE CHE LE TIME DEPENDENT EXPRESSION DELLE DIRICHLET BC DIPENDONO DIRETTAMENTE DA TIME_?
              *  For each \c element in \c timeDependentDirichletBCs_ , it will set the boundary condition's time 
              *  using \c t_ and update the bc stored in timeSteppingProblem_ calling \c removeDirichletBC() and
              *  \c addDirichletBC() on \c timeSteppingProblem_ itself. Note that we have to do this since 
@@ -665,6 +758,7 @@ namespace dcp
             
             //! Reset the time dependent Dirichlet boundary condition pointed by the given iterator
             /*!
+             * TODO POSSIAMO AVERE CHE LE TIME DEPENDENT EXPRESSION DELLE DIRICHLET BC DIPENDONO DIRETTAMENTE DA TIME_?
              *  This method removes the Dirichlet boundary condition from \c timeSteppingProblem_ 
              *  and replaces it with a new one with the same name but value updated to the new value of \c t_
              *  \param bcIterator the iterator pointing to the bc that should be replaced
@@ -674,6 +768,7 @@ namespace dcp
             
             //! Set the time dependent coefficients at every step of the solve loop
             /*
+             * TODO POSSIAMO AVERE CHE LE TIME DEPENDENT EXPRESSION DELLE DIRICHLET BC DIPENDONO DIRETTAMENTE DA TIME_?
              *  For each \c element in \c timeDependentCoefficients_ , it will set the coefficient's time using \c t_ 
              *  and call \c setCoefficient()
              */

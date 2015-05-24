@@ -44,6 +44,13 @@ namespace dcp
     
 
 
+    void Time::add (const double& timeIncrement)
+    {
+        time_ += timeIncrement;
+    }
+
+    
+
     const double& Time::value ()
     {
         return time_;

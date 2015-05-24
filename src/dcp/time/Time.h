@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_TIMES_TIME_H_INCLUDE_GUARD
-#define SRC_TIMES_TIME_H_INCLUDE_GUARD
+#ifndef SRC_TIME_TIME_H_INCLUDE_GUARD
+#define SRC_TIME_TIME_H_INCLUDE_GUARD
 
 namespace dcp
 {
@@ -61,6 +61,12 @@ namespace dcp
              *  \param time the value to which \c time_ should be set
              */
             virtual void setTo (const double& time);
+            
+            //! Add given value to current time
+            /*!
+             *  \param timeIncrement value to add to \c time_
+             */
+            virtual void add (const double& timeIncrement);
             
             //! Get time value
             virtual const double& value ();

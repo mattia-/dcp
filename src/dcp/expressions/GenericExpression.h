@@ -28,7 +28,6 @@
 #include <vector>
 #include <string>
 #include <functional>
-#include <dcp/expressions/DefaultEvaluator.h>
 
 namespace dcp
 {
@@ -83,7 +82,7 @@ namespace dcp
              *  Input arguments:
              *  \param variables map used to initialize the protected member \c variables_
              */
-            GenericExpression (const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables);
+            GenericExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
 
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -94,7 +93,7 @@ namespace dcp
              */         
             explicit GenericExpression 
                 (std::size_t dim,
-                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables);
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -107,7 +106,7 @@ namespace dcp
             GenericExpression 
                 (std::size_t dim0, 
                  std::size_t dim1,
-                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables);
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
 
 
             //! Create tensor-valued expression with given dimension and given map. This will call the appropriate 
@@ -119,7 +118,7 @@ namespace dcp
              */         
             explicit GenericExpression 
                 (std::vector<std::size_t> value_shape,
-                 const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables);
+                 const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables);
 
             //! Default copy constructor
             /*!
@@ -225,7 +224,7 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//  
         protected:
             //! The map that associates variables' names and values
-            std::map <std::string, std::shared_ptr<dolfin::GenericFunction> > variables_;
+            std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> > variables_;
     };
 }
 

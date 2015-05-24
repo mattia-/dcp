@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_TIME_TIME_H_INCLUDE_GUARD
-#define SRC_TIME_TIME_H_INCLUDE_GUARD
+#ifndef SRC_TIME_TIMEINCLUDER_H_INCLUDE_GUARD
+#define SRC_TIME_TIMEINCLUDER_H_INCLUDE_GUARD
 
 #include "Time.h"
 

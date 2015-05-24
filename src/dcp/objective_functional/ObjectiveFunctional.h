@@ -79,8 +79,8 @@ namespace dcp
              *  The functional form will be created too, calling the constructor which takes the mesh
              *  as input.
              */
-            ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh
-                                 const T_Gradient::Evaluator evaluator);
+            ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh,
+                                 const typename T_Gradient::Evaluator& evaluator);
 
 
             //! Constructor from reference [1]
@@ -95,7 +95,7 @@ namespace dcp
              *  as input.
              */
             ObjectiveFunctional (const dolfin::Mesh& mesh,
-                                 const T_Gradient::Evaluator evaluator);
+                                 const typename T_Gradient::Evaluator& evaluator);
 
             //!  Constructor from shared pointer [2]
             /*!
@@ -234,8 +234,8 @@ namespace dcp
     /******************* CONSTRUCTORS *******************/
     template <class T_FunctionalForm, class T_Gradient>
         ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh
-                             const T_Gradient::Evaluator evaluator) :
+        ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh,
+                             const typename T_Gradient::Evaluator& evaluator) :
             AbstractObjectiveFunctional (mesh),
             functional_ (*mesh),
             gradient_ (evaluator)
@@ -250,7 +250,7 @@ namespace dcp
     template <class T_FunctionalForm, class T_Gradient>
         ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
         ObjectiveFunctional (const dolfin::Mesh& mesh,
-                             const T_Gradient::Evaluator evaluator) :
+                             const typename T_Gradient::Evaluator& evaluator) :
             AbstractObjectiveFunctional (mesh),
             functional_ (mesh),
             gradient_ (evaluator)

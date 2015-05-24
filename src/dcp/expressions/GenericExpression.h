@@ -155,7 +155,7 @@ namespace dcp
              *  new entry will be created using \c variableName as key
              */
             virtual void setCoefficient (const std::string& variableName, 
-                                         const std::shared_ptr <dolfin::GenericFunction> value);
+                                         const std::shared_ptr <const dolfin::GenericFunction> value);
 
 
             /******************* GETTERS *******************/

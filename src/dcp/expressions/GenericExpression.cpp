@@ -111,7 +111,7 @@ namespace dcp
 
     /******************* SETTERS *******************/
     void GenericExpression::setCoefficient (const std::string& variableName, 
-                                            const std::shared_ptr <dolfin::GenericFunction> value)
+                                            const std::shared_ptr <const dolfin::GenericFunction> value)
     {
         dolfin::log (dolfin::DBG, "Inserting variable in map...");
 

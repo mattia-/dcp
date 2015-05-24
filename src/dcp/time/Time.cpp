@@ -17,41 +17,42 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/expressions/DefaultEvaluator.h>
+#include <dcp/time/Time.h>
+#include <dolfin/log/dolfin_log.h>
 
 namespace dcp
 {
+    /******************* CONSTRUCTORS *******************/
+    Time::Time (const double& time) : time_ (time)
+    {
+        dolfin::begin (dolfin::DBG, "Building AbstractProblem...");
+        
+        dolfin::log (dolfin::DBG, "Set time value to %f", time_);
+        
+        dolfin::end ();
+        
+        dolfin::log (dolfin::DBG, "Time object created");
+    }
+    
+    
+    
     /******************* METHODS *******************/
-    void DefaultEvaluator::operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x)
+    void Time::setTo (const double& time)
     {
-        
+        time_ = time;
     }
     
 
 
-    void DefaultEvaluator::operator() 
-        (dolfin::Array<double>& values, 
-         const dolfin::Array<double>& x, 
-         const std::map <std::string, std::shared_ptr<dolfin::GenericFunction> >& variables)
+    void Time::add (const double& timeIncrement)
     {
-        
-    }
-    
-    
-
-    void DefaultEvaluator::operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
-    {
-        
+        time_ += timeIncrement;
     }
 
-            
+    
 
-    void DefaultEvaluator::operator() 
-        (dolfin::Array<double>& values, 
-         const dolfin::Array<double>& x, 
-         const double& t,
-         const std::map <std::string, std::shared_ptr<dolfin::GenericFunction> >& variables)
+    const double& Time::value ()
     {
-
+        return time_;
     }
 }

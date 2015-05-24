@@ -20,12 +20,13 @@
 #include <dcp/expressions/VariableExpression.h>
 #include <utility>
 #include <memory>
+#include <dcp/expressions/DefaultEvaluator.h>
 
 namespace dcp
 {
     /******************* CONSTRUCTORS *******************/
     VariableExpression::VariableExpression (const dcp::VariableExpression::Evaluator& evaluator) :
-        dcp::Expression (),
+        dcp::Expression (dcp::DefaultEvaluator ()),
         evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "VariableExpression object created");
@@ -35,7 +36,7 @@ namespace dcp
 
     VariableExpression::VariableExpression (std::size_t dim, 
                                             const dcp::VariableExpression::Evaluator& evaluator) :
-        dcp::Expression (dim),
+        dcp::Expression (dim, dcp::DefaultEvaluator ()),
         evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "VariableExpression object created");
@@ -46,7 +47,7 @@ namespace dcp
 
     VariableExpression::VariableExpression (std::size_t dim0, std::size_t dim1, 
                                             const dcp::VariableExpression::Evaluator& evaluator) :
-        dcp::Expression (dim0, dim1),
+        dcp::Expression (dim0, dim1, dcp::DefaultEvaluator ()),
         evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "VariableExpression object created");
@@ -56,7 +57,7 @@ namespace dcp
 
     VariableExpression::VariableExpression (std::vector<std::size_t> value_shape, 
                                             const dcp::VariableExpression::Evaluator& evaluator) :
-        dcp::Expression (value_shape),
+        dcp::Expression (value_shape, dcp::DefaultEvaluator ()),
         evaluator_ (evaluator)
     { 
         dolfin::log (dolfin::DBG, "VariableExpression object created");
@@ -65,10 +66,10 @@ namespace dcp
 
 
     VariableExpression::VariableExpression 
-        (const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
+        (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
          const dcp::VariableExpression::Evaluator& evaluator) 
         : 
-            dcp::Expression (variables),
+            dcp::Expression (variables, dcp::DefaultEvaluator ()),
             evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "VariableExpression object created");
@@ -78,10 +79,10 @@ namespace dcp
 
     VariableExpression:: VariableExpression 
         (std::size_t dim,
-         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
+         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
          const dcp::VariableExpression::Evaluator& evaluator) 
         :
-            dcp::Expression (dim, variables), 
+            dcp::Expression (dim, variables, dcp::DefaultEvaluator ()), 
             evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "VariableExpression object created");
@@ -92,10 +93,10 @@ namespace dcp
     VariableExpression:: VariableExpression 
         (std::size_t dim0, 
          std::size_t dim1,
-         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
+         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
          const dcp::VariableExpression::Evaluator& evaluator) 
         : 
-            dcp::Expression (dim0, dim1, variables),
+            dcp::Expression (dim0, dim1, variables, dcp::DefaultEvaluator ()),
             evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "VariableExpression object created");
@@ -105,10 +106,10 @@ namespace dcp
 
     VariableExpression:: VariableExpression 
         (std::vector<std::size_t> value_shape,
-         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables,
+         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
          const dcp::VariableExpression::Evaluator& evaluator) 
         : 
-            dcp::Expression (value_shape, variables),
+            dcp::Expression (value_shape, variables, dcp::DefaultEvaluator ()),
             evaluator_ (evaluator)
     {
         dolfin::log (dolfin::DBG, "VariableExpression object created");

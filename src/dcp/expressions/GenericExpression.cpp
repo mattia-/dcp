@@ -62,7 +62,7 @@ namespace dcp
 
 
     GenericExpression::GenericExpression 
-        (const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables) 
+        (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables) 
         :
             dolfin::Expression (),
             variables_ (variables)
@@ -74,7 +74,7 @@ namespace dcp
 
     GenericExpression:: GenericExpression 
         (std::size_t dim,
-         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables)
+         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables)
         :
             dolfin::Expression (dim), 
             variables_ (variables)
@@ -87,7 +87,7 @@ namespace dcp
     GenericExpression:: GenericExpression 
         (std::size_t dim0, 
          std::size_t dim1,
-         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables)
+         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables)
         : 
             dolfin::Expression (dim0, dim1),
             variables_ (variables)
@@ -99,7 +99,7 @@ namespace dcp
 
     GenericExpression:: GenericExpression 
         (std::vector<std::size_t> value_shape,
-         const std::map <std::string, std::shared_ptr <dolfin::GenericFunction>>& variables)
+         const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables)
         : 
             dolfin::Expression (value_shape),
             variables_ (variables)

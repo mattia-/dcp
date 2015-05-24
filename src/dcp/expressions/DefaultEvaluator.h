@@ -31,9 +31,11 @@ namespace dcp
     /*! class DefaultEvaluator DefaultEvaluator.h
      *  \brief The default evaluator to be used in \c dcp::VariableExpression
      *  
-     *  This class is just a functor whose call operator issues a \c dolfin_error, to mimic
-     *  the behaviour of a \c dolfin::Expression when a \c dcp::VariableExpression is neither 
-     *  derived from nor is built passing a functor to its constructor
+     *  This class is just a functor whose call operator does nothing. It is used for the creation of 
+     *  children classes in the \c dcp::Expression hierarchy, since a different private member \c Evaluator_ 
+     *  is declared in each derived class to fit the right function wrapper signature. 
+     *  When the child class is created, the parent evaluator still needs to be set, and that's where this 
+     *  class comes in handy.
      *  
      */
     class DefaultEvaluator

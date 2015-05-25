@@ -175,17 +175,6 @@ namespace dcp
 
 
             /******************* METHODS *******************/
-            //! Evaluate at given point in given cell. Overrides method in \c dolfin::Expression
-            /*!
-             *  Input arguments are:
-             *  \param values array that will contain the evaluated function at the given point
-             *  \param x the coordinates of the point
-             *  \param cell the cell containing the point
-             */
-            virtual void eval (dolfin::Array<double>& values, 
-                               const dolfin::Array<double>& x, 
-                               const ufc::cell& cell) const override;
-            
             //! Evaluate at given point in given cell
             /*!
              *  Input arguments are:

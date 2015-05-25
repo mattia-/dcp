@@ -141,16 +141,6 @@ namespace dcp
 
 
     /******************* METHODS *******************/
-    void TimeDependentExpression::eval (dolfin::Array<double>& values, 
-                                        const dolfin::Array<double>& x, 
-                                        const ufc::cell& cell) const
-    {
-        // redirect to simple eval
-        this -> eval (values, x);
-    }
-
-
-
     void TimeDependentExpression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
     {
         evaluator_ (values, x, time_ -> value ());

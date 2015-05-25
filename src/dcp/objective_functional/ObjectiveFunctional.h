@@ -215,8 +215,8 @@ namespace dcp
             //! The functional itself
             T_FunctionalForm functional_;
 
-            //! The gradient of the functional
-            T_Gradient gradient_;
+            //! The gradient of the functional. Stored as a shared_ptr to the base class so that polymorphism applies
+            std::shared_ptr<dcp::GenericExpression> gradient_;
 
             // ---------------------------------------------------------------------------------------------//
 
@@ -238,7 +238,7 @@ namespace dcp
                              const typename T_Gradient::Evaluator& evaluator) :
             AbstractObjectiveFunctional (mesh),
             functional_ (*mesh),
-            gradient_ (evaluator)
+            gradient_ (new T_Gradient (evaluator))
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
         dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
@@ -253,7 +253,7 @@ namespace dcp
                              const typename T_Gradient::Evaluator& evaluator) :
             AbstractObjectiveFunctional (mesh),
             functional_ (mesh),
-            gradient_ (evaluator)
+            gradient_ (new T_Gradient (evaluator))
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
         dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
@@ -269,7 +269,7 @@ namespace dcp
                              const T_FunctionalForm& functional) : 
             AbstractObjectiveFunctional (mesh),
             functional_ (functional),
-            gradient_ (gradient) // TODO remember it is a shallow copy
+            gradient_ (new T_Gradient (gradient)) // TODO remember it is a shallow copy
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
         dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
@@ -285,7 +285,7 @@ namespace dcp
                              const T_FunctionalForm& functional) : 
             AbstractObjectiveFunctional (mesh),
             functional_ (functional),
-            gradient_ (gradient) // TODO remember it is a shallow copy
+            gradient_ (new T_Gradient (gradient)) // TODO remember it is a shallow copy
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
         dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
@@ -302,7 +302,7 @@ namespace dcp
                                          rhs.mesh_ : 
                                          std::shared_ptr<const dolfin::Mesh> (new dolfin::Mesh (*(rhs.mesh_)))),
             functional_ (rhs.functional_),
-            gradient_ (rhs.gradient_) // TODO remember it is a shallow copy
+            gradient_ (new T_Gradient (gradient)) // TODO remember it is a shallow copy
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional ...");
         dolfin::log (dolfin::DBG, "Copy of ObjectiveFunctional created");
@@ -325,7 +325,7 @@ namespace dcp
         const T_Gradient& ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
         gradient () const
         {
-            return gradient_;
+            return *(std::dynamic_pointer_cast<T_Gradient> (gradient_));
         }
 
 
@@ -346,7 +346,7 @@ namespace dcp
             else if (coefficientType == "gradient")
             {
                 dolfin::begin (dolfin::DBG, "Setting gradient coefficient \"%s\"...", coefficientName.c_str ());
-                gradient_.setCoefficient (coefficientName, coefficientValue);
+                gradient_ -> setCoefficient (coefficientName, coefficientValue);
                 dolfin::end ();
             }
             else
@@ -402,7 +402,7 @@ namespace dcp
                           const dolfin::Array<double>& x, 
                           const ufc::cell& cell) const
         {
-            gradient_.eval (values, x, cell);
+            gradient_ -> eval (values, x, cell);
         }
 
 
@@ -412,7 +412,7 @@ namespace dcp
         evaluateGradient (dolfin::Array<double>& values, 
                           const dolfin::Array<double>& x) const
         {
-            gradient_.eval (values, x);
+            gradient_ -> eval (values, x);
         }
 }
 #endif

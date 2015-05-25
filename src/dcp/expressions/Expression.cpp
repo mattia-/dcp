@@ -106,16 +106,6 @@ namespace dcp
 
 
     /******************* METHODS *******************/
-    void Expression::eval (dolfin::Array<double>& values, 
-                           const dolfin::Array<double>& x, 
-                           const ufc::cell& cell) const
-    {
-        // redirect to simple eval
-        this -> eval (values, x);
-    }
-
-    
-
     void Expression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
     {
         evaluator_ (values, x);

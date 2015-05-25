@@ -29,18 +29,18 @@
 #include "adjoint.h"
 #include "objective_functional.h"
 
-namespace objective_functional
+class GradientEvaluator
 {
-    class Gradient : public dcp::VariableExpression
-    {
-        void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+    public:
+        void operator() (dolfin::Array<double>& values, 
+                         const dolfin::Array<double>& x,
+                         const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables)
         {
-            evaluateVariable ("p", values, x);
+            variables.find("p")->second -> eval (values, x);
             values[0] = -values[0];
             values[1] = -values[1]; // TODO check gradient expression
         }
-    };
-}
+};
 
 class ProblemUpdater
 {
@@ -133,8 +133,8 @@ int main (int argc, char* argv[])
     // OBJECTIVE FUNCTIONAL 
     // ====================
     // define functional
-    dcp::ObjectiveFunctional <objective_functional::Form_J, objective_functional::Gradient>
-        objectiveFunctional (mesh);
+    dcp::ObjectiveFunctional <objective_functional::Form_J, dcp::VariableExpression>
+        objectiveFunctional (mesh, GradientEvaluator ());
     
     // control variable 
     dolfin::Function g (V);
@@ -165,7 +165,7 @@ int main (int argc, char* argv[])
     // define optimizer
     dcp::BacktrackingOptimizer backtrackingOptimizer;
     backtrackingOptimizer.parameters ["output_file_name"] = "results.txt";
-    backtrackingOptimizer.parameters ["relative_increment_tolerance"] = 1e-3;
+    backtrackingOptimizer.parameters ["max_minimization_iterations"] = 1000;
     
     backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater);
             
@@ -180,29 +180,12 @@ int main (int argc, char* argv[])
     // ===============
     // POST PROCESSING
     // ===============
-    dolfin::VTKPlotter meshPlotter (dolfin::reference_to_no_delete_pointer (mesh));
-    meshPlotter.parameters["title"] = "Mesh";
-    meshPlotter.plot ();
-    
-    dolfin::VTKPlotter solutionPlotter (dolfin::reference_to_no_delete_pointer (problems.solution ("primal")));
-    solutionPlotter.parameters["title"] = "Solution of the problem with computed control";
-    solutionPlotter.parameters["input_keys"] = "m";
-    solutionPlotter.plot ();
-    
-    dolfin::VTKPlotter controlPlotter (dolfin::reference_to_no_delete_pointer (g));
-    controlPlotter.parameters["title"] = "Control";
-    controlPlotter.plot ();
-    
-    dolfin::VTKPlotter controlRegionPlotter (dolfin::reference_to_no_delete_pointer (meshCells));
-    controlRegionPlotter.parameters["mode"]  = "color";
-    controlRegionPlotter.parameters["title"] = "Control region";
-    controlRegionPlotter.plot ();
-    
-    dolfin::VTKPlotter differencePlotter (dolfin::reference_to_no_delete_pointer (difference));
-    differencePlotter.parameters["title"] = "Difference between target and reconstructed solution";
-    differencePlotter.parameters["mode"]  = "color";
-    differencePlotter.plot ();
-    
+    dolfin::plot (mesh, "Mesh");
+    dolfin::plot (problems.solution ("primal"), "Primal Solution");
+    dolfin::plot (target, "Target Solution");
+    dolfin::plot (g, "Control");
+    dolfin::plot (meshCells, "Control region");
+    dolfin::plot (difference, "Difference between target and recovered");
     dolfin::interactive ();
     
     return 0;

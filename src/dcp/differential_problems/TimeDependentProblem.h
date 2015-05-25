@@ -741,7 +741,7 @@ namespace dcp
             virtual void solveLoop ();
 
             //! Set the time dependent Dirichlet boundary conditions at every step of the solve loop
-            /* TODO POSSIAMO AVERE CHE LE TIME DEPENDENT EXPRESSION DELLE DIRICHLET BC DIPENDONO DIRETTAMENTE DA TIME_?
+            /*! 
              *  For each \c element in \c timeDependentDirichletBCs_ , it will set the boundary condition's time 
              *  using \c t_ and update the bc stored in timeSteppingProblem_ calling \c removeDirichletBC() and
              *  \c addDirichletBC() on \c timeSteppingProblem_ itself. Note that we have to do this since 
@@ -758,7 +758,6 @@ namespace dcp
             
             //! Reset the time dependent Dirichlet boundary condition pointed by the given iterator
             /*!
-             * TODO POSSIAMO AVERE CHE LE TIME DEPENDENT EXPRESSION DELLE DIRICHLET BC DIPENDONO DIRETTAMENTE DA TIME_?
              *  This method removes the Dirichlet boundary condition from \c timeSteppingProblem_ 
              *  and replaces it with a new one with the same name but value updated to the new value of \c t_
              *  \param bcIterator the iterator pointing to the bc that should be replaced
@@ -767,12 +766,14 @@ namespace dcp
                 (std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue>::iterator bcIterator);
             
             //! Set the time dependent coefficients at every step of the solve loop
-            /*
-             * TODO POSSIAMO AVERE CHE LE TIME DEPENDENT EXPRESSION DELLE DIRICHLET BC DIPENDONO DIRETTAMENTE DA TIME_?
+            /*!
              *  For each \c element in \c timeDependentCoefficients_ , it will set the coefficient's time using \c t_ 
              *  and call \c setCoefficient()
              */
             virtual void setTimeDependentCoefficients ();
+            
+            //! Set the previous solution coefficients at every step of the solve loop
+            virtual void setPreviousSolutionsCoefficients ();
             
             //! Method to print a warning if \c isFinished() returns \c true. It is just useful to make \c solve()
             //! method clearer to read

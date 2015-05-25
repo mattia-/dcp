@@ -589,50 +589,6 @@ namespace dcp
     void TimeDependentProblem::advanceTime ()
     {
         time_ -> add (dt_);
-        
-        std::vector<std::string> previousSolutionCoefficientTypes;
-        parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
-        int timeSteppingSolutionComponent = parameters ["time_stepping_solution_component"];
-        
-        bool previousSolutionIsSetExternally = parameters ["previous_solution_is_set_externally"];
-        if (previousSolutionIsSetExternally == false)
-        {
-            dolfin::begin (dolfin::DBG, "Setting previous solution coefficients...");
-            for (unsigned int step = 1; step <= nTimeSchemeSteps_; ++step)
-            {
-                std::string previousSolutionName = parameters ["previous_solution_name"];
-                // if step > 1, append step number to the name of the coefficient to set 
-                if (step > 1)
-                {
-                    previousSolutionName = previousSolutionName + "_" + std::to_string (step);
-                }
-                
-                // get the index of the function in solution_ to use to set the coefficient
-                unsigned int index = solution_.size () - step;
-                for (auto& previousSolutionCoefficientType : previousSolutionCoefficientTypes)
-                {
-                    if (timeSteppingSolutionComponent >= 0)
-                    {
-                        timeSteppingProblem_ -> setCoefficient 
-                            (previousSolutionCoefficientType, 
-                             dolfin::reference_to_no_delete_pointer ((solution_ [index].second) [timeSteppingSolutionComponent]), 
-                             previousSolutionName);
-                    }
-                    else
-                    {
-                        timeSteppingProblem_ -> setCoefficient 
-                            (previousSolutionCoefficientType, 
-                             dolfin::reference_to_no_delete_pointer (solution_ [index].second),
-                             previousSolutionName);
-                    }
-                } 
-            }
-            dolfin::end ();
-        }
-        else
-        {
-            dolfin::log (dolfin::DBG, "Skipping previous solution setting loop since it is set externally.");
-        }
     }
 
 
@@ -836,6 +792,8 @@ namespace dcp
 
         setTimeDependentDirichletBCs ();
 
+        setPreviousSolutionsCoefficients ();
+        
         dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
         timeSteppingProblem_->solve ();
         dolfin::end ();
@@ -988,8 +946,57 @@ namespace dcp
         dolfin::end ();
     }
     
-            
     
+
+    void TimeDependentProblem::setPreviousSolutionsCoefficients ()
+    {
+        std::vector<std::string> previousSolutionCoefficientTypes;
+        parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
+        int timeSteppingSolutionComponent = parameters ["time_stepping_solution_component"];
+        
+        bool previousSolutionIsSetExternally = parameters ["previous_solution_is_set_externally"];
+        if (previousSolutionIsSetExternally == false)
+        {
+            dolfin::begin (dolfin::DBG, "Setting previous solution coefficients...");
+            for (unsigned int step = 1; step <= nTimeSchemeSteps_; ++step)
+            {
+                std::string previousSolutionName = parameters ["previous_solution_name"];
+                // if step > 1, append step number to the name of the coefficient to set 
+                if (step > 1)
+                {
+                    previousSolutionName = previousSolutionName + "_" + std::to_string (step);
+                }
+                
+                // get the index of the function in solution_ to use to set the coefficient
+                unsigned int index = solution_.size () - step;
+                for (auto& previousSolutionCoefficientType : previousSolutionCoefficientTypes)
+                {
+                    if (timeSteppingSolutionComponent >= 0)
+                    {
+                        timeSteppingProblem_ -> setCoefficient 
+                            (previousSolutionCoefficientType, 
+                             dolfin::reference_to_no_delete_pointer ((solution_ [index].second) [timeSteppingSolutionComponent]), 
+                             previousSolutionName);
+                    }
+                    else
+                    {
+                        timeSteppingProblem_ -> setCoefficient 
+                            (previousSolutionCoefficientType, 
+                             dolfin::reference_to_no_delete_pointer (solution_ [index].second),
+                             previousSolutionName);
+                    }
+                } 
+            }
+            dolfin::end ();
+        }
+        else
+        {
+            dolfin::log (dolfin::DBG, "Skipping previous solution setting loop since it is set externally.");
+        }
+    }
+
+
+
     void TimeDependentProblem::printFinishedWarning ()
     {
         dolfin::warning ("No time iteration performed in solve() function. End time already reached.");

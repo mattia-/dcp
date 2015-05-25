@@ -37,31 +37,25 @@ namespace navierstokes
     // the external force is divided into two parts: f = f1 * rho + f2
     // this is because rho is a solution, and there is no way to link it
     // to a TimeDependentExpression
-    class FirstExternalLoad : public dcp::TimeDependentExpression
+    class FirstExternalLoad
     {
         public:
-            FirstExternalLoad () : TimeDependentExpression (2) { }
-        
-            void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override
+            void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t) const
             {
                 values[0] =  x[1] * sin (t) - x[0] * cos (t) * cos (t);
                 values[1] = -x[0] * sin (t) - x[1] * cos (t) * cos (t);
             }
     }; 
-    
 
-    class SecondExternalLoad : public dcp::TimeDependentExpression
+    class SecondExternalLoad
     {
         public:
-            SecondExternalLoad () : TimeDependentExpression (2) { }
-
-            void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override
+            void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t) const
             {
                 values[0] =  cos (x[0]) * sin (x[1]) * sin (t);
                 values[1] =  sin (x[0]) * cos (x[1]) * sin (t);
             }
     }; 
-    
     
     class DirichletBoundaryEvaluator
     { 
@@ -154,16 +148,16 @@ int main (int argc, char* argv[])
 
     // set initial solutions
     // first step
-    exactRho.setTime (t0);
-    exactU.setTime (t0);
-    exactP.setTime (t0);
+    exactRho.time () -> setTo (t0);
+    exactU.time () -> setTo (t0);
+    exactP.time () -> setTo (t0);
     guermondSalgadoMethod.setInitialSolution ("density_problem", exactRho, 2);
     guermondSalgadoMethod.setInitialSolution ("velocity_problem", exactU, 2);
     
     // second step
-    exactRho.setTime (t0+dt);
-    exactU.setTime (t0+dt);
-    exactP.setTime (t0+dt);
+    exactRho.time () -> setTo (t0+dt);
+    exactU.time () -> setTo (t0+dt);
+    exactP.time () -> setTo (t0+dt);
     guermondSalgadoMethod.setInitialSolution ("density_problem", exactRho, 1);
     guermondSalgadoMethod.setInitialSolution ("velocity_problem", exactU, 1);
     guermondSalgadoMethod.setInitialSolution ("pressure_update_problem", exactP, 1);
@@ -177,8 +171,8 @@ int main (int argc, char* argv[])
 
     
     // define time dependent external loads
-    navierstokes::FirstExternalLoad f1;
-    navierstokes::SecondExternalLoad f2;
+    dcp::TimeDependentExpression f1 (2, navierstokes::FirstExternalLoad ());
+    dcp::TimeDependentExpression f2 (2, navierstokes::SecondExternalLoad ());
     guermondSalgadoMethod.problem ("velocity_problem").addTimeDependentCoefficient 
         ("f1", 
          "linear_form", 
@@ -252,9 +246,9 @@ int main (int argc, char* argv[])
 //        dolfin::plot (compP, "p, time = " + std::to_string (pTime)); 
 //        dolfin::interactive ();
 
-        exactRho.setTime (rhoTime);
-        exactU.setTime (uTime);
-        exactP.setTime (pTime);;
+        exactRho.time () -> setTo (rhoTime);
+        exactU.time () -> setTo (uTime);
+        exactP.time () -> setTo (pTime);;
         
         densityL2SquaredErrorComputer.exact_rho = exactRho;
         velocityL2SquaredErrorComputer.exact_u = exactU;

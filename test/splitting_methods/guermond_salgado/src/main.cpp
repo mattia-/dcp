@@ -37,31 +37,25 @@ namespace navierstokes
     // the external force is divided into two parts: f = f1 * rho + f2
     // this is because rho is a solution, and there is no way to link it
     // to a TimeDependentExpression
-    class FirstExternalLoad : public dcp::TimeDependentExpression
+    class FirstExternalLoad
     {
         public:
-            FirstExternalLoad () : TimeDependentExpression (2) { }
-        
-            void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override
+            void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t) const
             {
                 values[0] =  x[1] * sin (t) - x[0] * cos (t) * cos (t);
                 values[1] = -x[0] * sin (t) - x[1] * cos (t) * cos (t);
             }
     }; 
     
-
-    class SecondExternalLoad : public dcp::TimeDependentExpression
+    class SecondExternalLoad
     {
         public:
-            SecondExternalLoad () : TimeDependentExpression (2) { }
-
-            void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override
+            void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t) const
             {
                 values[0] =  cos (x[0]) * sin (x[1]) * sin (t);
                 values[1] =  sin (x[0]) * cos (x[1]) * sin (t);
             }
     }; 
-    
     
     class DirichletBoundaryEvaluator
     { 
@@ -113,7 +107,7 @@ int main (int argc, char* argv[])
     parameters.add ("N", 50);
     parameters.parse (argc, argv);
         
-//    dolfin::set_log_level (dolfin::DBG);
+    // dolfin::set_log_level (dolfin::DBG);
     // create mesh and finite element space
     std::cout << "Create mesh and finite element space..." << std::endl;
     mshr::Circle circle (dolfin::Point (0.0, 0.0), 1);
@@ -137,11 +131,11 @@ int main (int argc, char* argv[])
     
     // exact solution
     dcp::TimeDependentExpression exactRho ((exact_solutions::RhoEvaluator ()));
-    exactRho.setTime (t0);
+    exactRho.time () -> setTo (t0);
     dcp::TimeDependentExpression exactU (2, exact_solutions::UEvaluator ());
-    exactU.setTime (t0);
+    exactU.time () -> setTo (t0);
     dcp::TimeDependentExpression exactP ((exact_solutions::PEvaluator ()));
-    exactP.setTime (t0);
+    exactP.time () -> setTo (t0);
 
     // define the problems
     std::cout << "Define the problem..." << std::endl;
@@ -170,8 +164,8 @@ int main (int argc, char* argv[])
 
     
     // define time dependent external loads
-    navierstokes::FirstExternalLoad f1;
-    navierstokes::SecondExternalLoad f2;
+    dcp::TimeDependentExpression f1 (2, navierstokes::FirstExternalLoad ());
+    dcp::TimeDependentExpression f2 (2, navierstokes::SecondExternalLoad ());
     guermondSalgadoMethod.problem ("velocity_problem").addTimeDependentCoefficient 
         ("f1", 
          "linear_form", 
@@ -248,9 +242,9 @@ int main (int argc, char* argv[])
 //        dolfin::interactive ();
 //        dolfin::info (computedP[i].second, true);
 
-        exactRho.setTime (time);
-        exactU.setTime (time);
-        exactP.setTime (time);
+        exactRho.time () -> setTo (time);
+        exactU.time () -> setTo (time);
+        exactP.time () -> setTo (time);
         
         densityL2SquaredErrorComputer.exact_rho = exactRho;
         velocityL2SquaredErrorComputer.exact_u = exactU;

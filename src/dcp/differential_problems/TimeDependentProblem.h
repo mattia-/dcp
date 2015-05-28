@@ -120,7 +120,12 @@ namespace dcp
              *  indicate the specific component the time loop should use.
              *  \param nTimeSchemeSteps the number of time steps involved in the time stepping problem solution. 
              *  For example, implicit Euler is a one-step scheme, so \c nTimeSchemeSteps should be set to 1. BDF2, 
-             *  on the other *  hand, is a two-steps time scheme, so \c nTimeSchemeSteps should be set to 2. 
+             *  on the other hand, is a two-steps time scheme, so \c nTimeSchemeSteps should be set to 2. 
+             *  When the solution vector is created in the constructor it has size equal to \c nTimeSchemeSteps, and the
+             *  times stored in the pairs (time, solution) for the initial solutions are
+             *  <tt>startTime - (nTimeSchemeSteps - 1) * dt, startTime - (nTimeSchemeSteps - 2) * dt, ..., startTime</tt>.
+             *  That is, it is assumed that the initial solutions are associated with times lower than or equal to
+             *  \c startTime.
              *  The default value is 1.
              *  
              *  The constructors also sets the following parameters:
@@ -317,19 +322,19 @@ namespace dcp
             /*!
              *  \return a reference to \c startTime_
              */
-            virtual double& startTime ();
+            virtual const double& startTime ();
             
             //! Get a reference to the simulation time step
             /*!
              *  \return a reference to \c dt_
              */
-            virtual double& dt ();
+            virtual const double& dt ();
             
             //! Get a reference to the simulation end time
             /*!
              *  \return a reference to \c endTime_
              */
-            virtual double& endTime ();
+            virtual const double& endTime ();
             
             //! Get const reference to the problem's time stepping problem
             /*! 
@@ -344,11 +349,10 @@ namespace dcp
             //! solutions stored in \c solutions_ which will then be used to advance in time.
             /*!
              *  \param initialSolution the function to be used as initial solution
-             *  \param stepNumber the number of steps to go back to set the initial solution. This is only useful 
-             *  for multisteps method, where more than one previous solution is needed to compute the solution at the
-             *  current time step. This number, if greater than one, will be concatenated to \c "previous_solution_name"
-             *  to form the coefficient name to be set, as it was described in the constructor documentation.
-             *  The default value is 1, that means that the input function should be used to set the last solution.
+             *  \param stepNumber the number of steps to go back to set the initial solution. This is mostly useful for
+             *  multistep method, where more than one initial solution is needed.
+             *  The default value is 1, that means that the input function should be used to set the solution at the
+             *  last time step before the one that is being currently considered.
              */
             virtual void setInitialSolution (const dolfin::Function& initialSolution, 
                                              const unsigned int& stepNumber = 1);
@@ -358,11 +362,10 @@ namespace dcp
             //! solutions stored in \c solutions_ which will then be used to advance in time.
             /*!
              *  \param initialSolution the function to be used as initial solution
-             *  \param stepNumber the number of steps to go back to set the initial solution. This is only useful 
-             *  for multisteps method, where more than one previous solution is needed to compute the solution at the
-             *  current time step. This number, if greater than one, will be concatenated to \c "previous_solution_name"
-             *  to form the coefficient name to be set, as it was described in the constructor documentation.
-             *  The default value is 1, that means that the input expression should be used to set the last solution.
+             *  \param stepNumber the number of steps to go back to set the initial solution. This is mostly useful for
+             *  multistep method, where more than one initial solution is needed.
+             *  The default value is 1, that means that the input expression should be used to set the solution at the
+             *  last time step before the one that is being currently considered.
              */
             virtual void setInitialSolution (const dolfin::Expression& initialSolution, 
                                              const unsigned int& stepNumber = 1);

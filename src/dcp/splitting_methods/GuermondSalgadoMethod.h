@@ -436,6 +436,9 @@ namespace dcp
         
         dolfin::begin (dolfin::DBG, "Creating the time stepping linear problems...");
 
+        // define chorin temam system time
+        std::shared_ptr<dcp::Time> time (new dcp::Time (startTime));
+
         // define the problems
         // 1) density problem
         dolfin::begin (dolfin::DBG, "Creating density problem...");
@@ -445,6 +448,7 @@ namespace dcp
 
         std::shared_ptr <dcp::TimeDependentProblem> densityProblem
             (new dcp::TimeDependentProblem (timeSteppingDensityProblem,
+                                            time,
                                             startTime,
                                             dt,
                                             endTime,
@@ -466,6 +470,7 @@ namespace dcp
 
         std::shared_ptr <dcp::TimeDependentProblem> velocityProblem
             (new dcp::TimeDependentProblem (timeSteppingVelocityProblem,
+                                            time,
                                             startTime,
                                             dt,
                                             endTime,
@@ -489,6 +494,7 @@ namespace dcp
 
         std::shared_ptr <dcp::TimeDependentProblem> pressureCorrectionProblem
             (new dcp::TimeDependentProblem (timeSteppingPressureCorrectionProblem,
+                                            time,
                                             startTime,
                                             dt,
                                             endTime,
@@ -510,29 +516,14 @@ namespace dcp
              T_PressureUpdateLinearForm> 
              (pressureFunctionSpace_));
 
-        // if nTimeSchemeSteps == 2, the problem pressure update problem is created with a start time of startTime+dt, 
-        // because otherwise the time would be skewed with respect to the other problems, since they all use two-steps 
-        // time schemes (see also dcp::TimeDependentProblem constructor to see why multi-step problems have an 
-        // incremented start time)
-        std::shared_ptr <dcp::TimeDependentProblem> pressureUpdateProblem = nullptr;
-        if (nTimeSchemeSteps == 1)
-        {
-            pressureUpdateProblem.reset (new dcp::TimeDependentProblem (timeSteppingPressureUpdateProblem,
-                                                                        startTime,
-                                                                        dt,
-                                                                        endTime,
-                                                                        {},
-                                                                        {"linear_form"}));
-        }
-        else
-        {
-            pressureUpdateProblem.reset (new dcp::TimeDependentProblem (timeSteppingPressureUpdateProblem,
-                                                                        startTime+dt,
-                                                                        dt,
-                                                                        endTime,
-                                                                        {},
-                                                                        {"linear_form"}));
-        }
+        std::shared_ptr <dcp::TimeDependentProblem> pressureUpdateProblem
+            (new dcp::TimeDependentProblem (timeSteppingPressureUpdateProblem,
+                                            time,
+                                            startTime,
+                                            dt,
+                                            endTime,
+                                            {},
+                                            {"linear_form"}));
 
         pressureUpdateProblem->parameters ["previous_solution_name"] = previousPressureName;
 
@@ -544,7 +535,8 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Creating time dependent Guermond-Salgado system...");
 
         // 0) create the object
-        std::shared_ptr<dcp::TimeDependentEquationSystem> guermondSalgadoSystem (new dcp::TimeDependentEquationSystem);
+        std::shared_ptr<dcp::TimeDependentEquationSystem> guermondSalgadoSystem 
+            (new dcp::TimeDependentEquationSystem (time, startTime, dt, endTime));
 
         // 1) add problems
         dolfin::begin (dolfin::DBG, "Adding problems to protected member map...");
@@ -821,7 +813,8 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Creating time dependent Guermond-Salgado system...");
 
         // 0) create the object
-        std::shared_ptr<dcp::TimeDependentEquationSystem> guermondSalgadoSystem (new dcp::TimeDependentEquationSystem);
+        std::shared_ptr<dcp::TimeDependentEquationSystem> guermondSalgadoSystem 
+            (new dcp::TimeDependentEquationSystem (time, startTime, dt, endTime));
 
         // 1) add problems
         dolfin::begin (dolfin::DBG, "Adding problems to protected member map...");

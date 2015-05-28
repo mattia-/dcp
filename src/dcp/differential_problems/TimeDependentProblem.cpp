@@ -51,20 +51,16 @@ namespace dcp
         time_ -> setTo (startTime_);
         
         // we need a solution for every step in the time scheme! 
-        // And the time should be t0, t0+dt, t0+2dt ... (t0 is the start time)
+        // And the time should be t0-(nTimeSchemeSteps-1)*dt, to-(nTimeSchemeSteps-2)*dtdt, ... , t0-dt (t0 is the start time)
         dolfin::begin (dolfin::DBG, "Creating initial solutions...");
         unsigned int stepNumber;
-        for (stepNumber = 0; stepNumber < nTimeSchemeSteps_; ++stepNumber)
+        for (stepNumber = nTimeSchemeSteps_; stepNumber > 0; --stepNumber)
         {
-            solution_.emplace_back (std::make_pair (time_ -> value () + stepNumber * dt, 
+            solution_.emplace_back (std::make_pair (time_ -> value () - (stepNumber - 1) * dt_, 
                                                     dolfin::Function (timeSteppingProblem_->functionSpace ())));
         }
         dolfin::log (dolfin::DBG, "Created %d initial solutions", stepNumber + 1);
         
-        // set the correct value for time_, since it was not incremented during the previous loop.
-        // Use stepNumber - 1 since time_ will be incremented at the *beginning* of the time loop, not at the end
-        time_ -> add ((stepNumber - 1) * dt);
-            
         dolfin::end ();
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
@@ -222,21 +218,21 @@ namespace dcp
     
 
 
-    double& TimeDependentProblem::startTime ()
+    const double& TimeDependentProblem::startTime ()
     {
         return startTime_;
     }
     
 
 
-    double& TimeDependentProblem::dt ()
+    const double& TimeDependentProblem::dt ()
     {
         return dt_;
     }
 
 
 
-    double& TimeDependentProblem::endTime ()
+    const double& TimeDependentProblem::endTime ()
     {
         return endTime_;
     }
@@ -602,7 +598,7 @@ namespace dcp
             solveType != "clear+step" &&
             solveType != "steady")
         {
-            dolfin::dolfin_error ("dcp: TimeDependentProblem.h", 
+            dolfin::dolfin_error ("dcp: TimeDependentProblem.cpp", 
                                   "solve",
                                   "Unknown solve type \"%s\" requested",
                                   solveType.c_str ());
@@ -611,7 +607,9 @@ namespace dcp
         dolfin::log (dolfin::DBG, "Selected solve type: %s", solveType.c_str ());
         
         // check if we are already at the end of time loop
-        if (isFinished ())
+        // such check is only valid when solveType is not "steady", since steady solve does not increment time and
+        // so can be performed as many time as the user wants 
+        if (isFinished () && solveType != "steady")
         {
             printFinishedWarning ();
             return;

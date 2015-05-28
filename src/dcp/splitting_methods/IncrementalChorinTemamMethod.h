@@ -314,6 +314,8 @@ namespace dcp
 
         dolfin::log (dolfin::DBG, "Creating the time stepping linear problems...");
 
+        // define chorin temam system time
+        std::shared_ptr<dcp::Time> time (new dcp::Time (startTime));
 
         // define the problems
         // 1) prediction problem
@@ -324,6 +326,7 @@ namespace dcp
 
         std::shared_ptr <dcp::TimeDependentProblem> predictionProblem
             (new dcp::TimeDependentProblem (timeSteppingPredictionProblem,
+                                            time,
                                             startTime,
                                             dt,
                                             endTime,
@@ -345,6 +348,7 @@ namespace dcp
 
         std::shared_ptr <dcp::TimeDependentProblem> correctionProblem
             (new dcp::TimeDependentProblem (timeSteppingCorrectionProblem,
+                                            time,
                                             startTime,
                                             dt,
                                             endTime,
@@ -366,6 +370,7 @@ namespace dcp
 
         std::shared_ptr <dcp::TimeDependentProblem> velocityProjectionProblem
             (new dcp::TimeDependentProblem (timeSteppingVelocityProjectionProblem,
+                                            time,
                                             startTime,
                                             dt,
                                             endTime,
@@ -388,6 +393,7 @@ namespace dcp
 
         std::shared_ptr <dcp::TimeDependentProblem> pressureUpdateProblem
             (new dcp::TimeDependentProblem (timeSteppingPressureUpdateProblem,
+                                            time,
                                             startTime,
                                             dt,
                                             endTime,
@@ -403,7 +409,8 @@ namespace dcp
         dolfin::begin ("Creating time dependent Chorin-Temam system...");
 
         // 0) create the object
-        std::shared_ptr<dcp::TimeDependentEquationSystem> chorinTemamSystem (new dcp::TimeDependentEquationSystem);
+        std::shared_ptr<dcp::TimeDependentEquationSystem> chorinTemamSystem 
+            (new dcp::TimeDependentEquationSystem (time, startTime, dt, endTime));
 
         // 1) add problems
         dolfin::begin (dolfin::DBG, "Adding problems to protected member map...");
@@ -599,7 +606,8 @@ namespace dcp
         dolfin::begin ("Creating time dependent Chorin-Temam system...");
 
         // 0) create the object
-        std::shared_ptr<dcp::TimeDependentEquationSystem> chorinTemamSystem (new dcp::TimeDependentEquationSystem);
+        std::shared_ptr<dcp::TimeDependentEquationSystem> chorinTemamSystem 
+            (new dcp::TimeDependentEquationSystem (time, startTime, dt, endTime));
 
         // 1) add problems
         dolfin::begin (dolfin::DBG, "Adding problems to protected member map...");

@@ -107,7 +107,7 @@ int main (int argc, char* argv[])
     parameters.add ("N", 50);
     parameters.parse (argc, argv);
         
-//    dolfin::set_log_level (dolfin::DBG);
+    // dolfin::set_log_level (dolfin::DBG);
     // create mesh and finite element space
     std::cout << "Create mesh and finite element space..." << std::endl;
     mshr::Circle circle (dolfin::Point (0.0, 0.0), 1);

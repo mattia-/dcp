@@ -798,6 +798,20 @@ namespace dcp
         
         // TODO how does one store the last solution computed if he is subiterating with steadySolve()?
         // and more importantly, does one need to?
+        
+        // save new solution in solution_, only if the time of the currently last solution is not the same as the
+        // current time value. In fact, if they are the same it means that we are solving the same time step once again
+        // (maybe we are subiterating, or we are calling steadySolve() for whatever reason). In this case, replace the
+        // last solution
+        if (solution_.back ().first == time_ -> value ())
+        {
+            solution_.pop_back ();
+        }
+        solution_.push_back (std::make_pair (time_ -> value (), timeSteppingProblem_->solution ()));
+        
+        // TODO save only the number of soultions needed to advance in time (i.e. one if the method is a one-step time
+        // scheme, two for 2-steps time scheme....). This will force us to come up with a way to store the solution 
+        // even when we do not call solveLoop though
     }
 
     void TimeDependentProblem::step ()
@@ -807,11 +821,6 @@ namespace dcp
         dolfin::log (dolfin::INFO, "TIME = %f s", time_ -> value ());
         
         steadySolve ();
-        
-        solution_.push_back (std::make_pair (time_ -> value (), timeSteppingProblem_->solution ()));
-        // TODO save only the number of soultions needed to advance in time (i.e. one if the method is a one-step time
-        // scheme, two for 2-steps time scheme....). This will force us to come up with a way to store the solution 
-        // even when we do not call solveLoop though
     }
 
     

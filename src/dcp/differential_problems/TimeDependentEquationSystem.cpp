@@ -89,9 +89,10 @@ namespace dcp
         }
         catch (std::bad_cast& badCast)
         {
-            // else, if exception was thrown, it means that problem was not a TimeDependentProblem&, so revert back 
-            // to base class function right away
-            dcp::AbstractEquationSystem::addProblem (problemName, problem);
+            // else, if exception was thrown, it means that problem was not a TimeDependentProblem&, so issue an error
+            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                  "addProblem",
+                                  "Problem given as input argument is not a dcp::TimeDependentProblem");
         }
     }
         
@@ -106,9 +107,10 @@ namespace dcp
         // check if cast was successful
         if (castProblem == nullptr)
         {
-            // if castProblem is nullptr, the problem was not a dcp::TimeDependentProblem, so revert back to base
-            // class function right away
-            dcp::AbstractEquationSystem::addProblem (problemName, problem);
+            // if castProblem is nullptr, it means that problem was not a TimeDependentProblem&, so issue an error
+            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                  "addProblem",
+                                  "Problem given as input argument is not a dcp::TimeDependentProblem");
         }
         else
         {
@@ -362,7 +364,7 @@ namespace dcp
                                   "Problem \"%s\" not found in stored problems map", 
                                   name.c_str ());
         }
-        return *(std::dynamic_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
+        return *(std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
     }
 
 
@@ -377,7 +379,7 @@ namespace dcp
                                   "Problem \"%s\" not found in stored problems map", 
                                   name.c_str ());
         }
-        return *(std::dynamic_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
+        return *(std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
     }
 
 
@@ -462,9 +464,19 @@ namespace dcp
             
             dolfin::log (dolfin::INFO, "TIME = %f s", time_ -> value ());
             
-            for (auto problem : solveOrder_)
+            for (auto problemName : solveOrder_)
             {
-                solve (problem);
+                // solve problem
+                solve (problemName);
+                
+                // plot solution
+                dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
+                int plotInterval = problem.parameters["plot_interval"];
+                
+                if (plotInterval > 0 && timeStep % plotInterval == 0)
+                {
+                    problem.plotSolution ("last");
+                }
             }
             
             dolfin::end ();
@@ -479,18 +491,8 @@ namespace dcp
     {
         dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
 
-        // get problem with given name from map. Variable problemIterator will be a
-        // std::map <std::string, std::unique_ptr <dcp::AbstractProblem>::iterator
-        dolfin::log (dolfin::DBG, "Looking for problem \"%s\" in problems map...", problemName.c_str ());
-        auto problemIterator = storedProblems_.find (problemName);
-
-        if (problemIterator == storedProblems_.end ())
-        {
-            dolfin::warning ("Problem \"%s\" not found in stored problems map", problemName.c_str ());
-            return;
-        }
-
-        dcp::AbstractProblem& problem = *(problemIterator->second);
+        // get problem with given name from map
+        dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
 
         // 1)
         // loop over problemsLinks_ to reset all links to take changes to coefficients 

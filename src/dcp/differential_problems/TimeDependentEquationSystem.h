@@ -256,9 +256,9 @@ namespace dcp
              */
             virtual void solve () override;
             
-            //! Solve the problem corresponding to the name given
+            //! Solve the problem corresponding to the name given (once)
             /*!
-             *  The problem will be solved calling the \c solve method with \c type argument equal to \c "step".
+             *  The problem will be solved calling the \c solve method with \c type argument equal to \c "steady".
              *  \param problemName a string identifying the problem to be solved. If no problem with that name
              *  is found, a warning is issued
              */

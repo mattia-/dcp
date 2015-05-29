@@ -651,11 +651,17 @@ namespace dcp
              */
             virtual void solve (const std::string& solveType = "default") override;
 
-            //! Plot method. Overrides the one in \c dcp::AbstractProblem to take into account the fact that 
-            //! \c solution_ is now a vector with size greater than one). It uses the value of the parameter \c pause
-            //! to decide whether to stop at each plot or not and the value of the parameter \c plot_title to set
-            //! the plot title (\c plot_title will actually be added to the time, which is always plotted in the title)
-            virtual void plotSolution () override;
+            //! Plot the solution. 
+            /*! Overrides the one in \c dcp::AbstractProblem to take into account the fact that 
+             *  \c solution_ is now a vector with size greater than one. It uses the value of the parameter \c pause
+             *  to decide whether to stop at each plot or not and the value of the parameter \c plot_title to set
+             *  the plot title (\c plot_title will actually be added to the time, which is always plotted in the title).
+             *  \param plotType select among different behaviour.
+             *  Possible values are:
+             *  \li \c "all" : plot all the function in \c solution_
+             *  \li \c "last" : plot only the last solution stored in \c solution_
+             */
+            virtual void plotSolution (const std::string& plotType = "all") override;
             
             //! Clone method. Overrides method in \c AbstractProblem
             /*!

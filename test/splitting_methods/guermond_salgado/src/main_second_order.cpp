@@ -184,7 +184,13 @@ int main (int argc, char* argv[])
     guermondSalgadoMethod.system ().addLink ("velocity_problem", "rho", "linear_form", "density_problem");
         
     // plots
-//    dolfin::plot (mesh, "Mesh");
+    dolfin::plot (mesh, "Mesh");
+    
+    for (auto& name : guermondSalgadoMethod.system ().problemsNames ())
+    {
+        guermondSalgadoMethod.problem (name).parameters ["plot_interval"] = 1;
+        guermondSalgadoMethod.problem (name).parameters ["plot_title"] = name;
+    }
     
     // solve problem
     std::cout << "Solve the problem..." << std::endl;

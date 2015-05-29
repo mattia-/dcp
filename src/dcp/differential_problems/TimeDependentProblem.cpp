@@ -655,7 +655,7 @@ namespace dcp
     
     
 
-    void TimeDependentProblem::plotSolution ()
+    void TimeDependentProblem::plotSolution (const std::string& plotType)
     {
         bool pause = parameters ["pause"];
         int plotComponent = parameters ["plot_component"];
@@ -672,8 +672,54 @@ namespace dcp
         
         dolfin::begin (dolfin::DBG, "Plotting...");
         
-        for (auto& timeSolutionPair : solution_)
+        if (plotType == "all")
         {
+            for (auto& timeSolutionPair : solution_)
+            {
+                double time = timeSolutionPair.first;
+                
+                // get right function to plot
+                if (plotComponent == -1)
+                {
+                    functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second);
+                    dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, all components...");
+                }
+                else
+                {
+                    functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second [plotComponent]);
+                    dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, component %d...", plotComponent);
+                }
+
+                // actual plotting
+                if (solutionPlotter_ == nullptr)
+                {
+                    dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
+                    solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (time) + plotTitle);
+                }
+                else if (! solutionPlotter_ -> is_compatible (functionToPlot))
+                {
+                    dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
+                    dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
+                    solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (time) + plotTitle);
+                }
+                else 
+                {
+                    solutionPlotter_ -> parameters ["title"] = std::string ("Time = " + std::to_string (time) + plotTitle);
+                    solutionPlotter_ -> plot (functionToPlot);
+                }
+
+                if (pause)
+                {
+                    dolfin::interactive ();
+                }
+            }
+        }
+        else if (plotType == "last")
+        {
+            // get last element in vector
+            auto timeSolutionPair = solution_.back ();
+            
+            // get time
             double time = timeSolutionPair.first;
             
             // get right function to plot
@@ -710,8 +756,13 @@ namespace dcp
             {
                 dolfin::interactive ();
             }
+
         }
-        
+        else
+        {
+            dolfin::warning ("Uknown plot type \"%s\". No plot performed", plotType.c_str ());
+        }
+            
         dolfin::end ();
     }
 
@@ -810,8 +861,7 @@ namespace dcp
         solution_.push_back (std::make_pair (time_ -> value (), timeSteppingProblem_->solution ()));
         
         // TODO save only the number of soultions needed to advance in time (i.e. one if the method is a one-step time
-        // scheme, two for 2-steps time scheme....). This will force us to come up with a way to store the solution 
-        // even when we do not call solveLoop though
+        // scheme, two for 2-steps time scheme....)
     }
 
     void TimeDependentProblem::step ()

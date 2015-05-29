@@ -17,14 +17,30 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/optimizers/AbstractOptimizer.h>
+#include <dcp/optimizers/AbstractDescentMethod.h>
 #include <dolfin/log/dolfin_log.h>
 
 namespace dcp
 {
-    AbstractOptimizer::AbstractOptimizer () : 
-        parameters ("optimizer_parameters")
+    AbstractDescentMethod::AbstractDescentMethod () : 
+        parameters ("optimizer_parameters"),
+        dotProduct_ (),
+        searchDirectionComputer_ (dcp::GradientSearchDirection ())
     {
-        dolfin::log (dolfin::DBG, "AbstractOptimizer object created");
+        dolfin::log (dolfin::DBG, "AbstractDescentMethod object created");
+    }
+    
+
+
+    void AbstractDescentMethod::setDotProduct (const dolfin::Form& dotProductForm)
+    {
+        dotProduct_.setDotProductComputer (dotProductForm);
+    }
+    
+
+
+    void AbstractDescentMethod::setSearchDirection (const SearchDirectionComputer& searchDirectionComputer)
+    {
+        searchDirectionComputer_ = searchDirectionComputer;
     }
 }

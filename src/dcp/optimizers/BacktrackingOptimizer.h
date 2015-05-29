@@ -20,7 +20,7 @@
 #ifndef SRC_OPTIMIZERS_BACKTRACKINGOPTIMIZER_H_INCLUDE_GUARD
 #define SRC_OPTIMIZERS_BACKTRACKINGOPTIMIZER_H_INCLUDE_GUARD
 
-#include <dcp/optimizers/AbstractOptimizer.h>
+#include <dcp/optimizers/AbstractDescentMethod.h>
 #include <dcp/objective_functional/AbstractObjectiveFunctional.h>
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Function.h>
@@ -33,7 +33,7 @@ namespace dcp
      *  \brief Class that implements the gradient method with backtracking.
      *  
      *  This class provides the implementation of the gradient method as a descent method
-     *  for optimazation of funcionals. It is derived from \c dcp::AbstractOptimizer.
+     *  for optimazation of funcionals. It is derived from \c dcp::AbstractDescentMethod.
      *  Let \f$ J \f$ be the functional to be minimized and \f$ \psi \left( \alpha \right) \f$ the function defined as:
      *  \f[
      *      \psi \left( \alpha \right) = J \left( \mathbf{u} + \alpha\,\mathbf{d} \right)
@@ -66,7 +66,7 @@ namespace dcp
      *  \li \f$ \alpha^{\left(0\right)} = 0.5 \f$
      *  \li \f$ \rho = 0.5 \f$
      */
-    class BacktrackingOptimizer : public dcp::AbstractOptimizer
+    class BacktrackingOptimizer : public dcp::AbstractDescentMethod
     {
         // ---------------------------------------------------------------------------------------------//
         
@@ -117,15 +117,6 @@ namespace dcp
             
             
             /********************** METHODS ***********************/
-            //! Sets the form used to compute dot products and norms. 
-            /*!
-             *  \param dotProductComputer the form to be stored in the protected member \c dotProductComputer_
-             */
-            virtual void setDotProductComputer (const std::shared_ptr<dolfin::Form> dotProductComputer);
-            
-            //! Reset the value of the protected membet \c dotProductComputer_ so that the default form will be used
-            virtual void resetDotProductComputer ();
-                
             //! Perform optimization on the input problem using the gradient method with backtracking
             /*! 
              *  Input arguments are:
@@ -137,85 +128,20 @@ namespace dcp
              *  pointer, a function object or a lambda expression. Its input argument are:
              *  \li the composite differential problem to update
              *  \li the new value of the control function
-             *  
-             *  \param searchDirectionComputer callable object to compute the search direction. It can either be a 
-             *  function pointer, a function object or a lambda expression. In general the search direction is computed
-             *  as: 
-             *  \f[
-             *      \mathbf{d}_k = -B_k\,\nabla J_k
-             *  \f]
-             *  The default value is the member function \c gradientSearchDirection(), that basically uses the above 
-             *  formula with \f$ B_k = I \f$.
-             *  The input arguments for \c searchDirectionComputer are:
-             *  \li the dolfin function that will contain the search direction after the function exits
-             *  \li the dolfin function containing the gradient
+             * 
+             *  Functors for the most common types of update are provided: see \c dcp::DirichletControlUpdater,
+             *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
              */
-            virtual void apply (dcp::EquationSystem& problem,
+            virtual void apply (dcp::AbstractEquationSystem& problem,
                                 const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
-                                const std::function 
-                                <
-                                    void (dcp::EquationSystem&, const dolfin::GenericFunction&)
-                                >& updater,
-                                const std::function
-                                <
-                                    void (dolfin::Function&, const dolfin::Function&)
-                                >& searchDirectionComputer = BacktrackingOptimizer::gradientSearchDirection) override;
+                                const dcp::AbstractDescentMethod::Updater& updater) override;
             
-            //! Perform optimization on the input problem using the gradient method with backtracking and dumping
-            //! results to file in the process
-            /*! 
-             *  Input arguments are:
-             *  \param problem the composite differential problem that represents the primal/adjoint system
-             *  \param objectiveFunctional the objective functional to be minimized
-             *  \param initialGuess the starting point for the minimization algorithm. At the end of the function, it
-             *  will containt the final value of the control variable
-             *  \param updater callable object to update the control parameter value. It can be either be a function 
-             *  pointer, a function object or a lambda expression. Its input argument are:
-             *  \li the composite differential problem to update
-             *  \li the new value of the control function
-             *  
-             *  \param dumper callable object to peform the dump of data during the minimization iterations. It can 
-             *  either be a function pointer, a function object or a lambda expression. 
-             *  \param dumpInterval integer that defines the frequency of dumping. The \c dumper will be called
-             *  every \c dumpInterval minimization iterations (and after the last iteration). 
-             *  If \c dumpInterval is set to \c 0, the \c dumper will be called only after the last iteration.
-             *  \param searchDirectionComputer callable object to compute the search direction. It can either be a 
-             *  function pointer, a function object or a lambda expression. In general the search direction is computed
-             *  as: 
-             *  \f[
-             *      \mathbf{d}_k = -B_k\,\nabla J_k
-             *  \f]
-             *  The default value is the member function \c gradientSearchDirection(), that basically uses the above 
-             *  formula with \f$ B_k = I \f$.
-             *  The input arguments for \c searchDirectionComputer are:
-             *  \li the dolfin function that will contain the search direction after the function exits
-             *  \li the dolfin function containing the gradient
-             */
-            virtual void apply (dcp::EquationSystem& problem,
-                                const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
-                                dolfin::Function& initialGuess,
-                                const std::function 
-                                <
-                                    void (dcp::EquationSystem&, const dolfin::GenericFunction&)
-                                >& updater,
-                                const std::function 
-                                <
-                                    void ()
-                                >& dumper,
-                                const int& dumpInterval,
-                                const std::function
-                                <
-                                    void (dolfin::Function&, const dolfin::Function&)
-                                >& searchDirectionComputer = BacktrackingOptimizer::gradientSearchDirection);
-            
-            //! Function to compute the search direction. See documentation of method \c apply() for more information
-            static void gradientSearchDirection (dolfin::Function& searchDirection, const dolfin::Function& gradient);
-
             // ---------------------------------------------------------------------------------------------//
 
         protected:
-            // The members listed here are for internal use only, to keep the apply method as short and easy to
+            /********************** METHODS ***********************/
+            // The methods listed here are for internal use only, to keep the apply method as short and easy to
             // understand as possible
             
             //! Function to perform the backtracking loop iterations
@@ -248,14 +174,11 @@ namespace dcp
                                    dolfin::Function& controlVariable,
                                    const dolfin::Function& previousControlVariable,
                                    const dolfin::Function& searchDirection,
-                                   dcp::EquationSystem& problem,
+                                   dcp::AbstractEquationSystem& problem,
                                    const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
-                                   const std::function 
-                                   <
-                                       void (dcp::EquationSystem&, const dolfin::GenericFunction&)
-                                   >& updater);
+                                   const dcp::AbstractDescentMethod::Updater& updater);
             
-            //! Function to print to file some values. It is mostly useful to avid code repetition inside this class
+            //! Function to print to file some values. It is mostly useful to avoid code repetition inside this class
             /*! 
              *  Input parameters:
              *  \param iteration the current iteration when the function is called
@@ -282,43 +205,8 @@ namespace dcp
              */
             bool openOutputFile (std::ofstream& OUTFILE);
             
-            //! Function to get the right dotProductComputer
-            /*!
-             *  \param controlVariable the control function used in the apply method
-             *  
-             *  \return the dotProductComputer itself
-             */
-            std::shared_ptr<dolfin::Form> getDotProductComputer (const dolfin::Function& controlVariable);
+            /********************** MEMBERS ***********************/
             
-            //! Function to compute the dot product between two \c dolfin::Function objects using the
-            //! form passed as the first argument
-            /*!
-             *  \param dotProductComputer the form to compute the dot product
-             *  \param firstFunction the first function of the dot product
-             *  \param secondFunction the second function of the dot product
-             *  
-             *  \return the value of the dot product
-             */
-            double computeDotProduct (std::shared_ptr<dolfin::Form> dotProductComputer,
-                                      const dolfin::GenericFunction& firstFunction, 
-                                      const dolfin::GenericFunction& secondFunction);
-            
-            //! Empty dumper, used for compatibility. This function will be used when the version that does not 
-            //! take a \c dumper as input argument of the method \c apply() is called
-            static void emptyDumper () 
-            {
-                dolfin::log (dolfin::DBG, "Empty dumper was called");
-            };
-                
-            //! The form that will be used to compute the dot product between the gradient and the search direction. 
-            /*! 
-             *  The default value is \c nullptr, in which case the function will use one
-             *  of the forms in \c DotProduct.h, trying to determine the right one by checking the geometrical dimensions
-             *  of the input objects. However, sometimes it may be useful to pass a user-defined object to perform
-             *  the task. To do so, use the function \c setDotProductComputer
-             */
-            std::shared_ptr<dolfin::Form> dotProductComputer_;
-
             // ---------------------------------------------------------------------------------------------//
 
         private:

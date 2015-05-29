@@ -17,28 +17,30 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/optimizers/DistributedControlValueUpdater.h>
+#include <dcp/optimizers/NeumannControlUpdater.h>
 #include <dcp/differential_problems/AbstractProblem.h>
 
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    DistributedControlValueUpdater::DistributedControlValueUpdater (const std::string& problemName, 
-                                                                    const std::string& coefficientType,
-                                                                    const std::string& coefficientName) :
+    NeumannControlUpdater::NeumannControlUpdater (const std::string& problemName, 
+                                                  const std::string& coefficientType,
+                                                  const std::string& coefficientName) :
         problemName_ (problemName),
         coefficientType_ (coefficientType),
         coefficientName_ (coefficientName)
     {   }
-     
+
 
 
     /************************* OPERATORS ********************/
-    void DistributedControlValueUpdater::operator() (dcp::EquationSystem& compositeProblem, 
-                                                     const std::shared_ptr <const dolfin::GenericFunction> coefficientValue) const
+    void NeumannControlUpdater::operator() (dcp::EquationSystem& compositeProblem, 
+                                            const dolfin::GenericFunction& coefficientValue) const
     {
         dcp::AbstractProblem& problem = compositeProblem [problemName_];
-        
-        problem.setCoefficient (coefficientType_, coefficientValue, coefficientName_);
+
+        problem.setCoefficient (coefficientType_, 
+                                dolfin::reference_to_no_delete_pointer (coefficientValue), 
+                                coefficientName_);
     }
 }

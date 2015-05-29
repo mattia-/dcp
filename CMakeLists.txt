@@ -20,17 +20,17 @@ INCLUDE (${DOLFIN_USE_FILE})
 # doxygen
 FIND_PACKAGE (Doxygen)
 
-# check if file "./src/dcp/optimizers" exists and was compiler for
-# the correct version of dolfin. Remember that the version of dolfin
+# check if file "./src/dcp/optimizer/dotproductforms" exists and was compiled 
+# for the correct version of dolfin. Remember that the version of dolfin
 # is defined by the dolfin cmake package and is stored in the variable
 # DOLFIN_VERSION_STR
 # </====================================
-SET (DOT_PRODUCT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/dcp/optimizers/dotproduct.h")
+SET (DOT_PRODUCT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/dcp/utils/dotproductforms.h")
 # if the file does not exists, compile it
 IF (NOT EXISTS ${DOT_PRODUCT_FILE})
-    MESSAGE (STATUS "Compiling ufl file \"dotproduct.ufl\"")
-    EXECUTE_PROCESS (COMMAND ffc -l dolfin -O dotproduct.ufl
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/dcp/optimizers/
+    MESSAGE (STATUS "Compiling ufl file \"dotproductforms.ufl\"")
+    EXECUTE_PROCESS (COMMAND ffc -l dolfin -O dotproductforms.ufl
+                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/dcp/utils/
                      OUTPUT_QUIET)
 # if the file exists, check the versions
 ELSE (NOT EXISTS ${DOT_PRODUCT_FILE})
@@ -44,15 +44,15 @@ ELSE (NOT EXISTS ${DOT_PRODUCT_FILE})
     # compare dolfin version with ffc version extracted from file.
     # We need to add a dot at the end of ${DOLFIN_VERSION_STR} since the regexp
     # in the last expression matched also the dot at the end of the ffc version in
-    # "dotproduct.h"
+    # "dotproductforms.h"
     STRING (COMPARE EQUAL "${DOLFIN_VERSION_STR}." ${DOT_PRODUCT_FFC_VERSION} VERSION_COMPARISON)
 
     # if the output is 0, then the versions do not match. In this case, recompile
     IF (${VERSION_COMPARISON} EQUAL 0)
-        MESSAGE (STATUS "Mismatch between system FFC version and \"dotproduct.h\" FFC version")
-        MESSAGE (STATUS "Compiling ufl file \"dotproduct.ufl\"")
-        EXECUTE_PROCESS (COMMAND ffc -l dolfin -O dotproduct.ufl
-                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/dcp/optimizers/
+        MESSAGE (STATUS "Mismatch between system FFC version and \"dotproductforms.h\" FFC version")
+        MESSAGE (STATUS "Compiling ufl file \"dotproductforms.ufl\"")
+        EXECUTE_PROCESS (COMMAND ffc -l dolfin -O dotproductforms.ufl
+                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/dcp/utils/
                          OUTPUT_QUIET)
     ENDIF (${VERSION_COMPARISON} EQUAL 0)
 

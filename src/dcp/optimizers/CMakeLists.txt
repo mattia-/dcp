@@ -1,18 +1,19 @@
 # collect header files
-SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractOptimizer.h
+SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDescentMethod.h
              ${CMAKE_CURRENT_SOURCE_DIR}/BacktrackingOptimizer.h
-             ${CMAKE_CURRENT_SOURCE_DIR}/DirichletControlValueUpdater.h
-             ${CMAKE_CURRENT_SOURCE_DIR}/DistributedControlValueUpdater.h
-             ${CMAKE_CURRENT_SOURCE_DIR}/NeumannControlValueUpdater.h
-             ${CMAKE_CURRENT_SOURCE_DIR}/optimizers.h
-             ${CMAKE_CURRENT_SOURCE_DIR}/dotproduct.h)
+             ${CMAKE_CURRENT_SOURCE_DIR}/DirichletControlUpdater.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/DistributedControlUpdater.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/NeumannControlUpdater.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/GradientSearchDirection.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/optimizers.h)
 
 # collect source files
-SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/AbstractOptimizer.cpp
+SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDescentMethod.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/BacktrackingOptimizer.cpp
-             ${CMAKE_CURRENT_SOURCE_DIR}/DirichletControlValueUpdater.cpp
-             ${CMAKE_CURRENT_SOURCE_DIR}/DistributedControlValueUpdater.cpp
-             ${CMAKE_CURRENT_SOURCE_DIR}/NeumannControlValueUpdater.cpp)
+             ${CMAKE_CURRENT_SOURCE_DIR}/DirichletControlUpdater.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/DistributedControlUpdater.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/NeumannControlUpdater.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/GradientSearchDirection.cpp)
 
 # add files to shared library dependancies
 SET (CONTROL_PROBLEM_LIBRARY_SOURCES ${CONTROL_PROBLEM_LIBRARY_SOURCES} ${SOURCES} PARENT_SCOPE)

@@ -17,34 +17,30 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/optimizers/DirichletControlValueUpdater.h>
+#include <dcp/optimizers/DistributedControlUpdater.h>
 #include <dcp/differential_problems/AbstractProblem.h>
-#include <dolfin/fem/DirichletBC.h>
 
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    DirichletControlValueUpdater::DirichletControlValueUpdater (const std::string& problemName, 
-                                                                const std::string& dirichletBCName,
-                                                                const dolfin::SubDomain& dirichletBoundary,
-                                                                std::shared_ptr<const dolfin::FunctionSpace> functionSpace) : 
+    DistributedControlUpdater::DistributedControlUpdater (const std::string& problemName, 
+                                                          const std::string& coefficientType,
+                                                          const std::string& coefficientName) :
         problemName_ (problemName),
-        dirichletBCName_ (dirichletBCName),
-        dirichletBoundary_ (dirichletBoundary),
-        functionSpace_ (functionSpace)
-    {  }
-
+        coefficientType_ (coefficientType),
+        coefficientName_ (coefficientName)
+    {   }
+     
 
 
     /************************* OPERATORS ********************/
-    void DirichletControlValueUpdater::operator() (dcp::EquationSystem& compositeProblem, 
-                                                   const dolfin::GenericFunction& dirichletBCValue) const
+    void DistributedControlUpdater::operator() (dcp::EquationSystem& compositeProblem, 
+                                                const dolfin::GenericFunction& coefficientValue) const
     {
         dcp::AbstractProblem& problem = compositeProblem [problemName_];
         
-        problem.removeDirichletBC (dirichletBCName_);
-        
-        problem.addDirichletBC (dolfin::DirichletBC (*(functionSpace_), dirichletBCValue, dirichletBoundary_),
-                                dirichletBCName_);
+        problem.setCoefficient (coefficientType_, 
+                                dolfin::reference_to_no_delete_pointer (coefficientValue), 
+                                coefficientName_);
     }
 }

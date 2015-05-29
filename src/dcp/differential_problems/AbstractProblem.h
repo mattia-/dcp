@@ -300,7 +300,13 @@ namespace dcp
             virtual void solve (const std::string& solveType = "default") = 0;
             
             //! Method to plot the solution
-            virtual void plotSolution ();
+            /*!
+             *  \param plotType the type of the plot desired. In this case, it is not very useful, since the only 
+             *  possible value for \c plotType is \c "all" (which will simply plot the only solution stored in the 
+             *  protected member \c solution_), but it is useful to have the possibility to choose among different
+             *  behaviour in derived classes.
+             */
+            virtual void plotSolution (const std::string& plotType = "all");
             
             //! Clone method
             /*!

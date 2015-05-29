@@ -120,7 +120,12 @@ namespace dcp
              *  indicate the specific component the time loop should use.
              *  \param nTimeSchemeSteps the number of time steps involved in the time stepping problem solution. 
              *  For example, implicit Euler is a one-step scheme, so \c nTimeSchemeSteps should be set to 1. BDF2, 
-             *  on the other *  hand, is a two-steps time scheme, so \c nTimeSchemeSteps should be set to 2. 
+             *  on the other hand, is a two-steps time scheme, so \c nTimeSchemeSteps should be set to 2. 
+             *  When the solution vector is created in the constructor it has size equal to \c nTimeSchemeSteps, and the
+             *  times stored in the pairs (time, solution) for the initial solutions are
+             *  <tt>startTime - (nTimeSchemeSteps - 1) * dt, startTime - (nTimeSchemeSteps - 2) * dt, ..., startTime</tt>.
+             *  That is, it is assumed that the initial solutions are associated with times lower than or equal to
+             *  \c startTime.
              *  The default value is 1.
              *  
              *  The constructors also sets the following parameters:
@@ -317,19 +322,19 @@ namespace dcp
             /*!
              *  \return a reference to \c startTime_
              */
-            virtual double& startTime ();
+            virtual const double& startTime ();
             
             //! Get a reference to the simulation time step
             /*!
              *  \return a reference to \c dt_
              */
-            virtual double& dt ();
+            virtual const double& dt ();
             
             //! Get a reference to the simulation end time
             /*!
              *  \return a reference to \c endTime_
              */
-            virtual double& endTime ();
+            virtual const double& endTime ();
             
             //! Get const reference to the problem's time stepping problem
             /*! 
@@ -344,11 +349,10 @@ namespace dcp
             //! solutions stored in \c solutions_ which will then be used to advance in time.
             /*!
              *  \param initialSolution the function to be used as initial solution
-             *  \param stepNumber the number of steps to go back to set the initial solution. This is only useful 
-             *  for multisteps method, where more than one previous solution is needed to compute the solution at the
-             *  current time step. This number, if greater than one, will be concatenated to \c "previous_solution_name"
-             *  to form the coefficient name to be set, as it was described in the constructor documentation.
-             *  The default value is 1, that means that the input function should be used to set the last solution.
+             *  \param stepNumber the number of steps to go back to set the initial solution. This is mostly useful for
+             *  multistep method, where more than one initial solution is needed.
+             *  The default value is 1, that means that the input function should be used to set the solution at the
+             *  last time step before the one that is being currently considered.
              */
             virtual void setInitialSolution (const dolfin::Function& initialSolution, 
                                              const unsigned int& stepNumber = 1);
@@ -358,11 +362,10 @@ namespace dcp
             //! solutions stored in \c solutions_ which will then be used to advance in time.
             /*!
              *  \param initialSolution the function to be used as initial solution
-             *  \param stepNumber the number of steps to go back to set the initial solution. This is only useful 
-             *  for multisteps method, where more than one previous solution is needed to compute the solution at the
-             *  current time step. This number, if greater than one, will be concatenated to \c "previous_solution_name"
-             *  to form the coefficient name to be set, as it was described in the constructor documentation.
-             *  The default value is 1, that means that the input expression should be used to set the last solution.
+             *  \param stepNumber the number of steps to go back to set the initial solution. This is mostly useful for
+             *  multistep method, where more than one initial solution is needed.
+             *  The default value is 1, that means that the input expression should be used to set the solution at the
+             *  last time step before the one that is being currently considered.
              */
             virtual void setInitialSolution (const dolfin::Expression& initialSolution, 
                                              const unsigned int& stepNumber = 1);
@@ -648,11 +651,17 @@ namespace dcp
              */
             virtual void solve (const std::string& solveType = "default") override;
 
-            //! Plot method. Overrides the one in \c dcp::AbstractProblem to take into account the fact that 
-            //! \c solution_ is now a vector with size greater than one). It uses the value of the parameter \c pause
-            //! to decide whether to stop at each plot or not and the value of the parameter \c plot_title to set
-            //! the plot title (\c plot_title will actually be added to the time, which is always plotted in the title)
-            virtual void plotSolution () override;
+            //! Plot the solution. 
+            /*! Overrides the one in \c dcp::AbstractProblem to take into account the fact that 
+             *  \c solution_ is now a vector with size greater than one. It uses the value of the parameter \c pause
+             *  to decide whether to stop at each plot or not and the value of the parameter \c plot_title to set
+             *  the plot title (\c plot_title will actually be added to the time, which is always plotted in the title).
+             *  \param plotType select among different behaviour.
+             *  Possible values are:
+             *  \li \c "all" : plot all the function in \c solution_
+             *  \li \c "last" : plot only the last solution stored in \c solution_
+             */
+            virtual void plotSolution (const std::string& plotType = "all") override;
             
             //! Clone method. Overrides method in \c AbstractProblem
             /*!
@@ -741,7 +750,7 @@ namespace dcp
             virtual void solveLoop ();
 
             //! Set the time dependent Dirichlet boundary conditions at every step of the solve loop
-            /* TODO POSSIAMO AVERE CHE LE TIME DEPENDENT EXPRESSION DELLE DIRICHLET BC DIPENDONO DIRETTAMENTE DA TIME_?
+            /*! 
              *  For each \c element in \c timeDependentDirichletBCs_ , it will set the boundary condition's time 
              *  using \c t_ and update the bc stored in timeSteppingProblem_ calling \c removeDirichletBC() and
              *  \c addDirichletBC() on \c timeSteppingProblem_ itself. Note that we have to do this since 
@@ -758,7 +767,6 @@ namespace dcp
             
             //! Reset the time dependent Dirichlet boundary condition pointed by the given iterator
             /*!
-             * TODO POSSIAMO AVERE CHE LE TIME DEPENDENT EXPRESSION DELLE DIRICHLET BC DIPENDONO DIRETTAMENTE DA TIME_?
              *  This method removes the Dirichlet boundary condition from \c timeSteppingProblem_ 
              *  and replaces it with a new one with the same name but value updated to the new value of \c t_
              *  \param bcIterator the iterator pointing to the bc that should be replaced
@@ -767,12 +775,14 @@ namespace dcp
                 (std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue>::iterator bcIterator);
             
             //! Set the time dependent coefficients at every step of the solve loop
-            /*
-             * TODO POSSIAMO AVERE CHE LE TIME DEPENDENT EXPRESSION DELLE DIRICHLET BC DIPENDONO DIRETTAMENTE DA TIME_?
+            /*!
              *  For each \c element in \c timeDependentCoefficients_ , it will set the coefficient's time using \c t_ 
              *  and call \c setCoefficient()
              */
             virtual void setTimeDependentCoefficients ();
+            
+            //! Set the previous solution coefficients at every step of the solve loop
+            virtual void setPreviousSolutionsCoefficients ();
             
             //! Method to print a warning if \c isFinished() returns \c true. It is just useful to make \c solve()
             //! method clearer to read

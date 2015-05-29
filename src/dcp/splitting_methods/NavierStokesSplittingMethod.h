@@ -65,11 +65,11 @@ namespace dcp
 
         protected:
             //! The velocity function space. It is just a reference to the object pointed by the first element of 
-            //! \c functionSpaces_, which is inherited from \c dcP::AbstractSplittingMethod
+            //! \c functionSpaces_, which is inherited from \c dcp::AbstractSplittingMethod
             const dolfin::FunctionSpace& velocityFunctionSpace_;
             
             //! The pressure function space. It is just a reference to the object pointed by the second element of 
-            //! \c functionSpaces_, which is inherited from \c dcP::AbstractSplittingMethod
+            //! \c functionSpaces_, which is inherited from \c dcp::AbstractSplittingMethod
             const dolfin::FunctionSpace& pressureFunctionSpace_;
             
 

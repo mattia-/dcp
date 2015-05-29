@@ -28,8 +28,15 @@
 namespace dcp
 {
     /******************* CONSTRUCTORS ******************/
-    TimeDependentEquationSystem::TimeDependentEquationSystem () : 
-        AbstractEquationSystem ()
+    TimeDependentEquationSystem::TimeDependentEquationSystem (const std::shared_ptr<dcp::Time>& time,
+                                                              const double& startTime,
+                                                              const double& dt,
+                                                              const double& endTime) :
+        AbstractEquationSystem (),
+        time_ (time),
+        startTime_ (startTime),
+        dt_ (dt),
+        endTime_ (endTime)
     { 
         dolfin::log (dolfin::DBG, "TimeDependentEquationSystem object created");
     }
@@ -37,6 +44,116 @@ namespace dcp
     
 
     /******************* METHODS *******************/
+    void TimeDependentEquationSystem::addProblem (const std::string& problemName, dcp::AbstractProblem& problem)
+    {
+        // try-catch block to check if problem is actually a dcp::TimeDependentProblem&
+        try
+        {
+            dcp::TimeDependentProblem& castProblem = dynamic_cast<dcp::TimeDependentProblem&> (problem);
+            
+            // if exception was not thrown, check times before reverting back to base class function
+            if (time_ != castProblem.time ())
+            {
+                dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                      "addProblem",
+                                      "Problem's and system's time objects mismatch when adding problem \"%s\" to the map",
+                                      problemName.c_str ());
+            }
+            
+            if (dolfin::near (startTime_, castProblem.startTime ()) == 0)
+            {
+                dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                      "addProblem",
+                                      "Problem's and system's start times mismatch when adding problem \"%s\" to the map",
+                                      problemName.c_str ());
+            }
+            
+            if (dolfin::near (endTime_, castProblem.endTime ()) == 0)
+            {
+                dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                      "addProblem",
+                                      "Problem's and system's end times mismatch when adding problem \"%s\" to the map",
+                                      problemName.c_str ());
+            }
+            
+            if (dolfin::near (dt_, castProblem.dt ()) == 0)
+            {
+                dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                      "addProblem",
+                                      "Problem's and system's time steps mismatch when adding problem \"%s\" to the map",
+                                      problemName.c_str ());
+            }
+            
+            // if we got here, everything is fine, so just call the base class function
+            dcp::AbstractEquationSystem::addProblem (problemName, problem);
+        }
+        catch (std::bad_cast& badCast)
+        {
+            // else, if exception was thrown, it means that problem was not a TimeDependentProblem&, so issue an error
+            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                  "addProblem",
+                                  "Problem given as input argument is not a dcp::TimeDependentProblem");
+        }
+    }
+        
+
+
+    void TimeDependentEquationSystem::addProblem (const std::string& problemName, 
+                                                  const std::shared_ptr<dcp::AbstractProblem> problem)
+    {
+        std::shared_ptr<dcp::TimeDependentProblem> castProblem = 
+            std::dynamic_pointer_cast<dcp::TimeDependentProblem> (problem);
+        
+        // check if cast was successful
+        if (castProblem == nullptr)
+        {
+            // if castProblem is nullptr, it means that problem was not a TimeDependentProblem&, so issue an error
+            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                  "addProblem",
+                                  "Problem given as input argument is not a dcp::TimeDependentProblem");
+        }
+        else
+        {
+            // if castProblem was not nullptr, check times before reverting back to base class function
+            if (time_ != castProblem -> time ())
+            {
+                dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                      "addProblem",
+                                      "Problem's and system's time objects mismatch when adding problem \"%s\" to the map",
+                                      problemName.c_str ());
+            }
+            
+            if (dolfin::near (startTime_, castProblem->startTime ()) == 0)
+            {
+                dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                      "addProblem",
+                                      "Problem's and system's start times mismatch when adding problem \"%s\" to the map",
+                                      problemName.c_str ());
+            }
+            
+            if (dolfin::near (endTime_, castProblem->endTime ()) == 0)
+            {
+                dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                      "addProblem",
+                                      "Problem's and system's end times mismatch when adding problem \"%s\" to the map",
+                                      problemName.c_str ());
+            }
+            
+            if (dolfin::near (dt_, castProblem->dt ()) == 0)
+            {
+                dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                      "addProblem",
+                                      "Problem's and system's time steps mismatch when adding problem \"%s\" to the map",
+                                      problemName.c_str ());
+            }
+            
+            // if we got here, everything is fine, so just call the base class function
+            dcp::AbstractEquationSystem::addProblem (problemName, problem);
+        }
+    }
+    
+
+
     void TimeDependentEquationSystem::addLinkToPreviousSolution (const std::string& linkFrom, 
                                                                  const std::string& linkedCoefficientName,
                                                                  const std::string& linkedCoefficientType, 
@@ -247,7 +364,7 @@ namespace dcp
                                   "Problem \"%s\" not found in stored problems map", 
                                   name.c_str ());
         }
-        return *(std::dynamic_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
+        return *(std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
     }
 
 
@@ -262,7 +379,7 @@ namespace dcp
                                   "Problem \"%s\" not found in stored problems map", 
                                   name.c_str ());
         }
-        return *(std::dynamic_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
+        return *(std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
     }
 
 
@@ -293,6 +410,41 @@ namespace dcp
         return this->operator[] (solveOrder_ [position]);
     }
 
+    
+
+    std::shared_ptr<dcp::Time> TimeDependentEquationSystem::time () const
+    {
+        return time_;
+    }
+
+        
+
+    const double& TimeDependentEquationSystem::startTime () const
+    {
+        return startTime_;
+    }
+
+        
+
+    const double& TimeDependentEquationSystem::dt () const
+    {
+        return dt_;
+    }
+            
+
+
+    const double& TimeDependentEquationSystem::endTime () const
+    {
+        return endTime_;
+    }
+
+        
+
+    void TimeDependentEquationSystem::advanceTime ()
+    {
+        time_ -> add (dt_);
+    }
+    
 
 
     void TimeDependentEquationSystem::solve ()
@@ -302,18 +454,31 @@ namespace dcp
         // The loop is repeated until isFinished() returns true, that is until all problems' time loops are ended
         dolfin::begin ("Solving problems...");
         
-        int iterationCounter = 0;
+        int timeStep = 0;
         while (isFinished () == 0)
         {
-            iterationCounter++;
-            dolfin::log (dolfin::INFO, "=====================================");
-            dolfin::log (dolfin::INFO, "TIME DEPENDENT SYSTEM ITERATION: %d", iterationCounter);
-            dolfin::begin (dolfin::INFO, "=====================================");
-            for (auto problem : solveOrder_)
+            timeStep++;
+            dolfin::begin (dolfin::INFO, "===== Timestep %d =====", timeStep);
+            
+            advanceTime ();
+            
+            dolfin::log (dolfin::INFO, "TIME = %f s", time_ -> value ());
+            
+            for (auto problemName : solveOrder_)
             {
-                solve (problem);
+                // solve problem
+                solve (problemName);
+                
+                // plot solution
+                dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
+                int plotInterval = problem.parameters["plot_interval"];
+                
+                if (plotInterval > 0 && timeStep % plotInterval == 0)
+                {
+                    problem.plotSolution ("last");
+                }
             }
-            dolfin::log (dolfin::INFO, "");
+            
             dolfin::end ();
         }
         
@@ -326,18 +491,8 @@ namespace dcp
     {
         dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
 
-        // get problem with given name from map. Variable problemIterator will be a
-        // std::map <std::string, std::unique_ptr <dcp::AbstractProblem>::iterator
-        dolfin::log (dolfin::DBG, "Looking for problem \"%s\" in problems map...", problemName.c_str ());
-        auto problemIterator = storedProblems_.find (problemName);
-
-        if (problemIterator == storedProblems_.end ())
-        {
-            dolfin::warning ("Problem \"%s\" not found in stored problems map", problemName.c_str ());
-            return;
-        }
-
-        dcp::AbstractProblem& problem = *(problemIterator->second);
+        // get problem with given name from map
+        dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
 
         // 1)
         // loop over problemsLinks_ to reset all links to take changes to coefficients 
@@ -372,7 +527,7 @@ namespace dcp
         // 2)
         // solve problem
         dolfin::log (dolfin::PROGRESS, "Calling solve method on problem...");
-        problem.solve ("step");
+        problem.solve ("steady");
         
         dolfin::end ();
     }

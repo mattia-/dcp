@@ -51,20 +51,16 @@ namespace dcp
         time_ -> setTo (startTime_);
         
         // we need a solution for every step in the time scheme! 
-        // And the time should be t0, t0+dt, t0+2dt ... (t0 is the start time)
+        // And the time should be t0-(nTimeSchemeSteps-1)*dt, to-(nTimeSchemeSteps-2)*dtdt, ... , t0-dt (t0 is the start time)
         dolfin::begin (dolfin::DBG, "Creating initial solutions...");
         unsigned int stepNumber;
-        for (stepNumber = 0; stepNumber < nTimeSchemeSteps_; ++stepNumber)
+        for (stepNumber = nTimeSchemeSteps_; stepNumber > 0; --stepNumber)
         {
-            solution_.emplace_back (std::make_pair (time_ -> value () + stepNumber * dt, 
+            solution_.emplace_back (std::make_pair (time_ -> value () - (stepNumber - 1) * dt_, 
                                                     dolfin::Function (timeSteppingProblem_->functionSpace ())));
         }
         dolfin::log (dolfin::DBG, "Created %d initial solutions", stepNumber + 1);
         
-        // set the correct value for time_, since it was not incremented during the previous loop.
-        // Use stepNumber - 1 since time_ will be incremented at the *beginning* of the time loop, not at the end
-        time_ -> add ((stepNumber - 1) * dt);
-            
         dolfin::end ();
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
@@ -222,21 +218,21 @@ namespace dcp
     
 
 
-    double& TimeDependentProblem::startTime ()
+    const double& TimeDependentProblem::startTime ()
     {
         return startTime_;
     }
     
 
 
-    double& TimeDependentProblem::dt ()
+    const double& TimeDependentProblem::dt ()
     {
         return dt_;
     }
 
 
 
-    double& TimeDependentProblem::endTime ()
+    const double& TimeDependentProblem::endTime ()
     {
         return endTime_;
     }
@@ -589,50 +585,6 @@ namespace dcp
     void TimeDependentProblem::advanceTime ()
     {
         time_ -> add (dt_);
-        
-        std::vector<std::string> previousSolutionCoefficientTypes;
-        parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
-        int timeSteppingSolutionComponent = parameters ["time_stepping_solution_component"];
-        
-        bool previousSolutionIsSetExternally = parameters ["previous_solution_is_set_externally"];
-        if (previousSolutionIsSetExternally == false)
-        {
-            dolfin::begin (dolfin::DBG, "Setting previous solution coefficients...");
-            for (unsigned int step = 1; step <= nTimeSchemeSteps_; ++step)
-            {
-                std::string previousSolutionName = parameters ["previous_solution_name"];
-                // if step > 1, append step number to the name of the coefficient to set 
-                if (step > 1)
-                {
-                    previousSolutionName = previousSolutionName + "_" + std::to_string (step);
-                }
-                
-                // get the index of the function in solution_ to use to set the coefficient
-                unsigned int index = solution_.size () - step;
-                for (auto& previousSolutionCoefficientType : previousSolutionCoefficientTypes)
-                {
-                    if (timeSteppingSolutionComponent >= 0)
-                    {
-                        timeSteppingProblem_ -> setCoefficient 
-                            (previousSolutionCoefficientType, 
-                             dolfin::reference_to_no_delete_pointer ((solution_ [index].second) [timeSteppingSolutionComponent]), 
-                             previousSolutionName);
-                    }
-                    else
-                    {
-                        timeSteppingProblem_ -> setCoefficient 
-                            (previousSolutionCoefficientType, 
-                             dolfin::reference_to_no_delete_pointer (solution_ [index].second),
-                             previousSolutionName);
-                    }
-                } 
-            }
-            dolfin::end ();
-        }
-        else
-        {
-            dolfin::log (dolfin::DBG, "Skipping previous solution setting loop since it is set externally.");
-        }
     }
 
 
@@ -646,7 +598,7 @@ namespace dcp
             solveType != "clear+step" &&
             solveType != "steady")
         {
-            dolfin::dolfin_error ("dcp: TimeDependentProblem.h", 
+            dolfin::dolfin_error ("dcp: TimeDependentProblem.cpp", 
                                   "solve",
                                   "Unknown solve type \"%s\" requested",
                                   solveType.c_str ());
@@ -655,7 +607,9 @@ namespace dcp
         dolfin::log (dolfin::DBG, "Selected solve type: %s", solveType.c_str ());
         
         // check if we are already at the end of time loop
-        if (isFinished ())
+        // such check is only valid when solveType is not "steady", since steady solve does not increment time and
+        // so can be performed as many time as the user wants 
+        if (isFinished () && solveType != "steady")
         {
             printFinishedWarning ();
             return;
@@ -701,7 +655,7 @@ namespace dcp
     
     
 
-    void TimeDependentProblem::plotSolution ()
+    void TimeDependentProblem::plotSolution (const std::string& plotType)
     {
         bool pause = parameters ["pause"];
         int plotComponent = parameters ["plot_component"];
@@ -718,8 +672,54 @@ namespace dcp
         
         dolfin::begin (dolfin::DBG, "Plotting...");
         
-        for (auto& timeSolutionPair : solution_)
+        if (plotType == "all")
         {
+            for (auto& timeSolutionPair : solution_)
+            {
+                double time = timeSolutionPair.first;
+                
+                // get right function to plot
+                if (plotComponent == -1)
+                {
+                    functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second);
+                    dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, all components...");
+                }
+                else
+                {
+                    functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second [plotComponent]);
+                    dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, component %d...", plotComponent);
+                }
+
+                // actual plotting
+                if (solutionPlotter_ == nullptr)
+                {
+                    dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
+                    solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (time) + plotTitle);
+                }
+                else if (! solutionPlotter_ -> is_compatible (functionToPlot))
+                {
+                    dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
+                    dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
+                    solutionPlotter_ = dolfin::plot (functionToPlot, "Time = " + std::to_string (time) + plotTitle);
+                }
+                else 
+                {
+                    solutionPlotter_ -> parameters ["title"] = std::string ("Time = " + std::to_string (time) + plotTitle);
+                    solutionPlotter_ -> plot (functionToPlot);
+                }
+
+                if (pause)
+                {
+                    dolfin::interactive ();
+                }
+            }
+        }
+        else if (plotType == "last")
+        {
+            // get last element in vector
+            auto timeSolutionPair = solution_.back ();
+            
+            // get time
             double time = timeSolutionPair.first;
             
             // get right function to plot
@@ -756,8 +756,13 @@ namespace dcp
             {
                 dolfin::interactive ();
             }
+
         }
-        
+        else
+        {
+            dolfin::warning ("Uknown plot type \"%s\". No plot performed", plotType.c_str ());
+        }
+            
         dolfin::end ();
     }
 
@@ -836,12 +841,27 @@ namespace dcp
 
         setTimeDependentDirichletBCs ();
 
+        setPreviousSolutionsCoefficients ();
+        
         dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
         timeSteppingProblem_->solve ();
         dolfin::end ();
         
         // TODO how does one store the last solution computed if he is subiterating with steadySolve()?
         // and more importantly, does one need to?
+        
+        // save new solution in solution_, only if the time of the currently last solution is not the same as the
+        // current time value. In fact, if they are the same it means that we are solving the same time step once again
+        // (maybe we are subiterating, or we are calling steadySolve() for whatever reason). In this case, replace the
+        // last solution
+        if (solution_.back ().first == time_ -> value ())
+        {
+            solution_.pop_back ();
+        }
+        solution_.push_back (std::make_pair (time_ -> value (), timeSteppingProblem_->solution ()));
+        
+        // TODO save only the number of soultions needed to advance in time (i.e. one if the method is a one-step time
+        // scheme, two for 2-steps time scheme....)
     }
 
     void TimeDependentProblem::step ()
@@ -851,11 +871,6 @@ namespace dcp
         dolfin::log (dolfin::INFO, "TIME = %f s", time_ -> value ());
         
         steadySolve ();
-        
-        solution_.push_back (std::make_pair (time_ -> value (), timeSteppingProblem_->solution ()));
-        // TODO save only the number of soultions needed to advance in time (i.e. one if the method is a one-step time
-        // scheme, two for 2-steps time scheme....). This will force us to come up with a way to store the solution 
-        // even when we do not call solveLoop though
     }
 
     
@@ -988,8 +1003,57 @@ namespace dcp
         dolfin::end ();
     }
     
-            
     
+
+    void TimeDependentProblem::setPreviousSolutionsCoefficients ()
+    {
+        std::vector<std::string> previousSolutionCoefficientTypes;
+        parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
+        int timeSteppingSolutionComponent = parameters ["time_stepping_solution_component"];
+        
+        bool previousSolutionIsSetExternally = parameters ["previous_solution_is_set_externally"];
+        if (previousSolutionIsSetExternally == false)
+        {
+            dolfin::begin (dolfin::DBG, "Setting previous solution coefficients...");
+            for (unsigned int step = 1; step <= nTimeSchemeSteps_; ++step)
+            {
+                std::string previousSolutionName = parameters ["previous_solution_name"];
+                // if step > 1, append step number to the name of the coefficient to set 
+                if (step > 1)
+                {
+                    previousSolutionName = previousSolutionName + "_" + std::to_string (step);
+                }
+                
+                // get the index of the function in solution_ to use to set the coefficient
+                unsigned int index = solution_.size () - step;
+                for (auto& previousSolutionCoefficientType : previousSolutionCoefficientTypes)
+                {
+                    if (timeSteppingSolutionComponent >= 0)
+                    {
+                        timeSteppingProblem_ -> setCoefficient 
+                            (previousSolutionCoefficientType, 
+                             dolfin::reference_to_no_delete_pointer ((solution_ [index].second) [timeSteppingSolutionComponent]), 
+                             previousSolutionName);
+                    }
+                    else
+                    {
+                        timeSteppingProblem_ -> setCoefficient 
+                            (previousSolutionCoefficientType, 
+                             dolfin::reference_to_no_delete_pointer (solution_ [index].second),
+                             previousSolutionName);
+                    }
+                } 
+            }
+            dolfin::end ();
+        }
+        else
+        {
+            dolfin::log (dolfin::DBG, "Skipping previous solution setting loop since it is set externally.");
+        }
+    }
+
+
+
     void TimeDependentProblem::printFinishedWarning ()
     {
         dolfin::warning ("No time iteration performed in solve() function. End time already reached.");

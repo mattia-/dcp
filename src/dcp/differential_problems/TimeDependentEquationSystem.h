@@ -22,6 +22,7 @@
 
 #include <dcp/differential_problems/AbstractEquationSystem.h>
 #include <dcp/differential_problems/TimeDependentProblem.h>
+#include <dcp/time/Time.h>
 #include <map>
 #include <tuple>
 #include <memory>
@@ -50,7 +51,20 @@ namespace dcp
 
             /******************* CONSTRUCTORS ******************/
             //! Default constructor 
-            TimeDependentEquationSystem ();
+            /*!
+             *  \param time the time object for the simulation. It will be compared to the time object stored in the
+             *  time dependent problems that are added to the system through the method \c addProblem()
+             *  \param startTime the start time for the simulation. It will be compared to the start time stored in the
+             *  time dependent problems that are added to the system through the method \c addProblem()
+             *  \param dt the time step for the simulation. It will be compared to the time step stored in the
+             *  time dependent problems that are added to the system through the method \c addProblem()
+             *  \param endTime the end time for the simulation. It will be compared to the end time stored in the
+             *  time dependent problems that are added to the system through the method \c addProblem()
+             */
+            TimeDependentEquationSystem (const std::shared_ptr<dcp::Time>& time,
+                                         const double& startTime,
+                                         const double& dt,
+                                         const double& endTime);
             
             
             /******************* DESTRUCTOR *******************/
@@ -59,6 +73,44 @@ namespace dcp
             
 
             /******************** METHODS *********************/
+            //! Add problem to the map of problems to be solved [1]
+            /*!
+             *  The parameters are:
+             *  \param problemName the problem name
+             *  \param problem a const reference to an \c AbstractProblem. 
+             *  The class will make a copy of the input problem calling the method \c clone().
+             *  The problem's name is inserted at the end of \c solveOrder_
+             *  This method overrides that in base class, since we need to change the behaviour when a 
+             *  \c dcp::TimeDependentProblem is passed to the function. Indeed, if this is the case, the function will
+             *  check if the protected members \c time_, \c startTime_, \c endTime_ and \c dt_ are the same as those
+             *  stored in the time dependent problem given as input. This means that all time dependent problems 
+             *  that one wants to store in an equation system must share the same \c dcp::Time object and have the same
+             *  values for start time, end time and time step.
+             *  NB: since this method will invoke \c clone() on problem, clone method MUST be \c shallow_clone 
+             *  (or an equivalent method that builds the object sharing the same \c dcp::Time object). In fact, the 
+             *  system will increment time JUST ONCE, so it is pivotal that all the problems in the system share the
+             *  same time object. No check on the clone method is performed in the function because that would limit
+             *  the usage of this function to a single clone type, while the user may want to derive a new class from
+             *  \c dcp::TimeDependentProblem with a new clone method
+             */
+            virtual void addProblem (const std::string& problemName, dcp::AbstractProblem& problem);
+            
+            //! Add problem to the map of problems to be solved [2]
+            /*!
+             *  The parameters are:
+             *  \param problemName the problem name
+             *  \param problem a shared pointer to a \c dcp::AbstractProblem. 
+             *  The problem's name is inserted at the end of \c solveOrder_
+             *  This method overrides that in base class, since we need to change the behaviour when a 
+             *  \c dcp::TimeDependentProblem is passed to the function. Indeed, if this is the case, the function will
+             *  check if the protected members \c time_, \c startTime_, \c endTime_ and \c dt_ are the same as those
+             *  stored in the time dependent problem given as input. This means that all time dependent problems 
+             *  that one wants to store in an equation system must share the same \c dcp::Time object and have the same
+             *  values for start time, end time and time step.
+             */
+            virtual void addProblem (const std::string& problemName, 
+                                     const std::shared_ptr<dcp::AbstractProblem> problem);
+            
             //! Adds link between problems' coefficient and solution at a previous time step [1]
             /*!
              *  This function will add to the stored map \c linksToPreviousSolutions_ a \c std::pair created on the
@@ -180,6 +232,23 @@ namespace dcp
              */
             virtual dcp::TimeDependentProblem& operator[] (const std::size_t& position) override;
             
+            //! Return the time object of the simulation
+            std::shared_ptr<dcp::Time> time () const;
+            
+            //! Return the start time of the simulation
+            const double& startTime () const;
+            
+            //! Return the time step of the simulation
+            const double& dt () const;
+            
+            //! Return the end time of the simulation
+            const double& endTime () const;
+             
+            //! Advance time value \c time_. It just calls the increment function <tt>time_ -> add ()</tt> 
+            //! with <tt>parameters ["dt"]</tt> as input argument.
+            //! This allows us to automatically have a backwards time dependent problem if \c dt_ is negative.
+            virtual void advanceTime ();
+            
             //! Solve all the problems in the order specified by the private member \c solveOrder_. 
             /*! 
              *  The single problems will be solved calling the \c solve method with \c solveType argument equal 
@@ -187,9 +256,9 @@ namespace dcp
              */
             virtual void solve () override;
             
-            //! Solve the problem corresponding to the name given
+            //! Solve the problem corresponding to the name given (once)
             /*!
-             *  The problem will be solved calling the \c solve method with \c type argument equal to \c "step".
+             *  The problem will be solved calling the \c solve method with \c type argument equal to \c "steady".
              *  \param problemName a string identifying the problem to be solved. If no problem with that name
              *  is found, a warning is issued
              */
@@ -229,6 +298,18 @@ namespace dcp
              *  so on) 
              */
             std::map <LinkKey, PreviousSolutionLinkValue> linksToPreviousSolutions_;
+            
+            //! The time of the system
+            std::shared_ptr<dcp::Time> time_;
+            
+            //! Start time for the simulation
+            double startTime_;
+            
+            //! Time step
+            double dt_;
+            
+            //! End time for the simulation
+            double endTime_;
     };
 }
 

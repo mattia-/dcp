@@ -295,8 +295,15 @@ namespace dcp
     
 
     /********************** METHODS ***********************/
-    void AbstractProblem::plotSolution ()
+    void AbstractProblem::plotSolution (const std::string& plotType)
     {
+        // check if plotType is known
+        if (plotType != "all")
+        {
+            dolfin::warning ("Uknown plot type \"%s\". No plot performed", plotType.c_str ());
+            return;
+        }
+        
         dolfin::begin (dolfin::DBG, "Plotting...");
         int plotComponent = parameters ["plot_component"];
         

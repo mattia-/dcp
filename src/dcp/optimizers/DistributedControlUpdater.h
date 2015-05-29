@@ -31,7 +31,7 @@ namespace dcp
      *  
      *  This class is a functor which can be passed to the method \c apply() of any class
      *  of the \c AbstractDescentMethod hierarchy, which will use it to update the value of
-     *  the control parameter in the \c EquationSystem (also passed to the method \c apply()
+     *  the control parameter in the \c AbstractEquationSystem (also passed to the method \c apply()
      *  of the same class) as the optimization proceeds.
      */
     class DistributedControlUpdater
@@ -46,7 +46,7 @@ namespace dcp
             //! Constructor
             /*! 
              *  Input arguments are:
-             *  \param problemName string that identifies the problem (in the \c EquationSystem object 
+             *  \param problemName string that identifies the problem (in the \c AbstractEquationSystem object 
              *  passed as input to <tt>this->operator() () </tt>) which contains the control parameter to be updated
              *  \param coefficientType the type of the coefficient representing the control parameter inside the problem. 
              *  This will be used by the call to \c dcp::AbstractProblem::setCoefficient()
@@ -65,13 +65,13 @@ namespace dcp
              *  \param compositeProblem the problem on which to operate
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
-            void operator() (dcp::EquationSystem& compositeProblem, 
+            void operator() (dcp::AbstractEquationSystem& compositeProblem, 
                              const dolfin::GenericFunction& coefficientValue) const;
             
         // ---------------------------------------------------------------------------------------------//
         
         protected:
-            //! The name identifying the problem inside the \c EquationSystem which contains the
+            //! The name identifying the problem inside the \c AbstractEquationSystem which contains the
             //! control parameter
             std::string problemName_;
            

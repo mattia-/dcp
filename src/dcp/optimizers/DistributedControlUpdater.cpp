@@ -34,7 +34,7 @@ namespace dcp
 
 
     /************************* OPERATORS ********************/
-    void DistributedControlUpdater::operator() (dcp::EquationSystem& compositeProblem, 
+    void DistributedControlUpdater::operator() (dcp::AbstractEquationSystem& compositeProblem, 
                                                 const dolfin::GenericFunction& coefficientValue) const
     {
         dcp::AbstractProblem& problem = compositeProblem [problemName_];

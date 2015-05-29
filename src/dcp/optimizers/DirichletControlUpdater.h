@@ -68,7 +68,7 @@ namespace dcp
              *  \param compositeProblem the problem on which to operate
              *  \param dirichletBCValue the new value for the control Dirichlet boundary condition 
              */
-            void operator() (dcp::EquationSystem& compositeProblem, 
+            void operator() (dcp::AbstractEquationSystem& compositeProblem, 
                              const dolfin::GenericFunction& dirichletBCValue) const;
 
             // ---------------------------------------------------------------------------------------------//

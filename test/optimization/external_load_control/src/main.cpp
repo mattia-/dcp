@@ -42,18 +42,6 @@ class GradientEvaluator
         }
 };
 
-class ProblemUpdater
-{
-    public:
-        void operator() (dcp::EquationSystem& problem, 
-                         const dolfin::GenericFunction& controlValue) const
-        {
-            problem["primal"].setCoefficient ("linear_form", 
-                                              dolfin::reference_to_no_delete_pointer (controlValue),
-                                              "g");
-        }
-};
-
 class DirichletBoundary
 {
     public:
@@ -159,15 +147,12 @@ int main (int argc, char* argv[])
     // ============
     problems["primal"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (g), "g");
     
-    // define control value updater
-    ProblemUpdater updater;
-    
     // define optimizer
     dcp::BacktrackingOptimizer backtrackingOptimizer;
     backtrackingOptimizer.parameters ["output_file_name"] = "results.txt";
     backtrackingOptimizer.parameters ["max_minimization_iterations"] = 1000;
     
-    backtrackingOptimizer.apply (problems, objectiveFunctional, g, updater);
+    backtrackingOptimizer.apply (problems, objectiveFunctional, g, dcp::DistributedControlUpdater ("primal", "linear_form", "g"));
             
 
     // compute difference between target and reconstructed solution

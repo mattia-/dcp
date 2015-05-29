@@ -76,8 +76,8 @@ namespace dcp
             int secondFunctionRank = second.value_rank ();
             dolfin::log (dolfin::DBG, "Second function rank is: %d", secondFunctionRank);
             
-            // check ir ranks match
-            if (firstFunctionRank == secondFunctionRank)
+            // check if ranks match
+            if (firstFunctionRank != secondFunctionRank)
             {
                 dolfin::dolfin_error ("dcp: DotProduct.cpp",
                                       "getDotProductComputer",

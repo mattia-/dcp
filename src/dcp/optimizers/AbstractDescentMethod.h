@@ -111,7 +111,7 @@ namespace dcp
              *  The default value is on object of type \c dcp::DotProduct default-constructed, which will try to
              *  determine the right form to use by checking the geometrical dimensions of the input objects. 
              *  However, sometimes it may be useful to have a user-defined object to compute the dot product.
-             *  o do so, use the function \c setDotProduct
+             *  To do so, use the function \c setDotProduct
              */
             dcp::DotProduct dotProduct_;
             

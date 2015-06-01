@@ -38,6 +38,7 @@ namespace dcp
         dt_ (dt),
         endTime_ (endTime)
     { 
+        solveType_ = "steady";
         dolfin::log (dolfin::DBG, "TimeDependentEquationSystem object created");
     }
 
@@ -464,18 +465,53 @@ namespace dcp
             
             dolfin::log (dolfin::INFO, "TIME = %f s", time_ -> value ());
             
-            for (auto problemName : solveOrder_)
+            auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);
+            auto subiterationsEnd = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.second);
+
+            // increment subiterationsEnd since the range given to subiterate must be inclusive for the beginning and 
+            // exclusive for the end. Of course, if subiterationsEnd is already solveOrder_.end (), there is no need to
+            // increment it
+            if (subiterationsEnd != solveOrder_.end ())
             {
-                // solve problem
-                solve (problemName);
-                
-                // plot solution
-                dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
-                int plotInterval = problem.parameters["plot_interval"];
-                
-                if (plotInterval > 0 && timeStep % plotInterval == 0)
+                subiterationsEnd++;
+            }
+        
+            auto problemName = solveOrder_.begin ();
+            while (problemName != solveOrder_.end ())
+            {
+                if (problemName != subiterationsBegin)
                 {
-                    problem.plotSolution ("last");
+                    // solve problem
+                    solve (*problemName);
+                    
+                    // plot solution
+                    dcp::TimeDependentProblem& problem = this -> operator[] (*problemName);
+                    int plotInterval = problem.parameters["plot_interval"];
+                    
+                    if (plotInterval > 0 && timeStep % plotInterval == 0)
+                    {
+                        problem.plotSolution ("last");
+                    }
+                    problemName++;
+                }
+                else
+                {
+                    subiterate (subiterationsBegin, subiterationsEnd);
+                    
+                    // plot solution of all subiterated problems
+                    for (problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
+                    {
+                        dcp::TimeDependentProblem& problem = this -> operator[] (*problemName);
+                        int plotInterval = problem.parameters["plot_interval"];
+
+                        if (plotInterval > 0 && timeStep % plotInterval == 0)
+                        {
+                            problem.plotSolution ("last");
+                        }
+                    }
+                    
+                    // problemName should already be ok, but set it just to be sure :)
+                    problemName = subiterationsEnd;
                 }
             }
             
@@ -527,7 +563,7 @@ namespace dcp
         // 2)
         // solve problem
         dolfin::log (dolfin::PROGRESS, "Calling solve method on problem...");
-        problem.solve ("steady");
+        problem.solve (solveType_);
         
         dolfin::end ();
     }

@@ -303,17 +303,11 @@ namespace dcp
                  *  for more details on how the protected member \c solution_ works and why it is declared as a 
                  *  \c std::pair.
                  *
-                 *  \param type the solution type requested. In this class, the only possibility is to set
-                 *  \c type equal to \c "default".
+                 *  \param type the solution type wanted. Possible values are:
+                 *  \li \c "default" : the normal solution process
+                 *  \li \c "stash" : solve the problem but store the solution in \c stashedSolution_
                  */
                 virtual void solve (const std::string& type = "default") override;
-
-                //! Solve problem specifying flag
-                /*!
-                 *  \param solverParameters object of type \c dolfin::parameters that contain the parameters to
-                 *  be used for the non linear solver
-                 */
-                virtual void solve (const dolfin::Parameters& solverParameters);
 
                 //! Clone method. Overrides method in \c AbstractProblem
                 /*!
@@ -816,7 +810,7 @@ namespace dcp
         void NonlinearProblem<T_ResidualForm, T_JacobianForm>::
         solve (const std::string& solveType) 
         {
-            if (solveType != "default")
+            if (solveType != "default" && solveType != "stash")
             {
                 dolfin::dolfin_error ("dcp: NonlinearProblem.h", 
                                       "solve",
@@ -842,65 +836,54 @@ namespace dcp
             // call DirichletBC* destructor, which means that the pointers will be destroyed but the object they point
             // to will not
             
-            // now solve non linear problem and store solution in solution_.
+            // now solve non linear problem and store solution in solution_ or stashedSolution_ accordinf to solveType.
             // We need to check whether tmpDirichletBCs is empty, and call the appropriate function
             // Parameters passed to the solver are those stored in private member "parameters" in the set identified
             // by parameter "solver_parameters_set_name"
             std::string solverParametersSetName = parameters ["solver_parameters_set_name"];
             dolfin::log (dolfin::DBG, "Solver parameters set name is: %s", solverParametersSetName.c_str ());
-            if (tmpDirichletBCs.size () != 0)
+            if (solveType == "default")
             {
-                dolfin::solve (residualForm_ == 0, solution_.back ().second, tmpDirichletBCs, jacobianForm_, 
-                               parameters (solverParametersSetName));
+                if (tmpDirichletBCs.size () != 0)
+                {
+                    dolfin::solve (residualForm_ == 0, 
+                                   solution_.back ().second, 
+                                   tmpDirichletBCs, 
+                                   jacobianForm_, 
+                                   parameters (solverParametersSetName));
+                }
+                else
+                {
+                    dolfin::solve (residualForm_ == 0, 
+                                   solution_.back ().second, 
+                                   jacobianForm_, 
+                                   parameters (solverParametersSetName));
+                }
             }
-            else
+            else if (solveType == "stash")
             {
-                dolfin::solve (residualForm_ == 0, solution_.back ().second, jacobianForm_, 
-                               parameters (solverParametersSetName));
-            }
-            
-            dolfin::end ();
-        }
-
-
-
-    template <class T_ResidualForm, class T_JacobianForm>
-        void NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        solve (const dolfin::Parameters& solverParameters)
-        {
-            dolfin::begin (dolfin::DBG, "Solving problem...");
-            
-            dolfin::log (dolfin::DBG, "Creating temporary vectors of dolfin::DirichletBC pointers...");
-            // create vector of POINTERS to DirichletBC. This is needed to call the function dolfin::solve
-            std::vector<const dolfin::DirichletBC*> tmpDirichletBCs (dirichletBCs_.size (), nullptr);
-            std::size_t counter = 0;
-            
-            for (auto i = dirichletBCs_.begin (); i != dirichletBCs_.end (); ++i)
-            {
-                tmpDirichletBCs[counter] = &(i->second);
-                counter++;
-            }
-            // note that when tmpDirichletBCs gets destroyd (upon exit of the function) the vector distructor will
-            // call DirichletBC* destructor, which means that the pointers will be destroyed but the object they point
-            // to will not
-            
-            // now solve non linear problem and store solution in solution_.
-            // We need to check whether tmpDirichletBCs is empty, and call the appropriate function
-            // Parameters passed to the solver are those stored in the input variable
-            if (tmpDirichletBCs.size () != 0)
-            {
-                dolfin::solve (residualForm_ == 0, solution_.back ().second, tmpDirichletBCs, jacobianForm_, solverParameters);
-            }
-            else
-            {
-                dolfin::solve (residualForm_ == 0, solution_.back ().second, jacobianForm_, solverParameters);
+                if (tmpDirichletBCs.size () != 0)
+                {
+                    dolfin::solve (residualForm_ == 0, 
+                                   stashedSolution_,
+                                   tmpDirichletBCs, 
+                                   jacobianForm_, 
+                                   parameters (solverParametersSetName));
+                }
+                else
+                {
+                    dolfin::solve (residualForm_ == 0, 
+                                   stashedSolution_,
+                                   jacobianForm_, 
+                                   parameters (solverParametersSetName));
+                }
             }
             
             dolfin::end ();
         }
-    
-    
-    
+
+
+
     template <class T_ResidualForm, class T_JacobianForm>
         dcp::NonlinearProblem <T_ResidualForm, T_JacobianForm>*
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::

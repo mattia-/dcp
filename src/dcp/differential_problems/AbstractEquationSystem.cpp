@@ -18,7 +18,9 @@
  */ 
 
 #include <dcp/differential_problems/AbstractEquationSystem.h>
+#include <dcp/utils/DotProduct.h>
 #include <utility>
+#include <iterator>
 #include <tuple>
 #include <dolfin.h>
 #include <algorithm>
@@ -30,8 +32,19 @@ namespace dcp
     AbstractEquationSystem::AbstractEquationSystem () : 
         storedProblems_ (),
         solveOrder_ (),
-        problemsLinks_ ()
+        problemsLinks_ (),
+        subiterationsRange_ (),
+        solveType_ ("default"),
+        solutionType_ ("default")
     { 
+        dolfin::begin (dolfin::DBG, "Building AbstractEquationSystem...");
+        
+        dolfin::log (dolfin::DBG, "Setting up parameters...");
+        parameters.add ("subiterations_tolerance", 1e-6);
+        parameters.add ("subiterations_maximum_iterations", 10);
+            
+        dolfin::end ();
+        
         dolfin::log (dolfin::DBG, "AbstractEquationSystem object created");
     }
 
@@ -61,10 +74,24 @@ namespace dcp
     
 
 
+    const std::pair<std::string, std::string>& AbstractEquationSystem::subiterationsRange () const
+    {
+        return subiterationsRange_;
+    }
+        
+            
+
     /******************* METHODS *******************/
     void AbstractEquationSystem::addProblem (const std::string& problemName, 
                                              dcp::AbstractProblem& problem)
     {
+        if (problemName.empty ())
+        {
+            dolfin::dolfin_error ("dcp: AbstractEquationSystem.cpp",
+                                  "addProblem",
+                                  "Empty problem names not allowed");
+        }
+
         dolfin::begin (dolfin::DBG, 
                        "Inserting problem \"%s\" in equation system...", 
                        problemName.c_str ());
@@ -76,7 +103,7 @@ namespace dcp
         auto result = storedProblems_.insert 
             (std::make_pair (problemName, std::shared_ptr<dcp::AbstractProblem> (problem.clone ())));
         
-        // if problem was not inserted in list, issue a warning; else, add it also to the vector solveOrder_
+        // if problem was not inserted in map, issue a warning; else, add it to solveOrder_
         if (result.second == false)
         {
             dolfin::warning ("Problem \"%s\" already exist in equation system", 
@@ -97,6 +124,13 @@ namespace dcp
     void AbstractEquationSystem::addProblem (const std::string& problemName, 
                                              const std::shared_ptr<dcp::AbstractProblem> problem)
     {
+        if (problemName.empty ())
+        {
+            dolfin::dolfin_error ("dcp: AbstractEquationSystem.cpp",
+                                  "addProblem",
+                                  "Empty problem names not allowed");
+        }
+
         dolfin::begin (dolfin::DBG, 
                        "Inserting problem \"%s\" in equation system...", 
                        problemName.c_str ());
@@ -107,7 +141,7 @@ namespace dcp
                      problemName.c_str ());
         auto result = storedProblems_.insert (std::make_pair (problemName, problem));
         
-        // if problem was not inserted in list, issue a warning; else, add it also to the vector solveOrder_
+        // if problem was not inserted in map, issue a warning; else, add it to vector solveOrder_
         if (result.second == false)
         {
             dolfin::warning ("Problem \"%s\" already exist in equation system", 
@@ -131,76 +165,74 @@ namespace dcp
                        "Removing problem \"%s\" from equation system...", 
                        problemName.c_str ());
         
+        // 1) 
         // delete problem from storedProblems_
         dolfin::log (dolfin::DBG, 
                      "Removing problem \"%s\" from problems map...", 
                      problemName.c_str ());
         auto result = storedProblems_.erase (problemName);
         
-        // if problem was not inserted in list, issue a warning; else, erase it also from solveOrder_
+        // if problem was not found in map, issue a warning; else, erase it also from solveOrder_
         // remember that erase returns the number of elements removed, which in the case of a map is at most 1
         if (result < 1) 
         {
             dolfin::warning ("Problem \"%s\" was not found in equation system. Maybe you used a wrong name?",
                              problemName.c_str ());
         }
-        else
+        
+        // 2)
+        // remove problemName from solveOrder_. Remember that we are sure that such name is 
+        // unique in vector, since it was either inserted either by the function addProblem 
+        // (and if two problems with the same name are inserted, the second one does not get 
+        // added either to the map or to the vector) or by the function reorderProblems, 
+        // which checks the input vector for double entries when called).
+        dolfin::log (dolfin::DBG, "Removing problem \"%s\" from problem-names vector...", problemName.c_str ());
+        int erasedCount = 0;
+        
+        // std::find will return an iterator to the element if found and vector::end () if not found
+        auto problemPosition = find (solveOrder_.begin (), solveOrder_.end (), problemName);
+        if (problemPosition != solveOrder_.end ())
         {
-            // 1)
-            // remove problemName from solveOrder_. Remember that we cannot be sure that such name is 
-            // unique in vector and that problems are not in any kind of order.
-            // std::find will return an iterator to the element if found and vector::end () if not found
-            dolfin::log (dolfin::DBG, 
-                         "Removing every occurrence of problem \"%s\" from problem-names vector...", 
-                         problemName.c_str ());
-            int erasedCount = 0;
-            auto problemPosition = find (solveOrder_.begin (), solveOrder_.end (), problemName);
-            while (problemPosition != solveOrder_.end ())
-            {
-                ++erasedCount;
-                solveOrder_.erase (problemPosition);
-                problemPosition = find (solveOrder_.begin (), solveOrder_.end (), problemName);
-            }
-            dolfin::log (dolfin::DBG, 
-                         "Removed %d entries from problem-names vector", 
-                         erasedCount);
-            
-            // 2)
-            // remove problemName from problemsLinks_.
-            // We use an important statement from the c++ standard: 
-            // When erasing from a map, iterators, pointers and references referring to elements removed by the 
-            // function are invalidated. All other iterators, pointers and references keep their validity.
-            dolfin::log (dolfin::DBG, 
-                         "Removing every occurrence of problem \"%s\" from links map...", 
-                         problemName.c_str ());
-            erasedCount = 0;
-            auto linksIterator = problemsLinks_.begin (); // iterator pointing to the first element of the set
-            while (linksIterator != problemsLinks_.end ())
-            {
-                // delete element if problemName appears either as first or as fourth string in the map
-                if (std::get<0> (linksIterator->first) == problemName 
-                    || 
-                    std::get<0> (linksIterator->second) == problemName)
-                {
-                    auto auxIterator = linksIterator; // this will be used for the call to function erase
-                    ++linksIterator;   // iterator incremented to point to next element. 
-                                       // This is performed before erasing element, 
-                                       // so that increment is still valid
-                    
-                    problemsLinks_.erase (auxIterator);
-                    ++erasedCount;
-                }
-                else
-                {
-                    ++linksIterator;
-                }
-            }
-            dolfin::log (dolfin::DBG, 
-                         "Removed %d entries from links map", 
-                         erasedCount);
-            
-            dolfin::end ();
+            ++erasedCount;
+            solveOrder_.erase (problemPosition);
         }
+        dolfin::log (dolfin::DBG, "Removed %d entries from problem-names vector", erasedCount);
+
+        // 3)
+        // remove problemName from problemsLinks_.
+        // We use an important statement from the c++ standard: 
+        // When erasing from a map, iterators, pointers and references referring to elements removed by the 
+        // function are invalidated. All other iterators, pointers and references keep their validity.
+        dolfin::log (dolfin::DBG, 
+                     "Removing every occurrence of problem \"%s\" from links map...", 
+                     problemName.c_str ());
+        
+        erasedCount = 0;
+        auto linksIterator = problemsLinks_.begin (); // iterator pointing to the first element of the set
+        while (linksIterator != problemsLinks_.end ())
+        {
+            // delete element if problemName appears either as first or as fourth string in the map
+            if (std::get<0> (linksIterator->first) == problemName 
+                || 
+                std::get<0> (linksIterator->second) == problemName)
+            {
+                auto auxIterator = linksIterator; // this will be used for the call to function erase
+                
+                // Increment iterator to point to next element. This is performed before erasing element, 
+                // so that increment is still valid
+                ++linksIterator;
+
+                problemsLinks_.erase (auxIterator);
+                ++erasedCount;
+            }
+            else
+            {
+                ++linksIterator;
+            }
+        }
+        dolfin::log (dolfin::DBG, "Removed %d entries from links map", erasedCount);
+
+        dolfin::end ();
     }
 
 
@@ -208,6 +240,31 @@ namespace dcp
     void AbstractEquationSystem::reorderProblems (const std::vector<std::string>& solveOrder)
     {
         dolfin::log (dolfin::DBG, "Setting problems order...");
+
+        // look for empty names
+        auto emptyName = std::find (solveOrder.begin (), solveOrder.end (), std::string ());
+        if (emptyName != solveOrder.end ())
+        {
+            dolfin::warning ("Input vector to reorderProblems() contains empty names. No reordering performed");
+            return;
+        }
+
+        // check for duplicates. Basically, sort the vector and delete double entries, then 
+        // compare the sizes of this vector with the size of the input vector
+        std::vector<std::string> orderedInputVector (solveOrder.begin(), solveOrder.end ());
+        std::sort (orderedInputVector.begin (), orderedInputVector.end ());
+        
+        std::vector<std::string>::iterator it;
+        it = std::unique (orderedInputVector.begin(), orderedInputVector.end());
+
+        orderedInputVector.resize (std::distance (orderedInputVector.begin(), it));
+
+        if (solveOrder.size () != orderedInputVector.size ())
+        {
+            dolfin::warning ("Input vector to reorderProblems() contains duplicates. No reordering performed");
+            return;
+        }
+        
         solveOrder_ = solveOrder;
     }
 
@@ -285,7 +342,7 @@ namespace dcp
         }
         else
         {
-            dolfin::warning ("link (%s, %s, %s) -> (%s, all solution components) not added. Key is already present in map",
+            dolfin::warning ("Link (%s, %s, %s) -> (%s, all solution components) not added. Key is already present in map",
                              linkFrom.c_str (),
                              linkedCoefficientName.c_str (),
                              linkedCoefficientType.c_str (),
@@ -373,7 +430,7 @@ namespace dcp
         }
         else
         {
-            dolfin::warning ("link (%s, %s, %s) -> (%s, component %d) not added. Key is already present in map",
+            dolfin::warning ("Link (%s, %s, %s) -> (%s, component %d) not added. Key is already present in map",
                              linkFrom.c_str (),
                              linkedCoefficientName.c_str (),
                              linkedCoefficientType.c_str (),
@@ -453,6 +510,14 @@ namespace dcp
 
 
 
+    void AbstractEquationSystem::setSubiterationRange (const std::string& first, const std::string& last)
+    {
+        subiterationsRange_.first = first;
+        subiterationsRange_.second = last;
+    }
+    
+
+
     void AbstractEquationSystem::print ()
     {
         dolfin::cout << "Problems solve order:" << dolfin::endl;
@@ -483,7 +548,8 @@ namespace dcp
 
 
 
-    const dolfin::Function& AbstractEquationSystem::solution (const std::string& problemName) const
+    const dolfin::Function& AbstractEquationSystem::solution (const std::string& problemName,
+                                                              const std::string& solutionType) const
     {
         auto problemIterator = storedProblems_.find (problemName);
         if (problemIterator == storedProblems_.end ())
@@ -493,7 +559,7 @@ namespace dcp
                                   "Problem \"%s\" not found in stored problems map", 
                                   problemName.c_str ());
         }
-        return (problemIterator->second)->solution ();
+        return (problemIterator->second)->solution (solutionType);
     }
     
 
@@ -560,8 +626,10 @@ namespace dcp
                          (std::get<0> (link.first)).c_str (),
                          (std::get<0> (link.second)).c_str ());
 
+            // we use solutionType_. Remember that in subiterate() it was set to "stashed", so when relinking takes 
+            // place during subiterations the stashed solution will be used
             problem.setCoefficient (std::get<2> (link.first), 
-                                    dolfin::reference_to_no_delete_pointer (targetProblem.solution ()),
+                                    dolfin::reference_to_no_delete_pointer (targetProblem.solution (solutionType_)),
                                     std::get<1> (link.first));
         }
         else
@@ -575,12 +643,108 @@ namespace dcp
                          (std::get<0> (link.second)).c_str ());
 
             int component = std::get<1> (link.second);
+            
+            // we use solutionType_. Remember that in subiterate() it was set to "stashed", so when relinking takes 
+            // place during subiterations the stashed solution will be used
             problem.setCoefficient (std::get<2> (link.first), 
-                                    dolfin::reference_to_no_delete_pointer (targetProblem.solution ()[component]),
+                                    dolfin::reference_to_no_delete_pointer (targetProblem.solution (solutionType_)[component]),
                                     std::get<1> (link.first));
 
         }
         
         dolfin::end ();
+    }
+    
+
+
+    // --------------------------------------------------------------------------- //
+    
+    /******************* METHODS *******************/
+    void AbstractEquationSystem::subiterate (std::vector<std::string>::const_iterator subiterationsBegin,
+                                             std::vector<std::string>::const_iterator subiterationsEnd)
+    {
+        dolfin::begin ("Subiterating on problems \"%s\" - \"%s\"...", 
+                       (*subiterationsBegin).c_str (),
+                       (*subiterationsEnd).c_str ());
+        
+        // get backups for solveType_ and solutionType_
+        std::string solveTypeBackup = solveType_;
+        std::string solutionTypeBackup = solutionType_;
+        
+        // set solveType_ so that during subiterations solve of type "stash" is called
+        solveType_ = "stash";
+        
+        // solve all the problems the first time. Remember that subiterationsBegin and subiterationsEnd are
+        // iterators on solveOrder_
+        dolfin::begin ("Solving all problems once...");
+        for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
+        {
+            solve (*problemName);
+        }
+        dolfin::end (); // "Solving all problems once"
+            
+        // set solution type so that from now on links are performed on stashed solutions
+        solutionType_ = "stashed";
+        
+        // vector to contain auxiliary solutions needed to compute the norm of the increment. Size is equal to
+        // the number of problems on which we are subiterating
+        dolfin::log (dolfin::DBG, "Setting up subiterations loop variables...");
+        std::vector<dolfin::Function> oldSolutions;
+        for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
+        {
+            oldSolutions.push_back (solution (*problemName, solutionType_));
+        }
+        
+        // loop parameters
+        double tolerance = parameters ["subiterations_tolerance"];
+        int maxIterations = parameters ["subiterations_maximum_iterations"];
+        int iteration = 0;
+        double sumOfNorms = tolerance + 1;
+        dcp::DotProduct dotProduct;
+        
+        // loop until convergence, that is until the sum of the norms of the increment is below tolerance, 
+        // or until maximum number of iterations is reached
+        dolfin::begin ("***** SUBITERATIONS LOOP... *****");
+        while (sumOfNorms >= tolerance && iteration < maxIterations)
+        {
+            iteration++;
+            dolfin::log (dolfin::INFO, "==== Iteration %d ====", iteration);
+            
+            sumOfNorms = 0;
+            int counter = 0;
+            for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
+            {
+                solve (*problemName);
+                
+                dolfin::Function increment ((this -> operator[] (*problemName)).functionSpace ());
+                increment = solution (*problemName, solutionType_) - oldSolutions[counter];
+                sumOfNorms += dotProduct.norm (increment);
+                
+                oldSolutions[counter] = solution (*problemName, solutionType_);
+                
+                counter++;
+            }
+            
+            dolfin::log (dolfin::INFO, "Sum of increments' norms: %f", sumOfNorms);
+        }
+        dolfin::end (); // "SUBITERATIONS LOOP"
+        
+        if (iteration == maxIterations)
+        {
+            dolfin::warning ("Maximum number of iterations reached in subiterations loop");
+        }
+        
+        // apply stashed solutions
+        dolfin::log (dolfin::DBG, "Applying subiterations solutions to problems...");
+        for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
+        {
+            (this -> operator[] (*problemName)).applyStashedSolution ();
+        }
+        
+        // restore original values for solveType_ and solutionType_
+        solveType_ = solveTypeBackup;
+        solutionType_ = solutionTypeBackup;
+        
+        dolfin::end (); // "Subiterating on problems begin - end"
     }
 }

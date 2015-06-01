@@ -197,13 +197,6 @@ namespace dcp
     
 
 
-    const dolfin::Function& TimeDependentProblem::solution () const
-    {
-        return solution_.back ().second;
-    }
-
-
-
     const std::vector <std::pair <double, dolfin::Function> >& TimeDependentProblem::solutionsVector () const
     {
         return solution_;
@@ -596,7 +589,8 @@ namespace dcp
             solveType != "step" && 
             solveType != "clear+default" && 
             solveType != "clear+step" &&
-            solveType != "steady")
+            solveType != "steady" &&
+            solveType != "stash")
         {
             dolfin::dolfin_error ("dcp: TimeDependentProblem.cpp", 
                                   "solve",
@@ -650,10 +644,26 @@ namespace dcp
         {
              steadySolve ();
         }
-        
+        else if (solveType == "stash")
+        {
+             stashSolve ();
+        }
     }
     
     
+
+    void TimeDependentProblem::applyStashedSolution ()
+    {
+        // save stashed solution in solution_, only if the time of the currently last solution is not the same as the
+        // current time value. Otherwise, delete the last solution first
+        if (solution_.back ().first == time_ -> value ())
+        {
+            solution_.pop_back ();
+        }
+        solution_.push_back (std::make_pair (time_ -> value (), stashedSolution_));
+    }
+            
+
 
     void TimeDependentProblem::plotSolution (const std::string& plotType)
     {
@@ -844,25 +854,38 @@ namespace dcp
         setPreviousSolutionsCoefficients ();
         
         dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
-        timeSteppingProblem_->solve ();
+        timeSteppingProblem_->solve ("default");
         dolfin::end ();
         
-        // TODO how does one store the last solution computed if he is subiterating with steadySolve()?
-        // and more importantly, does one need to?
-        
         // save new solution in solution_, only if the time of the currently last solution is not the same as the
-        // current time value. In fact, if they are the same it means that we are solving the same time step once again
-        // (maybe we are subiterating, or we are calling steadySolve() for whatever reason). In this case, replace the
-        // last solution
+        // current time value. Otherwise, delete the last solution first
         if (solution_.back ().first == time_ -> value ())
         {
             solution_.pop_back ();
         }
-        solution_.push_back (std::make_pair (time_ -> value (), timeSteppingProblem_->solution ()));
+        solution_.push_back (std::make_pair (time_ -> value (), timeSteppingProblem_->solution ("default")));
         
         // TODO save only the number of soultions needed to advance in time (i.e. one if the method is a one-step time
         // scheme, two for 2-steps time scheme....)
     }
+
+    void TimeDependentProblem::stashSolve ()
+    {
+        setTimeDependentCoefficients ();
+
+        setTimeDependentDirichletBCs ();
+
+        setPreviousSolutionsCoefficients ();
+        
+        dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
+        timeSteppingProblem_->solve ("default");
+        dolfin::end ();
+        
+        // save new solution in stashedSolution_
+        stashedSolution_ = timeSteppingProblem_->solution ("default");
+    }
+    
+
 
     void TimeDependentProblem::step ()
     {

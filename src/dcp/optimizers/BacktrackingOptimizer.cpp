@@ -267,13 +267,11 @@ namespace dcp
             if (convergenceCriterion == "increment" || convergenceCriterion == "both")
             {
                 dolfin::begin (dolfin::PROGRESS, "Computing relative increment...");
-                previousControlVariableNorm = dotProduct_.norm (previousControlVariable,
-                                                                *(controlVariable.function_space ()->mesh ()));
+                previousControlVariableNorm = dotProduct_.norm (previousControlVariable);
                 dolfin::end ();
 
                 controlVariableIncrement = controlVariable - previousControlVariable;
-                incrementNorm = dotProduct_.norm (controlVariableIncrement,
-                                                  *(controlVariable.function_space ()->mesh ()));
+                incrementNorm = dotProduct_.norm (controlVariableIncrement);
 
                 // compute relative increment. We add DOLFIN_EPS at the denominator in case previousControlVariableNorm 
                 // is zero (like at the first iteration)
@@ -303,19 +301,23 @@ namespace dcp
         
         if (isConverged () == false) 
         {
-            dolfin::log (dolfin::INFO, "");
-            dolfin::warning ("Minimization loop ended because maximum number of iterations was reached");
+            dolfin::log (dolfin::INFO, "End of Minimization loop");
+            dolfin::warning ("Maximum number of iterations reached");
+            dolfin::log (dolfin::INFO, "Iterations performed: %d", minimizationIteration);
             dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
             dolfin::log (dolfin::INFO, "Relative increment = %f", relativeIncrement);
-            dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
+            dolfin::log (dolfin::INFO, "Functional value = %f\n", currentFunctionalValue);
         }
         else
         {
-            dolfin::log (dolfin::INFO, "Minimization loop ended. Iterations performed: %d\n", minimizationIteration);
+            dolfin::log (dolfin::INFO, "End of Minimization loop");
+            dolfin::log (dolfin::INFO, "Iterations performed: %d", minimizationIteration);
             dolfin::log (dolfin::INFO, "Gradient norm = %f", gradientNorm);
             dolfin::log (dolfin::INFO, "Relative increment = %f", relativeIncrement);
-            dolfin::log (dolfin::INFO, "Functional value = %f\n\n", currentFunctionalValue);
+            dolfin::log (dolfin::INFO, "Functional value = %f\n", currentFunctionalValue);
         }
+        
+        dolfin::log (dolfin::INFO, "-----------------------------\n");
         
         if (hasOutputFile)
         {

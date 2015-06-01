@@ -297,12 +297,6 @@ namespace dcp
              */
             virtual const std::map<std::string, dolfin::DirichletBC>& dirichletBCs () const override;
 
-            //! Get const reference to the problem's solution on the last considered time step
-            /*!
-             *  \return a const reference to the problem's solution on the last considered time step
-             */
-            virtual const dolfin::Function& solution () const override;  
-
             //! Get const reference to the problem's solutions vector. Note that this returns also the time values 
             //! associated with the solutions
             /*!
@@ -646,11 +640,21 @@ namespace dcp
              *  \li \c "default" the entire time loop is performed
              *  \li \c "step" only one step of the time loop is performed
              *  \li \c "steady" the problem is solved (once), but time is not incremented
+             *  \li \c "stash" the problem is solved (once) and time is not incremented, but solution is stored in
+             *  \c stashedSolution_
              *  \li <tt> "clear+default" </tt> \c clear method is called before performing the entire time loop
              *  \li <tt> "clear+step" </tt> \c clear method is called before performing one time step of the time loop
              */
             virtual void solve (const std::string& solveType = "default") override;
 
+            //! Copy stashed solution to \c solution_, thus making it the actual solution of the problem, using the 
+            //! current time value.
+            /*! 
+             *  Note that if time value is the same as the last stored solution, that solution is erased before 
+             *  copying the stased solution to \c solution_. Otherwise, it is simply added at the end of the vector
+             */
+            virtual void applyStashedSolution ();
+                
             //! Plot the solution. 
             /*! Overrides the one in \c dcp::AbstractProblem to take into account the fact that 
              *  \c solution_ is now a vector with size greater than one. It uses the value of the parameter \c pause
@@ -728,6 +732,16 @@ namespace dcp
              *  as the previous time step solution. To change it, use the method \c setInitialSolution.
              */ 
             virtual void steadySolve ();
+            
+            //! Solve the time stepping problem just once without incrementing \c time_ and store solution in 
+            //! \c stashedSolution_
+            /*!
+             *  This method solves the time stepping problem one time without incrementing the value stored in \c time_.
+             *  It uses the protected members' value to set the problem. The last element of \c solution_ will be used 
+             *  as the previous time step solution. To change it, use the method \c setInitialSolution.
+             *  The computed solution will be stored in \c stashedSolution_
+             */ 
+            virtual void stashSolve ();
             
             //! Perform one step of the time loop
             /*!

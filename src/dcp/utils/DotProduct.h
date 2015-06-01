@@ -80,15 +80,36 @@ namespace dcp
                                     const dolfin::GenericFunction& second,
                                     const dolfin::Mesh& mesh);
             
+            //! Function to compute the dot product between two \c dolfin::Function objects. 
+            /*! 
+             *  The \c dolfin::Form to be used is the one stored in dotProductComputer_ , if such variable is not empty. 
+             *  Otherwise, it will be determined based on the mesh (third input argument). If no mesh is provided, the
+             *  mesh of the first input argument is used
+             *  \param first the first function of the dot product
+             *  \param second the second function of the dot product
+             *  
+             *  The first function mesh will be used
+             *  
+             *  \return the value of the dot product
+             */
+            virtual double compute (const dolfin::Function& first, 
+                                    const dolfin::Function& second);
+            
             //! Function to compute the norm of a \c dolfin::GenericFunction object.
             /*! 
              *  This function simply wraps a call to \c compute().
              *  \param function the function or expression of which to compute the norm
-             *  \param mesh the mesh to be used, in case \c function is a \c dolfin::Expression. If no mesh is provided,
-             *  the mesh stored in \c function will be used.
+             *  \param mesh the mesh to be used
              */
             virtual double norm (const dolfin::GenericFunction& function, 
                                  const dolfin::Mesh& mesh);
+            
+            //! Function to compute the norm of a \c dolfin::Function object.
+            /*! 
+             *  This function simply wraps a call to \c compute().
+             *  \param function the function or expression of which to compute the norm
+             */
+            virtual double norm (const dolfin::Function& function);
             
             // ---------------------------------------------------------------------------------------------//
 

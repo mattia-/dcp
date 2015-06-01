@@ -471,7 +471,7 @@ namespace dcp
                  * 
                  *  \param type the solution type wanted. Possible values are:
                  *  \li \c "default" : the normal solution process
-                 *  \li \c "must_reassemble" : force system reassembly
+                 *  \li \c "stash" : solve the problem but store the solution in \c stashedSolution_
                  */
                 virtual void solve (const std::string& solveType = "default") override;
 
@@ -1157,7 +1157,7 @@ namespace dcp
         void LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         solve (const std::string& solveType) 
         {
-            if (solveType != "default" && solveType != "must_reassemble")
+            if (solveType != "default" && solveType != "stash")
             {
                 dolfin::dolfin_error ("dcp: LinearProblem.h", 
                                       "solve",
@@ -1170,14 +1170,6 @@ namespace dcp
             update ();
             
             dolfin::begin (dolfin::INFO, "Solving problem...");
-            
-            // variable to save current value of parameter force_reassemble_system
-            bool forceReassembleSystemBackup = parameters ["force_reassemble_system"];
-            if (solveType == "must_reassemble")
-            {
-                // overwrite parameter force_reassemble_system with input value and solve problem
-                parameters ["force_reassemble_system"] = true;
-            }
             
             // define auxiliary string variables
             bool systemIsAssembled = parameters ["system_is_assembled"];
@@ -1213,12 +1205,13 @@ namespace dcp
                 dolfin::end ();
             }
             
-            solver_ -> solve (*(solution_.back ().second.vector ()), rhsVector_);
-            
-            if (solveType == "must_reassemble")
+            if (solveType == "default")
             {
-                // restore value of parameter force_reassemble_system
-                parameters ["force_reassemble_system"] = forceReassembleSystemBackup;
+                solver_ -> solve (*(solution_.back ().second.vector ()), rhsVector_);
+            }
+            else if (solveType == "stash")
+            {
+                solver_ -> solve (*(stashedSolution_.vector ()), rhsVector_);
             }
             
             dolfin::end ();

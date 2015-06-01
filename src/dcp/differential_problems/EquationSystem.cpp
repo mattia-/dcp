@@ -42,9 +42,30 @@ namespace dcp
         // to the latter function the task of performing the actual parameters setting and solving
         dolfin::begin ("Solving problems...");
         
-        for (auto problem : solveOrder_)
+        auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);
+        auto subiterationsEnd = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.second);
+        
+        // increment subiterationsEnd since the range given to subiterate must be inclusive for the beginning and 
+        // exclusive for the end. Of course, if subiterationsEnd is already solveOrder_.end (), there is no need to
+        // increment it
+        if (subiterationsEnd != solveOrder_.end ())
         {
-            solve (problem);
+            subiterationsEnd++;
+        }
+        
+        auto problemName = solveOrder_.begin ();
+        while (problemName != solveOrder_.end ())
+        {
+            if (problemName != subiterationsBegin)
+            {
+                solve (*problemName);
+                problemName++;
+            }
+            else
+            {
+                subiterate (subiterationsBegin, subiterationsEnd);
+                problemName = subiterationsEnd;
+            }
         }
         
         dolfin::end ();
@@ -56,18 +77,8 @@ namespace dcp
     {
         dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
 
-        // get problem with given name from map. Variable problemIterator will be a
-        // std::map <std::string, std::unique_ptr <dcp::AbstractProblem>::iterator
-        dolfin::log (dolfin::DBG, "Looking for problem \"%s\" in problems map...", problemName.c_str ());
-        auto problemIterator = storedProblems_.find (problemName);
-
-        if (problemIterator == storedProblems_.end ())
-        {
-            dolfin::warning ("Problem \"%s\" not found in stored problems map", problemName.c_str ());
-            return;
-        }
-
-        dcp::AbstractProblem& problem = *(problemIterator->second);
+        // get problem with given name from map. 
+        dcp::AbstractProblem& problem = this -> operator[] (problemName);
 
         // 1)
         // loop over problemsLinks_ to reset all links to take changes to coefficients 
@@ -90,7 +101,7 @@ namespace dcp
         // 2)
         // solve problem
         dolfin::log (dolfin::PROGRESS, "Calling solve method on problem...");
-        problem.solve ();
+        problem.solve (solveType_);
         
         dolfin::end ();
     }

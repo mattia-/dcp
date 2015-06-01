@@ -54,7 +54,19 @@ namespace dcp
             
 
             /******************* CONSTRUCTORS ******************/
-            //! Default constructor 
+            //! Defaul constructor 
+            /*!
+             *  The strings in \c subiterationsRange_ are initialized with empty strings. 
+             *  This way, no subiteration is performed (unless \c setSubiterationRange() is explicitly called), 
+             *  since empty name are not allowed for problems. See documentation for \c setSubiterationRange() and
+             *  \c subiterate() for more details.
+             *  The strings \c solutionType_ and \c solveType_ are initialized with \c "default".
+             *  The constructors also sets the following parameters:
+             *      - \c "subiterations_tolerance" the tolerance for the convergence check in the subiterations loop.
+             *        It will be compared against the sum of the increments' norms. Default value: 1e-6
+             *      - \c "subiterations_maximum_iterations" the maximum number of iterations allowed in the 
+             *        subiterations loop. Default value: 10
+             */
             AbstractEquationSystem ();
             
             
@@ -74,13 +86,17 @@ namespace dcp
              */
             virtual const std::vector<std::string> problemsNames () const;
             
+            //! Get names of first and last problems on which subiterations will take place
+            virtual const std::pair<std::string, std::string>& subiterationsRange () const;
+            
 
             /******************** METHODS *********************/
             //! Add problem to the map of problems to be solved [1]
             /*!
              *  The parameters are:
-             *  \param problemName the problem name
-             *  \param problem a const reference to an \c AbstractProblem. 
+             *  \param problemName the problem name. Empty names are not allowed.
+             *  \param problem a const reference to an \c AbstractProblem 
+             *  
              *  The class will make a copy of the input problem calling the method \c clone().
              *  The problem's name is inserted at the end of \c solveOrder_
              */
@@ -89,8 +105,9 @@ namespace dcp
             //! Add problem to the map of problems to be solved [2]
             /*!
              *  The parameters are:
-             *  \param problemName the problem name
+             *  \param problemName the problem name. Empty names are not allowed.
              *  \param problem a shared pointer to a \c dcp::AbstractProblem. 
+             *  
              *  The problem's name is inserted at the end of \c solveOrder_
              */
             virtual void addProblem (const std::string& problemName, 
@@ -104,8 +121,8 @@ namespace dcp
             /*!
              *  \param solveOrder a \c std::vector<std::string> in which the problems' names are ordered as one 
              *  wishes the stored problem to be ordered. No check is performed either on problems' names contained in 
-             *  the input vector or on vectors' size. This means that, for example, the same problem can be 
-             *  insterted more than once, if needed
+             *  the input vector or on vectors' size. The function will, however, check for double entries and empty 
+             *  names, since neither of them are not allowed
              */
             virtual void reorderProblems (const std::vector<std::string>& solveOrder);
             
@@ -166,9 +183,9 @@ namespace dcp
              *  
              *  \return \c true if the link was removed, \c false otherwise
              */
-            bool removeLink (const std::string& linkFrom, 
-                             const std::string& linkedCoefficientName, 
-                             const std::string& linkedCoefficientType);
+            virtual bool removeLink (const std::string& linkFrom, 
+                                     const std::string& linkedCoefficientName, 
+                                     const std::string& linkedCoefficientType);
             
             //! Access problem with given name [1] (read only)
             /*!
@@ -204,8 +221,20 @@ namespace dcp
              */
             virtual dcp::AbstractProblem& operator[] (const std::size_t& position);
             
+            //! Set subiteration range
+            /*! Basically, \c subiterate will be called on the range of problems in \c solveOrder_ going from
+             *  \c subiterationsRange_.first (inclusive) to \c subiterationsRange_.second (also inclusive). 
+             *  The two strings in \c subiterationsRange_ are initialized as empty strings, so that if unless
+             *  \c setSubiterationRange() is called explicitly no subiteration is performed, since
+             *  empty names cannot be used for problems in \c storedProblems_. To indicate the end of the vector
+             *  (i.e.: subiterate to the last problem), use a non-empty string for \c first and an empty string for 
+             *  \c last.
+             *  No check is performed on the validity of the input strings.
+             */
+            virtual void setSubiterationRange (const std::string& first, const std::string& last);
+            
             //! Prints information on the problems: names list (in solution order) and links information.
-            //! It uses \c dolfin::cout stream
+            //! It uses \c dolfin::cout stream TODO fix stream and what gets printed
             virtual void print ();
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_
@@ -225,13 +254,35 @@ namespace dcp
             /*!
              *  \param problemName name of the problem to be accessed. If the name is not found, the function prints an
              *  error message through the function \c dolfin::dolfin_error()
+             *  \param solutionType the solution type requested. Passed along to \c solution() when called on the 
+             *  problem identified by \c problemName. Default value: \c "default" 
+             *  
              *  \return a reference to the problems' solution
              */
-            virtual const dolfin::Function& solution (const std::string& problemName) const;
+            virtual const dolfin::Function& solution (const std::string& problemName, 
+                                                      const std::string& solutionType = "default") const;
+            
+            
+            /********************** VARIABLES ***********************/
+            //! the system parameters
+            dolfin::Parameters parameters;
             
         // ---------------------------------------------------------------------------------------------//  
 
         protected:
+            /******************** METHODS *********************/
+            //! Subiterate on given problems
+            /*!
+             *  The function will subiterate on the problems whose names are stored in \c solveOrder_ 
+             *  between \c subiterationsBegin (inclusive) and \c subiterationsEnd (exclusive), 
+             *  solving each once in the order provided by \c solveOrder_ until convergence. 
+             *  Each problem is solved by calling the method \c solve(problemName)
+             *  TODO allow choice of convergence check. For now: sum of the norms of the increment and max iter
+             */
+            virtual void subiterate (std::vector<std::string>::const_iterator subiterationsBegin,
+                                     std::vector<std::string>::const_iterator subiterationsEnd);
+                
+            /******************** VARIABLES *********************/
             //! Performs the actual linking between problems
             /*!
              *  Being a protected member, this method is just called from library functions. 
@@ -240,10 +291,10 @@ namespace dcp
             virtual void linkProblems (const Link& link);
             
             //! The stored problems
-            std::map <std::string, std::shared_ptr <dcp::AbstractProblem>> storedProblems_;
+            std::map<std::string, std::shared_ptr <dcp::AbstractProblem>> storedProblems_;
 
             //! The solution order of the problems
-            std::vector <std::string> solveOrder_;
+            std::vector<std::string> solveOrder_;
             
             //! The map of links between problems. 
             /*!
@@ -261,8 +312,22 @@ namespace dcp
              *  A map guarantees that no tuple (problem, coefficient type, coefficient name) 
              *  is linked twice against possibly different problems
              */
-            std::map <LinkKey, LinkValue> problemsLinks_;
+            std::map<LinkKey, LinkValue> problemsLinks_;
             
+            //! The strings specifying the name of the first and last problem on which we must subiterate
+            std::pair<std::string, std::string> subiterationsRange_;
+            
+            //! Solve type to be used in the \c solve() method when solving stored problems
+            /*! 
+             *  Initial value: \c "default"
+             */
+            std::string solveType_;
+            
+            //! Solution type to be used when calling \c solution() on stored problems
+            /*! 
+             *  Initial value: \c "default"
+             */
+            std::string solutionType_;
         // ---------------------------------------------------------------------------------------------//  
 
         private:

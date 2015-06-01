@@ -135,9 +135,17 @@ namespace dcp
 
             //! Get const reference to the problem's solution
             /*!
+             *  \param solutionType the type of the solution to return. This allows to return the solution stored
+             *  in \c solution_ or the stashed solution stored in \c stashedSolution_ according to the input string.
+             *  Possible values:
+             *  \li \c "default" the real solution, stored in \c solution_
+             *  \li \c "stashed" the stashed solution
+             *  
+             *  Default value: \c "default"
+             *  
              *  \return a const reference to the second field of the last element of the protected member \c solution
              */
-            virtual const dolfin::Function& solution () const;  
+            virtual const dolfin::Function& solution (const std::string& solutionType = "default") const;  
 
             /********************** SETTERS ***********************/
             //! Set problem coefficients [1]
@@ -299,6 +307,9 @@ namespace dcp
              */
             virtual void solve (const std::string& solveType = "default") = 0;
             
+            //! Copy stashed solution to \c solution_, thus making it the actual solution of the problem
+            virtual void applyStashedSolution ();
+                
             //! Method to plot the solution
             /*!
              *  \param plotType the type of the plot desired. In this case, it is not very useful, since the only 
@@ -333,15 +344,29 @@ namespace dcp
             //! The Dirichlet's boundary conditions. The map associates the bc's name to the bc itself
             std::map<std::string, dolfin::DirichletBC> dirichletBCs_;
 
-            //! Solution of the differential problem. It is declared as a vector of pairs so that it may contain the 
-            //! solution and the time at which it was computed on different timesteps in the derived class
-            //! \c dcp::TimeDependentProblem. For steady problems, it will just have size 1, and the time (i.e. the
-            //! first field of the pair) will have a placeholder value equal to -1
-            std::vector <std::pair <double, dolfin::Function> > solution_;
+            //! Solution of the differential problem. 
+            /*! 
+             *  It is declared as a vector of pairs so that it may contain the solution and the time at which it was 
+             *  computed on different timesteps in the derived class \c dcp::TimeDependentProblem. 
+             *  For steady problems, it will just have size 1, and the time (i.e. the first field of the pair) will 
+             *  have a placeholder value equal to -1
+             *  It is returned through the method \c solution() with input argument \c "default"
+             */
+            std::vector<std::pair <double, dolfin::Function>> solution_;
             
-            //! Counter of dirichletBC inserted in the protected member map. It is used to create a unique
-            //! name for insertion of dirichlet bcs if the input argument \c bcName to \c addDirichletBC() is
-            //! left empty
+            //! The stashed solution
+            /*! 
+             *  Used when one wants to compute a solution but not store it as the actual solution, since it may be 
+             *  just a tentative one (for example if one is subiterating). 
+             *  It is returned through the method \c solution() with input argument \c "stashed"
+             */
+            dolfin::Function stashedSolution_;
+
+            //! Counter of dirichletBC inserted in the protected member map. 
+            /*! 
+             *  It is used to create a unique name for insertion of dirichlet bcs if the input argument \c bcName 
+             *  to \c addDirichletBC() is left empty
+             */
             int dirichletBCsCounter_;
             
             //! The plotter for the solution of the problem

@@ -31,6 +31,7 @@ namespace dcp
         functionSpace_ (functionSpace),
         dirichletBCs_ (),
         solution_ (),
+        stashedSolution_ (*functionSpace_),
         dirichletBCsCounter_ (0),
         solutionPlotter_ ()
     { 
@@ -53,6 +54,7 @@ namespace dcp
         functionSpace_ (new dolfin::FunctionSpace (functionSpace)),
         dirichletBCs_ (),
         solution_ (),
+        stashedSolution_ (functionSpace_),
         dirichletBCsCounter_ (0),
         solutionPlotter_ ()
     { 
@@ -75,6 +77,7 @@ namespace dcp
         functionSpace_ (new dolfin::FunctionSpace (std::move (functionSpace))),
         dirichletBCs_ (),
         solution_ (),
+        stashedSolution_ (functionSpace_),
         dirichletBCsCounter_ (0),
         solutionPlotter_ ()
     { 
@@ -129,9 +132,24 @@ namespace dcp
 
 
 
-    const dolfin::Function& AbstractProblem::solution () const
+    const dolfin::Function& AbstractProblem::solution (const std::string& solutionType) const
     {
-        return solution_.back ().second;
+        if (solutionType == "default")
+        {
+            return solution_.back ().second;
+        }
+        else if (solutionType == "stashed")
+        {
+            return stashedSolution_;
+        }
+        else
+        {
+            dolfin::dolfin_error ("dcp: AbstractProblem.cpp",
+                                  "solution",
+                                  "Unkown solution type \"%s\" requested", solutionType.c_str ());
+            return stashedSolution_; // just to suppress the compilation warning, dolfin_error will cause the program
+                                     // to exit anyway
+        }
     }
 
 
@@ -341,5 +359,13 @@ namespace dcp
         }
         
         dolfin::end ();
+    }
+    
+
+
+    void AbstractProblem::applyStashedSolution ()
+    {
+        solution_.back ().second = stashedSolution_;
+        stashedSolution_ = dolfin::Function (*functionSpace_);
     }
 }

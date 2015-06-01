@@ -280,7 +280,7 @@ namespace dcp
              *  of.
              *  For example one may need to use not only the last solution computed but also the solution at the previous 
              *  time steps, or the solution from two time steps ago. This is what this map is for.
-             *  Thhis map associates a <tt> std::tuple<std::string, std::string, std::string></tt> 
+             *  This map associates a <tt> std::tuple<std::string, std::string, std::string></tt> 
              *  and a <tt>std::pair <std::string, int></tt>, where:
              *  \li the first \c string contains the name of the problem whose coefficient should be linked against 
              *  some other problem's solution

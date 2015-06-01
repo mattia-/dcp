@@ -41,6 +41,14 @@ namespace dcp
     
 
 
+    double DotProduct::compute (const dolfin::Function& first, 
+                                const dolfin::Function& second)
+    {
+        return compute (first, second, *(first.function_space () -> mesh ()));
+    }
+                                
+
+
     double DotProduct::norm (const dolfin::GenericFunction& function, 
                              const dolfin::Mesh& mesh)
     {
@@ -49,10 +57,18 @@ namespace dcp
     
 
 
+    double DotProduct::norm (const dolfin::Function& function)
+    {
+        return norm (function, *(function.function_space () -> mesh ()));
+    }
+    
+
+
     // ---------------------------------------------------------------------------------------------//
 
 
 
+    /********************** PROTECTED METHODS ***********************/
     std::shared_ptr<dolfin::Form> DotProduct::getDotProductComputer (const dolfin::GenericFunction& first,
                                                                      const dolfin::GenericFunction& second,
                                                                      const dolfin::Mesh& mesh)

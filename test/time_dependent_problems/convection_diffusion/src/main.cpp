@@ -97,7 +97,7 @@ int main (int argc, char* argv[])
     // plots
     dolfin::plot (mesh);
     
-    dolfin::interactive ();
+    // dolfin::interactive ();
   
     return 0;
 }

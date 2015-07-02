@@ -147,7 +147,7 @@ int main (int argc, char* argv[])
      * dolfin::plot (navierStokesProblem.solution ()[0], "Velocity");
      * dolfin::plot (navierStokesProblem.solution ()[1], "Pressure");
      */
-    dolfin::interactive ();
+    // dolfin::interactive ();
     
     return 0;
 }

@@ -12,17 +12,3 @@ with::
     k = 0.01
     b = (1, 0)
     u_0 = exp (-[(x - 1)^2 + (y - 1)^2]/0.2)
-
-
-Steps to launch the code:
-
-1) compile::
-
-    mkdir build
-    cd build
-    cmake ..
-    make
-
-2) run the executable::
-
-    ./src/main

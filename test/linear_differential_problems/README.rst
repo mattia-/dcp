@@ -14,16 +14,3 @@ with::
     f = 1
     g = 1
     h = 0
-
-
-Steps to launch the code:
-
-1) compile::
-
-    mkdir build
-    cd build
-    cmake ..
-
-2) run the executable::
-
-    ./src/main

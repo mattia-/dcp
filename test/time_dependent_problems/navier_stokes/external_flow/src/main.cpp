@@ -155,7 +155,7 @@ int main (int argc, char* argv[])
     std::cout << "Solve the problem..." << std::endl;
     navierStokesProblem.solve ();
     
-    dolfin::interactive ();
+    // dolfin::interactive ();
     
     return 0;
 }

@@ -171,7 +171,7 @@ int main (int argc, char* argv[])
     dolfin::plot (g, "Control");
     dolfin::plot (meshCells, "Control region");
     dolfin::plot (difference, "Difference between target and recovered");
-    dolfin::interactive ();
+    // dolfin::interactive ();
     
     return 0;
 }

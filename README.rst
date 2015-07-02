@@ -55,7 +55,7 @@ From the build directory, launch::
 Test
 ====
 
-To run a test, go to the ``test`` directory and follow the instructions of the file README in there
+To run the tests, go to the ``test`` directory and follow the instructions of the file README in there
   
 License
 =======

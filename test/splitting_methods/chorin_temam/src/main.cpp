@@ -168,7 +168,7 @@ int main (int argc, char* argv[])
     std::cout << "Solve the problem..." << std::endl;
     chorinTemamMethod.apply ();
 
-    dolfin::interactive ();
+    // dolfin::interactive ();
     
     return 0;
 }

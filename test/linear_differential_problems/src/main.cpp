@@ -93,7 +93,7 @@ int main (int argc, char* argv[])
     dolfin::plot (mesh);
     poissonProblem.plotSolution ();
     
-    dolfin::interactive ();
+    // dolfin::interactive ();
     
     return 0;
 }

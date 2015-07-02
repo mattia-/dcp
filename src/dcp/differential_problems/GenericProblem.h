@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_ABSTRACTPROBLEM_H_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_ABSTRACTPROBLEM_H_INCLUDE_GUARD
+#ifndef SRC_DIFFERENTIAL_PROBLEMS_GENERICPROBLEM_H_INCLUDE_GUARD
+#define SRC_DIFFERENTIAL_PROBLEMS_GENERICPROBLEM_H_INCLUDE_GUARD
 
 #include <dolfin/mesh/MeshFunction.h>
 #include <dolfin/mesh/SubDomain.h>
@@ -36,21 +36,21 @@
 
 namespace dcp
 {
-    /*! \class AbstractProblem AbstractProblem.h
-     *  \brief Abstract base class for differential problems. 
+    /*! \class GenericProblem GenericProblem.h
+     *  \brief Generic base class for differential problems. 
      *         
      *  This class contains the basic interface for a differential problem to be
      *  solved with FEniCS library. It is an abstract class, it only provides the
      *  basic interface to all differential problems
      */ 
-    class AbstractProblem
+    class GenericProblem
     {
         // ---------------------------------------------------------------------------------------------//
 
         public:
             /************************* CONSTRUCTORS ********************/
             //! Default constructor
-            AbstractProblem () = delete;
+            GenericProblem () = delete;
 
             //!  Constructor with shared pointer
             /*!
@@ -65,7 +65,7 @@ namespace dcp
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
              *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
              */
-            AbstractProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
+            GenericProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
 
 
             //! Constructor with reference
@@ -81,7 +81,7 @@ namespace dcp
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
              *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
              */
-            AbstractProblem (const dolfin::FunctionSpace& functionSpace);
+            GenericProblem (const dolfin::FunctionSpace& functionSpace);
 
             //! Constructor with rvalue reference
             /*!
@@ -96,7 +96,7 @@ namespace dcp
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
              *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
              */
-            AbstractProblem (dolfin::FunctionSpace&& functionSpace);
+            GenericProblem (dolfin::FunctionSpace&& functionSpace);
 
 
             /************************* DESTRUCTOR ********************/
@@ -104,7 +104,7 @@ namespace dcp
             /*! Default destructor, since members of the class are trivially 
              * destructible.
              */
-            virtual ~AbstractProblem () {};
+            virtual ~GenericProblem () {};
 
 
             /********************** GETTERS ***********************/
@@ -321,10 +321,10 @@ namespace dcp
             
             //! Clone method
             /*!
-             *  \return a pointer to a \c dcp::AbstractProblem containing a copy of the object on 
+             *  \return a pointer to a \c dcp::GenericProblem containing a copy of the object on 
              *  which it is called. 
              */
-            virtual dcp::AbstractProblem* clone () const = 0;
+            virtual dcp::GenericProblem* clone () const = 0;
 
 
             /********************** VARIABLES ***********************/

@@ -25,7 +25,7 @@ namespace dcp
     /******************* CONSTRUCTORS *******************/
     Time::Time (const double& time) : time_ (time)
     {
-        dolfin::begin (dolfin::DBG, "Building AbstractProblem...");
+        dolfin::begin (dolfin::DBG, "Building Time...");
         
         dolfin::log (dolfin::DBG, "Set time value to %f", time_);
         

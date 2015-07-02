@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/differential_problems/AbstractEquationSystem.h>
+#include <dcp/differential_problems/GenericEquationSystem.h>
 #include <dcp/utils/DotProduct.h>
 #include <utility>
 #include <iterator>
@@ -29,7 +29,7 @@
 namespace dcp
 {
     /******************* CONSTRUCTORS ******************/
-    AbstractEquationSystem::AbstractEquationSystem () : 
+    GenericEquationSystem::GenericEquationSystem () : 
         storedProblems_ (),
         solveOrder_ (),
         problemsLinks_ (),
@@ -37,7 +37,7 @@ namespace dcp
         solveType_ ("default"),
         solutionType_ ("default")
     { 
-        dolfin::begin (dolfin::DBG, "Building AbstractEquationSystem...");
+        dolfin::begin (dolfin::DBG, "Building GenericEquationSystem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("subiterations_tolerance", 1e-6);
@@ -45,20 +45,20 @@ namespace dcp
             
         dolfin::end ();
         
-        dolfin::log (dolfin::DBG, "AbstractEquationSystem object created");
+        dolfin::log (dolfin::DBG, "GenericEquationSystem object created");
     }
 
     
 
     /******************** GETTERS *********************/
-    const std::size_t AbstractEquationSystem::size () const
+    const std::size_t GenericEquationSystem::size () const
     {
         return storedProblems_.size ();
     }
 
 
 
-    const std::vector<std::string> AbstractEquationSystem::problemsNames () const
+    const std::vector<std::string> GenericEquationSystem::problemsNames () const
     {
         std::vector<std::string> names (storedProblems_.size ());
         int counter = 0;
@@ -74,7 +74,7 @@ namespace dcp
     
 
 
-    const std::pair<std::string, std::string>& AbstractEquationSystem::subiterationsRange () const
+    const std::pair<std::string, std::string>& GenericEquationSystem::subiterationsRange () const
     {
         return subiterationsRange_;
     }
@@ -82,12 +82,12 @@ namespace dcp
             
 
     /******************* METHODS *******************/
-    void AbstractEquationSystem::addProblem (const std::string& problemName, 
-                                             dcp::AbstractProblem& problem)
+    void GenericEquationSystem::addProblem (const std::string& problemName, 
+                                            dcp::GenericProblem& problem)
     {
         if (problemName.empty ())
         {
-            dolfin::dolfin_error ("dcp: AbstractEquationSystem.cpp",
+            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
                                   "addProblem",
                                   "Empty problem names not allowed");
         }
@@ -101,7 +101,7 @@ namespace dcp
                      "Inserting problem in problems map with name \"%s\"...", 
                      problemName.c_str ());
         auto result = storedProblems_.insert 
-            (std::make_pair (problemName, std::shared_ptr<dcp::AbstractProblem> (problem.clone ())));
+            (std::make_pair (problemName, std::shared_ptr<dcp::GenericProblem> (problem.clone ())));
         
         // if problem was not inserted in map, issue a warning; else, add it to solveOrder_
         if (result.second == false)
@@ -121,12 +121,12 @@ namespace dcp
     
     
 
-    void AbstractEquationSystem::addProblem (const std::string& problemName, 
-                                             const std::shared_ptr<dcp::AbstractProblem> problem)
+    void GenericEquationSystem::addProblem (const std::string& problemName, 
+                                            const std::shared_ptr<dcp::GenericProblem> problem)
     {
         if (problemName.empty ())
         {
-            dolfin::dolfin_error ("dcp: AbstractEquationSystem.cpp",
+            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
                                   "addProblem",
                                   "Empty problem names not allowed");
         }
@@ -159,7 +159,7 @@ namespace dcp
 
 
 
-    void AbstractEquationSystem::removeProblem (const std::string& problemName)
+    void GenericEquationSystem::removeProblem (const std::string& problemName)
     {
         dolfin::begin (dolfin::DBG, 
                        "Removing problem \"%s\" from equation system...", 
@@ -237,7 +237,7 @@ namespace dcp
 
 
 
-    void AbstractEquationSystem::reorderProblems (const std::vector<std::string>& solveOrder)
+    void GenericEquationSystem::reorderProblems (const std::vector<std::string>& solveOrder)
     {
         dolfin::log (dolfin::DBG, "Setting problems order...");
 
@@ -270,11 +270,11 @@ namespace dcp
 
 
 
-    void AbstractEquationSystem::addLink (const std::string& linkFrom, 
-                                          const std::string& linkedCoefficientName,
-                                          const std::string& linkedCoefficientType, 
-                                          const std::string& linkTo,
-                                          const bool& forceRelinking)
+    void GenericEquationSystem::addLink (const std::string& linkFrom, 
+                                         const std::string& linkedCoefficientName,
+                                         const std::string& linkedCoefficientType, 
+                                         const std::string& linkTo,
+                                         const bool& forceRelinking)
     {
         dolfin::begin (dolfin::DBG, 
                        "Setting up link (%s, %s, %s) -> (%s, all solution components)...",
@@ -353,12 +353,12 @@ namespace dcp
 
 
 
-    void AbstractEquationSystem::addLink (const std::string& linkFrom, 
-                                          const std::string& linkedCoefficientName,
-                                          const std::string& linkedCoefficientType, 
-                                          const std::string& linkTo,
-                                          const int& linkToComponent,
-                                          const bool& forceRelinking)
+    void GenericEquationSystem::addLink (const std::string& linkFrom, 
+                                         const std::string& linkedCoefficientName,
+                                         const std::string& linkedCoefficientType, 
+                                         const std::string& linkTo,
+                                         const int& linkToComponent,
+                                         const bool& forceRelinking)
     {
         dolfin::begin (dolfin::DBG, 
                        "Setting up link (%s, %s, %s) -> (%s, component %d)...",
@@ -442,9 +442,9 @@ namespace dcp
     
 
 
-    bool AbstractEquationSystem::removeLink (const std::string& linkFrom, 
-                                             const std::string& linkedCoefficientName, 
-                                             const std::string& linkedCoefficientType)
+    bool GenericEquationSystem::removeLink (const std::string& linkFrom, 
+                                            const std::string& linkedCoefficientName, 
+                                            const std::string& linkedCoefficientType)
     {
         auto linkKey = std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType);
         return (problemsLinks_.erase (linkKey)) == 1 ? true : false;
@@ -452,12 +452,12 @@ namespace dcp
             
 
 
-    const dcp::AbstractProblem& AbstractEquationSystem::operator[] (const std::string& name) const
+    const dcp::GenericProblem& GenericEquationSystem::operator[] (const std::string& name) const
     {
         auto problemIterator = storedProblems_.find (name);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::dolfin_error ("dcp: AbstractEquationSystem.cpp",
+            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
                                   "operator[]", 
                                   "Problem \"%s\" not found in stored problems map", 
                                   name.c_str ());
@@ -467,12 +467,12 @@ namespace dcp
 
 
 
-    dcp::AbstractProblem& AbstractEquationSystem::operator[] (const std::string& name)
+    dcp::GenericProblem& GenericEquationSystem::operator[] (const std::string& name)
     {
         auto problemIterator = storedProblems_.find (name);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::dolfin_error ("dcp: AbstractEquationSystem.cpp",
+            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
                                   "operator[]", 
                                   "Problem \"%s\" not found in stored problems map", 
                                   name.c_str ());
@@ -482,11 +482,11 @@ namespace dcp
 
 
 
-    const dcp::AbstractProblem& AbstractEquationSystem::operator[] (const std::size_t& position) const
+    const dcp::GenericProblem& GenericEquationSystem::operator[] (const std::size_t& position) const
     {
         if (position >= solveOrder_.size ())
         {
-            dolfin::dolfin_error ("dcp: AbstractEquationSystem.cpp",
+            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
                                   "operator[]",
                                   "Input value \"%d\" is greater than problems vector size",
                                   position);
@@ -496,11 +496,11 @@ namespace dcp
 
 
 
-    dcp::AbstractProblem& AbstractEquationSystem::operator[] (const std::size_t& position)
+    dcp::GenericProblem& GenericEquationSystem::operator[] (const std::size_t& position)
     {
         if (position >= solveOrder_.size ())
         {
-            dolfin::dolfin_error ("dcp: AbstractEquationSystem.cpp",
+            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
                                   "operator[]",
                                   "Input value \"%d\" is greater than problems vector size",
                                   position);
@@ -510,7 +510,7 @@ namespace dcp
 
 
 
-    void AbstractEquationSystem::setSubiterationRange (const std::string& first, const std::string& last)
+    void GenericEquationSystem::setSubiterationRange (const std::string& first, const std::string& last)
     {
         subiterationsRange_.first = first;
         subiterationsRange_.second = last;
@@ -518,7 +518,7 @@ namespace dcp
     
 
 
-    void AbstractEquationSystem::print ()
+    void GenericEquationSystem::print ()
     {
         dolfin::cout << "Problems solve order:" << dolfin::endl;
         for (auto i : solveOrder_)
@@ -548,13 +548,13 @@ namespace dcp
 
 
 
-    const dolfin::Function& AbstractEquationSystem::solution (const std::string& problemName,
-                                                              const std::string& solutionType) const
+    const dolfin::Function& GenericEquationSystem::solution (const std::string& problemName,
+                                                             const std::string& solutionType) const
     {
         auto problemIterator = storedProblems_.find (problemName);
         if (problemIterator == storedProblems_.end ())
         {
-            dolfin::dolfin_error ("dcp: AbstractEquationSystem.cpp",
+            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
                                   "solution",
                                   "Problem \"%s\" not found in stored problems map", 
                                   problemName.c_str ());
@@ -565,7 +565,7 @@ namespace dcp
 
     
     /******************* PROTECTED METHODS *******************/
-    void AbstractEquationSystem::linkProblems (const dcp::AbstractEquationSystem::Link& link)
+    void GenericEquationSystem::linkProblems (const dcp::GenericEquationSystem::Link& link)
     {
         if (std::get<1> (link.second) == -1)
         {
@@ -601,7 +601,7 @@ namespace dcp
             return;
         }
 
-        dcp::AbstractProblem& problem = *(problemIterator->second);
+        dcp::GenericProblem& problem = *(problemIterator->second);
 
         // check if target problem of the link exists
         dolfin::log (dolfin::DBG, "Looking for link target in problems map...");
@@ -615,7 +615,7 @@ namespace dcp
             return;
         }
 
-        dcp::AbstractProblem& targetProblem = *(targetProblemIterator->second);
+        dcp::GenericProblem& targetProblem = *(targetProblemIterator->second);
 
         if (std::get<1> (link.second) == -1)
         {
@@ -660,8 +660,8 @@ namespace dcp
     // --------------------------------------------------------------------------- //
     
     /******************* METHODS *******************/
-    void AbstractEquationSystem::subiterate (std::vector<std::string>::const_iterator subiterationsBegin,
-                                             std::vector<std::string>::const_iterator subiterationsEnd)
+    void GenericEquationSystem::subiterate (std::vector<std::string>::const_iterator subiterationsBegin,
+                                            std::vector<std::string>::const_iterator subiterationsEnd)
     {
         dolfin::begin ("Subiterating on problems \"%s\" - \"%s\"...", 
                        (*subiterationsBegin).c_str (),

@@ -365,7 +365,7 @@ namespace dcp
 
             protected:
                 //! The density function space. It is just a reference to the element pointed by the third element of 
-                //! \c functionSpaces_, which is inherited from \c dcp::AbstractSplittingMethod.
+                //! \c functionSpaces_, which is inherited from \c dcp::GenericSplittingMethod.
                 const dolfin::FunctionSpace& densityFunctionSpace_;
                 
                 // ---------------------------------------------------------------------------------------------//
@@ -443,7 +443,7 @@ namespace dcp
         // 1) density problem
         dolfin::begin (dolfin::DBG, "Creating density problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingDensityProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingDensityProblem
             (new dcp::LinearProblem <T_DensityBilinearForm, T_DensityLinearForm> (densityFunctionSpace_));
 
         std::shared_ptr <dcp::TimeDependentProblem> densityProblem
@@ -465,7 +465,7 @@ namespace dcp
         // 2) velocity problem
         dolfin::begin (dolfin::DBG, "Creating velocity problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingVelocityProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingVelocityProblem
             (new dcp::LinearProblem <T_VelocityBilinearForm, T_VelocityLinearForm> (velocityFunctionSpace_));
 
         std::shared_ptr <dcp::TimeDependentProblem> velocityProblem
@@ -487,7 +487,7 @@ namespace dcp
         // 3) pressure correction problem
         dolfin::begin (dolfin::DBG, "Creating pressure correction problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingPressureCorrectionProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingPressureCorrectionProblem
             (new dcp::LinearProblem <T_PressureCorrectionBilinearForm, 
              T_PressureCorrectionLinearForm> 
              (pressureFunctionSpace_));
@@ -511,7 +511,7 @@ namespace dcp
         // 4) pressure update problem
         dolfin::begin (dolfin::DBG, "Creating pressure update problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingPressureUpdateProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingPressureUpdateProblem
             (new dcp::LinearProblem <T_PressureUpdateBilinearForm, 
              T_PressureUpdateLinearForm> 
              (pressureFunctionSpace_));
@@ -704,7 +704,7 @@ namespace dcp
         // 1) density problem
         dolfin::begin (dolfin::DBG, "Creating density problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingDensityProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingDensityProblem
             (new dcp::LinearProblem <T_DensityBilinearForm, T_DensityLinearForm> (densityFunctionSpace_));
 
         std::shared_ptr <dcp::TimeDependentProblem> densityProblem
@@ -726,7 +726,7 @@ namespace dcp
         // 2) velocity problem
         dolfin::begin (dolfin::DBG, "Creating velocity problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingVelocityProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingVelocityProblem
             (new dcp::LinearProblem <T_VelocityBilinearForm, T_VelocityLinearForm> (velocityFunctionSpace_));
 
         std::shared_ptr <dcp::TimeDependentProblem> velocityProblem
@@ -748,7 +748,7 @@ namespace dcp
         // 3) pressure correction problem
         dolfin::begin (dolfin::DBG, "Creating pressure correction problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingPressureCorrectionProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingPressureCorrectionProblem
             (new dcp::LinearProblem <T_PressureCorrectionBilinearForm, 
              T_PressureCorrectionLinearForm> 
              (pressureFunctionSpace_));
@@ -772,7 +772,7 @@ namespace dcp
         // 4) pressure update problem
         dolfin::begin (dolfin::DBG, "Creating pressure update problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingPressureUpdateProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingPressureUpdateProblem
             (new dcp::LinearProblem <T_PressureUpdateBilinearForm, 
              T_PressureUpdateLinearForm> 
              (pressureFunctionSpace_));

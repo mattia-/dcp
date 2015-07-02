@@ -17,10 +17,10 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_ABSTRACTEQUATIONSYSTEM_H_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_ABSTRACTEQUATIONSYSTEM_H_INCLUDE_GUARD
+#ifndef SRC_DIFFERENTIAL_PROBLEMS_GENERICEQUATIONSYSTEM_H_INCLUDE_GUARD
+#define SRC_DIFFERENTIAL_PROBLEMS_GENERICEQUATIONSYSTEM_H_INCLUDE_GUARD
 
-#include <dcp/differential_problems/AbstractProblem.h>
+#include <dcp/differential_problems/GenericProblem.h>
 #include <map>
 #include <tuple>
 #include <memory>
@@ -31,18 +31,18 @@
 
 namespace dcp
 {
-    /*! \class AbstractEquationSystem AbstractEquationSystem.h
-     *  \brief Abstract class for multi-variable and multi-equation coupled system
+    /*! \class GenericEquationSystem GenericEquationSystem.h
+     *  \brief Generic class for multi-variable and multi-equation coupled system
      *  
      *  The class contains a \c std::map that associate a problem with its identifying name
      *  and a vector that stores the problem names in the order they should be solved.
      *  The aforementioned map associates a \c std::string to a pointer to 
-     *  \c dcp::AbstractProblem.
+     *  \c dcp::GenericProblem.
      *  The class also offers the possibility to link a problem's coefficient to another problem's
      *  solution through the use of a 
      *  <tt> std::map<std::tuple <std::string, std::string, std::string>, std::pair <std::string, int>> </tt>.
      */
-    class AbstractEquationSystem
+    class GenericEquationSystem
     {
         // ---------------------------------------------------------------------------------------------//  
 
@@ -67,12 +67,12 @@ namespace dcp
              *      - \c "subiterations_maximum_iterations" the maximum number of iterations allowed in the 
              *        subiterations loop. Default value: 10
              */
-            AbstractEquationSystem ();
+            GenericEquationSystem ();
             
             
             /******************* DESTRUCTOR *******************/
             //! Default destructor
-            virtual ~AbstractEquationSystem () = default;
+            virtual ~GenericEquationSystem () = default;
             
 
             /******************** GETTERS *********************/
@@ -95,23 +95,23 @@ namespace dcp
             /*!
              *  The parameters are:
              *  \param problemName the problem name. Empty names are not allowed.
-             *  \param problem a const reference to an \c AbstractProblem 
+             *  \param problem a const reference to an \c GenericProblem 
              *  
              *  The class will make a copy of the input problem calling the method \c clone().
              *  The problem's name is inserted at the end of \c solveOrder_
              */
-            virtual void addProblem (const std::string& problemName, dcp::AbstractProblem& problem);
+            virtual void addProblem (const std::string& problemName, dcp::GenericProblem& problem);
             
             //! Add problem to the map of problems to be solved [2]
             /*!
              *  The parameters are:
              *  \param problemName the problem name. Empty names are not allowed.
-             *  \param problem a shared pointer to a \c dcp::AbstractProblem. 
+             *  \param problem a shared pointer to a \c dcp::GenericProblem. 
              *  
              *  The problem's name is inserted at the end of \c solveOrder_
              */
             virtual void addProblem (const std::string& problemName, 
-                                     const std::shared_ptr<dcp::AbstractProblem> problem);
+                                     const std::shared_ptr<dcp::GenericProblem> problem);
             
             //! Remove problem with the given name from the private member variables. A warning is issued if the name is 
             //! not found
@@ -134,7 +134,7 @@ namespace dcp
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
              *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
-             *  \c setCoefficient (see \c dcp::AbstractProblem documentation for more details)
+             *  \c setCoefficient (see \c dcp::GenericProblem documentation for more details)
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
@@ -157,7 +157,7 @@ namespace dcp
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
              *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
-             *  \c setCoefficient (see \c dcp::AbstractProblem documentation for more details)
+             *  \c setCoefficient (see \c dcp::GenericProblem documentation for more details)
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
@@ -178,7 +178,7 @@ namespace dcp
             //! Remove link between problems' coefficient and solution
             /*!
              *  Removes the link identified by the input arguments from the protected member \c problemsLinks_ .
-             *  The input arguments will be used to create an object of \c dcp::AbstractProblem::LinkKey to use
+             *  The input arguments will be used to create an object of \c dcp::GenericProblem::LinkKey to use
              *  to erase the corresponding entry from \c problemsLinks_ .
              *  
              *  \return \c true if the link was removed, \c false otherwise
@@ -193,7 +193,7 @@ namespace dcp
              *  error message through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
-            virtual const dcp::AbstractProblem& operator[] (const std::string& name) const;
+            virtual const dcp::GenericProblem& operator[] (const std::string& name) const;
             
             //! Access problem with given name [2] (read and write)
             /*!
@@ -201,7 +201,7 @@ namespace dcp
              *  error message through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
-            virtual dcp::AbstractProblem& operator[] (const std::string& name);
+            virtual dcp::GenericProblem& operator[] (const std::string& name);
             
             //! Access problem with given position in vector \c solveOrder_ [1] (read only)
             /*!
@@ -210,7 +210,7 @@ namespace dcp
              *  through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
-            virtual const dcp::AbstractProblem& operator[] (const std::size_t& position) const;
+            virtual const dcp::GenericProblem& operator[] (const std::size_t& position) const;
             
             //! Access problem with given position in vector \c solveOrder_ [2] (read and write)
             /*!
@@ -219,7 +219,7 @@ namespace dcp
              *  through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
-            virtual dcp::AbstractProblem& operator[] (const std::size_t& position);
+            virtual dcp::GenericProblem& operator[] (const std::size_t& position);
             
             //! Set subiteration range
             /*! Basically, \c subiterate will be called on the range of problems in \c solveOrder_ going from
@@ -291,7 +291,7 @@ namespace dcp
             virtual void linkProblems (const Link& link);
             
             //! The stored problems
-            std::map<std::string, std::shared_ptr <dcp::AbstractProblem>> storedProblems_;
+            std::map<std::string, std::shared_ptr <dcp::GenericProblem>> storedProblems_;
 
             //! The solution order of the problems
             std::vector<std::string> solveOrder_;
@@ -302,7 +302,7 @@ namespace dcp
              *  \li the first \c string contains the name of the problem whose coefficient should be linked against 
              *  some other problem's solution
              *  \li the second \c string contains the type of such coefficient, in a form that can be passed to
-             *  \c dcp::AbstractProblem::setCoefficients
+             *  \c dcp::GenericProblem::setCoefficients
              *  \li the third \c string contains the name of said coefficient in the problem
              *  \li the fourth \c string contains the name of the problem whose solution should be used to set the 
              *  coefficient identified by the first three strings

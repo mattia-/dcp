@@ -17,23 +17,23 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OPTIMIZERS_ABSTRACTDESCENTMETHOD_H_INCLUDE_GUARD
-#define SRC_OPTIMIZERS_ABSTRACTDESCENTMETHOD_H_INCLUDE_GUARD
+#ifndef SRC_OPTIMIZERS_GENERICDESCENTMETHOD_H_INCLUDE_GUARD
+#define SRC_OPTIMIZERS_GENERICDESCENTMETHOD_H_INCLUDE_GUARD
 
 #include <dolfin/parameter/Parameters.h>
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Function.h>
 #include <dolfin/function/Expression.h>
-#include <dcp/objective_functional/AbstractObjectiveFunctional.h>
-#include <dcp/differential_problems/AbstractEquationSystem.h>
+#include <dcp/objective_functional/GenericObjectiveFunctional.h>
+#include <dcp/differential_problems/GenericEquationSystem.h>
 #include <dcp/optimizers/GradientSearchDirection.h>
 #include <dcp/utils/DotProduct.h>
 #include <functional>
 
 namespace dcp
 {
-    /*! \class AbstractDescentMethod AbstractDescentMethod.h
-     *  \brief Abstract base class for descent methods.
+    /*! \class GenericDescentMethod GenericDescentMethod.h
+     *  \brief Generic base class for descent methods.
      * 
      *  This class defines the base interface for all descent methods.
      *  It provides a \c apply() method to perform the optimization of the
@@ -41,18 +41,18 @@ namespace dcp
      *  can be populated by derived classes to store concrete methods' settings
      */
     
-    class AbstractDescentMethod
+    class GenericDescentMethod
     {
         // ---------------------------------------------------------------------------------------------//
         
         public:
             /************************* TYPEDEFS ************************/
-            typedef std::function<void (dcp::AbstractEquationSystem&, const dolfin::GenericFunction&)> Updater;
+            typedef std::function<void (dcp::GenericEquationSystem&, const dolfin::GenericFunction&)> Updater;
             typedef std::function<void (dolfin::Function&, const dolfin::Function&)> SearchDirectionComputer;
             
             /************************* CONSTRUCTORS ********************/
             //! Default constructor
-            AbstractDescentMethod ();
+            GenericDescentMethod ();
             
 
             /************************* DESTRUCTOR ********************/
@@ -62,7 +62,7 @@ namespace dcp
              *  The protected member will all be initialized with default parameters (see specific members documentation
              *  for details).
              */
-            virtual ~AbstractDescentMethod () {};
+            virtual ~GenericDescentMethod () {};
             
             
             /********************** METHODS ***********************/
@@ -82,10 +82,10 @@ namespace dcp
              *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
              *  
              */
-            virtual void apply (dcp::AbstractEquationSystem& problem,
-                                const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
+            virtual void apply (dcp::GenericEquationSystem& problem,
+                                const dcp::GenericObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
-                                const dcp::AbstractDescentMethod::Updater& updater) = 0;
+                                const dcp::GenericDescentMethod::Updater& updater) = 0;
             
             //! Set the dot product to be used
             /*!

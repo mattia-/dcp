@@ -321,7 +321,7 @@ namespace dcp
         // 1) prediction problem
         dolfin::begin (dolfin::DBG, "Creating prediction problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingPredictionProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingPredictionProblem
             (new dcp::LinearProblem <T_PredictionBilinearForm, T_PredictionLinearForm> (velocityFunctionSpace_));
 
         std::shared_ptr <dcp::TimeDependentProblem> predictionProblem
@@ -343,7 +343,7 @@ namespace dcp
         // 2) correction problem
         dolfin::begin (dolfin::DBG, "Creating correction problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingCorrectionProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingCorrectionProblem
             (new dcp::LinearProblem <T_CorrectionBilinearForm, T_CorrectionLinearForm> (pressureFunctionSpace_));
 
         std::shared_ptr <dcp::TimeDependentProblem> correctionProblem
@@ -363,7 +363,7 @@ namespace dcp
         // 3) velocity projection problem
         dolfin::begin (dolfin::DBG, "Creating velocity projection problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingVelocityProjectionProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingVelocityProjectionProblem
             (new dcp::LinearProblem <T_VelocityProjectionBilinearForm, 
              T_VelocityProjectionLinearForm> 
              (velocityFunctionSpace_));
@@ -386,7 +386,7 @@ namespace dcp
         // 4) pressure projection problem
         dolfin::begin (dolfin::DBG, "Creating pressure update problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingPressureUpdateProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingPressureUpdateProblem
             (new dcp::LinearProblem <T_PressureUpdateBilinearForm, 
              T_PressureUpdateLinearForm> 
              (pressureFunctionSpace_));
@@ -518,7 +518,7 @@ namespace dcp
         // 1) prediction problem
         dolfin::begin (dolfin::DBG, "Creating prediction problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingPredictionProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingPredictionProblem
             (new dcp::LinearProblem <T_PredictionBilinearForm, T_PredictionLinearForm> (velocityFunctionSpace_));
 
         std::shared_ptr <dcp::TimeDependentProblem> predictionProblem
@@ -540,7 +540,7 @@ namespace dcp
         // 2) correction problem
         dolfin::begin (dolfin::DBG, "Creating correction problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingCorrectionProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingCorrectionProblem
             (new dcp::LinearProblem <T_CorrectionBilinearForm, T_CorrectionLinearForm> (pressureFunctionSpace_));
 
         std::shared_ptr <dcp::TimeDependentProblem> correctionProblem
@@ -560,7 +560,7 @@ namespace dcp
         // 3) velocity projection problem
         dolfin::begin (dolfin::DBG, "Creating velocity projection problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingVelocityProjectionProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingVelocityProjectionProblem
             (new dcp::LinearProblem <T_VelocityProjectionBilinearForm, 
              T_VelocityProjectionLinearForm> 
              (velocityFunctionSpace_));
@@ -583,7 +583,7 @@ namespace dcp
         // 4) pressure projection problem
         dolfin::begin (dolfin::DBG, "Creating pressure update problem...");
 
-        std::shared_ptr <dcp::AbstractProblem> timeSteppingPressureUpdateProblem
+        std::shared_ptr <dcp::GenericProblem> timeSteppingPressureUpdateProblem
             (new dcp::LinearProblem <T_PressureUpdateBilinearForm, 
              T_PressureUpdateLinearForm> 
              (pressureFunctionSpace_));

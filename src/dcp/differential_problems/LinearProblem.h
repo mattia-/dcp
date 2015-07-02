@@ -31,7 +31,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <dcp/differential_problems/AbstractProblem.h>
+#include <dcp/differential_problems/GenericProblem.h>
 #include <dcp/factories/LinearSolverFactory.h>
 #include <dcp/differential_problems/SubdomainType.h>
 
@@ -47,7 +47,7 @@ namespace dcp
      *  with \f$ a \left(u, v\right) : V \times V \rightarrow \mathds{R}\f$ bilinear form on \f$V\f$
      *  and \f$ L \left(v\right) : V \rightarrow \mathds{R} \f$ linear form on the same space.
      *  
-     *  It inherits publicly from \c AbstractProblem
+     *  It inherits publicly from \c GenericProblem
      *  and it extends its functionalities to a concrete differential
      *  problem.
      *  Template arguments are:
@@ -58,7 +58,7 @@ namespace dcp
      */
 
     template <class T_BilinearForm_, class T_LinearForm_, class T_LinearSolverFactory_ = dcp::LinearSolverFactory>
-        class LinearProblem : public dcp::AbstractProblem
+        class LinearProblem : public dcp::GenericProblem
         {
             // ---------------------------------------------------------------------------------------------//  
 
@@ -312,43 +312,43 @@ namespace dcp
 
                 /******************* SETTERS *******************/
                 
-                //! Set coefficient [1]. Override of virtual function in \c AbstractProblem.
+                //! Set coefficient [1]. Override of virtual function in \c GenericProblem.
                 /*!
                  *  Possible values for \c coefficientType are:
                  *  \li \c bilinear_form to set the coefficient in the bilinear form
                  *  \li \c linear_form to set the coefficient in the linear form
                  *  
-                 *  See \c AbstractProblem documentation for more details on the function
+                 *  See \c GenericProblem documentation for more details on the function
                  */
                 virtual void setCoefficient (const std::string& coefficientType, 
                                              const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                              const std::string& coefficientName) override;
 
-                //! Set coefficient [2]. Override of virtual function in \c AbstractProblem.
+                //! Set coefficient [2]. Override of virtual function in \c GenericProblem.
                 /*!
                  *  Possible values for \c coefficientType are:
                  *  \li \c bilinear_form to set the coefficient in the bilinear form
                  *  \li \c linear_form to set the coefficient in the linear form
                  *  
-                 *  See \c AbstractProblem documentation for more details on the function
+                 *  See \c GenericProblem documentation for more details on the function
                  */
                 virtual void setCoefficient (const std::string& coefficientType,
                                              const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                              const std::size_t& coefficientNumber) override;
 
-                //! Set integration subdomains for the forms. Override of virtual function in \c AbstractProblem
+                //! Set integration subdomains for the forms. Override of virtual function in \c GenericProblem
                 /*! 
                  *  Possible values for \c formType are:
                  *  \li \c bilinear_form to set the integration subdomain in the bilinear form
                  *  \li \c linear_form to set the integration subdomain in the linear form
                  *  
-                 *  See \c AbstractProblem documentation for more details on the function
+                 *  See \c GenericProblem documentation for more details on the function
                  */
                 virtual void setIntegrationSubdomain (const std::string& formType,
                                                        std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                        const dcp::SubdomainType& subdomainType) override;
 
-                //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c AbstractProblem
+                //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c GenericProblem
                 /*!
                  *  This method adds to the base class method the setting of parameter \c system_is_assembled to 
                  *  \c false.
@@ -363,7 +363,7 @@ namespace dcp
                                              const dolfin::SubDomain& boundary,
                                              std::string bcName = "") override;
 
-                //! Add Dirichlet boundary condition to the problem [2]. Overrides method in \c AbstractProblem
+                //! Add Dirichlet boundary condition to the problem [2]. Overrides method in \c GenericProblem
                 /*!
                  *  This method adds to the base class method the setting of parameter \c system_is_assembled to 
                  *  \c false.
@@ -414,7 +414,7 @@ namespace dcp
                                              const std::size_t& component,
                                              std::string bcName = "") override;
 
-                //! Add Dirichlet boundary condition to the problem [5]. Overrides method in \c AbstractProblem
+                //! Add Dirichlet boundary condition to the problem [5]. Overrides method in \c GenericProblem
                 /*!
                  *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
                  *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the
@@ -427,7 +427,7 @@ namespace dcp
                 virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
                                              std::string bcName = "") override;
 
-                //! Add Dirichlet boundary condition to the problem [6]. Overrides method in \c AbstractProblem
+                //! Add Dirichlet boundary condition to the problem [6]. Overrides method in \c GenericProblem
                 /*!
                  *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
                  *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the
@@ -440,7 +440,7 @@ namespace dcp
                 virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, 
                                              std::string bcName = "") override;
 
-                //! Remove Dirichlet boundary condition with given position. Overrides method in \c AbstractProblem
+                //! Remove Dirichlet boundary condition with given position. Overrides method in \c GenericProblem
                 /*!
                  *  This method adds to the base class method the setting of parameter \c system_is_assembled to 
                  *  \c false.
@@ -460,7 +460,7 @@ namespace dcp
                 //! Solve problem
                 /*!
                  *  This method solves the problem defined. It uses the private members' value to set the problem and then
-                 *  stores the solution in the private member \c solution_. See documentation of \c dcp::AbstractProblem
+                 *  stores the solution in the private member \c solution_. See documentation of \c dcp::GenericProblem
                  *  for more details on how the protected member \c solution_ works and why it is declared as a 
                  *  \c std::pair.
                  *  Note that the method \c solve() checks the problem's member
@@ -475,7 +475,7 @@ namespace dcp
                  */
                 virtual void solve (const std::string& solveType = "default") override;
 
-                //! Clone method. Overrides method in \c AbstractProblem
+                //! Clone method. Overrides method in \c GenericProblem
                 /*!
                  *  It uses the parameter \c clone_method to decide which type of cloning to perform.
                  *  Possible values for such parameter are:
@@ -543,7 +543,7 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace) :
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
@@ -583,7 +583,7 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (const dolfin::FunctionSpace& functionSpace) :
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
@@ -623,7 +623,7 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (dolfin::FunctionSpace&& functionSpace) :
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
@@ -665,7 +665,7 @@ namespace dcp
         LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                        const T_BilinearForm& bilinearForm,
                        const T_LinearForm& linearForm) :
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
             solver_ (nullptr),
@@ -707,7 +707,7 @@ namespace dcp
         LinearProblem (const dolfin::FunctionSpace& functionSpace,
                        const T_BilinearForm& bilinearForm,
                        const T_LinearForm& linearForm) :
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
             solver_ (nullptr),
@@ -749,7 +749,7 @@ namespace dcp
         LinearProblem (dolfin::FunctionSpace&& functionSpace,
                        T_BilinearForm&& bilinearForm,
                        T_LinearForm&& linearForm) :
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             bilinearForm_ (std::move (bilinearForm)),
             linearForm_ (std::move (linearForm)),
             solver_ (nullptr),

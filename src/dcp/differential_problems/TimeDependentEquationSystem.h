@@ -20,7 +20,7 @@
 #ifndef SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTEQUATIONSYSTEM_H_INCLUDE_GUARD
 #define SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTEQUATIONSYSTEM_H_INCLUDE_GUARD
 
-#include <dcp/differential_problems/AbstractEquationSystem.h>
+#include <dcp/differential_problems/GenericEquationSystem.h>
 #include <dcp/differential_problems/TimeDependentProblem.h>
 #include <dcp/time/Time.h>
 #include <map>
@@ -36,10 +36,10 @@ namespace dcp
     /*! \class TimeDependentEquationSystem TimeDependentEquationSystem.h
      *  \brief Class for multi-variable and multi-equation coupled time dependent system
      *  
-     *  This class derives from AbstractEquationSystem and expands its functionalities by defining the
+     *  This class derives from GenericEquationSystem and expands its functionalities by defining the
      *  solve method for time dependent systems.
      */
-    class TimeDependentEquationSystem : public dcp::AbstractEquationSystem
+    class TimeDependentEquationSystem : public dcp::GenericEquationSystem
     {
         // ---------------------------------------------------------------------------------------------//  
 
@@ -77,7 +77,7 @@ namespace dcp
             /*!
              *  The parameters are:
              *  \param problemName the problem name
-             *  \param problem a const reference to an \c AbstractProblem. 
+             *  \param problem a const reference to an \c GenericProblem. 
              *  The class will make a copy of the input problem calling the method \c clone().
              *  The problem's name is inserted at the end of \c solveOrder_
              *  This method overrides that in base class, since we need to change the behaviour when a 
@@ -93,13 +93,13 @@ namespace dcp
              *  the usage of this function to a single clone type, while the user may want to derive a new class from
              *  \c dcp::TimeDependentProblem with a new clone method
              */
-            virtual void addProblem (const std::string& problemName, dcp::AbstractProblem& problem);
+            virtual void addProblem (const std::string& problemName, dcp::GenericProblem& problem);
             
             //! Add problem to the map of problems to be solved [2]
             /*!
              *  The parameters are:
              *  \param problemName the problem name
-             *  \param problem a shared pointer to a \c dcp::AbstractProblem. 
+             *  \param problem a shared pointer to a \c dcp::GenericProblem. 
              *  The problem's name is inserted at the end of \c solveOrder_
              *  This method overrides that in base class, since we need to change the behaviour when a 
              *  \c dcp::TimeDependentProblem is passed to the function. Indeed, if this is the case, the function will
@@ -109,7 +109,7 @@ namespace dcp
              *  values for start time, end time and time step.
              */
             virtual void addProblem (const std::string& problemName, 
-                                     const std::shared_ptr<dcp::AbstractProblem> problem);
+                                     const std::shared_ptr<dcp::GenericProblem> problem);
             
             //! Adds link between problems' coefficient and solution at a previous time step [1]
             /*!
@@ -119,7 +119,7 @@ namespace dcp
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
              *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
-             *  \c setCoefficient (see \c dcp::AbstractProblem documentation for more details)
+             *  \c setCoefficient (see \c dcp::GenericProblem documentation for more details)
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
@@ -144,7 +144,7 @@ namespace dcp
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
              *  \param linkedCoefficientType identifies the type of the coefficient, and will be passed to the function
-             *  \c setCoefficient (see \c dcp::AbstractProblem documentation for more details)
+             *  \c setCoefficient (see \c dcp::GenericProblem documentation for more details)
              *  \param linkTo identifies the problem whose solution is linked to the parameter in the problem
              *  identified by the second and the first arguments respectively. No check is performed on the
              *  existence of such problem
@@ -168,7 +168,7 @@ namespace dcp
             /*!
              *  Removes the link identified by the input arguments from the protected member 
              *  \c linksToPreviousSolutions_ .
-             *  The input arguments will be used to create an object of \c dcp::AbstractProblem::LinkKey to use
+             *  The input arguments will be used to create an object of \c dcp::GenericProblem::LinkKey to use
              *  to erase the corresponding entry from \c linksToPreviousSolutions_ .
              *  
              *  \return \c true if the link was removed, \c false otherwise
@@ -187,7 +187,7 @@ namespace dcp
             virtual bool isFinished ();
             
             //! Access problem with given name [1] (read only). 
-            //! Overrides method in base class \c dcp::AbstractEquationSystem. In this overridden method we return a
+            //! Overrides method in base class \c dcp::GenericEquationSystem. In this overridden method we return a
             //! reference to \c dcp::TimeDependentProblem since any problem inserted in a time dependent system will
             //! surely be a time dependent problem
             /*!
@@ -199,7 +199,7 @@ namespace dcp
             
             //! Access problem with given name [2] (read and write)
             /*!
-            //! Overrides method in base class \c dcp::AbstractEquationSystem. In this overridden method we return a
+            //! Overrides method in base class \c dcp::GenericEquationSystem. In this overridden method we return a
             //! reference to \c dcp::TimeDependentProblem since any problem inserted in a time dependent system will
             //! surely be a time dependent problem
              *  \param name name of the problem to be accessed. If the name is not found, the function prints an
@@ -209,7 +209,7 @@ namespace dcp
             virtual dcp::TimeDependentProblem& operator[] (const std::string& name) override;
             
             //! Access problem with given position in vector \c solveOrder_ [1] (read only)
-            //! Overrides method in base class \c dcp::AbstractEquationSystem. In this overridden method we return a
+            //! Overrides method in base class \c dcp::GenericEquationSystem. In this overridden method we return a
             //! reference to \c dcp::TimeDependentProblem since any problem inserted in a time dependent system will
             //! surely be a time dependent problem
             /*!
@@ -221,7 +221,7 @@ namespace dcp
             virtual const dcp::TimeDependentProblem& operator[] (const std::size_t& position) const override;
             
             //! Access problem with given position in vector \c solveOrder_ [2] (read and write)
-            //! Overrides method in base class \c dcp::AbstractEquationSystem. In this overridden method we return a
+            //! Overrides method in base class \c dcp::GenericEquationSystem. In this overridden method we return a
             //! reference to \c dcp::TimeDependentProblem since any problem inserted in a time dependent system will
             //! surely be a time dependent problem
             /*!
@@ -285,7 +285,7 @@ namespace dcp
              *  \li the first \c string contains the name of the problem whose coefficient should be linked against 
              *  some other problem's solution
              *  \li the second \c string contains the type of such coefficient, in a form that can be passed to
-             *  \c dcp::AbstractProblem::setCoefficients
+             *  \c dcp::GenericProblem::setCoefficients
              *  \li the third \c string contains the name of said coefficient in the problem
              *  \li the fourth \c string contains the name of the problem whose solution should be used to set the 
              *  coefficient identified by the first three strings

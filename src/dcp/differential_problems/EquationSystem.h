@@ -20,7 +20,7 @@
 #ifndef SRC_DIFFERENTIAL_PROBLEMS_EQUATIONSYSTEM_H_INCLUDE_GUARD
 #define SRC_DIFFERENTIAL_PROBLEMS_EQUATIONSYSTEM_H_INCLUDE_GUARD
 
-#include <dcp/differential_problems/AbstractEquationSystem.h>
+#include <dcp/differential_problems/GenericEquationSystem.h>
 #include <map>
 #include <tuple>
 #include <memory>
@@ -34,11 +34,11 @@ namespace dcp
     /*! \class EquationSystem EquationSystem.h
      *  \brief Class for multi-variable and multi-equation coupled system
      *  
-     *  This class derives from AbstractEquationSystem and expands its functionalities by defining the
+     *  This class derives from GenericEquationSystem and expands its functionalities by defining the
      *  solve method. This class only works for steady equation systems. For time dependent systems, 
      *  see \c dcp::TimeDependentEquationSystem
      */
-    class EquationSystem : public dcp::AbstractEquationSystem
+    class EquationSystem : public dcp::GenericEquationSystem
     {
         // ---------------------------------------------------------------------------------------------//  
 

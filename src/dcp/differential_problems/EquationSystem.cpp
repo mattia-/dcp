@@ -28,7 +28,7 @@ namespace dcp
 {
     /******************* CONSTRUCTORS ******************/
     EquationSystem::EquationSystem () : 
-        AbstractEquationSystem ()
+        GenericEquationSystem ()
     { 
         dolfin::log (dolfin::DBG, "EquationSystem object created");
     }
@@ -78,7 +78,7 @@ namespace dcp
         dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
 
         // get problem with given name from map. 
-        dcp::AbstractProblem& problem = this -> operator[] (problemName);
+        dcp::GenericProblem& problem = this -> operator[] (problemName);
 
         // 1)
         // loop over problemsLinks_ to reset all links to take changes to coefficients 

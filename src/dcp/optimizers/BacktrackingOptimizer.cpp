@@ -33,7 +33,7 @@
 namespace dcp
 {
     BacktrackingOptimizer::BacktrackingOptimizer ():
-        AbstractDescentMethod ()
+        GenericDescentMethod ()
     {
         dolfin::begin (dolfin::DBG, "Creating BacktrackingOptimizer object...");
         
@@ -56,10 +56,10 @@ namespace dcp
     
 
 
-    void BacktrackingOptimizer::apply (dcp::AbstractEquationSystem& problem,
-                                       const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
+    void BacktrackingOptimizer::apply (dcp::GenericEquationSystem& problem,
+                                       const dcp::GenericObjectiveFunctional& objectiveFunctional, 
                                        dolfin::Function& initialGuess,
-                                       const dcp::AbstractDescentMethod::Updater& updater)
+                                       const dcp::GenericDescentMethod::Updater& updater)
     {
         // ------------------------------------------------------------------------------------------------------- //
         // minimization loop settings
@@ -338,9 +338,9 @@ namespace dcp
                                                    dolfin::Function& controlVariable,
                                                    const dolfin::Function& previousControlVariable,
                                                    const dolfin::Function& searchDirection,
-                                                   dcp::AbstractEquationSystem& problem,
-                                                   const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
-                                                   const dcp::AbstractDescentMethod::Updater& updater)
+                                                   dcp::GenericEquationSystem& problem,
+                                                   const dcp::GenericObjectiveFunctional& objectiveFunctional, 
+                                                   const dcp::GenericDescentMethod::Updater& updater)
     {
         // get parameters
         double c_1 = this->parameters ["c_1"];

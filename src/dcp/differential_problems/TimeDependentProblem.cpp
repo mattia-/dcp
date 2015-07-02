@@ -26,7 +26,7 @@ namespace dcp
 {
     /******************* CONSTRUCTORS *******************/
     TimeDependentProblem::TimeDependentProblem 
-        (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
+        (const std::shared_ptr<dcp::GenericProblem> timeSteppingProblem,
          const std::shared_ptr<dcp::Time> time,
          const double& startTime,
          const double& dt,
@@ -35,7 +35,7 @@ namespace dcp
          std::initializer_list<std::string> previousSolutionCoefficientTypes,
          const unsigned int& nTimeSchemeSteps)
         : 
-            AbstractProblem (timeSteppingProblem->functionSpace ()),
+            GenericProblem (timeSteppingProblem->functionSpace ()),
             timeSteppingProblem_ (timeSteppingProblem),
             time_ (time),
             startTime_ (startTime),
@@ -97,7 +97,7 @@ namespace dcp
 
 
     TimeDependentProblem::TimeDependentProblem 
-        (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
+        (const std::shared_ptr<dcp::GenericProblem> timeSteppingProblem,
          const double& startTime,
          const double& dt,
          const double& endTime,
@@ -105,7 +105,7 @@ namespace dcp
          std::initializer_list<std::string> previousSolutionCoefficientTypes,
          const unsigned int& nTimeSchemeSteps)
         : 
-            AbstractProblem (timeSteppingProblem->functionSpace ()),
+            GenericProblem (timeSteppingProblem->functionSpace ()),
             timeSteppingProblem_ (timeSteppingProblem),
             time_ (new dcp::Time (startTime)),
             startTime_ (startTime),
@@ -232,7 +232,7 @@ namespace dcp
     
 
 
-    dcp::AbstractProblem& TimeDependentProblem::timeSteppingProblem ()
+    dcp::GenericProblem& TimeDependentProblem::timeSteppingProblem ()
     {
         return *timeSteppingProblem_;
     }

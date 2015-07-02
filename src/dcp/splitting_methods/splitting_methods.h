@@ -20,7 +20,7 @@
 #ifndef SRC_SPLITTING_METHODS_SPLITTING_METHODS_H_INCLUDE_GUARD
 #define SRC_SPLITTING_METHODS_SPLITTING_METHODS_H_INCLUDE_GUARD
 
-#include "AbstractSplittingMethod.h"
+#include "GenericSplittingMethod.h"
 #include "NavierStokesSplittingMethod.h"
 #include "ChorinTemamMethod.h"
 #include "IncrementalChorinTemamMethod.h"

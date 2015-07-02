@@ -28,7 +28,7 @@ namespace dcp
     /************************* CONSTRUCTORS ********************/
     NavierStokesSplittingMethod::NavierStokesSplittingMethod 
         (const std::vector<std::shared_ptr <dolfin::FunctionSpace>> functionSpaces) :
-            AbstractSplittingMethod (functionSpaces),
+            GenericSplittingMethod (functionSpaces),
             velocityFunctionSpace_ (*(functionSpaces_ [0])),
             pressureFunctionSpace_ (*(functionSpaces_ [1]))
     { 

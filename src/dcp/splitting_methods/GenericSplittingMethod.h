@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_SPLITTING_METHODS_ABSTRACTSPLITTINGMETHOD_H_INCLUDE_GUARD
-#define SRC_SPLITTING_METHODS_ABSTRACTSPLITTINGMETHOD_H_INCLUDE_GUARD
+#ifndef SRC_SPLITTING_METHODS_GENERICSPLITTINGMETHOD_H_INCLUDE_GUARD
+#define SRC_SPLITTING_METHODS_GENERICSPLITTINGMETHOD_H_INCLUDE_GUARD
 
 #include <vector>
 #include <memory>
@@ -30,8 +30,8 @@
 
 namespace dcp
 {
-    /*! \class AbstractSplittingMethod AbstractSplittingMethod.h
-     *  \brief Abstract base class for splitting methods for a system of 
+    /*! \class GenericSplittingMethod GenericSplittingMethod.h
+     *  \brief Generic base class for splitting methods for a system of 
      *  differential problems. 
      *         
      *  This class contains the basic interface for a splitting method to 
@@ -42,7 +42,7 @@ namespace dcp
      *  It is an abstract class, it only provides the basic interface to 
      *  all splitting methods.
      */ 
-    class AbstractSplittingMethod
+    class GenericSplittingMethod
     {
         // ---------------------------------------------------------------------------------------------//
 
@@ -53,7 +53,7 @@ namespace dcp
              *  \param functionSpaces the function spaces of the various differential problems that will be stored in 
              *  the protected member \c differentialSystem_
              */
-            AbstractSplittingMethod (const std::vector<std::shared_ptr <dolfin::FunctionSpace>> functionSpaces);
+            GenericSplittingMethod (const std::vector<std::shared_ptr <dolfin::FunctionSpace>> functionSpaces);
 
             /************************* DESTRUCTOR ********************/
             //! Destructor
@@ -64,7 +64,7 @@ namespace dcp
              *  be defined here and inherited in derived classes. That's why we defined a pure virtual destructor.
              *  Note that it still needs to be defined, as it will be called anyway when the base class is destroyed.
              */
-            virtual ~AbstractSplittingMethod () = 0;
+            virtual ~GenericSplittingMethod () = 0;
 
 
             /********************** GETTERS ***********************/
@@ -343,7 +343,7 @@ namespace dcp
              *  Applies splitting method to solve differential problem.
              *  
              *  \param type the solve type requested. It will be passed to the \c solve method of the protected member
-             *  \c differentialSystem_. See \c dcp::AbstractEquationSystem documentation for more details on this 
+             *  \c differentialSystem_. See \c dcp::GenericEquationSystem documentation for more details on this 
              *  parameter.
              */
             virtual void apply (const std::string& type = "default");

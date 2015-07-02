@@ -20,7 +20,7 @@
 #ifndef SRC_SPLITTING_METHODS_NAVIERSTOKESSPLITTINGMETHOD_H_INCLUDE_GUARD
 #define SRC_SPLITTING_METHODS_NAVIERSTOKESSPLITTINGMETHOD_H_INCLUDE_GUARD
 
-#include <dcp/splitting_methods/AbstractSplittingMethod.h>
+#include <dcp/splitting_methods/GenericSplittingMethod.h>
 #include <dcp/differential_problems/TimeDependentEquationSystem.h>
 
 
@@ -35,7 +35,7 @@ namespace dcp
      *  to be derived to implement concrete splitting methods, like Chorin-Temam
      *  and Incremental Chorin-Temam. 
      */
-    class NavierStokesSplittingMethod : public AbstractSplittingMethod
+    class NavierStokesSplittingMethod : public GenericSplittingMethod
     {
         // ---------------------------------------------------------------------------------------------//
 
@@ -65,11 +65,11 @@ namespace dcp
 
         protected:
             //! The velocity function space. It is just a reference to the object pointed by the first element of 
-            //! \c functionSpaces_, which is inherited from \c dcp::AbstractSplittingMethod
+            //! \c functionSpaces_, which is inherited from \c dcp::GenericSplittingMethod
             const dolfin::FunctionSpace& velocityFunctionSpace_;
             
             //! The pressure function space. It is just a reference to the object pointed by the second element of 
-            //! \c functionSpaces_, which is inherited from \c dcp::AbstractSplittingMethod
+            //! \c functionSpaces_, which is inherited from \c dcp::GenericSplittingMethod
             const dolfin::FunctionSpace& pressureFunctionSpace_;
             
 

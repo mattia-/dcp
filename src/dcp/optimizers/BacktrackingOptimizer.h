@@ -20,8 +20,8 @@
 #ifndef SRC_OPTIMIZERS_BACKTRACKINGOPTIMIZER_H_INCLUDE_GUARD
 #define SRC_OPTIMIZERS_BACKTRACKINGOPTIMIZER_H_INCLUDE_GUARD
 
-#include <dcp/optimizers/AbstractDescentMethod.h>
-#include <dcp/objective_functional/AbstractObjectiveFunctional.h>
+#include <dcp/optimizers/GenericDescentMethod.h>
+#include <dcp/objective_functional/GenericObjectiveFunctional.h>
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Function.h>
 #include <functional>
@@ -33,7 +33,7 @@ namespace dcp
      *  \brief Class that implements the gradient method with backtracking.
      *  
      *  This class provides the implementation of the gradient method as a descent method
-     *  for optimazation of funcionals. It is derived from \c dcp::AbstractDescentMethod.
+     *  for optimazation of funcionals. It is derived from \c dcp::GenericDescentMethod.
      *  Let \f$ J \f$ be the functional to be minimized and \f$ \psi \left( \alpha \right) \f$ the function defined as:
      *  \f[
      *      \psi \left( \alpha \right) = J \left( \mathbf{u} + \alpha\,\mathbf{d} \right)
@@ -66,7 +66,7 @@ namespace dcp
      *  \li \f$ \alpha^{\left(0\right)} = 0.5 \f$
      *  \li \f$ \rho = 0.5 \f$
      */
-    class BacktrackingOptimizer : public dcp::AbstractDescentMethod
+    class BacktrackingOptimizer : public dcp::GenericDescentMethod
     {
         // ---------------------------------------------------------------------------------------------//
         
@@ -132,10 +132,10 @@ namespace dcp
              *  Functors for the most common types of update are provided: see \c dcp::DirichletControlUpdater,
              *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
              */
-            virtual void apply (dcp::AbstractEquationSystem& problem,
-                                const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
+            virtual void apply (dcp::GenericEquationSystem& problem,
+                                const dcp::GenericObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
-                                const dcp::AbstractDescentMethod::Updater& updater) override;
+                                const dcp::GenericDescentMethod::Updater& updater) override;
             
             // ---------------------------------------------------------------------------------------------//
 
@@ -174,9 +174,9 @@ namespace dcp
                                    dolfin::Function& controlVariable,
                                    const dolfin::Function& previousControlVariable,
                                    const dolfin::Function& searchDirection,
-                                   dcp::AbstractEquationSystem& problem,
-                                   const dcp::AbstractObjectiveFunctional& objectiveFunctional, 
-                                   const dcp::AbstractDescentMethod::Updater& updater);
+                                   dcp::GenericEquationSystem& problem,
+                                   const dcp::GenericObjectiveFunctional& objectiveFunctional, 
+                                   const dcp::GenericDescentMethod::Updater& updater);
             
             //! Function to print to file some values. It is mostly useful to avoid code repetition inside this class
             /*! 

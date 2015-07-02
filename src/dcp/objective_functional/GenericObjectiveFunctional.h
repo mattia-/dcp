@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OBJECTIVE_FUNCTIONAL_ABSTRACTOBJECTIVEFUNCTIONAL_H_INCLUDE_GUARD
-#define SRC_OBJECTIVE_FUNCTIONAL_ABSTRACTOBJECTIVEFUNCTIONAL_H_INCLUDE_GUARD
+#ifndef SRC_OBJECTIVE_FUNCTIONAL_GENERICOBJECTIVEFUNCTIONAL_H_INCLUDE_GUARD
+#define SRC_OBJECTIVE_FUNCTIONAL_GENERICOBJECTIVEFUNCTIONAL_H_INCLUDE_GUARD
 
 #include <dolfin/mesh/Mesh.h>
 #include <dolfin/mesh/MeshFunction.h>
@@ -30,34 +30,34 @@
 
 namespace dcp
 {
-    /*! \class AbstractObjectiveFunctional AbstractObjectiveFunctional.h
-     *  \brief Abstract base class for objective functionals.
+    /*! \class GenericObjectiveFunctional GenericObjectiveFunctional.h
+     *  \brief Generic base class for objective functionals.
      *
      *  This class contains the basic interface for a generic objective functional. The class is pure virtual 
      *  and it is intended to be use in order to apply polymorphism for concrete instances of the derived 
      *  \c ObjectiveFunctional class, which is derived for this one
      */
 
-    class AbstractObjectiveFunctional
+    class GenericObjectiveFunctional
     {
         // ---------------------------------------------------------------------------------------------//  
 
         public:
             /******************* CONSTRUCTORS *******************/
             //! Default constructor is deleted
-            AbstractObjectiveFunctional () = delete;
+            GenericObjectiveFunctional () = delete;
 
             //! Constructor with \c shared_ptr
-            AbstractObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh);
+            GenericObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh);
             
             //! Constructor with <tt> const reference </tt>
-            AbstractObjectiveFunctional (const dolfin::Mesh& mesh);
+            GenericObjectiveFunctional (const dolfin::Mesh& mesh);
 
 
             /******************* DESTRUCTOR *******************/
 
             //! Default destructor
-            virtual ~AbstractObjectiveFunctional () {};
+            virtual ~GenericObjectiveFunctional () {};
 
             
             /******************* GETTERS *******************/

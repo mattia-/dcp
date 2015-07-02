@@ -1,5 +1,5 @@
 # collect header files
-SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDescentMethod.h
+SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericDescentMethod.h
              ${CMAKE_CURRENT_SOURCE_DIR}/BacktrackingOptimizer.h
              ${CMAKE_CURRENT_SOURCE_DIR}/DirichletControlUpdater.h
              ${CMAKE_CURRENT_SOURCE_DIR}/DistributedControlUpdater.h
@@ -8,7 +8,7 @@ SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDescentMethod.h
              ${CMAKE_CURRENT_SOURCE_DIR}/optimizers.h)
 
 # collect source files
-SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDescentMethod.cpp
+SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/GenericDescentMethod.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/BacktrackingOptimizer.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/DirichletControlUpdater.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/DistributedControlUpdater.cpp

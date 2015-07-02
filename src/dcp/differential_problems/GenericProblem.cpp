@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/differential_problems/AbstractProblem.h>
+#include <dcp/differential_problems/GenericProblem.h>
 #include <dolfin/log/dolfin_log.h>
 #include <map>
 #include <string>
@@ -26,7 +26,7 @@
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    AbstractProblem::AbstractProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
+    GenericProblem::GenericProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
         parameters ("differential_problem_parameters"),
         functionSpace_ (functionSpace),
         dirichletBCs_ (),
@@ -35,7 +35,7 @@ namespace dcp
         dirichletBCsCounter_ (0),
         solutionPlotter_ ()
     { 
-        dolfin::begin (dolfin::DBG, "Building AbstractProblem...");
+        dolfin::begin (dolfin::DBG, "Building GenericProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("plot_component", -1);
@@ -44,12 +44,12 @@ namespace dcp
             
         dolfin::end ();
         
-        dolfin::log (dolfin::DBG, "AbstractProblem object created");
+        dolfin::log (dolfin::DBG, "GenericProblem object created");
     }
 
 
 
-    AbstractProblem::AbstractProblem (const dolfin::FunctionSpace& functionSpace) : 
+    GenericProblem::GenericProblem (const dolfin::FunctionSpace& functionSpace) : 
         parameters ("differential_problem_parameters"),
         functionSpace_ (new dolfin::FunctionSpace (functionSpace)),
         dirichletBCs_ (),
@@ -58,7 +58,7 @@ namespace dcp
         dirichletBCsCounter_ (0),
         solutionPlotter_ ()
     { 
-        dolfin::begin (dolfin::DBG, "Building AbstractProblem...");
+        dolfin::begin (dolfin::DBG, "Building GenericProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("plot_component", -1);
@@ -67,12 +67,12 @@ namespace dcp
             
         dolfin::end ();
         
-        dolfin::log (dolfin::DBG, "AbstractProblem object created");
+        dolfin::log (dolfin::DBG, "GenericProblem object created");
     }
 
 
 
-    AbstractProblem::AbstractProblem (dolfin::FunctionSpace&& functionSpace) : 
+    GenericProblem::GenericProblem (dolfin::FunctionSpace&& functionSpace) : 
         parameters ("differential_problem_parameters"),
         functionSpace_ (new dolfin::FunctionSpace (std::move (functionSpace))),
         dirichletBCs_ (),
@@ -81,7 +81,7 @@ namespace dcp
         dirichletBCsCounter_ (0),
         solutionPlotter_ ()
     { 
-        dolfin::begin (dolfin::DBG, "Building AbstractProblem...");
+        dolfin::begin (dolfin::DBG, "Building GenericProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("plot_component", -1);
@@ -90,32 +90,32 @@ namespace dcp
             
         dolfin::end ();
         
-        dolfin::log (dolfin::DBG, "AbstractProblem object created");
+        dolfin::log (dolfin::DBG, "GenericProblem object created");
     }
 
 
 
     /********************** GETTERS ***********************/
-    std::shared_ptr<const dolfin::Mesh> AbstractProblem::mesh () const
+    std::shared_ptr<const dolfin::Mesh> GenericProblem::mesh () const
     {
         return functionSpace_ -> mesh ();      
     }
 
 
 
-    std::shared_ptr<dolfin::FunctionSpace> AbstractProblem::functionSpace () const
+    std::shared_ptr<dolfin::FunctionSpace> GenericProblem::functionSpace () const
     {
         return functionSpace_;
     }
 
 
 
-    const dolfin::DirichletBC& AbstractProblem::dirichletBC (const std::string& bcName) const
+    const dolfin::DirichletBC& GenericProblem::dirichletBC (const std::string& bcName) const
     {
         auto bcIterator = dirichletBCs_.find (bcName);
         if (bcIterator == dirichletBCs_.end ())
         {
-            dolfin::dolfin_error ("dcp: AbstractProblem.cpp",
+            dolfin::dolfin_error ("dcp: GenericProblem.cpp",
                                   "dirichletBC",
                                   "Cannot find dirichletBC with name \"%s\" in map", 
                                   bcName.c_str ());
@@ -125,14 +125,14 @@ namespace dcp
 
 
 
-    const std::map<std::string, dolfin::DirichletBC>& AbstractProblem::dirichletBCs () const
+    const std::map<std::string, dolfin::DirichletBC>& GenericProblem::dirichletBCs () const
     {
         return dirichletBCs_;
     }
 
 
 
-    const dolfin::Function& AbstractProblem::solution (const std::string& solutionType) const
+    const dolfin::Function& GenericProblem::solution (const std::string& solutionType) const
     {
         if (solutionType == "default")
         {
@@ -144,7 +144,7 @@ namespace dcp
         }
         else
         {
-            dolfin::dolfin_error ("dcp: AbstractProblem.cpp",
+            dolfin::dolfin_error ("dcp: GenericProblem.cpp",
                                   "solution",
                                   "Unkown solution type \"%s\" requested", solutionType.c_str ());
             return stashedSolution_; // just to suppress the compilation warning, dolfin_error will cause the program
@@ -155,9 +155,9 @@ namespace dcp
 
 
     /********************** SETTERS ***********************/
-    bool AbstractProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
-                                          const dolfin::SubDomain& boundary,
-                                          std::string bcName)
+    bool GenericProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
+                                         const dolfin::SubDomain& boundary,
+                                         std::string bcName)
     {
         return addDirichletBC (dolfin::reference_to_no_delete_pointer (condition), 
                                dolfin::reference_to_no_delete_pointer (boundary),
@@ -166,10 +166,10 @@ namespace dcp
     
 
 
-    bool AbstractProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
-                                          const dolfin::SubDomain& boundary, 
-                                          const std::size_t& component,
-                                          std::string bcName)
+    bool GenericProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
+                                         const dolfin::SubDomain& boundary, 
+                                         const std::size_t& component,
+                                         std::string bcName)
     {
         return addDirichletBC (dolfin::reference_to_no_delete_pointer (condition), 
                                dolfin::reference_to_no_delete_pointer (boundary),
@@ -179,9 +179,9 @@ namespace dcp
     
 
 
-    bool AbstractProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
-                                          std::shared_ptr<const dolfin::SubDomain> boundary,
-                                          std::string bcName)
+    bool GenericProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                         std::shared_ptr<const dolfin::SubDomain> boundary,
+                                         std::string bcName)
     {
         if (bcName.empty ())
         {
@@ -206,10 +206,10 @@ namespace dcp
 
     
 
-    bool AbstractProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
-                                          std::shared_ptr<const dolfin::SubDomain> boundary,
-                                          const std::size_t& component,
-                                          std::string bcName)
+    bool GenericProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+                                         std::shared_ptr<const dolfin::SubDomain> boundary,
+                                         const std::size_t& component,
+                                         std::string bcName)
     {
         if (bcName.empty ())
         {
@@ -235,8 +235,8 @@ namespace dcp
 
     
 
-    bool AbstractProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
-                                          std::string bcName)
+    bool GenericProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
+                                         std::string bcName)
     {
         if (bcName.empty ())
         {
@@ -261,8 +261,8 @@ namespace dcp
 
 
 
-    bool AbstractProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition,
-                                          std::string bcName)
+    bool GenericProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition,
+                                         std::string bcName)
     {
         if (bcName.empty ())
         {
@@ -287,7 +287,7 @@ namespace dcp
 
 
 
-    bool AbstractProblem::removeDirichletBC (const std::string& bcName)
+    bool GenericProblem::removeDirichletBC (const std::string& bcName)
     {
         dolfin::log (dolfin::DBG, 
                      "Removing dirichlet boundary condition \"%s\" from boundary conditions map...", 
@@ -305,7 +305,7 @@ namespace dcp
     
 
 
-    void AbstractProblem::update ()
+    void GenericProblem::update ()
     {
 
     }
@@ -313,7 +313,7 @@ namespace dcp
     
 
     /********************** METHODS ***********************/
-    void AbstractProblem::plotSolution (const std::string& plotType)
+    void GenericProblem::plotSolution (const std::string& plotType)
     {
         // check if plotType is known
         if (plotType != "all")
@@ -363,7 +363,7 @@ namespace dcp
     
 
 
-    void AbstractProblem::applyStashedSolution ()
+    void GenericProblem::applyStashedSolution ()
     {
         solution_.back ().second = stashedSolution_;
         stashedSolution_ = dolfin::Function (*functionSpace_);

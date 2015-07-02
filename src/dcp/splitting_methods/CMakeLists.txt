@@ -1,5 +1,5 @@
 # collect header files
-SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractSplittingMethod.h 
+SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericSplittingMethod.h 
              ${CMAKE_CURRENT_SOURCE_DIR}/NavierStokesSplittingMethod.h
              ${CMAKE_CURRENT_SOURCE_DIR}/ChorinTemamMethod.h
              ${CMAKE_CURRENT_SOURCE_DIR}/IncrementalChorinTemamMethod.h
@@ -7,7 +7,7 @@ SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractSplittingMethod.h
              ${CMAKE_CURRENT_SOURCE_DIR}/splitting_methods.h)
 
 # collect source files
-SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/AbstractSplittingMethod.cpp
+SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/GenericSplittingMethod.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/NavierStokesSplittingMethod.cpp)
 
 # add files to shared library dependancies

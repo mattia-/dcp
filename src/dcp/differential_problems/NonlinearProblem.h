@@ -29,7 +29,7 @@
 #include <dolfin/parameter/Parameters.h>
 #include <vector>
 #include <string>
-#include <dcp/differential_problems/AbstractProblem.h>
+#include <dcp/differential_problems/GenericProblem.h>
 #include <dcp/differential_problems/SubdomainType.h>
 
 namespace dcp
@@ -43,7 +43,7 @@ namespace dcp
      *  \f]
      *  with \f$ F \left(u, v\right) : V \times V \rightarrow \mathds{R}\f$ non linear in the problem unknown \f$u\f$.
      *  
-     *  It inherits publicly from \c AbstractProblem
+     *  It inherits publicly from \c GenericProblem
      *  and it extends its functionalities to a concrete differential
      *  problem.
      *  Template arguments are:
@@ -53,7 +53,7 @@ namespace dcp
      */
 
     template <class T_ResidualForm_, class T_JacobianForm_>
-        class NonlinearProblem : public dcp::AbstractProblem
+        class NonlinearProblem : public dcp::GenericProblem
         {
             // ---------------------------------------------------------------------------------------------//  
 
@@ -246,7 +246,7 @@ namespace dcp
 
                 /******************* SETTERS *******************/
 
-                //! Set coefficient [1]. Override of virtual function in \c AbstractProblem.
+                //! Set coefficient [1]. Override of virtual function in \c GenericProblem.
                 /*!
                  *  Possible values for \c coefficientType are:
                  *  \li \c residual_form to set the coefficient in the residual form
@@ -264,31 +264,31 @@ namespace dcp
                  *  \c coefficientValue can only be \c dolfin::Expression or \c dolfin::Function. This is because
                  *  \c setCoefficient() will call the assignement operator of class \c dolfin::Function, which only accepts
                  *  the two types mentioned before as input arguments.
-                 *  See \c AbstractProblem documentation for more details on the function
+                 *  See \c GenericProblem documentation for more details on the function
                  */
                 virtual void setCoefficient (const std::string& coefficientType, 
                                              const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                              const std::string& coefficientName = "default") override;
 
-                //! Set coefficient [2]. Override of virtual function in \c AbstractProblem.
+                //! Set coefficient [2]. Override of virtual function in \c GenericProblem.
                 /*!
                  *  Possible values for \c coefficientType are:
                  *  \li \c residual_form to set the coefficient in the residual form
                  *  \li \c jacobian_form to set the coefficient in the jacobian form
                  *  
-                 *  See \c AbstractProblem documentation for more details on the function
+                 *  See \c GenericProblem documentation for more details on the function
                  */
                 virtual void setCoefficient (const std::string& coefficientType,
                                              const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                              const std::size_t& coefficientNumber) override;
 
-                //! Set integration subdomains for the forms. Override of virtual function in \c AbstractProblem
+                //! Set integration subdomains for the forms. Override of virtual function in \c GenericProblem
                 /*! 
                  *  Possible values for \c formType are:
                  *  \li \c residual_form to set the integration subdomain in the residual form
                  *  \li \c jacobian_form to set the integration subdomain in the jacobian form
                  *  
-                 *  See \c AbstractProblem documentation for more details on the function
+                 *  See \c GenericProblem documentation for more details on the function
                  */
                 virtual void setIntegrationSubdomain (const std::string& formType,
                                                        std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
@@ -299,7 +299,7 @@ namespace dcp
                 //! Solve problem
                 /*!
                  *  This method solves the problem defined. It uses the private members' value to set the problem and then
-                 *  stores the solution in the private member \c solution_. See documentation of \c dcp::AbstractProblem
+                 *  stores the solution in the private member \c solution_. See documentation of \c dcp::GenericProblem
                  *  for more details on how the protected member \c solution_ works and why it is declared as a 
                  *  \c std::pair.
                  *
@@ -309,7 +309,7 @@ namespace dcp
                  */
                 virtual void solve (const std::string& type = "default") override;
 
-                //! Clone method. Overrides method in \c AbstractProblem
+                //! Clone method. Overrides method in \c GenericProblem
                 /*!
                  *  It uses the parameter \c clone_method to decide which type of cloning to perform.
                  *  Possible values for such parameter are:
@@ -353,7 +353,7 @@ namespace dcp
         NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
@@ -403,7 +403,7 @@ namespace dcp
         NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
@@ -453,7 +453,7 @@ namespace dcp
         NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
@@ -505,7 +505,7 @@ namespace dcp
                           const T_JacobianForm& jacobianForm,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 
@@ -557,7 +557,7 @@ namespace dcp
                           const T_JacobianForm& jacobianForm,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 
@@ -609,7 +609,7 @@ namespace dcp
                           T_JacobianForm&& jacobianForm,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            AbstractProblem (functionSpace),
+            GenericProblem (functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 

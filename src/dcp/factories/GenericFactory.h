@@ -43,14 +43,14 @@ namespace dcp
      */
     template 
         <
-            class T_AbstractProduct_, 
+            class T_GenericProduct_, 
             class T_Identifier_, 
-            class T_Builder_ = std::function <std::unique_ptr<T_AbstractProduct_> ()> 
+            class T_Builder_ = std::function <std::unique_ptr<T_GenericProduct_> ()> 
         >
             class GenericFactory
             {
                 public:
-                    typedef T_AbstractProduct_ T_AbstractProduct;
+                    typedef T_GenericProduct_ T_GenericProduct;
                     typedef T_Identifier_      T_Identifier;
                     typedef T_Builder_         T_Builder;
 
@@ -61,7 +61,7 @@ namespace dcp
                     /*!
                       The pointer is null if no match was found for the identifier.
                       */
-                    std::unique_ptr<T_AbstractProduct> create (const T_Identifier& identifier) const;
+                    std::unique_ptr<T_GenericProduct> create (const T_Identifier& identifier) const;
 
                     //! Register the given rule
                     void add (const T_Identifier& identifier, const T_Builder& builder);
@@ -104,12 +104,12 @@ namespace dcp
     // We use Meyer's trick to istantiate the factory.
     template
         <
-            class T_AbstractProduct,
+            class T_GenericProduct,
             class T_Identifier,
             class T_Builder
         >
-        GenericFactory<T_AbstractProduct, T_Identifier, T_Builder>& 
-        GenericFactory<T_AbstractProduct, T_Identifier, T_Builder>::Instance() 
+        GenericFactory<T_GenericProduct, T_Identifier, T_Builder>& 
+        GenericFactory<T_GenericProduct, T_Identifier, T_Builder>::Instance() 
         {
             static GenericFactory factory;
             return factory;
@@ -119,12 +119,12 @@ namespace dcp
 
     template
         <
-            class T_AbstractProduct,
+            class T_GenericProduct,
             class T_Identifier,
             class T_Builder
         >
-        std::unique_ptr <T_AbstractProduct> 
-        GenericFactory<T_AbstractProduct, T_Identifier, T_Builder>::create(const T_Identifier& identifier) const
+        std::unique_ptr <T_GenericProduct> 
+        GenericFactory<T_GenericProduct, T_Identifier, T_Builder>::create(const T_Identifier& identifier) const
         {
             auto f = storedData_.find (identifier); 
             if (f == storedData_.end ())
@@ -134,7 +134,7 @@ namespace dcp
             }
             else
             {
-                return std::unique_ptr<T_AbstractProduct> (f->second());
+                return std::unique_ptr<T_GenericProduct> (f->second());
             }
         }
     
@@ -142,12 +142,12 @@ namespace dcp
 
     template
         <
-            class T_AbstractProduct,
+            class T_GenericProduct,
             class T_Identifier,
             class T_Builder
         >
         void 
-        GenericFactory<T_AbstractProduct, T_Identifier, T_Builder>::
+        GenericFactory<T_GenericProduct, T_Identifier, T_Builder>::
         add (const T_Identifier& identifier, const T_Builder& builder)
         {
             auto f = storedData_.insert(std::make_pair(identifier, builder));
@@ -161,12 +161,12 @@ namespace dcp
     
     template
         <
-            typename T_AbstractProduct,
+            typename T_GenericProduct,
             typename T_Identifier,
             typename T_Builder
         >
         std::vector<T_Identifier> 
-        GenericFactory<T_AbstractProduct, T_Identifier, T_Builder>::registered () const
+        GenericFactory<T_GenericProduct, T_Identifier, T_Builder>::registered () const
         {
             std::vector<T_Identifier> tmp;
             tmp.reserve (storedData_.size());

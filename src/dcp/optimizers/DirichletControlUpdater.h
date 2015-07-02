@@ -32,7 +32,7 @@ namespace dcp
      *  \brief Class to update the value of the control variable in Dirichlet boundary control problems.
      *  
      *  This class is a functor which can be passed to the method \c apply() of any class
-     *  of the \c AbstractDescentMethod hierarchy, which will use it to update the value of
+     *  of the \c GenericDescentMethod hierarchy, which will use it to update the value of
      *  the control parameter in the \c EquationSystem (also passed to the method \c apply()
      *  of the same class) as the optimization proceeds.
      */
@@ -68,7 +68,7 @@ namespace dcp
              *  \param compositeProblem the problem on which to operate
              *  \param dirichletBCValue the new value for the control Dirichlet boundary condition 
              */
-            void operator() (dcp::AbstractEquationSystem& compositeProblem, 
+            void operator() (dcp::GenericEquationSystem& compositeProblem, 
                              const dolfin::GenericFunction& dirichletBCValue) const;
 
             // ---------------------------------------------------------------------------------------------//

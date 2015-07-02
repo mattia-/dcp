@@ -41,7 +41,7 @@ namespace dcp
         class Proxy 
         {
             public:
-                typedef typename T_Factory_::T_AbstractProduct T_Factory_AbstractProduct;
+                typedef typename T_Factory_::T_GenericProduct T_Factory_GenericProduct;
                 typedef typename T_Factory_::T_Identifier      T_Factory_Identifier;
                 typedef typename T_Factory_::T_Builder         T_Factory_Builder;
                 typedef          T_Factory_                    T_Factory;
@@ -55,9 +55,9 @@ namespace dcp
 
                 //! The builder for the default construction. It must comply with the signature which we
                 //! want to use for our factory
-                static std::unique_ptr<T_Factory_AbstractProduct> Build ()
+                static std::unique_ptr<T_Factory_GenericProduct> Build ()
                 {
-                    return std::unique_ptr<T_Factory_AbstractProduct> (new T_ConcreteProduct ());
+                    return std::unique_ptr<T_Factory_GenericProduct> (new T_ConcreteProduct ());
                 }
 
             private:

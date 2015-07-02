@@ -35,7 +35,7 @@
 #include <initializer_list>
 #include <map>
 #include <tuple>
-#include <dcp/differential_problems/AbstractProblem.h>
+#include <dcp/differential_problems/GenericProblem.h>
 #include <dcp/factories/LinearSolverFactory.h>
 #include <dcp/differential_problems/SubdomainType.h>
 #include <dcp/expressions/TimeDependentExpression.h>
@@ -58,13 +58,13 @@ namespace dcp
      *  with \f$ a \left(u \left(t\right), v\right) : V \times V \rightarrow \mathds{R}\f$ generic form on \f$V\f$
      *  and \f$ L \left(v\right) : V \rightarrow \mathds{R} \f$ linear form on the same space.
      *  
-     *  It inherits publicly from \c AbstractProblem
+     *  It inherits publicly from \c GenericProblem
      *  and it extends its functionalities to a concrete differential
      *  problem. The problem to be solved on each timestep is stored as a 
-     *  <tt> shared_ptr <dcp::AbstractProblem> </tt>
+     *  <tt> shared_ptr <dcp::GenericProblem> </tt>
      */
 
-    class TimeDependentProblem : public dcp::AbstractProblem
+    class TimeDependentProblem : public dcp::GenericProblem
     {
         // ---------------------------------------------------------------------------------------------//  
 
@@ -160,11 +160,11 @@ namespace dcp
              *        set the coefficient whose name is stored in the parameter \c "previous_solution_name" at every
              *        time step but will assume that it has already been set externally, for example with a link in
              *        a \c dcp::TimeDependentEquationSystem. Default value: \c false
-             *  Furthermore, the constructor modifies the \c AbstractProblem parameter \c plot_title and sets its 
+             *  Furthermore, the constructor modifies the \c GenericProblem parameter \c plot_title and sets its 
              *  default value to the empty string, so that by default the plot title contains only the value of the 
              *  current time when the plot method is called.
              */
-            TimeDependentProblem (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
+            TimeDependentProblem (const std::shared_ptr<dcp::GenericProblem> timeSteppingProblem,
                                   const std::shared_ptr<dcp::Time> time,
                                   const double& startTime,
                                   const double& dt,
@@ -242,11 +242,11 @@ namespace dcp
              *        set the coefficient whose name is stored in the parameter \c "previous_solution_name" at every
              *        time step but will assume that it has already been set externally, for example with a link in
              *        a \c dcp::TimeDependentEquationSystem. Default value: \c false
-             *  Furthermore, the constructor modifies the \c AbstractProblem parameter \c plot_title and sets its 
+             *  Furthermore, the constructor modifies the \c GenericProblem parameter \c plot_title and sets its 
              *  default value to the empty string, so that by default the plot title contains only the value of the 
              *  current time when the plot method is called.
              */
-            TimeDependentProblem (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
+            TimeDependentProblem (const std::shared_ptr<dcp::GenericProblem> timeSteppingProblem,
                                   const double& startTime,
                                   const double& dt,
                                   const double& endTime,
@@ -334,7 +334,7 @@ namespace dcp
             /*! 
              *  \return a const reference to the problem's time stepping problem
              */
-            virtual dcp::AbstractProblem& timeSteppingProblem ();
+            virtual dcp::GenericProblem& timeSteppingProblem ();
 
 
             /******************* SETTERS *******************/
@@ -364,7 +364,7 @@ namespace dcp
             virtual void setInitialSolution (const dolfin::Expression& initialSolution, 
                                              const unsigned int& stepNumber = 1);
             
-            //! Set coefficient [1]. Override of virtual function in \c AbstractProblem.
+            //! Set coefficient [1]. Override of virtual function in \c GenericProblem.
             //! This function is used to set the coefficients for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c setCoefficient function.
             /*!
@@ -372,13 +372,13 @@ namespace dcp
              *  \li \c bilinear_form to set the coefficient in the bilinear form
              *  \li \c linear_form to set the coefficient in the linear form
              *  
-             *  See \c AbstractProblem documentation for more details on the function.
+             *  See \c GenericProblem documentation for more details on the function.
              */
             virtual void setCoefficient (const std::string& coefficientType, 
                                          const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                          const std::string& coefficientName) override;
 
-            //! Set coefficient [2]. Override of virtual function in \c AbstractProblem.
+            //! Set coefficient [2]. Override of virtual function in \c GenericProblem.
             //! This function is used to set the coefficients for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c setCoefficient function.
             /*!
@@ -386,13 +386,13 @@ namespace dcp
              *  \li \c bilinear_form to set the coefficient in the bilinear form
              *  \li \c linear_form to set the coefficient in the linear form
              *  
-             *  See \c AbstractProblem documentation for more details on the function
+             *  See \c GenericProblem documentation for more details on the function
              */
             virtual void setCoefficient (const std::string& coefficientType,
                                          const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                          const std::size_t& coefficientNumber) override;
 
-            //! Set integration subdomains for the forms. Override of virtual function in \c AbstractProblem
+            //! Set integration subdomains for the forms. Override of virtual function in \c GenericProblem
             //! This function sets the integration subdomains for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c setCoefficient function.
             /*! 
@@ -400,14 +400,14 @@ namespace dcp
              *  \li \c bilinear_form to set the integration subdomain in the bilinear form
              *  \li \c linear_form to set the integration subdomain in the linear form
              *  
-             *  See \c AbstractProblem documentation for more details on the function
+             *  See \c GenericProblem documentation for more details on the function
              */
             virtual void setIntegrationSubdomain (const std::string& formType,
                                                   std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                                   const dcp::SubdomainType& subdomainType) override;
 
             //! Add Dirichlet boundary condition to the problem [1]
-            //! Overrides method in \c AbstractProblem.
+            //! Overrides method in \c GenericProblem.
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
@@ -423,7 +423,7 @@ namespace dcp
                                          std::string bcName = "") override;
 
             //! Add Dirichlet boundary condition to the problem [2]
-            //! Overrides method in \c AbstractProblem.
+            //! Overrides method in \c GenericProblem.
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
@@ -443,7 +443,7 @@ namespace dcp
                                          std::string bcName = "") override;
 
             //! Add Dirichlet boundary condition to the problem [3]
-            //! Overrides method in \c AbstractProblem.
+            //! Overrides method in \c GenericProblem.
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
@@ -459,7 +459,7 @@ namespace dcp
                                          std::string bcName = "") override;
 
             //! Add Dirichlet boundary condition to the problem [4]
-            //! Overrides method in \c AbstractProblem.
+            //! Overrides method in \c GenericProblem.
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
@@ -479,7 +479,7 @@ namespace dcp
                                          std::string bcName = "") override;
 
             //! Add Dirichlet boundary condition to the problem [5]. 
-            //! Overrides method in \c AbstractProblem.
+            //! Overrides method in \c GenericProblem.
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
@@ -494,7 +494,7 @@ namespace dcp
                                          std::string bcName = "") override;
 
             //! Add Dirichlet boundary condition to the problem [6]. 
-            //! Overrides method in \c AbstractProblem.
+            //! Overrides method in \c GenericProblem.
             //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
             /*!
@@ -508,7 +508,7 @@ namespace dcp
             virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, 
                                          std::string bcName = "") override;
 
-            //! Remove Dirichlet boundary condition with given position. Overrides method in \c AbstractProblem
+            //! Remove Dirichlet boundary condition with given position. Overrides method in \c GenericProblem
             //! This function removes the given Dirichlet boundary conditions from the protected member 
             //! \c timeSteppingProblem_.
             //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c removeDirichletBC function.
@@ -656,7 +656,7 @@ namespace dcp
             virtual void applyStashedSolution ();
                 
             //! Plot the solution. 
-            /*! Overrides the one in \c dcp::AbstractProblem to take into account the fact that 
+            /*! Overrides the one in \c dcp::GenericProblem to take into account the fact that 
              *  \c solution_ is now a vector with size greater than one. It uses the value of the parameter \c pause
              *  to decide whether to stop at each plot or not and the value of the parameter \c plot_title to set
              *  the plot title (\c plot_title will actually be added to the time, which is always plotted in the title).
@@ -667,7 +667,7 @@ namespace dcp
              */
             virtual void plotSolution (const std::string& plotType = "all") override;
             
-            //! Clone method. Overrides method in \c AbstractProblem
+            //! Clone method. Overrides method in \c GenericProblem
             /*!
              *  It uses the parameter \c clone_method to decide which type of cloning to perform.
              *  Possible values for such parameter are:
@@ -687,7 +687,7 @@ namespace dcp
 
         protected:
             //! The problem to be solved on each time step
-            std::shared_ptr <dcp::AbstractProblem> timeSteppingProblem_;
+            std::shared_ptr <dcp::GenericProblem> timeSteppingProblem_;
             
             //! Pointer to the object keeping time for this problem
             std::shared_ptr <dcp::Time> time_;
@@ -823,7 +823,7 @@ namespace dcp
                                                 const int& storeInterval);
             
             //! Plot the solution, used inside the time loop and thus kept protected. It overloads the 
-            //! plot method in \c dcp::AbstractProblem, which is still usable (and actually overridden in this class
+            //! plot method in \c dcp::GenericProblem, which is still usable (and actually overridden in this class
             //! to take into account the fact that \c solution_ is now a vector with size greater than one)
             /*!
              *  \param solution the solution to be plotted

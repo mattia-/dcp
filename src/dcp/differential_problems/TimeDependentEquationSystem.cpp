@@ -32,7 +32,7 @@ namespace dcp
                                                               const double& startTime,
                                                               const double& dt,
                                                               const double& endTime) :
-        AbstractEquationSystem (),
+        GenericEquationSystem (),
         time_ (time),
         startTime_ (startTime),
         dt_ (dt),
@@ -45,7 +45,7 @@ namespace dcp
     
 
     /******************* METHODS *******************/
-    void TimeDependentEquationSystem::addProblem (const std::string& problemName, dcp::AbstractProblem& problem)
+    void TimeDependentEquationSystem::addProblem (const std::string& problemName, dcp::GenericProblem& problem)
     {
         // try-catch block to check if problem is actually a dcp::TimeDependentProblem&
         try
@@ -86,7 +86,7 @@ namespace dcp
             }
             
             // if we got here, everything is fine, so just call the base class function
-            dcp::AbstractEquationSystem::addProblem (problemName, problem);
+            dcp::GenericEquationSystem::addProblem (problemName, problem);
         }
         catch (std::bad_cast& badCast)
         {
@@ -100,7 +100,7 @@ namespace dcp
 
 
     void TimeDependentEquationSystem::addProblem (const std::string& problemName, 
-                                                  const std::shared_ptr<dcp::AbstractProblem> problem)
+                                                  const std::shared_ptr<dcp::GenericProblem> problem)
     {
         std::shared_ptr<dcp::TimeDependentProblem> castProblem = 
             std::dynamic_pointer_cast<dcp::TimeDependentProblem> (problem);
@@ -149,7 +149,7 @@ namespace dcp
             }
             
             // if we got here, everything is fine, so just call the base class function
-            dcp::AbstractEquationSystem::addProblem (problemName, problem);
+            dcp::GenericEquationSystem::addProblem (problemName, problem);
         }
     }
     
@@ -609,7 +609,7 @@ namespace dcp
             return;
         }
 
-        dcp::AbstractProblem& problem = *(problemIterator->second);
+        dcp::GenericProblem& problem = *(problemIterator->second);
 
         // check if target problem of the link exists
         dolfin::log (dolfin::DBG, "Looking for link target in problems map...");
@@ -622,7 +622,7 @@ namespace dcp
             return;
         }
 
-        // unlike in AbstractEquationSystem, we use a reference to TimeDependentProblem (i.e. the derived class).
+        // unlike in GenericEquationSystem, we use a reference to TimeDependentProblem (i.e. the derived class).
         // Two reasons for this:
         // 1) we need to call solutionsVector
         // 2) if it is not a TimeDependentProblem, the whole method does not make sense

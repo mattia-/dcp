@@ -30,8 +30,8 @@ namespace dcp
      *  \brief Class to update the value of the control variable in distributed control problems.
      *  
      *  This class is a functor which can be passed to the method \c apply() of any class
-     *  of the \c AbstractDescentMethod hierarchy, which will use it to update the value of
-     *  the control parameter in the \c AbstractEquationSystem (also passed to the method \c apply()
+     *  of the \c GenericDescentMethod hierarchy, which will use it to update the value of
+     *  the control parameter in the \c GenericEquationSystem (also passed to the method \c apply()
      *  of the same class) as the optimization proceeds.
      */
     class DistributedControlUpdater
@@ -46,10 +46,10 @@ namespace dcp
             //! Constructor
             /*! 
              *  Input arguments are:
-             *  \param problemName string that identifies the problem (in the \c AbstractEquationSystem object 
+             *  \param problemName string that identifies the problem (in the \c GenericEquationSystem object 
              *  passed as input to <tt>this->operator() () </tt>) which contains the control parameter to be updated
              *  \param coefficientType the type of the coefficient representing the control parameter inside the problem. 
-             *  This will be used by the call to \c dcp::AbstractProblem::setCoefficient()
+             *  This will be used by the call to \c dcp::GenericProblem::setCoefficient()
              *  \param coefficientName the name of the coefficient representing the control parameter in the problem 
              *  passed as first argument
              */
@@ -65,18 +65,18 @@ namespace dcp
              *  \param compositeProblem the problem on which to operate
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
-            void operator() (dcp::AbstractEquationSystem& compositeProblem, 
+            void operator() (dcp::GenericEquationSystem& compositeProblem, 
                              const dolfin::GenericFunction& coefficientValue) const;
             
         // ---------------------------------------------------------------------------------------------//
         
         protected:
-            //! The name identifying the problem inside the \c AbstractEquationSystem which contains the
+            //! The name identifying the problem inside the \c GenericEquationSystem which contains the
             //! control parameter
             std::string problemName_;
            
             //! The type of the coefficient representing the control parameter inside the problem. This will be used
-            //! by the call to \c dcp::AbstractProblem::setCoefficient()
+            //! by the call to \c dcp::GenericProblem::setCoefficient()
             std::string coefficientType_;
            
             //! The name of the control parameter inside the problem identified by \c problemName_

@@ -223,7 +223,7 @@ namespace dcp
             
             //! Set subiteration range
             /*! Basically, \c subiterate will be called on the range of problems in \c solveOrder_ going from
-             *  \c subiterationsRange_.first (inclusive) to \c subiterationsRange_.second (also inclusive). 
+             *  \c subiterationsRange_.first (inclusive) to \c subiterationsRange_.second (exclusive). 
              *  The two strings in \c subiterationsRange_ are initialized as empty strings, so that if unless
              *  \c setSubiterationRange() is called explicitly no subiteration is performed, since
              *  empty names cannot be used for problems in \c storedProblems_. To indicate the end of the vector

@@ -45,14 +45,6 @@ namespace dcp
         auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);
         auto subiterationsEnd = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.second);
         
-        // increment subiterationsEnd since the range given to subiterate must be inclusive for the beginning and 
-        // exclusive for the end. Of course, if subiterationsEnd is already solveOrder_.end (), there is no need to
-        // increment it
-        if (subiterationsEnd != solveOrder_.end ())
-        {
-            subiterationsEnd++;
-        }
-        
         auto problemName = solveOrder_.begin ();
         while (problemName != solveOrder_.end ())
         {

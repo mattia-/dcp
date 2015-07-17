@@ -75,7 +75,7 @@ namespace dcp
         // 1)
         // loop over problemsLinks_ to reset all links to take changes to coefficients 
         // into account. Remember it is a map: elements in it are order according to 
-        // the default lexicographical ordering
+        // the default lexicographic ordering
         dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
 
         auto linksIterator = problemsLinks_.begin ();

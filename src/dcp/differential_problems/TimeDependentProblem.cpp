@@ -661,6 +661,8 @@ namespace dcp
             solution_.pop_back ();
         }
         solution_.push_back (std::make_pair (time_ -> value (), stashedSolution_));
+        
+        stashedSolution_ = dolfin::Function (*functionSpace_);
     }
             
 

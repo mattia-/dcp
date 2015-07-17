@@ -162,6 +162,14 @@ namespace dcp
                                                                  const int& nStepsBack,
                                                                  const bool& forceRelinking)
     {
+        // check if nStepsBack is a valid value
+        if (nStepsBack < 1)
+        {
+            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                  "addLinkToPreviousSolution",
+                                  "Value of nStepsBack should be at least 1. Use addLink() to link to problems at the current timestep");
+        }
+        
         dolfin::begin (dolfin::DBG, 
                        "Setting up link (%s, %s, %s) -> (%s, all solution components, %d time steps back)...",
                        linkFrom.c_str (),
@@ -249,6 +257,14 @@ namespace dcp
                                                                  const int& nStepsBack,
                                                                  const bool& forceRelinking) 
     {
+        // check if nStepsBack is a valid value
+        if (nStepsBack < 1)
+        {
+            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
+                                  "addLinkToPreviousSolution",
+                                  "Value of nStepsBack should be at least 1. Use addLink() to link to problems at the current timestep");
+        }
+        
         dolfin::begin (dolfin::DBG, 
                        "Setting up link (%s, %s, %s) -> (%s, component %d, %d time steps back)...",
                        linkFrom.c_str (),
@@ -501,9 +517,6 @@ namespace dcp
                             problem.plotSolution ("last");
                         }
                     }
-                    
-                    // problemName should already be ok, but set it just to be sure :)
-                    problemName = subiterationsEnd;
                 }
             }
             
@@ -638,6 +651,17 @@ namespace dcp
             // get target function, by going back from the last element of nStepsBack steps. 
             // NB: we use operator+ to traverse the vector backwards, since rbegin is a REVERSE iterator
             int nStepsBack = std::get<2> (link.second);
+            
+            // if solutionType_ is "stashed", decrease the number of time steps by one, since the solution; indeed, when 
+            // solutionType_ is "stashed" we suppose that a call to solve ("stash") (on the problem) has already been 
+            // performed, so the solution at the current step is not actually stored in solutionsVector. This means that
+            // for example the solution at the previous time step is the LAST element in solutionsVector, not the last 
+            // but one
+            if (solveType_ == "stashed")
+            {
+                nStepsBack--;
+            }
+            
             const dolfin::Function& targetFunction = (targetProblemSolutionsVector.rbegin() + nStepsBack)->second;
 
             problem.setCoefficient (std::get<2> (link.first), 

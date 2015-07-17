@@ -657,9 +657,6 @@ namespace dcp
     
 
 
-    // --------------------------------------------------------------------------- //
-    
-    /******************* METHODS *******************/
     void GenericEquationSystem::subiterate (std::vector<std::string>::const_iterator subiterationsBegin,
                                             std::vector<std::string>::const_iterator subiterationsEnd)
     {

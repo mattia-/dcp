@@ -469,7 +469,7 @@ namespace dcp
                  *  \c desired_solver_preconditioner match the values of \c current_solver_type, \c current_solver_method
                  *  and \c current_solver_preconditioner. If they differ, it calls \c createSolver().
                  * 
-                 *  \param type the solution type wanted. Possible values are:
+                 *  \param solveType the solution type wanted. Possible values are:
                  *  \li \c "default" : the normal solution process
                  *  \li \c "stash" : solve the problem but store the solution in \c stashedSolution_
                  */

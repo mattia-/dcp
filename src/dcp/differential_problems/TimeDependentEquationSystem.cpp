@@ -657,7 +657,7 @@ namespace dcp
             // performed, so the solution at the current step is not actually stored in solutionsVector. This means that
             // for example the solution at the previous time step is the LAST element in solutionsVector, not the last 
             // but one
-            if (solveType_ == "stashed")
+            if (solutionType_ == "stashed")
             {
                 nStepsBack--;
             }
@@ -686,6 +686,17 @@ namespace dcp
             // get target function, by going back from the last element of nStepsBack steps. 
             // NB: we use operator+ to traverse the vector backwards, since rbegin is a REVERSE iterator
             int nStepsBack = std::get<2> (link.second);
+            
+            // if solutionType_ is "stashed", decrease the number of time steps by one, since the solution; indeed, when 
+            // solutionType_ is "stashed" we suppose that a call to solve ("stash") (on the problem) has already been 
+            // performed, so the solution at the current step is not actually stored in solutionsVector. This means that
+            // for example the solution at the previous time step is the LAST element in solutionsVector, not the last 
+            // but one
+            if (solutionType_ == "stashed")
+            {
+                nStepsBack--;
+            }
+            
             const dolfin::Function& targetFunction = (targetProblemSolutionsVector.rbegin() + nStepsBack)->second;
 
             int component = std::get<1> (link.second);

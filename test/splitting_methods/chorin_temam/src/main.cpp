@@ -24,7 +24,7 @@
 #include "prediction.h"
 #include "correction.h"
 #include "projection.h"
-#include <dcp/differential_problems/differential_problems.h>
+#include <dcp/problems/problems.h>
 #include <dcp/splitting_methods/splitting_methods.h>
 
 namespace navierstokes

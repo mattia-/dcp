@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/differential_problems/GenericProblem.h>
+#include <dcp/problems/GenericProblem.h>
 #include <dolfin/log/dolfin_log.h>
 #include <map>
 #include <string>

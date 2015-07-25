@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_NONLINEARPROBLEM_H_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_NONLINEARPROBLEM_H_INCLUDE_GUARD
+#ifndef SRC_PROBLEMS_NONLINEARPROBLEM_H_INCLUDE_GUARD
+#define SRC_PROBLEMS_NONLINEARPROBLEM_H_INCLUDE_GUARD
 
 #include <dolfin/mesh/MeshFunction.h>
 #include <dolfin/function/FunctionSpace.h>
@@ -29,8 +29,8 @@
 #include <dolfin/parameter/Parameters.h>
 #include <vector>
 #include <string>
-#include <dcp/differential_problems/GenericProblem.h>
-#include <dcp/differential_problems/SubdomainType.h>
+#include <dcp/problems/GenericProblem.h>
+#include <dcp/problems/SubdomainType.h>
 
 namespace dcp
 {

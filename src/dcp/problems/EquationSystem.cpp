@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/differential_problems/EquationSystem.h>
+#include <dcp/problems/EquationSystem.h>
 #include <utility>
 #include <tuple>
 #include <dolfin.h>

@@ -24,8 +24,8 @@
 #include <memory>
 #include <initializer_list>
 #include <string>
-#include <dcp/differential_problems/SubdomainType.h>
-#include <dcp/differential_problems/TimeDependentEquationSystem.h>
+#include <dcp/problems/SubdomainType.h>
+#include <dcp/problems/TimeDependentEquationSystem.h>
 
 
 namespace dcp

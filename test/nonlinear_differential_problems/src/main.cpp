@@ -22,7 +22,7 @@
 #include <dolfin.h>
 #include <mshr.h>
 #include "navierstokes.h"
-#include <dcp/differential_problems/differential_problems.h>
+#include <dcp/problems/problems.h>
 
 namespace navierstokes
 {

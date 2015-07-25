@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/differential_problems/TimeDependentProblem.h>
+#include <dcp/problems/TimeDependentProblem.h>
 #include <dolfin/log/dolfin_log.h>
 #include <dolfin/io/File.h>
 #include <regex>

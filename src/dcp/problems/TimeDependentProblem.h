@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTPROBLEM_H_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_TIMEDEPENDENTPROBLEM_H_INCLUDE_GUARD
+#ifndef SRC_PROBLEMS_TIMEDEPENDENTPROBLEM_H_INCLUDE_GUARD
+#define SRC_PROBLEMS_TIMEDEPENDENTPROBLEM_H_INCLUDE_GUARD
 
 #include <dolfin/mesh/MeshFunction.h>
 #include <dolfin/function/FunctionSpace.h>
@@ -35,9 +35,9 @@
 #include <initializer_list>
 #include <map>
 #include <tuple>
-#include <dcp/differential_problems/GenericProblem.h>
+#include <dcp/problems/GenericProblem.h>
 #include <dcp/factories/LinearSolverFactory.h>
-#include <dcp/differential_problems/SubdomainType.h>
+#include <dcp/problems/SubdomainType.h>
 #include <dcp/expressions/TimeDependentExpression.h>
 #include <dcp/subdomains/Subdomain.h>
 #include <dcp/time/Time.h>

@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/differential_problems/GenericEquationSystem.h>
+#include <dcp/problems/GenericEquationSystem.h>
 #include <dcp/utils/DotProduct.h>
 #include <utility>
 #include <iterator>

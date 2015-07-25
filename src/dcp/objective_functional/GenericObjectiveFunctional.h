@@ -26,7 +26,7 @@
 #include <dolfin/fem/Form.h>
 #include <string>
 #include <dcp/expressions/VariableExpression.h>
-#include <dcp/differential_problems/SubdomainType.h>
+#include <dcp/problems/SubdomainType.h>
 
 namespace dcp
 {

@@ -11,24 +11,15 @@ ENDIF (DEFINED C_COMPILER)
 
 ENABLE_TESTING ()
 
-# MESSAGE (STATUS "PROCESSING DIRECTORY: expressions_and_subdomains")
+ADD_SUBDIRECTORY (algebraic_problems)
 ADD_SUBDIRECTORY (expressions_and_subdomains)
-
-# MESSAGE (STATUS "PROCESSING DIRECTORY: linear_differential_problems")
 ADD_SUBDIRECTORY (linear_differential_problems)
-
-# MESSAGE (STATUS "PROCESSING DIRECTORY: nonlinear_differential_problems")
 ADD_SUBDIRECTORY (nonlinear_differential_problems)
-
-# MESSAGE (STATUS "PROCESSING DIRECTORY: optimization")
 ADD_SUBDIRECTORY (optimization)
-
-# MESSAGE (STATUS "PROCESSING DIRECTORY: splitting_methods")
 ADD_SUBDIRECTORY (splitting_methods)
-
-# MESSAGE (STATUS "PROCESSING DIRECTORY: :ime_dependent_problems")
 ADD_SUBDIRECTORY (time_dependent_problems)
 
+ADD_TEST (NAME algebraic_problems COMMAND algebraic_problems)
 ADD_TEST (NAME expressions_and_subdomains COMMAND expressions_and_subdomains)
 ADD_TEST (NAME linear_problems COMMAND linear_problem)
 ADD_TEST (NAME nonlinear_problems COMMAND nonlinear_problem)

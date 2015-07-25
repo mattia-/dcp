@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_GENERICPROBLEM_H_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_GENERICPROBLEM_H_INCLUDE_GUARD
+#ifndef SRC_PROBLEMS_GENERICPROBLEM_H_INCLUDE_GUARD
+#define SRC_PROBLEMS_GENERICPROBLEM_H_INCLUDE_GUARD
 
 #include <dolfin/mesh/MeshFunction.h>
 #include <dolfin/mesh/SubDomain.h>
@@ -28,7 +28,7 @@
 #include <dolfin/parameter/Parameters.h>
 #include <dolfin/plot/plot.h>
 #include <dolfin/plot/VTKPlotter.h>
-#include <dcp/differential_problems/SubdomainType.h>
+#include <dcp/problems/SubdomainType.h>
 #include <map>
 #include <string>
 #include <utility>

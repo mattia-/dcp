@@ -25,7 +25,7 @@
 #include "correction.h"
 #include "velocity_projection.h"
 #include "pressure_update.h"
-#include <dcp/differential_problems/differential_problems.h>
+#include <dcp/problems/problems.h>
 #include <dcp/splitting_methods/splitting_methods.h>
 
 namespace navierstokes

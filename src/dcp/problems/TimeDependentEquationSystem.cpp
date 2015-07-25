@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/differential_problems/TimeDependentEquationSystem.h>
-#include <dcp/differential_problems/TimeDependentProblem.h>
+#include <dcp/problems/TimeDependentEquationSystem.h>
+#include <dcp/problems/TimeDependentProblem.h>
 #include <utility>
 #include <tuple>
 #include <dolfin.h>

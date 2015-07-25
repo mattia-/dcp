@@ -3,17 +3,19 @@ SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/LinearProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/NonlinearProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentProblem.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/AlgebraicProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/GenericEquationSystem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/EquationSystem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentEquationSystem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/SubdomainType.h
-             ${CMAKE_CURRENT_SOURCE_DIR}/differential_problems.h)
+             ${CMAKE_CURRENT_SOURCE_DIR}/problems.h)
 
 # collect source files
 SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/EquationSystem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentEquationSystem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentProblem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/GenericProblem.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/AlgebraicProblem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/GenericEquationSystem.cpp)
 
 # add files to shared library dependancies

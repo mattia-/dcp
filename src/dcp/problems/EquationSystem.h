@@ -17,10 +17,10 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_DIFFERENTIAL_PROBLEMS_EQUATIONSYSTEM_H_INCLUDE_GUARD
-#define SRC_DIFFERENTIAL_PROBLEMS_EQUATIONSYSTEM_H_INCLUDE_GUARD
+#ifndef SRC_PROBLEMS_EQUATIONSYSTEM_H_INCLUDE_GUARD
+#define SRC_PROBLEMS_EQUATIONSYSTEM_H_INCLUDE_GUARD
 
-#include <dcp/differential_problems/GenericEquationSystem.h>
+#include <dcp/problems/GenericEquationSystem.h>
 #include <map>
 #include <tuple>
 #include <memory>

@@ -18,7 +18,7 @@
  */ 
 
 #include <dcp/optimizers/DirichletControlUpdater.h>
-#include <dcp/differential_problems/GenericProblem.h>
+#include <dcp/problems/GenericProblem.h>
 #include <dolfin/fem/DirichletBC.h>
 
 namespace dcp

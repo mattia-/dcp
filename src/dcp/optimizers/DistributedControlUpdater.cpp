@@ -18,7 +18,7 @@
  */ 
 
 #include <dcp/optimizers/DistributedControlUpdater.h>
-#include <dcp/differential_problems/GenericProblem.h>
+#include <dcp/problems/GenericProblem.h>
 
 namespace dcp
 {

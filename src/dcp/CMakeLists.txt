@@ -1,4 +1,4 @@
-ADD_SUBDIRECTORY (differential_problems)
+ADD_SUBDIRECTORY (problems)
 ADD_SUBDIRECTORY (expressions)
 ADD_SUBDIRECTORY (factories)
 ADD_SUBDIRECTORY (objective_functional)

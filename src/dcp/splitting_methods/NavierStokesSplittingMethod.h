@@ -21,7 +21,7 @@
 #define SRC_SPLITTING_METHODS_NAVIERSTOKESSPLITTINGMETHOD_H_INCLUDE_GUARD
 
 #include <dcp/splitting_methods/GenericSplittingMethod.h>
-#include <dcp/differential_problems/TimeDependentEquationSystem.h>
+#include <dcp/problems/TimeDependentEquationSystem.h>
 
 
 namespace dcp

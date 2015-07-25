@@ -21,7 +21,7 @@
 #include <string>
 #include <dolfin.h>
 #include <mshr.h>
-#include <dcp/differential_problems/differential_problems.h>
+#include <dcp/problems/problems.h>
 #include <dcp/splitting_methods/splitting_methods.h>
 #include <dcp/expressions/expressions.h>
 #include <dcp/subdomains/subdomains.h>

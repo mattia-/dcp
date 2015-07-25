@@ -21,6 +21,7 @@
 #include <string>
 #include <dolfin.h>
 #include <dcp/problems/problems.h>
+#include <dcp/expressions/expressions.h>
 #include "poisson.h"
 
 namespace poisson
@@ -46,6 +47,27 @@ namespace poisson
     };
 }
 
+class Evaluator
+{
+    public:
+        void operator() (dolfin::Array<double>& values, 
+                         const dolfin::Array<double>& x,
+                         const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables)
+        {
+            dolfin::Array<double> uValues (1);
+            (*variables.find("u")).second->eval (uValues, x);
+            
+            if (uValues[0] > 0.25)
+            {
+                values[0] = 1;
+            }
+            else
+            {
+                values[0] = 0;
+            }
+        }
+};
+
 int main (int argc, char* argv[])
 {
     // create mesh and finite element space 
@@ -53,24 +75,24 @@ int main (int argc, char* argv[])
     dolfin::UnitSquareMesh mesh (20, 20);
     poisson::FunctionSpace V (mesh);
     
-    // define problem
-    dolfin::info ("Define the problem...");
+    // define linear problem
+    dolfin::info ("Define the linear problem...");
     dcp::LinearProblem <poisson::BilinearForm, poisson::LinearForm> poissonProblem (dolfin::reference_to_no_delete_pointer (V));
 
     // define coefficients
-    dolfin::info ("Define the problem's coefficients...");
+    dolfin::info ("Define the linear problem's coefficients...");
     dolfin::Constant k (1.0);
     dolfin::Constant f (1.0);
     dolfin::Constant g (1.0);
     dolfin::Constant h (0.0);
 
     // define dirichlet boundary conditions 
-    dolfin::info ("Define the problem's Dirichlet boundary conditions...");
+    dolfin::info ("Define the linear problem's Dirichlet boundary conditions...");
     poisson::DirichletBoundary dirichletBoundary;
     poissonProblem.addDirichletBC (h, dirichletBoundary);
     
     // define neumann boundary conditions 
-    dolfin::info ("Define the problem's Neumann boundary conditions...");
+    dolfin::info ("Define the linear problem's Neumann boundary conditions...");
     poisson::NeumannBoundary neumannBoundary;
     dolfin::FacetFunction<std::size_t> meshFacets (mesh);
     meshFacets.set_all (0);
@@ -80,18 +102,35 @@ int main (int argc, char* argv[])
                                              dcp::SubdomainType::BOUNDARY_FACETS);
     
     // set problem coefficients
-    dolfin::info ("Set the problem's coefficients...");
+    dolfin::info ("Set the linear problem's coefficients...");
     poissonProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (k), "k");
     poissonProblem.setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (f), "f");
     poissonProblem.setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (g), "g");
 
     // solve problem
-    dolfin::info ("Solve the problem...");
+    dolfin::info ("Solve the linear problem...");
     poissonProblem.solve ();
     
     // plots
     dolfin::plot (mesh);
     poissonProblem.plotSolution ();
+    
+    // define algebraic problem
+    dolfin::info ("Define the algebraic problem...");
+    dcp::AlgebraicProblem problem (dolfin::reference_to_no_delete_pointer (V), 
+                                   std::shared_ptr<dcp::GenericExpression> (new dcp::VariableExpression (Evaluator ())));
+    
+    // set algebraic problem coefficients
+    dolfin::info ("Set the algebraic problem's coefficients...");
+    problem.setCoefficient ("expression", dolfin::reference_to_no_delete_pointer (poissonProblem.solution ()), "u");
+
+    // solve problem
+    dolfin::info ("Solve the algebraic problem...");
+    problem.solve ();
+    
+    // plots
+    dolfin::plot (mesh);
+    problem.plotSolution ();
     
     // dolfin::interactive ();
     

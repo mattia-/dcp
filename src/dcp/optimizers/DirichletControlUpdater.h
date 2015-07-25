@@ -20,7 +20,7 @@
 #ifndef SRC_OPTIMIZERS_DIRICHLETCONTROLUPDATER_H_INCLUDE_GUARD
 #define SRC_OPTIMIZERS_DIRICHLETCONTROLUPDATER_H_INCLUDE_GUARD
 
-#include <dcp/differential_problems/EquationSystem.h>
+#include <dcp/problems/EquationSystem.h>
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/mesh/SubDomain.h>

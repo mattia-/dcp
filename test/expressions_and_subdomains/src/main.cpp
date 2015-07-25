@@ -20,7 +20,7 @@
 #include <iostream>
 #include <string>
 #include <dolfin.h>
-#include <dcp/differential_problems/differential_problems.h>
+#include <dcp/problems/problems.h>
 #include <dcp/expressions/expressions.h>
 #include <dcp/subdomains/subdomains.h>
 #include "poisson.h"

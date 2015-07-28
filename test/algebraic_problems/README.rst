@@ -14,3 +14,7 @@ with::
     f = 1
     g = 1
     h = 0
+
+Then, algebraic problems are tested by computing the Heaviside function of
+the set defined by the points for which the solution of the linear problem
+above is greater than 0.25

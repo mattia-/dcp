@@ -820,7 +820,7 @@ namespace dcp
             
             dolfin::log (dolfin::DBG, "Solve type: %s", solveType.c_str ());
             
-            dolfin::begin (dolfin::INFO, "Solving problem...");
+            dolfin::begin (dolfin::PROGRESS, "Solving problem...");
             
             dolfin::log (dolfin::DBG, "Creating temporary vectors of dolfin::DirichletBC pointers...");
             // create vector of POINTERS to DirichletBC. This is needed to call the function dolfin::solve
@@ -859,6 +859,11 @@ namespace dcp
                                    jacobianForm_, 
                                    parameters (solverParametersSetName));
                 }
+                
+                // set stashedSolution_ to be equal to the last computed solution, so that when solution() is called
+                // from a subiterations loop it gets the right one. In the case of "default" solveType, indeed, the
+                // solution returned should be the same for all solution types
+                stashedSolution_ = solution_.back ().second;;
             }
             else if (solveType == "stash")
             {

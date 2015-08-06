@@ -58,18 +58,9 @@ namespace dcp
 
 
 
-    const std::vector<std::string> GenericEquationSystem::problemsNames () const
+    const std::vector<std::string>& GenericEquationSystem::problemsNames () const
     {
-        std::vector<std::string> names (storedProblems_.size ());
-        int counter = 0;
-        
-        for (auto& problem : storedProblems_)
-        {
-            names [counter] = problem.first;
-            counter++;
-        }
-        
-        return names;
+        return solveOrder_;
     }
     
 
@@ -564,13 +555,33 @@ namespace dcp
     
 
     
+    void GenericEquationSystem::plotSolution (const std::string& plotType)
+    {
+        for (auto problemName = solveOrder_.begin (); problemName != solveOrder_.end (); problemName++)
+        {
+            (this->operator[] (*problemName)).plotSolution (plotType);
+        }
+    }
+            
+
+
+    void GenericEquationSystem::writeSolutionToFile (const std::string& writeType)
+    {
+        for (auto problemName = solveOrder_.begin (); problemName != solveOrder_.end (); problemName++)
+        {
+            (this->operator[] (*problemName)).writeSolutionToFile (writeType);
+        }
+    }
+            
+
+
     /******************* PROTECTED METHODS *******************/
     void GenericEquationSystem::linkProblems (const dcp::GenericEquationSystem::Link& link)
     {
         if (std::get<1> (link.second) == -1)
         {
             dolfin::begin (dolfin::DBG, 
-                           "Considering link: (%s, %s, %s) -> (%s, all solution componentes)...",
+                           "Considering link: (%s, %s, %s) -> (%s, all solution components)...",
                            (std::get<0> (link.first)).c_str (),
                            (std::get<1> (link.first)).c_str (),
                            (std::get<2> (link.first)).c_str (),
@@ -660,9 +671,10 @@ namespace dcp
     void GenericEquationSystem::subiterate (std::vector<std::string>::const_iterator subiterationsBegin,
                                             std::vector<std::string>::const_iterator subiterationsEnd)
     {
-        dolfin::begin ("Subiterating on problems [\"%s\" - \"%s\")...", 
-                       (*subiterationsBegin).c_str (),
-                       (*subiterationsEnd).c_str ());
+        dolfin::begin ("===== Subiterating on problems [%s - %s) =====", 
+                       ("\"" + *subiterationsBegin + "\"").c_str (),
+                       subiterationsEnd == solveOrder_.end () ?  "end" : 
+                                                                 ("\"" + *subiterationsEnd + "\"").c_str ());
         
         // get backups for solveType_ and solutionType_
         std::string solveTypeBackup = solveType_;
@@ -673,12 +685,12 @@ namespace dcp
         
         // solve all the problems the first time. Remember that subiterationsBegin and subiterationsEnd are
         // iterators on solveOrder_
-        dolfin::begin ("Solving all problems once...");
+        dolfin::begin (dolfin::INFO, "Solving all problems once...");
         for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
         {
             solve (*problemName);
         }
-        dolfin::end (); // "Solving all problems once"
+        dolfin::end (); // Solving all problems once
             
         // set solution type so that from now on links are performed on stashed solutions
         solutionType_ = "stashed";
@@ -699,13 +711,13 @@ namespace dcp
         double sumOfNorms = tolerance + 1;
         dcp::DotProduct dotProduct;
         
-        // loop until convergence, that is until the sum of the norms of the increment is below tolerance, 
-        // or until maximum number of iterations is reached
+        // loop until convergence, that is until the sum of the norms of the increment divided by the norm of the
+        // current solution is below tolerance or until maximum number of iterations is reached
         dolfin::begin ("***** SUBITERATIONS LOOP *****");
         while (sumOfNorms >= tolerance && iteration < maxIterations)
         {
             iteration++;
-            dolfin::log (dolfin::INFO, "==== Iteration %d ====", iteration);
+            dolfin::begin (dolfin::INFO, "===== Iteration %d =====", iteration);
             
             sumOfNorms = 0;
             int counter = 0;
@@ -715,14 +727,18 @@ namespace dcp
                 
                 dolfin::Function increment ((this -> operator[] (*problemName)).functionSpace ());
                 increment = solution (*problemName, solutionType_) - oldSolutions[counter];
-                sumOfNorms += dotProduct.norm (increment);
                 
                 oldSolutions[counter] = solution (*problemName, solutionType_);
+                
+                // use DOLFIN_EPS in division in case norm of the current solution is 0
+                sumOfNorms += dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[counter]) + DOLFIN_EPS);
                 
                 counter++;
             }
             
-            dolfin::log (dolfin::INFO, "Sum of increments' norms: %f", sumOfNorms);
+            dolfin::log (dolfin::INFO, "Sum of relative increment norms: %f", sumOfNorms);
+            
+            dolfin::end (); // ===== Iteration =====
         }
         dolfin::end (); // "SUBITERATIONS LOOP"
         

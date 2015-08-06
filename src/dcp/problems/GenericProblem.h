@@ -58,6 +58,8 @@ namespace dcp
              *  \c dolfin::FunctionSpace
              *  The stored function space's ownership will be shared between the object and the input argument.
              *  The constructors also sets the following parameters:
+             *      - \c "solution_file_name" the name of the file on which the solution will be written when/if required.
+             *        Default value: \c "solution.pvd"
              *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
              *        A negative value stands for all the components. Default value: -1
              *      - \c "plot_title" the title of the plot. Default value: "Solution"
@@ -74,6 +76,8 @@ namespace dcp
              *  The stored function space's ownership will be unique to the object, since the pointer is 
              *  initialized using the \c new operator and functionSpace's copy constructor.
              *  The constructors also sets the following parameters:
+             *      - \c "solution_file_name" the name of the file on which the solution will be written when/if required.
+             *        Default value: \c "solution.pvd"
              *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
              *        A negative value stands for all the components. Default value: -1
              *      - \c "plot_title" the title of the plot. Default value: "Solution"
@@ -89,6 +93,8 @@ namespace dcp
              *  The stored function space's ownership will be unique to the object, since the pointers are 
              *  initialized using the \c new operator and mesh's and functionSpace's move constructor
              *  The constructors also sets the following parameters:
+             *      - \c "solution_file_name" the name of the file on which the solution will be written when/if required.
+             *        Default value: \c "solution.pvd"
              *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
              *        A negative value stands for all the components. Default value: -1
              *      - \c "plot_title" the title of the plot. Default value: "Solution"
@@ -310,7 +316,7 @@ namespace dcp
             //! Copy stashed solution to \c solution_, thus making it the actual solution of the problem
             virtual void applyStashedSolution ();
                 
-            //! Method to plot the solution
+            //! Plot the solution
             /*!
              *  \param plotType the type of the plot desired. In this case, it is not very useful, since the only 
              *  possible value for \c plotType is \c "all" (which will simply plot the only solution stored in the 
@@ -318,6 +324,17 @@ namespace dcp
              *  behaviour in derived classes.
              */
             virtual void plotSolution (const std::string& plotType = "all");
+            
+            //! Write the solution to file
+            /*!
+             *  It checks if the parameter \c "solution_file_name" and the protected member \c solutionFileName_
+             *  coincide. If not, reset \c solutionWriter_ creating a new \c dolfin::File object with the correct name.
+             *  \param writeType the type of the writing desired. In this case, it is not very useful, since the only 
+             *  possible value for \c plotType is \c "all" (which will simply plot the only solution stored in the 
+             *  protected member \c solution_), but it is useful to have the possibility to choose among different
+             *  behaviour in derived classes.
+             */
+            virtual void writeSolutionToFile (const std::string& writeType = "all");
             
             //! Clone method
             /*!
@@ -371,6 +388,12 @@ namespace dcp
             
             //! The plotter for the solution of the problem
             std::shared_ptr<dolfin::VTKPlotter> solutionPlotter_;
+            
+            //! The name of the file on which to write the solution
+            std::string solutionFileName_;
+                
+            //! The output stream for the solution
+            std::shared_ptr<dolfin::File> solutionWriter_;
 
             // ---------------------------------------------------------------------------------------------//
 

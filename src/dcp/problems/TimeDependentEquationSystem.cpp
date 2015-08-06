@@ -469,7 +469,7 @@ namespace dcp
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving.
         // The loop is repeated until isFinished() returns true, that is until all problems' time loops are ended
-        dolfin::begin ("Solving problems...");
+        dolfin::begin (dolfin::PROGRESS, "Solving problems...");
         
         int timeStep = 0;
         while (isFinished () == 0)
@@ -530,7 +530,7 @@ namespace dcp
 
     void TimeDependentEquationSystem::solve (const std::string& problemName)
     {
-        dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
+        dolfin::begin ("Problem: \"%s\"", problemName.c_str ());
 
         // get problem with given name from map
         dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
@@ -567,7 +567,6 @@ namespace dcp
 
         // 2)
         // solve problem
-        dolfin::log (dolfin::PROGRESS, "Calling solve method on problem...");
         problem.solve (solveType_);
         
         dolfin::end ();
@@ -581,7 +580,7 @@ namespace dcp
         if (std::get<1> (link.second) == -1)
         {
             dolfin::begin (dolfin::DBG, 
-                           "Considering link: (%s, %s, %s) -> (%s, all solution componentes, %d time steps back)...",
+                           "Considering link: (%s, %s, %s) -> (%s, all solution components, %d time steps back)...",
                            (std::get<0> (link.first)).c_str (),
                            (std::get<1> (link.first)).c_str (),
                            (std::get<2> (link.first)).c_str (),
@@ -652,12 +651,18 @@ namespace dcp
             // NB: we use operator+ to traverse the vector backwards, since rbegin is a REVERSE iterator
             int nStepsBack = std::get<2> (link.second);
             
-            // if solutionType_ is "stashed", decrease the number of time steps by one, since the solution; indeed, when 
-            // solutionType_ is "stashed" we suppose that a call to solve ("stash") (on the problem) has already been 
-            // performed, so the solution at the current step is not actually stored in solutionsVector. This means that
+            // if we are linking a problem (in a subiterations loop) to the solution at a previous problem (in the
+            // subiterations loop as well), we must decrease the number of time steps by one before linking because
+            // the solution at the current step is not actually stored in solutionsVector. This means that
             // for example the solution at the previous time step is the LAST element in solutionsVector, not the last 
-            // but one
-            if (solutionType_ == "stashed")
+            // but one.
+            // So check if they both are between subiterationsRange_ and if that's the case decrease nStepsBack by 1
+            auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);
+            auto subiterationsEnd = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.second);
+            bool bothInSubiterationsRange = 
+                (std::find (subiterationsBegin, subiterationsEnd, problemIterator->first) != solveOrder_.end ())
+                && (std::find (subiterationsBegin, subiterationsEnd, targetProblemIterator->first) != solveOrder_.end ());
+            if (bothInSubiterationsRange)
             {
                 nStepsBack--;
             }
@@ -687,12 +692,18 @@ namespace dcp
             // NB: we use operator+ to traverse the vector backwards, since rbegin is a REVERSE iterator
             int nStepsBack = std::get<2> (link.second);
             
-            // if solutionType_ is "stashed", decrease the number of time steps by one, since the solution; indeed, when 
-            // solutionType_ is "stashed" we suppose that a call to solve ("stash") (on the problem) has already been 
-            // performed, so the solution at the current step is not actually stored in solutionsVector. This means that
+            // if we are linking a problem (in a subiterations loop) to the solution at a previous problem (in the
+            // subiterations loop as well), we must decrease the number of time steps by one before linking because
+            // the solution at the current step is not actually stored in solutionsVector. This means that
             // for example the solution at the previous time step is the LAST element in solutionsVector, not the last 
-            // but one
-            if (solutionType_ == "stashed")
+            // but one.
+            // So check if they both are between subiterationsRange_ and if that's the case decrease nStepsBack by 1
+            auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);
+            auto subiterationsEnd = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.second);
+            bool bothInSubiterationsRange = 
+                (std::find (subiterationsBegin, subiterationsEnd, problemIterator->first) != solveOrder_.end ())
+                && (std::find (subiterationsBegin, subiterationsEnd, targetProblemIterator->first) != solveOrder_.end ());
+            if (bothInSubiterationsRange)
             {
                 nStepsBack--;
             }

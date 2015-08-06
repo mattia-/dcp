@@ -67,7 +67,7 @@ namespace dcp
         parameters.add ("problem_type", "time_dependent");
         parameters.add ("dt_name", "dt");
         parameters.add ("previous_solution_name", "u_old");
-        parameters.add ("store_interval", 1);
+        parameters.add ("write_interval", 1);
         parameters.add ("plot_interval", 0);
         parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("pause", false);
@@ -139,7 +139,7 @@ namespace dcp
         parameters.add ("problem_type", "time_dependent");
         parameters.add ("dt_name", "dt");
         parameters.add ("previous_solution_name", "u_old");
-        parameters.add ("store_interval", 1);
+        parameters.add ("write_interval", 1);
         parameters.add ("plot_interval", 0);
         parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("pause", false);
@@ -601,9 +601,8 @@ namespace dcp
         dolfin::log (dolfin::DBG, "Selected solve type: %s", solveType.c_str ());
         
         // check if we are already at the end of time loop
-        // such check is only valid when solveType is not "steady", since steady solve does not increment time and
-        // so can be performed as many time as the user wants 
-        if (isFinished () && solveType != "steady")
+        // check only when solveType is not "steady" or "stash", since these solve type do not increment time
+        if (isFinished () && solveType != "steady" && solveType != "stash")
         {
             printFinishedWarning ();
             return;
@@ -777,7 +776,38 @@ namespace dcp
             
         dolfin::end ();
     }
+    
 
+
+    void TimeDependentProblem::writeSolutionToFile (const std::string& writeType)
+    {
+        // check if writeType is known
+        if (writeType != "all" && writeType != "last")
+        {
+            dolfin::warning ("Uknown write type \"%s\". No write performed", writeType.c_str ());
+            return;
+        }
+        
+        // check if solutionFileName_ and parameters["solution_file_name"] coincide. If not, change solutionWriter_
+        if (solutionFileName_ != std::string (parameters["solution_file_name"]))
+        {
+            solutionWriter_.reset (new dolfin::File (parameters ["solution_file_name"]));
+            solutionFileName_ = std::string (parameters["solution_file_name"]);
+        }
+        
+        if (writeType == "all")
+        {
+            for (const auto& element : solution_)
+            {
+                (*solutionWriter_) << std::make_pair (&(element.second), element.first);
+            }
+        }
+        if (writeType == "last")
+        {
+            (*solutionWriter_) << std::make_pair (&(solution_.back ().second), solution_.back ().first);
+        }
+    }
+    
 
 
     dcp::TimeDependentProblem* TimeDependentProblem::clone () const
@@ -855,7 +885,7 @@ namespace dcp
 
         setPreviousSolutionsCoefficients ();
         
-        dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
+        dolfin::begin (dolfin::PROGRESS, "Solving time stepping problem...");
         timeSteppingProblem_->solve ("default");
         dolfin::end ();
         
@@ -869,6 +899,11 @@ namespace dcp
         
         // TODO save only the number of soultions needed to advance in time (i.e. one if the method is a one-step time
         // scheme, two for 2-steps time scheme....)
+        
+        // set stashedSolution_ to be equal to the last computed solution, so that when solution() is called
+        // from a subiterations loop it gets the right one. In the case of "default" solveType, indeed, the
+        // solution returned should be the same for all solution types
+        stashedSolution_ = solution_.back ().second;
     }
 
     void TimeDependentProblem::stashSolve ()
@@ -879,7 +914,7 @@ namespace dcp
 
         setPreviousSolutionsCoefficients ();
         
-        dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
+        dolfin::begin (dolfin::PROGRESS, "Solving time stepping problem...");
         timeSteppingProblem_->solve ("default");
         dolfin::end ();
         
@@ -903,7 +938,7 @@ namespace dcp
     void TimeDependentProblem::solveLoop ()
     {
         // ---- Problem settings ---- //
-        int storeInterval = parameters ["store_interval"];
+        int writeInterval = parameters ["write_interval"];
         int plotInterval = parameters ["plot_interval"];
         int plotComponent = parameters ["plot_component"];
         bool pause = parameters ["pause"];
@@ -913,7 +948,7 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Solving time dependent problem...");
         
         
-        // function used to step through the time loop
+        // function used to plot and save to file the solution through the time loop
         dolfin::Function tmpSolution = solution_.back ().second;
         
         // start time loop
@@ -928,8 +963,12 @@ namespace dcp
             
             tmpSolution = timeSteppingProblem_->solution ();
             
-            // save solution to file according to time step and store interval.
-            storeSolution (tmpSolution, timeStep, storeInterval);
+            // save solution to file according to time step and write interval.
+            if (writeInterval > 0 && timeStep % writeInterval == 0)
+            {
+                dolfin::log (dolfin::DBG, "Saving time stepping problem solution in solutions vector...");
+                writeSolutionToFile ("last");
+            }
             
             // plot solution according to time step and plot interval
             plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause);
@@ -938,8 +977,13 @@ namespace dcp
         }
         
         // At this point, we just need to make sure that the solution on the last iteration was saved even though
-        // timeStep % storeInterval != 0 (but it must not be saved twice!)
-        storeLastStepSolution (tmpSolution, timeStep, storeInterval);
+        // timeStep % writeInterval != 0 (but it must not be saved twice!)
+        if (!(writeInterval > 0 && timeStep % writeInterval == 0)) 
+        // negation of the condition of the last if, so it is performed if the last if was not
+        {
+            dolfin::log (dolfin::DBG, "Saving last time step solution in solutions vector...");
+            writeSolutionToFile ("last");
+        }
         
         dolfin::end ();
     }
@@ -1085,32 +1129,6 @@ namespace dcp
     }
     
 
-
-    void TimeDependentProblem::storeSolution (const dolfin::Function& solution, 
-                                              const int& timeStep, 
-                                              const int& storeInterval)
-    {
-        if (storeInterval > 0 && timeStep % storeInterval == 0)
-        {
-            dolfin::log (dolfin::DBG, "Saving time stepping problem solution in solutions vector...");
-            // solution_.push_back (std::make_pair (time_ -> value (), solution)); TODO PRINT TO FILE
-        }
-    } 
-    
-
-
-    void TimeDependentProblem::storeLastStepSolution (const dolfin::Function& solution, 
-                                                      const int& timeStep, 
-                                                      const int& storeInterval)
-    {
-        if (!(storeInterval > 0 && timeStep % storeInterval == 0))
-        {
-            dolfin::log (dolfin::DBG, "Saving last time step solution in solutions vector...");
-            // solution_.push_back (std::make_pair (t_ -> value (), solution)); TODO PRINT TO FILE
-        }
-    }
-
-    
 
     void TimeDependentProblem::plotSolution (dolfin::Function& solution, 
                                              const int& timeStep, 

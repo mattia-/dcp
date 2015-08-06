@@ -33,11 +33,14 @@ namespace dcp
         solution_ (),
         stashedSolution_ (*functionSpace_),
         dirichletBCsCounter_ (0),
-        solutionPlotter_ ()
+        solutionPlotter_ (),
+        solutionFileName_ ("solution.pvd"),
+        solutionWriter_ (new dolfin::File (solutionFileName_))
     { 
         dolfin::begin (dolfin::DBG, "Building GenericProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
+        parameters.add ("solution_file_name", "solution.pvd");
         parameters.add ("plot_component", -1);
         parameters.add ("plot_title", "Solution");
         parameters.add ("clone_method", "shallow_clone");
@@ -56,11 +59,14 @@ namespace dcp
         solution_ (),
         stashedSolution_ (functionSpace_),
         dirichletBCsCounter_ (0),
-        solutionPlotter_ ()
+        solutionPlotter_ (),
+        solutionFileName_ ("solution.pvd"),
+        solutionWriter_ (new dolfin::File (solutionFileName_))
     { 
         dolfin::begin (dolfin::DBG, "Building GenericProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
+        parameters.add ("solution_file_name", "solution.pvd");
         parameters.add ("plot_component", -1);
         parameters.add ("plot_title", "Solution");
         parameters.add ("clone_method", "shallow_clone");
@@ -79,11 +85,14 @@ namespace dcp
         solution_ (),
         stashedSolution_ (functionSpace_),
         dirichletBCsCounter_ (0),
-        solutionPlotter_ ()
+        solutionPlotter_ (),
+        solutionFileName_ ("solution.pvd"),
+        solutionWriter_ (new dolfin::File (solutionFileName_))
     { 
         dolfin::begin (dolfin::DBG, "Building GenericProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
+        parameters.add ("solution_file_name", "solution.pvd");
         parameters.add ("plot_component", -1);
         parameters.add ("plot_title", "Solution");
         parameters.add ("clone_method", "shallow_clone");
@@ -359,6 +368,27 @@ namespace dcp
         }
         
         dolfin::end ();
+    }
+    
+
+
+    void GenericProblem::writeSolutionToFile (const std::string& writeType)
+    {
+        // check if writeType is known
+        if (writeType != "all")
+        {
+            dolfin::warning ("Uknown write type \"%s\". No write performed", writeType.c_str ());
+            return;
+        }
+        
+        // check if solutionFileName_ and parameters["solution_file_name"] coincide. If not, change solutionWriter_
+        if (solutionFileName_ != std::string (parameters["solution_file_name"]))
+        {
+            solutionWriter_.reset (new dolfin::File (parameters ["solution_file_name"]));
+            solutionFileName_ = std::string (parameters["solution_file_name"]);
+        }
+        
+        (*solutionWriter_) << solution_.back ().second;
     }
     
 

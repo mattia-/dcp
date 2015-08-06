@@ -1,14 +1,6 @@
 # check on CMake version
 CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 
-IF (DEFINED CXX_COMPILER)
-    SET (CMAKE_CXX_COMPILER ${CXX_COMPILER})
-ENDIF (DEFINED CXX_COMPILER)
-
-IF (DEFINED C_COMPILER)
-    SET (CMAKE_C_COMPILER ${C_COMPILER})
-ENDIF (DEFINED C_COMPILER)
-
 ENABLE_TESTING ()
 
 ADD_SUBDIRECTORY (algebraic_problems)
@@ -30,4 +22,3 @@ ADD_TEST (NAME splitting_methods_guermond_salgado COMMAND guermond_salgado)
 ADD_TEST (NAME time_dependent_convection_diffusion COMMAND time_dependent_convection_diffusion)
 ADD_TEST (NAME time_dependent_cavity_NS COMMAND time_dependent_cavity_NS)
 ADD_TEST (NAME time_dependent_external_flow_NS COMMAND time_dependent_external_flow_NS)
- 

@@ -63,7 +63,8 @@ namespace dcp
              *  The strings \c solutionType_ and \c solveType_ are initialized with \c "default".
              *  The constructors also sets the following parameters:
              *      - \c "subiterations_tolerance" the tolerance for the convergence check in the subiterations loop.
-             *        It will be compared against the sum of the increments' norms. Default value: 1e-6
+             *        It will be compared against the sum of the increments' norms divided by the norm of the solution
+             *        computed at the last step. Default value: 1e-6
              *      - \c "subiterations_maximum_iterations" the maximum number of iterations allowed in the 
              *        subiterations loop. Default value: 10
              */
@@ -81,10 +82,10 @@ namespace dcp
             
             //! Get names of problems stored in the protected map \c storedProblems_
             /*!
-             *  \return a vector containing all the problems names. Move semantic is 
-             *  used in returning the vector, so no unnecessary copy is performed.
+             *  \return a vector containing all the problems names in the order in which they are stored in 
+             *  \c solveOrder_ (aka the order in which they are solved
              */
-            virtual const std::vector<std::string> problemsNames () const;
+            virtual const std::vector<std::string>& problemsNames () const;
             
             //! Get names of first and last problems on which subiterations will take place
             virtual const std::pair<std::string, std::string>& subiterationsRange () const;
@@ -122,7 +123,8 @@ namespace dcp
              *  \param solveOrder a \c std::vector<std::string> in which the problems' names are ordered as one 
              *  wishes the stored problem to be ordered. No check is performed either on problems' names contained in 
              *  the input vector or on vectors' size. The function will, however, check for double entries and empty 
-             *  names, since neither of them are not allowed
+             *  names, since neither of them are allowed. Use \c setSubiterationRange if you want a problems solved more
+             *  than once at each timestep
              */
             virtual void reorderProblems (const std::vector<std::string>& solveOrder);
             
@@ -227,11 +229,14 @@ namespace dcp
              *  The two strings in \c subiterationsRange_ are initialized as empty strings, so that if unless
              *  \c setSubiterationRange() is called explicitly no subiteration is performed, since
              *  empty names cannot be used for problems in \c storedProblems_. To indicate the end of the vector
-             *  (i.e.: subiterate to the last problem), use a non-empty string for \c first and an empty string for 
+             *  (i.e.: subiterate to the last problem), we use a non-empty string for \c first and an empty string for 
              *  \c last.
              *  No check is performed on the validity of the input strings.
+             *  \param first the first problem on which to subiterate (inclusive boundary)
+             *  \param last the problem AFTER the last on which to subiterate (exclusive boundary). 
+             *  Default value: empty string, which means that we should subiterate up to the last problem.
              */
-            virtual void setSubiterationRange (const std::string& first, const std::string& last);
+            virtual void setSubiterationRange (const std::string& first, const std::string& last = "");
             
             //! Prints information on the problems: names list (in solution order) and links information.
             //! It uses \c dolfin::cout stream TODO fix stream and what gets printed
@@ -262,6 +267,20 @@ namespace dcp
             virtual const dolfin::Function& solution (const std::string& problemName, 
                                                       const std::string& solutionType = "default") const;
             
+            
+            //! Plot the problems' solution
+            /*!
+             *  \param plotType the plot type desired. It will be passed along to the plot method of each problem, so it
+             *  must be a valid string for the problem types stored in the map
+             */
+            virtual void plotSolution (const std::string& plotType);
+
+            //! Write the problems' solution to file
+            /*!
+             *  \param writeType the write type desired. It will be passed along to the write method of each problem, so 
+             *  it must be a valid string for the problem types stored in the map
+             */
+            virtual void writeSolutionToFile (const std::string& writeType);
             
             /********************** VARIABLES ***********************/
             //! the system parameters

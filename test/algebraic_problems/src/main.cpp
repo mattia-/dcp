@@ -47,7 +47,7 @@ namespace poisson
     };
 }
 
-class Evaluator
+class Solver
 {
     public:
         void operator() (dolfin::Array<double>& values, 
@@ -118,7 +118,7 @@ int main (int argc, char* argv[])
     // define algebraic problem
     dolfin::info ("Define the algebraic problem...");
     dcp::AlgebraicProblem problem (dolfin::reference_to_no_delete_pointer (V), 
-                                   std::shared_ptr<dcp::GenericExpression> (new dcp::VariableExpression (Evaluator ())));
+                                   std::shared_ptr<dcp::GenericExpression> (new dcp::VariableExpression (Solver ())));
     
     // set algebraic problem coefficients
     dolfin::info ("Set the algebraic problem's coefficients...");

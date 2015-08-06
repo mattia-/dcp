@@ -67,7 +67,7 @@ namespace dcp
 
     void EquationSystem::solve (const std::string& problemName)
     {
-        dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
+        dolfin::begin ("Problem: \"%s\"", problemName.c_str ());
 
         // get problem with given name from map. 
         dcp::GenericProblem& problem = this -> operator[] (problemName);
@@ -92,7 +92,6 @@ namespace dcp
 
         // 2)
         // solve problem
-        dolfin::log (dolfin::PROGRESS, "Calling solve method on problem...");
         problem.solve (solveType_);
         
         dolfin::end ();

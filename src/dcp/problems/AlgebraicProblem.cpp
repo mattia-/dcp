@@ -34,9 +34,9 @@ namespace dcp
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("problem_type", "algebraic");
 
-        dolfin::log (dolfin::DBG, "AlgebraicProblem object created");
-        
         dolfin::end (); // "Building AlgebraicProblem"
+        
+        dolfin::log (dolfin::DBG, "AlgebraicProblem object created");
     }
 
 
@@ -52,10 +52,10 @@ namespace dcp
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("problem_type", "algebraic");
-
-        dolfin::log (dolfin::DBG, "AlgebraicProblem object created");
         
         dolfin::end (); // "Building AlgebraicProblem"
+
+        dolfin::log (dolfin::DBG, "AlgebraicProblem object created");
     }
 
 
@@ -186,11 +186,16 @@ namespace dcp
 
         dolfin::log (dolfin::DBG, "Solve type: %s", solveType.c_str ());
 
-        dolfin::begin (dolfin::INFO, "Solving problem...");
+        dolfin::begin (dolfin::PROGRESS, "Solving problem...");
 
         if (solveType == "default")
         {
             solution_.back ().second = *(expression_);
+
+            // set stashedSolution_ to be equal to the last computed solution, so that when solution() is called
+            // from a subiterations loop it gets the right one. In the case of "default" solveType, indeed, the
+            // solution returned should be the same for all solution types
+            stashedSolution_ = solution_.back ().second;;
         }
         else if (solveType == "stash")
         {

@@ -142,9 +142,10 @@ namespace dcp
              *        used must be called \c <"previous_solution_name">, \c <"previous_solution_name">_2, 
              *        \c <"previous_solution_name">_3 and so on.
              *        Default value for \c "previous_solution_name": "u_old"
-             *      - \c "store_interval" the interval of time steps to store the solution. Basically, the solution will
-             *        be saved to file every \c store_interval time steps. A value less than or equal to 0
-             *        means that the solution should never be stored. Default value: 1
+             *      - \c "write_interval" the interval of time steps to write the solution to file. Basically, the 
+             *        solution will be saved to file every \c write_interval time steps. 
+             *        A value less than or equal to 0 means that the solution should never be saved to file. 
+             *        Default value: 1
              *      - \c "plot_interval" the interval of time steps to plot the solution. Basically, the solution will
              *        be plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
              *        solution should never be plotted. Default value: 0
@@ -224,9 +225,10 @@ namespace dcp
              *        used must be called \c <"previous_solution_name">, \c <"previous_solution_name">_2, 
              *        \c <"previous_solution_name">_3 and so on.
              *        Default value for \c "previous_solution_name": "u_old"
-             *      - \c "store_interval" the interval of time steps to store the solution. Basically, the solution will
-             *        be saved to file every \c store_interval time steps. A value less than or equal to 0
-             *        means that the solution should never be stored. Default value: 1
+             *      - \c "write_interval" the interval of time steps to write the solution to file. Basically, the 
+             *        solution will be saved to file every \c write_interval time steps. 
+             *        A value less than or equal to 0 means that the solution should never be saved to file. 
+             *        Default value: 1
              *      - \c "plot_interval" the interval of time steps to plot the solution. Basically, the solution will
              *        be plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
              *        solution should never be plotted. Default value: 0
@@ -656,16 +658,26 @@ namespace dcp
             virtual void applyStashedSolution ();
                 
             //! Plot the solution. 
-            /*! Overrides the one in \c dcp::GenericProblem to take into account the fact that 
+            /*! Overrides method in \c dcp::GenericProblem to take into account the fact that 
              *  \c solution_ is now a vector with size greater than one. It uses the value of the parameter \c pause
              *  to decide whether to stop at each plot or not and the value of the parameter \c plot_title to set
              *  the plot title (\c plot_title will actually be added to the time, which is always plotted in the title).
              *  \param plotType select among different behaviour.
              *  Possible values are:
-             *  \li \c "all" : plot all the function in \c solution_
+             *  \li \c "all" : plot all the functions in \c solution_
              *  \li \c "last" : plot only the last solution stored in \c solution_
              */
             virtual void plotSolution (const std::string& plotType = "all") override;
+            
+            //! Write the solution to file. 
+            /*! Overrides method in \c dcp::GenericProblem to take into account the fact that \c solution_ is now a 
+             *  vector with size greater than one. 
+             *  \param writeType select among different behaviour.
+             *  Possible values are:
+             *  \li \c "all" : write to file all the functions in \c solution_
+             *  \li \c "last" : write to file only the last solution stored in \c solution_
+             */
+            virtual void writeSolutionToFile (const std::string& writeType = "all") override;
             
             //! Clone method. Overrides method in \c GenericProblem
             /*!
@@ -758,7 +770,7 @@ namespace dcp
             /*!
              *  This method solves the time problem at every time step between \c startTime_ and \c endTime_ by calling
              *  \c step() on each time step. It will also save the solution to file and plot it according to the values 
-             *  stored in \c parameters["store_interval"] and \c parameters["plot_interval"]
+             *  stored in \c parameters["write_interval"] and \c parameters["plot_interval"]
              * 
              */
             virtual void solveLoop ();
@@ -801,26 +813,6 @@ namespace dcp
             //! Method to print a warning if \c isFinished() returns \c true. It is just useful to make \c solve()
             //! method clearer to read
             virtual void printFinishedWarning ();
-            
-            //! Store the solution. 
-            /*!
-             *  \param solution the solution to be stored
-             *  \param timeStep the current time step
-             *  \param storeInterval the store interval (see constructor documentation)
-            */
-            virtual void storeSolution (const dolfin::Function& solution, 
-                                        const int& timeStep, 
-                                        const int& storeInterval);
-            
-            //! Store the solution on the last time step. 
-            /*!
-             *  \param solution the solution to be stored
-             *  \param timeStep the current time step
-             *  \param storeInterval the store interval (see constructor documentation)
-            */
-            virtual void storeLastStepSolution (const dolfin::Function& solution, 
-                                                const int& timeStep, 
-                                                const int& storeInterval);
             
             //! Plot the solution, used inside the time loop and thus kept protected. It overloads the 
             //! plot method in \c dcp::GenericProblem, which is still usable (and actually overridden in this class

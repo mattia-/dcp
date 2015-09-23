@@ -32,11 +32,11 @@ test = TestFunction (T)
 u, p = split (up)
 v, q = split (test)
 dt = Constant (cell)
-gamma = Constant (cell)
+reynoldsNr = Constant (cell)
+capillaryNr = Constant (cell)
 n = FacetNormal(cell)
 h = MaxFacetEdgeLength(cell)
 beta = Constant (cell)
-wallVelocity = Coefficient (V)
 
 #th = pi/2
 #A = as_matrix([[cos(th) , -sin(th)] , [sin(th) , cos(th)]])
@@ -44,11 +44,10 @@ A = as_matrix ([ [0 , -1] , [1 , 0] ])
 
 # OPPOSITE w.r.t. myNavierstokesTimeCurv.ufl
 # because there we move this term to the lhs
-L =  - dt * gamma * div (v) * ds(1) \
-     + dt * gamma * inner (grad(v), outer (n,n)) * ds(1) \
-     - dt * gamma * div (v) * ds(4) \
-     + dt * gamma * inner (grad(v), outer (n,n)) * ds(4) \
-     - dt * gamma * div (v) * ds(5) \
-     + dt * gamma * inner (grad(v), outer (n,n)) * ds(5) \
-     - dt * beta * inner (u, v) * ds(2) \
-     + dt * beta * inner (wallVelocity, v) * ds(2) 
+L =  - dt * 1/(reynoldsNr*capillaryNr) * div (v) * ds(1) \
+     + dt * 1/(reynoldsNr*capillaryNr) * inner (grad(v), outer (n,n)) * ds(1) \
+     - dt * 1/(reynoldsNr*capillaryNr) * div (v) * ds(4) \
+     + dt * 1/(reynoldsNr*capillaryNr) * inner (grad(v), outer (n,n)) * ds(4) \
+     - dt * 1/(reynoldsNr*capillaryNr) * div (v) * ds(5) \
+     + dt * 1/(reynoldsNr*capillaryNr) * inner (grad(v), outer (n,n)) * ds(5) \
+     - dt * beta * inner (u, v) * ds(2) 

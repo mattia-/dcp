@@ -1,0 +1,14 @@
+cell = interval
+V = FiniteElement ("Lagrange",cell,1)
+
+trial = TrialFunction (V)
+test = TestFunction (V)
+
+# vert = VectorConstant(V)
+# 
+# a = inner (dot(grad(trial),vert), dot(grad(test,vert))) * dx
+
+zero = Constant(cell)
+
+a = inner (grad(trial), grad(test)) * dx
+F = inner (zero, test) * dx

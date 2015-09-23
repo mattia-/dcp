@@ -10331,7 +10331,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({false, true, true, false});
+    static const std::vector<bool> enabled({false, true, true, false, false});
     return enabled;
   }
 
@@ -10563,7 +10563,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({true, true, false, true});
+    static const std::vector<bool> enabled({true, true, false, true, true});
     return enabled;
   }
 
@@ -10575,9 +10575,9 @@ public:
                                int cell_orientation) const
   {
     // Number of operations (multiply-add pairs) for Jacobian data:      10
-    // Number of operations (multiply-add pairs) for geometry tensor:    24
-    // Number of operations (multiply-add pairs) for tensor contraction: 45
-    // Total number of operations (multiply-add pairs):                  79
+    // Number of operations (multiply-add pairs) for geometry tensor:    48
+    // Number of operations (multiply-add pairs) for tensor contraction: 99
+    // Total number of operations (multiply-add pairs):                  157
     
     // Compute Jacobian
     double J[4];
@@ -10600,18 +10600,30 @@ public:
     
     
     // Compute geometry tensor
-    const double G0_0_0_0 = det*w[0][0]*w[1][0]*w[3][0]*(1.0);
-    const double G0_1_0_0 = det*w[0][1]*w[1][0]*w[3][0]*(1.0);
-    const double G0_2_0_0 = det*w[0][2]*w[1][0]*w[3][0]*(1.0);
-    const double G0_3_0_0 = det*w[0][3]*w[1][0]*w[3][0]*(1.0);
-    const double G0_4_0_0 = det*w[0][4]*w[1][0]*w[3][0]*(1.0);
-    const double G0_5_0_0 = det*w[0][5]*w[1][0]*w[3][0]*(1.0);
-    const double G1_6_0_0 = det*w[0][6]*w[1][0]*w[3][0]*(1.0);
-    const double G1_7_0_0 = det*w[0][7]*w[1][0]*w[3][0]*(1.0);
-    const double G1_8_0_0 = det*w[0][8]*w[1][0]*w[3][0]*(1.0);
-    const double G1_9_0_0 = det*w[0][9]*w[1][0]*w[3][0]*(1.0);
-    const double G1_10_0_0 = det*w[0][10]*w[1][0]*w[3][0]*(1.0);
-    const double G1_11_0_0 = det*w[0][11]*w[1][0]*w[3][0]*(1.0);
+    const double G0_0_0_0 = det*w[4][0]*w[1][0]*w[3][0]*(1.0);
+    const double G0_1_0_0 = det*w[4][1]*w[1][0]*w[3][0]*(1.0);
+    const double G0_2_0_0 = det*w[4][2]*w[1][0]*w[3][0]*(1.0);
+    const double G0_3_0_0 = det*w[4][3]*w[1][0]*w[3][0]*(1.0);
+    const double G0_4_0_0 = det*w[4][4]*w[1][0]*w[3][0]*(1.0);
+    const double G0_5_0_0 = det*w[4][5]*w[1][0]*w[3][0]*(1.0);
+    const double G1_6_0_0 = det*w[4][6]*w[1][0]*w[3][0]*(1.0);
+    const double G1_7_0_0 = det*w[4][7]*w[1][0]*w[3][0]*(1.0);
+    const double G1_8_0_0 = det*w[4][8]*w[1][0]*w[3][0]*(1.0);
+    const double G1_9_0_0 = det*w[4][9]*w[1][0]*w[3][0]*(1.0);
+    const double G1_10_0_0 = det*w[4][10]*w[1][0]*w[3][0]*(1.0);
+    const double G1_11_0_0 = det*w[4][11]*w[1][0]*w[3][0]*(1.0);
+    const double G2_0_0_0 = det*w[0][0]*w[1][0]*w[3][0]*(1.0);
+    const double G2_1_0_0 = det*w[0][1]*w[1][0]*w[3][0]*(1.0);
+    const double G2_2_0_0 = det*w[0][2]*w[1][0]*w[3][0]*(1.0);
+    const double G2_3_0_0 = det*w[0][3]*w[1][0]*w[3][0]*(1.0);
+    const double G2_4_0_0 = det*w[0][4]*w[1][0]*w[3][0]*(1.0);
+    const double G2_5_0_0 = det*w[0][5]*w[1][0]*w[3][0]*(1.0);
+    const double G3_6_0_0 = det*w[0][6]*w[1][0]*w[3][0]*(1.0);
+    const double G3_7_0_0 = det*w[0][7]*w[1][0]*w[3][0]*(1.0);
+    const double G3_8_0_0 = det*w[0][8]*w[1][0]*w[3][0]*(1.0);
+    const double G3_9_0_0 = det*w[0][9]*w[1][0]*w[3][0]*(1.0);
+    const double G3_10_0_0 = det*w[0][10]*w[1][0]*w[3][0]*(1.0);
+    const double G3_11_0_0 = det*w[0][11]*w[1][0]*w[3][0]*(1.0);
     
     // Compute element tensor
     switch (facet)
@@ -10619,15 +10631,15 @@ public:
     case 0:
       {
         A[0] = 0.0;
-      A[1] = -0.133333333333333*G0_1_0_0 + 0.0333333333333333*G0_2_0_0 - 0.0666666666666666*G0_3_0_0;
-      A[2] = 0.0333333333333333*G0_1_0_0 - 0.133333333333333*G0_2_0_0 - 0.0666666666666666*G0_3_0_0;
-      A[3] = -0.0666666666666666*G0_1_0_0 - 0.0666666666666666*G0_2_0_0 - 0.533333333333333*G0_3_0_0;
+      A[1] = 0.133333333333333*G0_1_0_0 - 0.0333333333333333*G0_2_0_0 + 0.0666666666666666*G0_3_0_0 - 0.133333333333333*G2_1_0_0 + 0.0333333333333333*G2_2_0_0 - 0.0666666666666666*G2_3_0_0;
+      A[2] = -0.0333333333333333*G0_1_0_0 + 0.133333333333333*G0_2_0_0 + 0.0666666666666666*G0_3_0_0 + 0.0333333333333333*G2_1_0_0 - 0.133333333333333*G2_2_0_0 - 0.0666666666666666*G2_3_0_0;
+      A[3] = 0.0666666666666666*G0_1_0_0 + 0.0666666666666666*G0_2_0_0 + 0.533333333333333*G0_3_0_0 - 0.0666666666666666*G2_1_0_0 - 0.0666666666666666*G2_2_0_0 - 0.533333333333333*G2_3_0_0;
       A[4] = 0.0;
       A[5] = 0.0;
       A[6] = 0.0;
-      A[7] = -0.133333333333333*G1_7_0_0 + 0.0333333333333333*G1_8_0_0 - 0.0666666666666666*G1_9_0_0;
-      A[8] = 0.0333333333333333*G1_7_0_0 - 0.133333333333333*G1_8_0_0 - 0.0666666666666666*G1_9_0_0;
-      A[9] = -0.0666666666666666*G1_7_0_0 - 0.0666666666666666*G1_8_0_0 - 0.533333333333333*G1_9_0_0;
+      A[7] = 0.133333333333333*G1_7_0_0 - 0.0333333333333333*G1_8_0_0 + 0.0666666666666666*G1_9_0_0 - 0.133333333333333*G3_7_0_0 + 0.0333333333333333*G3_8_0_0 - 0.0666666666666666*G3_9_0_0;
+      A[8] = -0.0333333333333333*G1_7_0_0 + 0.133333333333333*G1_8_0_0 + 0.0666666666666666*G1_9_0_0 + 0.0333333333333333*G3_7_0_0 - 0.133333333333333*G3_8_0_0 - 0.0666666666666666*G3_9_0_0;
+      A[9] = 0.0666666666666666*G1_7_0_0 + 0.0666666666666666*G1_8_0_0 + 0.533333333333333*G1_9_0_0 - 0.0666666666666666*G3_7_0_0 - 0.0666666666666666*G3_8_0_0 - 0.533333333333333*G3_9_0_0;
       A[10] = 0.0;
       A[11] = 0.0;
       A[12] = 0.0;
@@ -10637,17 +10649,17 @@ public:
       }
     case 1:
       {
-        A[0] = -0.133333333333333*G0_0_0_0 + 0.0333333333333333*G0_2_0_0 - 0.0666666666666666*G0_4_0_0;
+        A[0] = 0.133333333333333*G0_0_0_0 - 0.0333333333333333*G0_2_0_0 + 0.0666666666666666*G0_4_0_0 - 0.133333333333333*G2_0_0_0 + 0.0333333333333333*G2_2_0_0 - 0.0666666666666666*G2_4_0_0;
       A[1] = 0.0;
-      A[2] = 0.0333333333333333*G0_0_0_0 - 0.133333333333333*G0_2_0_0 - 0.0666666666666666*G0_4_0_0;
+      A[2] = -0.0333333333333333*G0_0_0_0 + 0.133333333333333*G0_2_0_0 + 0.0666666666666666*G0_4_0_0 + 0.0333333333333333*G2_0_0_0 - 0.133333333333333*G2_2_0_0 - 0.0666666666666666*G2_4_0_0;
       A[3] = 0.0;
-      A[4] = -0.0666666666666666*G0_0_0_0 - 0.0666666666666666*G0_2_0_0 - 0.533333333333333*G0_4_0_0;
+      A[4] = 0.0666666666666666*G0_0_0_0 + 0.0666666666666666*G0_2_0_0 + 0.533333333333333*G0_4_0_0 - 0.0666666666666666*G2_0_0_0 - 0.0666666666666666*G2_2_0_0 - 0.533333333333333*G2_4_0_0;
       A[5] = 0.0;
-      A[6] = -0.133333333333333*G1_6_0_0 + 0.0333333333333333*G1_8_0_0 - 0.0666666666666666*G1_10_0_0;
+      A[6] = 0.133333333333333*G1_6_0_0 - 0.0333333333333333*G1_8_0_0 + 0.0666666666666666*G1_10_0_0 - 0.133333333333333*G3_6_0_0 + 0.0333333333333333*G3_8_0_0 - 0.0666666666666666*G3_10_0_0;
       A[7] = 0.0;
-      A[8] = 0.0333333333333333*G1_6_0_0 - 0.133333333333333*G1_8_0_0 - 0.0666666666666666*G1_10_0_0;
+      A[8] = -0.0333333333333333*G1_6_0_0 + 0.133333333333333*G1_8_0_0 + 0.0666666666666666*G1_10_0_0 + 0.0333333333333333*G3_6_0_0 - 0.133333333333333*G3_8_0_0 - 0.0666666666666666*G3_10_0_0;
       A[9] = 0.0;
-      A[10] = -0.0666666666666666*G1_6_0_0 - 0.0666666666666666*G1_8_0_0 - 0.533333333333333*G1_10_0_0;
+      A[10] = 0.0666666666666666*G1_6_0_0 + 0.0666666666666666*G1_8_0_0 + 0.533333333333333*G1_10_0_0 - 0.0666666666666666*G3_6_0_0 - 0.0666666666666666*G3_8_0_0 - 0.533333333333333*G3_10_0_0;
       A[11] = 0.0;
       A[12] = 0.0;
       A[13] = 0.0;
@@ -10656,18 +10668,18 @@ public:
       }
     case 2:
       {
-        A[0] = -0.133333333333333*G0_0_0_0 + 0.0333333333333333*G0_1_0_0 - 0.0666666666666666*G0_5_0_0;
-      A[1] = 0.0333333333333333*G0_0_0_0 - 0.133333333333333*G0_1_0_0 - 0.0666666666666666*G0_5_0_0;
+        A[0] = 0.133333333333333*G0_0_0_0 - 0.0333333333333333*G0_1_0_0 + 0.0666666666666666*G0_5_0_0 - 0.133333333333333*G2_0_0_0 + 0.0333333333333333*G2_1_0_0 - 0.0666666666666666*G2_5_0_0;
+      A[1] = -0.0333333333333333*G0_0_0_0 + 0.133333333333333*G0_1_0_0 + 0.0666666666666666*G0_5_0_0 + 0.0333333333333333*G2_0_0_0 - 0.133333333333333*G2_1_0_0 - 0.0666666666666666*G2_5_0_0;
       A[2] = 0.0;
       A[3] = 0.0;
       A[4] = 0.0;
-      A[5] = -0.0666666666666666*G0_0_0_0 - 0.0666666666666666*G0_1_0_0 - 0.533333333333333*G0_5_0_0;
-      A[6] = -0.133333333333333*G1_6_0_0 + 0.0333333333333333*G1_7_0_0 - 0.0666666666666666*G1_11_0_0;
-      A[7] = 0.0333333333333333*G1_6_0_0 - 0.133333333333333*G1_7_0_0 - 0.0666666666666666*G1_11_0_0;
+      A[5] = 0.0666666666666666*G0_0_0_0 + 0.0666666666666666*G0_1_0_0 + 0.533333333333333*G0_5_0_0 - 0.0666666666666666*G2_0_0_0 - 0.0666666666666666*G2_1_0_0 - 0.533333333333333*G2_5_0_0;
+      A[6] = 0.133333333333333*G1_6_0_0 - 0.0333333333333333*G1_7_0_0 + 0.0666666666666666*G1_11_0_0 - 0.133333333333333*G3_6_0_0 + 0.0333333333333333*G3_7_0_0 - 0.0666666666666666*G3_11_0_0;
+      A[7] = -0.0333333333333333*G1_6_0_0 + 0.133333333333333*G1_7_0_0 + 0.0666666666666666*G1_11_0_0 + 0.0333333333333333*G3_6_0_0 - 0.133333333333333*G3_7_0_0 - 0.0666666666666666*G3_11_0_0;
       A[8] = 0.0;
       A[9] = 0.0;
       A[10] = 0.0;
-      A[11] = -0.0666666666666666*G1_6_0_0 - 0.0666666666666666*G1_7_0_0 - 0.533333333333333*G1_11_0_0;
+      A[11] = 0.0666666666666666*G1_6_0_0 + 0.0666666666666666*G1_7_0_0 + 0.533333333333333*G1_11_0_0 - 0.0666666666666666*G3_6_0_0 - 0.0666666666666666*G3_7_0_0 - 0.533333333333333*G3_11_0_0;
       A[12] = 0.0;
       A[13] = 0.0;
       A[14] = 0.0;
@@ -10702,7 +10714,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({false, true, true, false});
+    static const std::vector<bool> enabled({false, true, true, false, false});
     return enabled;
   }
 
@@ -10934,7 +10946,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({false, true, true, false});
+    static const std::vector<bool> enabled({false, true, true, false, false});
     return enabled;
   }
 
@@ -11177,13 +11189,13 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "4b4b8f2de3225e2afd1de72f78a76cb12b6126b9ef1fc66c774baa97421360663b49a9fc11c5ee7bbc59021604ddb8c8dcf582638af0606082bc5bc3c93523de";
+    return "b497277daf03f80a716e22f06416473371d9759d686a19a32152d089b1577c205d11a16032477f130ce6ced6b8cde0135c33e290a0a91761cf00027793662391";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
   virtual std::size_t original_coefficient_position(std::size_t i) const
   {
-    static const std::vector<std::size_t> position({0, 1, 2, 3});
+    static const std::vector<std::size_t> position({0, 1, 2, 3, 4});
     return position[i];
   }
 
@@ -11196,7 +11208,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 4;
+    return 5;
   }
 
   /// Return the number of cell domains
@@ -11289,6 +11301,11 @@ public:
         return new computefreesurfacestress_notp_finite_element_0();
         break;
       }
+    case 5:
+      {
+        return new computefreesurfacestress_notp_finite_element_2();
+        break;
+      }
     }
     
     return 0;
@@ -11322,6 +11339,11 @@ public:
     case 4:
       {
         return new computefreesurfacestress_notp_dofmap_0();
+        break;
+      }
+    case 5:
+      {
+        return new computefreesurfacestress_notp_dofmap_2();
         break;
       }
     }
@@ -11622,6 +11644,53 @@ public:
 
 };
 
+class CoefficientSpace_wallVelocity: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_wallVelocity(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_notp_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_notp_dofmap_2()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_wallVelocity(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_notp_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_notp_dofmap_2()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_wallVelocity(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_notp_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_notp_dofmap_2()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_wallVelocity(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_notp_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_notp_dofmap_2()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+};
+
 class Form_L_FunctionSpace_0: public dolfin::FunctionSpace
 {
 public:
@@ -11677,13 +11746,15 @@ typedef CoefficientSpace_gamma Form_L_FunctionSpace_3;
 
 typedef CoefficientSpace_beta Form_L_FunctionSpace_4;
 
+typedef CoefficientSpace_wallVelocity Form_L_FunctionSpace_5;
+
 class Form_L: public dolfin::Form
 {
 public:
 
   // Constructor
   Form_L(const dolfin::FunctionSpace& V0):
-    dolfin::Form(1, 4), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3)
+    dolfin::Form(1, 5), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3), wallVelocity(*this, 4)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
@@ -11691,8 +11762,8 @@ public:
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& up, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& beta):
-    dolfin::Form(1, 4), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3)
+  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& up, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& beta, const dolfin::GenericFunction& wallVelocity):
+    dolfin::Form(1, 5), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3), wallVelocity(*this, 4)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
@@ -11700,13 +11771,14 @@ public:
     this->dt = dt;
     this->gamma = gamma;
     this->beta = beta;
+    this->wallVelocity = wallVelocity;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_notp_form_0());
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> up, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> beta):
-    dolfin::Form(1, 4), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3)
+  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> up, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> beta, std::shared_ptr<const dolfin::GenericFunction> wallVelocity):
+    dolfin::Form(1, 5), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3), wallVelocity(*this, 4)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
@@ -11714,13 +11786,14 @@ public:
     this->dt = *dt;
     this->gamma = *gamma;
     this->beta = *beta;
+    this->wallVelocity = *wallVelocity;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_notp_form_0());
   }
 
   // Constructor
   Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 4), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3)
+    dolfin::Form(1, 5), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3), wallVelocity(*this, 4)
   {
     _function_spaces[0] = V0;
 
@@ -11728,8 +11801,8 @@ public:
   }
 
   // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& up, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& beta):
-    dolfin::Form(1, 4), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& up, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& beta, const dolfin::GenericFunction& wallVelocity):
+    dolfin::Form(1, 5), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3), wallVelocity(*this, 4)
   {
     _function_spaces[0] = V0;
 
@@ -11737,13 +11810,14 @@ public:
     this->dt = dt;
     this->gamma = gamma;
     this->beta = beta;
+    this->wallVelocity = wallVelocity;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_notp_form_0());
   }
 
   // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> up, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> beta):
-    dolfin::Form(1, 4), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> up, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> beta, std::shared_ptr<const dolfin::GenericFunction> wallVelocity):
+    dolfin::Form(1, 5), up(*this, 0), dt(*this, 1), gamma(*this, 2), beta(*this, 3), wallVelocity(*this, 4)
   {
     _function_spaces[0] = V0;
 
@@ -11751,6 +11825,7 @@ public:
     this->dt = *dt;
     this->gamma = *gamma;
     this->beta = *beta;
+    this->wallVelocity = *wallVelocity;
 
     _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_notp_form_0());
   }
@@ -11770,6 +11845,8 @@ public:
       return 2;
     else if (name == "beta")
       return 3;
+    else if (name == "wallVelocity")
+      return 4;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -11790,6 +11867,8 @@ public:
       return "gamma";
     case 3:
       return "beta";
+    case 4:
+      return "wallVelocity";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -11804,12 +11883,14 @@ public:
   typedef Form_L_FunctionSpace_2 CoefficientSpace_dt;
   typedef Form_L_FunctionSpace_3 CoefficientSpace_gamma;
   typedef Form_L_FunctionSpace_4 CoefficientSpace_beta;
+  typedef Form_L_FunctionSpace_5 CoefficientSpace_wallVelocity;
 
   // Coefficients
   dolfin::CoefficientAssigner up;
   dolfin::CoefficientAssigner dt;
   dolfin::CoefficientAssigner gamma;
   dolfin::CoefficientAssigner beta;
+  dolfin::CoefficientAssigner wallVelocity;
 };
 
 // Class typedefs

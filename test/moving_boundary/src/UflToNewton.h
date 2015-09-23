@@ -25,8 +25,8 @@
 #include <dcp/differential_problems/NonlinearProblem.h>
 #include "utilities.h"
 
-#define DAI_STAMPA false
-#define ALG_STAMPA false
+//#define DAI_STAMPA
+//#define ALG_STAMPA
 
 namespace Ivan
 {
@@ -40,21 +40,12 @@ namespace Ivan
     public:
   
       // Constructor
-/*      UflToNewton (const dolfin::Mesh& mesh) :
-          functionSpace_ (new T_FunctionSpace(mesh)),
-          additionalFunctionSpace_ (new T_AdditionalFunctionSpace(mesh)),
-          residualForm_ (T_ResidualForm (*functionSpace_)),
-          jacobianForm_ (T_JacobianForm (*functionSpace_, *functionSpace_)),
-          additionalForm_ (T_AdditionalForm (*additionalFunctionSpace_)),
-          solution_ (new dolfin::Function(functionSpace_)),
-          previousSolution_ (new dolfin::Function(functionSpace_))*/
       UflToNewton (const dolfin::FunctionSpace& functionSpace,
                    const std::string& residualFormSolutionName,
                    const std::string& jacobianFormSolutionName = "" ) :
           dcp::NonlinearProblem<T_ResidualForm,T_JacobianForm> (functionSpace,residualFormSolutionName,jacobianFormSolutionName),
           additionalFunctionSpace_ (new T_AdditionalFunctionSpace(this->functionSpace_->mesh())),
           additionalForm_ (T_AdditionalForm (*(this->additionalFunctionSpace_))),
-//          dummy_ (this->functionSpace_),
           bCheckFile("/u/laureandi/ifumagalli/dcp_test_output/NewtonCheck_b.pvd"),
           xCheckFile("/u/laureandi/ifumagalli/dcp_test_output/NewtonCheck_x.pvd"),
           solAlgFile("/u/laureandi/ifumagalli/dcp_test_output/solAlg.pvd"),
@@ -67,46 +58,39 @@ namespace Ivan
         init<simpleNavierStokes::FunctionSpace, simpleNavierStokes::JacobianForm,
              simpleNavierStokes::ResidualForm>(mesh, nu, gamma, dt, w);
   */
-//          this->solution_.push_back (std::make_pair (0,dummy_));
       }
   
-/*      void addDirichletBC (dolfin::DirichletBC&& dirichletBC, std::string&& str)
+      // Return solution function (non const version)
+      // TODO sarebbe meglio tenere solo quella const di dcp::NonlinearProblem;
+      //      per il momento questa serve per poter passare *solution_.vector() a dolfin::NewtonSolver
+      dolfin::Function& solution ()
       {
-          dirichletBCs_.insert (std::make_pair(str,dirichletBC));
-      }*/
+          return this->solution_.back ().second;
+      }
   
-      // User defined residual vector
-      void F (dolfin::GenericVector& b, const dolfin::GenericVector& x);
-  
-      // User defined assemble of Jacobian
-      void J (dolfin::GenericMatrix& A, const dolfin::GenericVector& x);
-  
-/*      // Return solution function
-      dolfin::Function& solution()
-      { return *solution_; }
-  
-      // Return previous solution function
-      dolfin::Function& previousSolution()
-      { return *previousSolution_; }
-  
-      dolfin::FunctionSpace& functionSpace()
-      { return *functionSpace_; }*/
+      // Overriding dcp::NonlinearProblem::setCoefficient [1]
+      virtual void setCoefficient (const std::string& coefficientType, 
+                                   const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                   const std::string& coefficientName = "default") override;
 
-      virtual bool setNonlinearSolver (std::shared_ptr<dolfin::NewtonSolver> solver)
-        //TODO templatizzare/altre opzioni per avere generico solutore
-      {
-          this->nonlinear_solver_.reset(new dolfin::NewtonSolver);
-          // TODO sarebbe meglio una cosa tipo la riga seguente...
-          // this->nonlinear_solver_.reset (solver);
-          nonlinear_solver_set_ = true;
-//  nonlinear_solver_->parameters["linear_solver"] = "lu";
-  nonlinear_solver_->parameters["convergence_criterion"] = "residual";
-  nonlinear_solver_->parameters["maximum_iterations"] = 50;
-//  nonlinear_solver_->parameters["error_on_nonconvergence"] = false;
-  nonlinear_solver_->parameters["relative_tolerance"] = 1e-5;
-  nonlinear_solver_->parameters["absolute_tolerance"] = 1e-9;
-          return nonlinear_solver_set_;
-      }
+      // Overriding dcp::NonlinearProblem::setCoefficient [2]
+      virtual void setCoefficient (const std::string& coefficientType,
+                                   const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                                   const std::size_t& coefficientNumber) override;
+
+      // Overriding dcp::NonlinearProblem::setIntegrationSubdomain
+      virtual void setIntegrationSubdomain (const std::string& formType,
+                                             std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+                                             const dcp::SubdomainType& subdomainType) override;
+                
+      // User defined residual vector (dolfin::NonlinearProblem)
+      void F (dolfin::GenericVector& b, const dolfin::GenericVector& x) override;
+  
+      // User defined assemble of Jacobian (dolfin::NonlinearProblem)
+      void J (dolfin::GenericMatrix& A, const dolfin::GenericVector& x) override;
+  
+      // Set solver for algebraic solution
+      virtual bool setNonlinearSolver (std::shared_ptr<dolfin::NewtonSolver> solver);
 
       //! Solve problem
       /*!
@@ -120,32 +104,6 @@ namespace Ivan
        */
       virtual void solve (const std::string& type = "default") override;
 
-      // Return previous solution function
-      dolfin::Function& previousSolution()
-      {
-/*          if (this->solution_.empty())
-              return dummy_;*/
-          if (this->solution_.size() < 2)
-              return this->solution_.back ().second;
-          return this->solution_[this->solution_.size()-2].second;
-      }
-
-      // Return solution function (non const version)
-      // TODO sarebbe meglio tenere solo quella const di dcp::NonlinearProblem;
-      //      per il momento questa serve per poter passare *solution_.vector() a dolfin::NewtonSolver
-      dolfin::Function& solution ()
-      {
-          return this->solution_.back ().second;
-      }
-  
-      virtual void setCoefficient (const std::string& coefficientType, 
-                                   const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-                                   const std::string& coefficientName = "default") override;
-
-      virtual void setIntegrationSubdomain (const std::string& formType,
-                                             std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                             const dcp::SubdomainType& subdomainType) override;
-                
     private:
   
   //    template<class T_FunctionSpace, class T_JacobianForm, class T_ResidualForm>
@@ -157,7 +115,6 @@ namespace Ivan
   /*      // Create function space and functions
         std::shared_ptr<T_FunctionSpace> V(new T_FunctionSpace(mesh));
         solution_.reset(new Function(V));
-        previousSolution_.reset(new Function(V));
   
         // Create forms and attach functions
         T_JacobianForm* jacobianForm_ = new T_JacobianForm(V, V);
@@ -179,19 +136,15 @@ namespace Ivan
 
       virtual void processAdditionalVector (dolfin::Vector& vec);
   
-      // Function space, forms and functions
-//      std::shared_ptr<dolfin::FunctionSpace> functionSpace_;
+      // Function spaces and forms
+      // (additional w.r.t. those contained in dcp::NonlinearProblem
       std::shared_ptr<dolfin::FunctionSpace> additionalFunctionSpace_;
-/*      T_ResidualForm residualForm_;
-      T_JacobianForm jacobianForm_;*/
       T_AdditionalForm additionalForm_;
-/*      std::shared_ptr<dolfin::Function> solution_;
-      std::shared_ptr<dolfin::Function> previousSolution_;*/
-//      std::map <std::string, dolfin::DirichletBC> dirichletBCs_;
-//      dolfin::Function dummy_;
+
       std::shared_ptr<dolfin::NewtonSolver> nonlinear_solver_;
       bool nonlinear_solver_set_;
         //TODO templatizzare/altre opzioni per avere generico solutore
+
 dolfin::File bCheckFile;
 dolfin::File xCheckFile;
 dolfin::File solAlgFile;
@@ -214,46 +167,28 @@ dolfin::File timeSolVarFile;
                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                         const std::string& coefficientName)
         {
-/*std::cerr << "Setting coefficient " << coefficientName << " in " << coefficientType << "(0 to continue)" << std::endl;
-int bla;
-std::cin >> bla;*/
-            if (coefficientType == "residual_form")
-            {
-                dolfin::log (dolfin::DBG, "Setting residual form coefficient \"%s\"...", coefficientName.c_str ());
-                this->residualForm_.set_coefficient (coefficientName, coefficientValue);
-            }
-            else if (coefficientType == "jacobian_form")
-            {
-                dolfin::log (dolfin::DBG, "Setting jacobian form coefficient \"%s\"...", coefficientName.c_str ());
-                this->jacobianForm_.set_coefficient (coefficientName, coefficientValue);
-            }
-/*            else if (coefficientType == "initial_guess")
-            {
-                dolfin::log (dolfin::DBG, "Setting initial guess...");
-                // check whether coefficientValue is a pointer to dolfin::Function or dolfin::Expression
-                if (std::dynamic_pointer_cast<const dolfin::Function> (coefficientValue) != nullptr)
-                {
-                    solution_.back ().second = *(std::dynamic_pointer_cast<const dolfin::Function> (coefficientValue));
-                }
-                else if (std::dynamic_pointer_cast<const dolfin::Expression> (coefficientValue) != nullptr)
-                {
-                    solution_.back ().second = *(std::dynamic_pointer_cast<const dolfin::Expression> (coefficientValue));
-                }
-                else
-                {
-                    dolfin::warning ("Cannot set initial guess in nonlinear differential problem. Input argument is neither a dolfin::Function nor a dolfin::Expression");
-                }
-            }*/
-            else if (coefficientType == "additional_form")
+            if (coefficientType == "additional_form")
             {
                 dolfin::log (dolfin::DBG, "Setting jacobian form coefficient \"%s\"...", coefficientName.c_str ());
                 this->additionalForm_.set_coefficient (coefficientName, coefficientValue);
             }
             else
+                this->dcp::NonlinearProblem <T_ResidualForm,T_JacobianForm>::setCoefficient (coefficientType,coefficientValue,coefficientName);
+        }
+
+  template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_ResidualForm, class T_JacobianForm, class T_AdditionalForm>
+        void UflToNewton <T_FunctionSpace, T_AdditionalFunctionSpace, T_ResidualForm, T_JacobianForm, T_AdditionalForm>::
+        setCoefficient (const std::string& coefficientType,
+                        const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
+                        const std::size_t& coefficientNumber)
+        {
+            if (coefficientType == "additional_form")
             {
-                dolfin::warning ("Cannot set coefficient in non linear differential problem. Coefficient type \"%s\" unknown",
-                                 coefficientType.c_str ());
+                dolfin::log (dolfin::DBG, "Setting jacobian form coefficient number %d...", coefficientNumber);
+                this->additionalForm_.set_coefficient (coefficientNumber, coefficientValue);
             }
+            else
+                this->dcp::NonlinearProblem <T_ResidualForm,T_JacobianForm>::setCoefficient (coefficientType,coefficientValue,coefficientNumber);
         }
 
   template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_ResidualForm, class T_JacobianForm, class T_AdditionalForm>
@@ -262,61 +197,7 @@ std::cin >> bla;*/
                                   std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                   const dcp::SubdomainType& subdomainType)
         {
-            if (formType == "residual_form")
-            {
-                if (subdomainType == dcp::SubdomainType::INTERNAL_CELLS)
-                {
-                    dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on INTERNAL_CELLS...");
-                    this->residualForm_.set_cell_domains (meshFunction);
-                }
-                else if (subdomainType == dcp::SubdomainType::INTERNAL_FACETS)
-                {
-                    dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on INTERNAL_FACETS...");
-                    this->residualForm_.set_interior_facet_domains (meshFunction);
-                }
-                else if (subdomainType == dcp::SubdomainType::BOUNDARY_FACETS)
-                {
-                    dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on BOUNDARY_FACETS...");
-                    this->residualForm_.set_exterior_facet_domains (meshFunction);
-                }
-                else if (subdomainType == dcp::SubdomainType::VERTICES)
-                {
-                    dolfin::log (dolfin::DBG, "Setting residual form integration subdomain on VERTICES...");
-                    this->residualForm_.set_vertex_domains (meshFunction);
-                }
-                else
-                {
-                    dolfin::warning ("unknown subdomain type requested while trying to apply mesh function to residual form"); 
-                }
-            }
-            else if (formType == "jacobian_form")
-            {
-                if (subdomainType == dcp::SubdomainType::INTERNAL_CELLS)
-                {
-                    dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on INTERNAL_CELLS...");
-                    this->jacobianForm_.set_cell_domains (meshFunction);
-                }
-                else if (subdomainType == dcp::SubdomainType::INTERNAL_FACETS)
-                {
-                    dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on INTERNAL_FACETS...");
-                    this->jacobianForm_.set_interior_facet_domains (meshFunction);
-                }
-                else if (subdomainType == dcp::SubdomainType::BOUNDARY_FACETS)
-                {
-                    dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on BOUNDARY_FACETS...");
-                    this->jacobianForm_.set_exterior_facet_domains (meshFunction);
-                }
-                else if (subdomainType == dcp::SubdomainType::VERTICES)
-                {
-                    dolfin::log (dolfin::DBG, "Setting jacobian form integration subdomain on VERTICES...");
-                    this->jacobianForm_.set_vertex_domains (meshFunction);
-                }
-                else
-                {
-                    dolfin::warning ("unknown subdomain type requested while trying to apply mesh function to jacobian form"); 
-                }
-            }
-            else if (formType == "additional_form")
+            if (formType == "additional_form")
             {
                 if (subdomainType == dcp::SubdomainType::INTERNAL_CELLS)
                 {
@@ -344,10 +225,7 @@ std::cin >> bla;*/
                 }
             }
             else
-            {
-                dolfin::warning ("Cannot set integration subdomain in linear differential problem. Form type \"%s\" unknown",
-                                 formType.c_str ());
-            }
+                this->dcp::NonlinearProblem <T_ResidualForm,T_JacobianForm>::setIntegrationSubdomain (formType,meshFunction,subdomainType);
 
         }
 
@@ -382,14 +260,16 @@ std::cerr << ".h OK fino a " << __LINE__ << std::endl;
         assembler.assemble (vec, this->additionalForm_);
 std::cerr << ".h OK fino a " << __LINE__ << std::endl;
         processAdditionalVector (vec);
-if (DAI_STAMPA || ALG_STAMPA) {
-std::cerr << "Norma residuo solo form = " << b.norm("l2") << std::endl;}
+#if defined(DAI_STAMPA) || defined(ALG_STAMPA)
+std::cerr << "Norma residuo solo form = " << b.norm("l2") << std::endl;
+#endif
         b -= vec;
 //!!! controllare segno: += oppure -=
 
         // Apply Dirichlet boundary conditions
-if (DAI_STAMPA || ALG_STAMPA) {
-std::cerr << "Norma residuo pre-BC = " << b.norm("l2") << std::endl;}
+#if defined(DAI_STAMPA) || defined(ALG_STAMPA)
+std::cerr << "Norma residuo pre-BC = " << b.norm("l2") << std::endl;
+#endif
         for (auto it = this->dirichletBCs_.begin(); it != this->dirichletBCs_.end(); it++)
             {(it->second).apply (b,x); std::cerr<<"TimeBC "<<it->first<<std::endl;}
 //  b.apply();
@@ -397,24 +277,28 @@ std::cerr << "Norma residuo pre-BC = " << b.norm("l2") << std::endl;}
 //!!! non faccio apply(b,x) perche' pare (a me) che quello serva se risolvo un sistema non lineare
 //    tenendo come incognita la x, mentre qui, con Newton, l'incognita e' il DELTA x
 //            {(it->second).apply (b, x); std::cerr<<"TimeBC "<<it->first<<std::endl;}
+#if defined(DAI_STAMPA)
 std::cerr << ".h OK fino a " << __LINE__ << std::endl;
 dolfin::Function bFun (*this->additionalFunctionSpace_);
 * bFun.vector() = b;
 bCheckFile << bFun;
 * bFun.vector() = x;
 xCheckFile << bFun;
+#endif
 //dolfin::plot (bFun[0], "rhs");
 /*dolfin::plot (bFun[0][0],"x rhs");
 dolfin::plot (bFun[0][1],"y rhs"); dolfin::interactive();*/
-if (DAI_STAMPA || ALG_STAMPA) {
+#if defined(DAI_STAMPA) || defined(ALG_STAMPA)
 std::cerr << " vec (size = " << vec.size() << ") = "; for (auto i=0; i!=vec.size(); ++i) std::cerr << vec[i] << ", "; std::cerr << std::endl;
 std::cerr << "   b (size = " <<   b.size() << ") = "; for (auto i=0; i!=b.size(); ++i) std::cerr << b[i] << ", "; std::cerr << std::endl;
 std::cerr << "Norma residuo = " << b.norm("l2") << std::endl;
 std::ofstream vecFile; vecFile.open("/u/laureandi/ifumagalli/dcp_test_output/vec.csv",std::ios::out|std::ios::app);
 for (auto i=0; i!=vec.size(); ++i) vecFile << vec[i] << ","; vecFile << std::endl; vecFile.close();
 std::ofstream bFile; bFile.open("/u/laureandi/ifumagalli/dcp_test_output/b.csv",std::ios::out|std::ios::app);
-for (auto i=0; i!=  b.size(); ++i)   bFile <<   b[i] << ",";   bFile << std::endl; bFile.close();}
+for (auto i=0; i!=  b.size(); ++i)   bFile <<   b[i] << ",";   bFile << std::endl; bFile.close();
+#endif
       }
+
   template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_ResidualForm, class T_JacobianForm, class T_AdditionalForm>
         void UflToNewton <T_FunctionSpace, T_AdditionalFunctionSpace, T_ResidualForm, T_JacobianForm, T_AdditionalForm>::
       J (dolfin::GenericMatrix& A, const dolfin::GenericVector& x)
@@ -422,19 +306,39 @@ for (auto i=0; i!=  b.size(); ++i)   bFile <<   b[i] << ",";   bFile << std::end
         // Assemble system
         dolfin::Assembler assembler;
         assembler.assemble(A, this->jacobianForm_);
-if (DAI_STAMPA || ALG_STAMPA) {
+#if defined(DAI_STAMPA) || defined(ALG_STAMPA)
 std::ofstream A_pre_bcFile; A_pre_bcFile.open("/u/laureandi/ifumagalli/dcp_test_output/A_pre_bc.csv",std::ios::out|std::ios::app);
 for (auto i=0; i!=A.size(0); ++i) {for (auto j=0; j!=A.size(1); ++j) A_pre_bcFile << A(i,j) << ","; A_pre_bcFile << std::endl;} A_pre_bcFile << std::endl; A_pre_bcFile.close();
-std::cerr << "Norma jacobiana pre-BC = " << A.norm("frobenius") << std::endl;}
+std::cerr << "Norma jacobiana pre-BC = " << A.norm("frobenius") << std::endl;
+#endif
         for (auto it = this->dirichletBCs_.begin(); it != this->dirichletBCs_.end(); it++)
             (it->second).apply (A);
 //  A.apply();
-if (DAI_STAMPA || ALG_STAMPA) {
+#if defined(DAI_STAMPA) || defined(ALG_STAMPA)
 std::ofstream AFile; AFile.open("/u/laureandi/ifumagalli/dcp_test_output/A.csv",std::ios::out|std::ios::app);
 for (auto i=0; i!=A.size(0); ++i) {for (auto j=0; j!=A.size(1); ++j) AFile << A(i,j) << ","; AFile << std::endl;} AFile << std::endl; AFile.close();
 std::cerr << "   A (size = " << A.size(0) << "," << A.size(1) << ") = "; for (auto i=0; i!=A.size(0); ++i) for (auto j=0; j!=A.size(1); ++j) std::cerr << A(i,j) << ", "; std::cerr << std::endl;
 std::cerr << "   A is symmetric : " << A.is_symmetric(1e-10) << std::endl;
-std::cerr << "Norma jacobiana = " << A.norm("frobenius") << std::endl;}
+std::cerr << "Norma jacobiana = " << A.norm("frobenius") << std::endl;
+#endif
+      }
+
+  template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_ResidualForm, class T_JacobianForm, class T_AdditionalForm>
+        bool UflToNewton <T_FunctionSpace, T_AdditionalFunctionSpace, T_ResidualForm, T_JacobianForm, T_AdditionalForm>::
+      setNonlinearSolver (std::shared_ptr<dolfin::NewtonSolver> solver)
+        //TODO templatizzare/altre opzioni per avere generico solutore
+      {
+          this->nonlinear_solver_.reset(new dolfin::NewtonSolver);
+          // TODO sarebbe meglio una cosa tipo la riga seguente...
+          // this->nonlinear_solver_.reset (solver);
+          nonlinear_solver_set_ = true;
+//  nonlinear_solver_->parameters["linear_solver"] = "lu";
+  nonlinear_solver_->parameters["convergence_criterion"] = "residual";
+  nonlinear_solver_->parameters["maximum_iterations"] = 10;
+  nonlinear_solver_->parameters["error_on_nonconvergence"] = false;
+  nonlinear_solver_->parameters["relative_tolerance"] = 1e-5;
+  nonlinear_solver_->parameters["absolute_tolerance"] = 1e-9;
+          return nonlinear_solver_set_;
       }
 
   template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_ResidualForm, class T_JacobianForm, class T_AdditionalForm>

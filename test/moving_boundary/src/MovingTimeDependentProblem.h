@@ -1,5 +1,5 @@
 /* 
- *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
+ *  Copyright (C) 2015, Ivan Fumagalli, ivan.fumagalli.if@gmail.com
  * 
  *  This file is part of the DCP library
  *   
@@ -38,15 +38,19 @@
 #include <tuple>
 #include <dcp/differential_problems/AbstractProblem.h>
 #include <dcp/differential_problems/LinearProblem.h>
+#include <dcp/differential_problems/TimeDependentProblem.h>
 #include <dcp/factories/LinearSolverFactory.h>
 #include <dcp/differential_problems/SubdomainType.h>
 #include <dcp/expressions/TimeDependentExpression.h>
 #include <dcp/subdomains/Subdomain.h>
-#include "geometry.h"
+//#include "geometry.h"
+#include "MeshManager.h"
 #include <math.h>
 
 namespace Ivan
 {
+//Ivan:: SubDomains
+/*
     class LateralInterior : public dolfin::SubDomain
     {
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
@@ -70,9 +74,9 @@ namespace Ivan
                     ||
                    ( dolfin::near(x[0],0.05,0.006) && dolfin::near(x[1],0.1,0.006) ) )
                   && !( lateralInterior.inside(x, on_boundary) );
-            return  ( dolfin::near(x[0], 0) && (x[1]<0.01-6e-16) && (x[1]>6e-16)) //dolfin::near(x[1],0.005) )
+            return  ( dolfin::near(x[0], 0) && (x[1]<0.01-6e-16) && (x[1]>6e-16))
            		     ||
-                 		( dolfin::near(x[0], 0.05) && (x[1]<0.01-6e-16) && (x[1]>6e-16)); //dolfin::near(x[1],0.005) );
+                 		( dolfin::near(x[0], 0.05) && (x[1]<0.01-6e-16) && (x[1]>6e-16));
         }
 
         LateralInterior lateralInterior;
@@ -115,18 +119,20 @@ namespace Ivan
         bool inside (const dolfin::Array<double>& x, bool on_boundary) const
         {
             return on_boundary
-/*                   &&
+                   &&
                   dolfin::between(x[0],{0.0,0.05})
-*//*  	               && !(
+  	               && !(
                       dolfin::near(x[0], 0)
            		     ||
              		      dolfin::near(x[0], 0.05)
           		     ||
-             		    dolfin::near(x[1], 0));*/
+             		    dolfin::near(x[1], 0));
                    &&
                   (x[1] >= 0.10 - 6.0e-16);
         }
     };
+*/
+//Ivan:: SubDomains
 
     /*! \class MovingTimeDependentProblem MovingTimeDependentProblem.h
      *  \brief Class for time dependent differential problems.
@@ -148,7 +154,7 @@ namespace Ivan
      *  <tt> shared_ptr <dcp::AbstractProblem> </tt>
      */
 
-    class MovingTimeDependentProblem : public dcp::AbstractProblem
+    class MovingTimeDependentProblem : public dcp::TimeDependentProblem
     {
         // ---------------------------------------------------------------------------------------------//  
 
@@ -163,7 +169,8 @@ namespace Ivan
 
             /******************* CONSTRUCTORS *******************/
             //! Default constructor is deleted. The class is not default constructable.
-            MovingTimeDependentProblem () = delete;
+//            MovingTimeDependentProblem () = delete;
+//     Already deleted in TimeDependentProblem
 
             //!  Constructor
             /*!
@@ -235,14 +242,16 @@ namespace Ivan
              *  default value to the empty string, so that by default the plot title contains only the value of the 
              *  current time when the plot method is called.
              */
-            MovingTimeDependentProblem (const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
-                                  const double& startTime,
-                                  const double& dt,
-                                  const double& endTime,
-                                  std::initializer_list<std::string> dtCoefficientTypes,
-                                  std::initializer_list<std::string> previousSolutionCoefficientTypes,
-//current//                                  std::initializer_list<std::string> currentSolutionCoefficientTypes,
-                                  const unsigned int& nTimeSchemeSteps = 1);
+//            MovingTimeDependentProblem (const std::shared_ptr<geometry::MeshManager<dolfin::ALE,dolfin::FunctionSpace> > meshManager,
+            MovingTimeDependentProblem (const std::shared_ptr<MeshManager<> > meshManager,
+																			 const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
+																			 const double& startTime,
+                    	 								 const double& dt,
+                               				 const double& endTime,
+                                  		 std::initializer_list<std::string> dtCoefficientTypes,
+                                  		 std::initializer_list<std::string> previousSolutionCoefficientTypes,
+                                  		 std::initializer_list<std::string> wCoefficientTypes,
+                                  		 const unsigned int& nTimeSchemeSteps = 1);
 
 
             /******************* DESTRUCTOR *******************/
@@ -267,362 +276,9 @@ namespace Ivan
              */
             virtual std::shared_ptr<dolfin::FunctionSpace> functionSpace () const override;
 
-            //! Get const reference to the problem's dirichlet boundary condition with given name.
-            //! Note that time dependent Dirichlet BC can be found in this map along with "stationary" BCs. 
-            //! When a time dependent Dirichlet BC is retrieved through this method, its time value will be the last 
-            //! set during the solve process.
-            /*! 
-             *  \param bcName the name identifying the boundary condition
-             *  \return a const reference to the problem's dirichletBC identified by \c bcName
-             */
-            virtual const dolfin::DirichletBC& dirichletBC (const std::string& bcName) const override;
-
-            //! Get const reference to the problem's dirichlet boundary conditions map
-            //! Note that time dependent Dirichlet BC can be found in this map along with "stationary" BCs. 
-            //! When a time dependent Dirichlet BC is retrieved through this method, its time value will be the last 
-            //! set during the solve process.
-            /*! 
-             *  \return a const reference to the problem's \c dirichletBC map
-             */
-            virtual const std::map<std::string, dolfin::DirichletBC>& dirichletBCs () const override;
-
-            //! Get const reference to the problem's solution on the last considered time step
-            /*!
-             *  \return a const reference to the problem's solution on the last considered time step
-             */
-            virtual const dolfin::Function& solution () const override;  
-
-            //! Get const reference to the problem's solutions vector. Note that this returns also the time values 
-            //! associated with the solutions
-            /*!
-             *  \return a const reference to the problem's time-solution pairs vector
-             */
-            virtual const std::vector <std::pair <double, dolfin::Function> >& solutions () const;  
-            
-            //! Get const reference to the current simulation time
-            /*!
-             *  \return a const reference to \c t_
-             */
-            virtual const double& time () const;
-            
-            //! Get a reference to the simulation start time
-            /*!
-             *  \return a reference to \c startTime_
-             */
-            virtual double& startTime ();
-            
-            //! Get a reference to the simulation time step
-            /*!
-             *  \return a reference to \c dt_
-             */
-            virtual double& dt ();
-            
-            //! Get a reference to the simulation end time
-            /*!
-             *  \return a reference to \c endTime_
-             */
-            virtual double& endTime ();
-            
-            //! Get const reference to the problem's time stepping problem
-            /*! 
-             *  \return a const reference to the problem's time stepping problem
-             */
-            virtual dcp::AbstractProblem& timeSteppingProblem ();
-
-
-            /******************* SETTERS *******************/
-            //! Set initial solution for the time loop using a \c dolfin::Function. 
-            //! Note that this will not clear the solutions vector. Instead, it will change the value of the last
-            //! solutions stored in \c solutions_ which will then be used to advance in time.
-            /*!
-             *  \param initialSolution the function to be used as initial solution
-             *  \param stepNumber the number of steps to go back to set the initial solution. This is only useful 
-             *  for multisteps method, where more than one previous solution is needed to compute the solution at the
-             *  current time step. This number, if greater than one, will be concatenated to \c "previous_solution_name"
-             *  to form the coefficient name to be set, as it was described in the constructor documentation.
-             *  The default value is 1, that means that the input function should be used to set the last solution.
-             */
-            virtual void setInitialSolution (const dolfin::Function& initialSolution, 
-                                             const unsigned int& stepNumber = 1);
-            
-            //! Set initial solution for the time loop using a \c dolfin::Expression.
-            //! Note that this will not clear the solutions vector. Instead, it will change the value of the last
-            //! solutions stored in \c solutions_ which will then be used to advance in time.
-            /*!
-             *  \param initialSolution the function to be used as initial solution
-             *  \param stepNumber the number of steps to go back to set the initial solution. This is only useful 
-             *  for multisteps method, where more than one previous solution is needed to compute the solution at the
-             *  current time step. This number, if greater than one, will be concatenated to \c "previous_solution_name"
-             *  to form the coefficient name to be set, as it was described in the constructor documentation.
-             *  The default value is 1, that means that the input expression should be used to set the last solution.
-             */
-            virtual void setInitialSolution (const dolfin::Expression& initialSolution, 
-                                             const unsigned int& stepNumber = 1);
-            
-            //! Set coefficient [1]. Override of virtual function in \c AbstractProblem.
-            //! This function is used to set the coefficients for the protected member \c timeSteppingProblem_.
-            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c setCoefficient function.
-            /*!
-             *  Possible values for \c coefficientType are:
-             *  \li \c bilinear_form to set the coefficient in the bilinear form
-             *  \li \c linear_form to set the coefficient in the linear form
-             *  
-             *  See \c AbstractProblem documentation for more details on the function.
-             */
-            virtual void setCoefficient (const std::string& coefficientType, 
-                                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-                                         const std::string& coefficientName) override;
-
-            //! Set coefficient [2]. Override of virtual function in \c AbstractProblem.
-            //! This function is used to set the coefficients for the protected member \c timeSteppingProblem_.
-            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c setCoefficient function.
-            /*!
-             *  Possible values for \c coefficientType are:
-             *  \li \c bilinear_form to set the coefficient in the bilinear form
-             *  \li \c linear_form to set the coefficient in the linear form
-             *  
-             *  See \c AbstractProblem documentation for more details on the function
-             */
-            virtual void setCoefficient (const std::string& coefficientType,
-                                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
-                                         const std::size_t& coefficientNumber) override;
-
-            //! Set integration subdomains for the forms. Override of virtual function in \c AbstractProblem
-            //! This function sets the integration subdomains for the protected member \c timeSteppingProblem_.
-            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c setCoefficient function.
-            /*! 
-             *  Possible values for \c formType are:
-             *  \li \c bilinear_form to set the integration subdomain in the bilinear form
-             *  \li \c linear_form to set the integration subdomain in the linear form
-             *  
-             *  See \c AbstractProblem documentation for more details on the function
-             */
-            virtual void setIntegrationSubdomain (const std::string& formType,
-                                                  std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                  const dcp::SubdomainType& subdomainType) override;
-
-            //! Add Dirichlet boundary condition to the problem [1]
-            //! Overrides method in \c AbstractProblem.
-            //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
-            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
-            /*!
-             *  \param condition the boundary condition to enforce
-             *  \param boundary the boundary on which to enforce the condition
-             *  \param bcName the name identifying the boundary condition. If empty,
-             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
-             *  
-             *  \return boolean flag, with \c true representing success and \c false representing failure
-             */
-            virtual bool addDirichletBC (const dolfin::GenericFunction& condition, 
-                                         const dolfin::SubDomain& boundary,
-                                         std::string bcName = "") override;
-
-            //! Add Dirichlet boundary condition to the problem [2]
-            //! Overrides method in \c AbstractProblem.
-            //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
-            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
-            /*!
-             *  \param condition the boundary condition to enforce
-             *  \param boundary the boundary on which to enforce the condition
-             *  \param component the function space component on which the boundary condition should be imposed. 
-             *  For instance, this can be useful if we have a vector space and we want only the orizontal component to
-             *  have a fixed value
-             *  \param bcName the name identifying the boundary condition. If empty,
-             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
-             *  
-             *  \return boolean flag, with \c true representing success and \c false representing failure
-             */
-            virtual bool addDirichletBC (const dolfin::GenericFunction& condition, 
-                                         const dolfin::SubDomain& boundary,
-                                         const std::size_t& component,
-                                         std::string bcName = "") override;
-
-            //! Add Dirichlet boundary condition to the problem [3]
-            //! Overrides method in \c AbstractProblem.
-            //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
-            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
-            /*!
-             *  \param condition the boundary condition to enforce
-             *  \param boundary the boundary on which to enforce the condition
-             *  \param bcName the name identifying the boundary condition. If empty,
-             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
-             *  
-             *  \return boolean flag, with \c true representing success and \c false representing failure
-             */
-            virtual bool addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
-                                         std::shared_ptr<const dolfin::SubDomain> boundary,
-                                         std::string bcName = "") override;
-
-            //! Add Dirichlet boundary condition to the problem [4]
-            //! Overrides method in \c AbstractProblem.
-            //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
-            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
-            /*!
-             *  \param condition the boundary condition to enforce
-             *  \param boundary the boundary on which to enforce the condition
-             *  \param component the function space component on which the boundary condition should be imposed. 
-             *  For instance, this can be useful if we have a vector space and we want only the orizontal component to
-             *  have a fixed value
-             *  \param bcName the name identifying the boundary condition. If empty,
-             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
-             *  
-             *  \return boolean flag, with \c true representing success and \c false representing failure
-             */
-            virtual bool addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
-                                         std::shared_ptr<const dolfin::SubDomain> boundary,
-                                         const std::size_t& component,
-                                         std::string bcName = "") override;
-
-            //! Add Dirichlet boundary condition to the problem [5]. 
-            //! Overrides method in \c AbstractProblem.
-            //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
-            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
-            /*!
-             *  \param dirichletCondition a const reference to the dirichlet boundary condition to be added to the 
-             *  problem
-             *  \param bcName the name identifying the boundary condition. If empty, 
-             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
-             *  
-             *  \return boolean flag, with \c true representing success and \c false representing failure
-             */
-            virtual bool addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
-                                         std::string bcName = "") override;
-
-            //! Add Dirichlet boundary condition to the problem [6]. 
-            //! Overrides method in \c AbstractProblem.
-            //! This function sets Dirichlet boundary conditions for the protected member \c timeSteppingProblem_.
-            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c addDirichletBC function.
-            /*!
-             *  \param dirichletCondition a rvalue reference to the dirichlet boundary condition to be added to the 
-             *  problem
-             *  \param bcName the name identifying the boundary condition. If empty, 
-             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
-             *  
-             *  \return boolean flag, with \c true representing success and \c false representing failure
-             */
-            virtual bool addDirichletBC (dolfin::DirichletBC&& dirichletCondition, 
-                                         std::string bcName = "") override;
-
-            //! Remove Dirichlet boundary condition with given position. Overrides method in \c AbstractProblem
-            //! This function removes the given Dirichlet boundary conditions from the protected member 
-            //! \c timeSteppingProblem_.
-            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c removeDirichletBC function.
-            /*!
-             *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
-             *  \param bcName name of the boundary condition to be removed.
-             *  
-             *  \return boolean flag, with \c true representing success and \c false representing failure
-             */
-            virtual bool removeDirichletBC (const std::string& bcName) override;
-            
-            //! Add time dependend Dirichlet boundary condition to the problem [1]
-            /*! 
-             *  This function adds the two object defining the time dependent expression (passed as input arguments) to 
-             *  \c timeDependentDirichletBCs_ and sets the time dependent Dirichlet boundary condition for the 
-             *  protected member \c timeSteppingProblem_.
-             *
-             *  \param condition the boundary condition to enforce
-             *  \param boundary the boundary on which to enforce the condition
-             *  \param bcName the name identifying the boundary condition. If empty,
-             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
-             *  
-             *  \return boolean flag, with \c true representing success and \c false representing failure
-             */
-            virtual bool addTimeDependentDirichletBC (const dcp::TimeDependentExpression& condition, 
-                                                      const dcp::Subdomain& boundary,
-                                                      std::string bcName = "");
-
-            //! Add time dependend Dirichlet boundary condition to the problem [2]
-            /*! 
-             *  This function adds the two object defining the time dependent expression (passed as input arguments) to 
-             *  \c timeDependentDirichletBCs_ and sets the time dependent Dirichlet boundary condition for the 
-             *  protected member \c timeSteppingProblem_.
-             *
-             *  \param condition the boundary condition to enforce
-             *  \param boundary the boundary on which to enforce the condition
-             *  \param component the function space component on which the boundary condition should be imposed. 
-             *  For instance, this can be useful if we have a vector space and we want only the orizontal component to
-             *  have a fixed value
-             *  \param bcName the name identifying the boundary condition. If empty,
-             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
-             *  
-             *  \return boolean flag, with \c true representing success and \c false representing failure
-             */
-            virtual bool addTimeDependentDirichletBC (const dcp::TimeDependentExpression& condition, 
-                                                      const dcp::Subdomain& boundary,
-                                                      const std::size_t& component,
-                                                      std::string bcName = "");
-
-            //! Remove time dependent Dirichlet boundary condition with given name. 
-            //! This function removes the given Dirichlet boundary conditions from the protected member 
-            //! \c timeSteppingProblem_.
-            /*!
-             *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.
-             *  \param bcName name of the boundary condition to be removed.
-             *  
-             *  \return boolean flag, with \c true representing success and \c false representing failure
-             */
-            virtual bool removeTimeDependentDirichletBC (const std::string& bcName);
-            
-            //! Add an entry to the protected member map \c timeDependentCoefficients_.
-            /*
-             *  \param coefficientName the name to identify the coefficient. It will be used in the protected method
-             *  \c setTimeDependentCoefficients(), so it must be the same as the name used in the ufl file
-             *  \param coefficientType the type of the coefficient, in a form that will make sense once passed to the
-             *  method \c setCoefficient() (that is for example \c "linear_form", \c "bilinear_form" and so on)
-             *  \param expression the time dependent expression, whose \c eval() method will be used when setting the
-             *  coefficient in \c setTimeDependentCoefficients(). We use a \c shared_ptr because there is no other way 
-             *  to call the right \c eval() (unless we forced the user to override a possible \c clone() method in the
-             *  class derived from \c dcp::TimeDependentExpression
-             *  
-             *  \return \c true if the coefficient was inserted in the map, \c false otherwise
-             */
-            virtual bool addTimeDependentCoefficient (const std::string& coefficientName, 
-                                                      const std::string& coefficientType,
-                                                      std::shared_ptr<dcp::TimeDependentExpression> expression);
-            
-            //! Remove the selected element from the protected member map \c timeDependentCoefficients_
-            /*!
-             *  \param coefficientName the name of the coefficient to remove
-             *  \param coefficientType the type of the coefficient to remove
-             *  
-             *  \return \c true if the coefficient was removed from the map, \c false otherwise
-             */
-            virtual bool removeTimeDependentCoefficient (const std::string& coefficientName,
-                                                         const std::string& coefficientType);
-            
-            //! Method to update class members. 
-            //! Note that this function only wraps a call to the \c timeSteppingProblem_ \c update function 
-            //! (which may be an empty function)
-            virtual void update () override;
 
             
             /******************* METHODS *******************/
-            //! Checks if the time loop has ended
-            /*!
-             *  \return \c true if the time loop has ended, that is if \c t_ >= \c parameters["end_time"],
-             *  \c false otherwise
-             */
-            virtual bool isFinished ();
-            
-            //! Clear solutions vector
-            /*!
-             *  This methos clears the protected member \c solution_ and creates a zero function as its first element,
-             *  as if the class had just been created. Protected member \c t_ will be reset to \c startTime_.
-             *  Finally, the time value in time dependent Dirichlet BCs will be reset to \c startTime_ as well.
-             */  
-            virtual void clear ();
-             
-            //! Perform one step of the time loop
-            /*!
-             *  This method performes one step of the time loop. It uses the protected members' value to set the problem
-             *  and then stores the solution in the private member \c solution_ (which is inherited from the base
-             *  class), adding to its existing elements (see method \c clear to delete any element stored in 
-             *  \c solution_).  The last element of \c solution_ will be used as the previous time step solution. To
-             *  change it, use the method \c setInitialSolution.  The protected member \c t_ will be incremented by 
-             *  \c parameters["dt"]
-             */
-            virtual void step ();
 
             //! Solve the problem
             /*!
@@ -645,14 +301,8 @@ namespace Ivan
              *  \li <tt> "clear_step" </tt> \c clear method is called before performing one time step of the time loop
              */
             virtual void solve (const std::string& type = "default") override;
-
-            //! Plot method. Overrides the one in \c dcp::AbstractProblem to take into account the fact that 
-            //! \c solution_ is now a vector with size greater than one). It uses the value of the parameter \c pause
-            //! to decide whether to stop at each plot or not and the value of the parameter \c plot_title to set
-            //! the plot title (\c plot_title will actually be added to the time, which is always plotted in the title)
-            virtual void plotSolution () override;
             
-            //! Clone method. Overrides method in \c AbstractProblem
+            //! Clone method. Overrides method in \c TimeDependentProblem, but performs exactly the same actions
             /*!
              *  It uses the parameter \c clone_method to decide which type of cloning to perform.
              *  Possible values for such parameter are:
@@ -671,125 +321,11 @@ namespace Ivan
             // ---------------------------------------------------------------------------------------------//
 
         protected:
-            //! The problem to be solved on each time step
-            std::shared_ptr <dcp::AbstractProblem> timeSteppingProblem_;
-            
-            //! A map containing the time dependent expressions needed for the time dependent problem
-            /*!
-             *  If for example a problem had an external force that depends on time, its corresponding coefficient in
-             *  the time stepping problem would need to be reset at every step, since the time parameter changes. 
-             *  The coefficient is identified by a \c pair containing its name and its type and is associated in the map
-             *  to a pointer to \c dcp::TimeDependentExpression (the use of the pointer is necessary to call the 
-             *  \c eval() function defined in the user-defined class derived from \c dcp::TimeDependentExpression )
-             */
-            std::map <TimeDependentCoefficientKey, TimeDependentCoefficientValue> timeDependentCoefficients_;
-            
-            //! The time dependent Dirichlet's boundary conditions. The map associates the bc's name to the tuple 
-            //! <time dependent expression, boundary, solution component> identifying the condition itself. 
-            //! If the condition should be enforced on all the function space components, \c -1 is used as a placeholder
-            std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue> timeDependentDirichletBCs_;
-
-            //! The time during the simulation. It takes into account also previous calls to \c solve since it is
-            //! not reset after such function is called. It can be reset to the value of the parameter \c t0 
-            //! calling the method \c clear
-            double t_;
-            
-            //! The start time of the simulation
-            double startTime_;
-            
-            //! The time step of the simulation
-            double dt_;
-            
-            //! The end time of the simulation
-            double endTime_;
-            
-            //! The number of steps in the time scheme. For example, implicit Euler method is a 1-step scheme, while
-            //! BDF2 is a 2-steps scheme.
-            unsigned int nTimeSchemeSteps_;
-            
-            //! Counter of time dependent dirichletBC inserted in the protected member map. It is used to create a 
-            //! unique name for insertion of dirichlet bcs if the input argument \c bcName to 
-            //! \c addTimeDependentDirichletBC() is left empty
-            int timeDependentDirichletBCsCounter_;
             
             //! The mesh manager
-            geometry::MeshManager<dolfin::ALE,dolfin::FunctionSpace> meshManager_;
-
-            //! Advance time value \c t_. It just performs the increment <tt>t += parameters ["dt"]</tt>.
-            //! This allows us to automatically have a backwards time dependent problem if \c dt is negative.
-            virtual void advanceTime ();
-            
-            //! Set the time dependent Dirichlet boundary conditions at every step of the solve loop
-            /*
-             *  For each \c element in \c timeDependentDirichletBCs_ , it will set the boundary condition's time 
-             *  using \c t_ and update the bc stored in timeSteppingProblem_ calling \c removeDirichletBC() and
-             *  \c addDirichletBC() on \c timeSteppingProblem_ itself. Note that we have to do this since 
-             *  \c addDirichletBC() always stores a *COPY* of the \c dolfin::DirichletBC object it takes as input
-             *  (and we chose to do so in order to allow the use of temporary objects when adding Dirichlet BCs to
-             *  the problem), so we cannot store a reference to the \c timeDependentDirichletBCs_ object in
-             *  \c dirichletBCs_ and just change its time value. Also, this would prevent the ability to perform
-             *  other operations in on \c timeSteppingProblem_ when modifying its Dirichlet BCs (and this is bad for
-             *  example if \c timeSteppingProblem_ is a \c dcp::LinearProblem, since we need to reassemble the system
-             *  in this case - see the documentation for \c dcp::LinearProblem , and in particular the role of
-             *  the parameter \c "system_is_assembled" )
-             */
-            virtual void setTimeDependentDirichletBCs ();
-            
-            //! Reset the time dependent Dirichlet boundary condition pointed by the given iterator
-            /*!
-             *  This method removes the Dirichlet boundary condition from \c timeSteppingProblem_ 
-             *  and replaces it with a new one with the same name but value updated to the new value of \c t_
-             *  \param bcIterator the iterator pointing to the bc that should be replaced
-             */
-            virtual void resetTimeDependentDirichletBC 
-                (std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue>::iterator bcIterator);
-            
-            //! Set the time dependent coefficients at every step of the solve loop
-            /*
-             *  For each \c element in \c timeDependentCoefficients_ , it will set the coefficient's time using \c t_ 
-             *  and call \c setCoefficient()
-             */
-            virtual void setTimeDependentCoefficients ();
-            
-            //! Method to print a warning if \c isFinished() returns \c true. It is just useful to make \c solve()
-            //! method clearer to read
-            virtual void printFinishedWarning ();
-            
-            //! Store the solution. 
-            /*!
-             *  \param solution the solution to be stored
-             *  \param timeStep the current time step
-             *  \param storeInterval the store interval (see constructor documentation)
-            */
-            virtual void storeSolution (const dolfin::Function& solution, 
-                                        const int& timeStep, 
-                                        const int& storeInterval);
-            
-            //! Store the solution on the last time step. 
-            /*!
-             *  \param solution the solution to be stored
-             *  \param timeStep the current time step
-             *  \param storeInterval the store interval (see constructor documentation)
-            */
-            virtual void storeLastStepSolution (const dolfin::Function& solution, 
-                                                const int& timeStep, 
-                                                const int& storeInterval);
-            
-            //! Plot the solution, used inside the time loop and thus kept protected. It overloads the 
-            //! plot method in \c dcp::AbstractProblem, which is still usable (and actually overridden in this class
-            //! to take into account the fact that \c solution_ is now a vector with size greater than one)
-            /*!
-             *  \param solution the solution to be plotted
-             *  \param timeStep the current time step
-             *  \param plotInterval the plot interval (see constructor documentation)
-             *  \param plotComponent the component of the solution to be plotted (see constructor documentation)
-             *  \param pause boolean flag, true if the function should wait after plotting
-            */
-            virtual void plotSolution (dolfin::Function& solution, 
-                                       const int& timeStep, 
-                                       const int& plotInterval, 
-                                       const int& plotComponent,
-                                       const bool& pause);
+//            geometry::MeshManager<dolfin::ALE,dolfin::FunctionSpace> meshManager_;
+            std::shared_ptr<MeshManager<> > meshManager_;
+            // TODO preferirei std::shared_ptr<const MeshManager<> >, ma poi dovrei mettere const tutti i metodi di MeshManager e usare mutable...
 
             // ---------------------------------------------------------------------------------------------//
 

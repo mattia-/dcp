@@ -1,8 +1,8 @@
 // Begin demo
 
 #include <dolfin.h>
-#include "myNavierstokesTimeCurv.h"
-#include "computeFreeSurfaceStress_onlyTP.h"
+#include "myNavierstokesTimeCurv_dimensionless.h"
+#include "computeFreeSurfaceStress_onlyTP_dimensionless.h"
 #include "UflToNewton.h"
 #include "utilities.h"
 #include "MovingTimeDependentProblem.h"
@@ -35,57 +35,42 @@ int main(int argc, char* argv[])
 
   // Mesh
 //  dolfin::UnitSquareMesh mesh(20, 20);
-  dolfin::RectangleMesh mesh(0,0, lx,ly, nx, ny);
+  dolfin::RectangleMesh mesh(0,0, lx,ly, nx, yxratio*nx,"crossed");
+dolfin::ALE meshMover;
+InitialDisplacement initialDisplacementExpr;
+//meshMover.move(mesh,initialDisplacementExpr);
 
   // Time stepping and model parameters
-//  dolfin::Constant dt(ustar*2.5*10.0/nx);//0.05);
-#if defined(GerbeauLelievre) && !defined(SprittlesShikhmurzaev) && !defined(Yamamoto)
-  dolfin::Constant dt(0.1);//0.05);
-  dolfin::Constant nu (1.95 / 0.81);
+  dolfin::Constant dt(0.001);//0.1*ustar*2.5*10.0/nx);//0.05);
 std::cerr << "Reynolds number = " << re << std::endl;
-  dolfin::Constant gamma(5.5);
-//  dolfin::Constant w(0,0);
-  dolfin::Constant beta(36);
-  dolfin::Constant cosThetaS (cos(3.14159265/2.0));
-  dolfin::Constant stressBelow(0,0);
-#elif defined(Yamamoto) && !defined(GerbeauLelievre) && !defined(SprittlesShikhmurzaev)
-  dolfin::Constant dt(0.00002);//0.05);
-  #ifdef vanMourik
-      dolfin::Constant nu (2.91e-6);
-    std::cerr << "Reynolds number = " << ustar*lx/2.91e-6 << std::endl;
-      dolfin::Constant gamma(2.06e-5);
-      dolfin::Constant cosThetaS (cos(53.6*3.14159265/180.0));
-      dolfin::Constant stressBelow(0,0);
-  #else
-  dolfin::Constant nu (2.081e-2 / rho);
-std::cerr << "Reynolds number = " << ustar*lx*2.081e-2/rho << std::endl;
-  dolfin::Constant gamma(4.36e-5);
-  dolfin::Constant cosThetaS (cos(69.8*3.14159265/180.0));
-  dolfin::Constant stressBelow(0,rho*9.81*ly);
-  #endif
-//  dolfin::Constant w(0,0);
-  dolfin::Constant beta(36);
-#endif
+  dolfin::Constant reynoldsNr (re);
+  dolfin::Constant stokesNr (st);
+  dolfin::Constant capillaryNr (ca);
+  dolfin::Constant beta(1.0e4/(re*re));
+  dolfin::Constant cosThetaS (cos(3.14159265/3.0));
   dolfin::Constant t_partialOmega(0,1);
-  #ifdef vanMourik
-      dolfin::Constant gravityVersor(0,0);
-  #else
-  dolfin::Constant gravityVersor(0,-1);
-  #endif
-  dcp::TimeDependentExpression stressAbove(2,(BoundaryStressEvaluator (0,0)));
+  dolfin::Constant gravityVersor(0,0);//-1);
+  dolfin::Constant stressBelow(0,0);//ly);
+  dcp::TimeDependentExpression stressAbove(2,(BoundaryStressEvaluator (0,0)));//1)));
+  dolfin::Constant wallVelocity (0,-1);
 
   double t0 = 0.0;
-  double T  = 50;
+  double T  = t0+750*dt;
 
   // Create user-defined nonlinear problem
-  myNavierstokesTimeCurv::FunctionSpace V (mesh);
-  Ivan::UflToNewton < myNavierstokesTimeCurv::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
-                      myNavierstokesTimeCurv::ResidualForm, myNavierstokesTimeCurv::JacobianForm,
-                      computeFreeSurfaceStress_onlyTP::LinearForm >
+  myNavierstokesTimeCurv_dimensionless::FunctionSpace V (mesh);
+  Ivan::UflToNewton < myNavierstokesTimeCurv_dimensionless::FunctionSpace, computeFreeSurfaceStress_onlyTP_dimensionless::FunctionSpace,
+                      myNavierstokesTimeCurv_dimensionless::ResidualForm, myNavierstokesTimeCurv_dimensionless::JacobianForm,
+                      computeFreeSurfaceStress_onlyTP_dimensionless::LinearForm >
        timeSteppingProblem(V,"trial");//,"dtrial");
 
   // Create nonlinear solver, set parameters and assign it to timeSteppingProblem
   dolfin::NewtonSolver newton_solver;
+  newton_solver.parameters["linear_solver"] = "lu";
+  newton_solver.parameters["convergence_criterion"] = "incremental";
+  newton_solver.parameters["maximum_iterations"] = 50;
+/*  newton_solver.parameters["relative_tolerance"] = 1e-6;
+  newton_solver.parameters["absolute_tolerance"] = 1e-15;*/
   timeSteppingProblem.setNonlinearSolver (dolfin::reference_to_no_delete_pointer(newton_solver));
 
 
@@ -107,7 +92,7 @@ std::cerr << "OK fino a " << __LINE__ << std::endl;
 
 //inflowTime//  BottomBoundary inflowBoundary;
   LateralWall wallBoundary;
- // LateralInterior wallBoundaryInterior;
+  LateralInterior wallBoundaryInterior;
   TopBoundary freeSurface;
   TriplePointLeft triplePointLeft;
   TriplePointRight triplePointRight;
@@ -125,13 +110,6 @@ std::cerr << "OK fino a " << __LINE__ << std::endl;
         dolfin::DirichletBC (* (* (* navierStokesProblem.functionSpace())[0])[0], freeSlipDirichletBC, wallBoundary),
 //        dolfin::DirichletBC (* (* navierStokesProblem.functionSpace())[0], noSlipDirichletBC, wallBoundary),
         std::string("wall"));
-  navierStokesProblem.addDirichletBC (
-  #ifdef vanMourik
-            dolfin::DirichletBC (* (* navierStokesProblem.functionSpace())[0], noSlipDirichletBC, inflowBoundary),
-  #else
-        dolfin::DirichletBC (* (* (* navierStokesProblem.functionSpace())[0])[0], freeSlipDirichletBC, inflowBoundary),
-  #endif
-        std::string("cut"));
 
   dolfin::FacetFunction<std::size_t> meshFacets (navierStokesProblem.mesh());
   meshFacets.set_all (0);
@@ -162,22 +140,18 @@ std::cerr << "OK fino a " << __LINE__ << std::endl;
 dolfin::plot(meshFacets, "meshFacets");dolfin::plot(additionalMeshFacets, "additionalMeshFacets");dolfin::interactive();
 
   // Coefficients
-  navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nu),"nu");
-//  navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (dt),"dt");
-  navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (gamma),"gamma");
-//  navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nonlinearProblem.previousSolution()[0]),"u_old");
-//  navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nonlinearProblem.solution()),"trial");
+  navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (reynoldsNr),"reynoldsNr");
+  navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (stokesNr),"stokesNr");
+  navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (capillaryNr),"capillaryNr");
   navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (beta),"beta");
   navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (stressAbove),"stressAbove");
   navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (stressBelow),"stressBelow");
-  navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (*(new WallVelocity)),"wallVelocity");
   navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (gravityVersor),"gravityVersor");
-  navierStokesProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu),"nu");
-//  navierStokesProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (dt),"dt");
-//  navierStokesProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nonlinearProblem.solution()),"trial");
-//  navierStokesProblem.setCoefficient ("additional_form", dolfin::reference_to_no_delete_pointer (dt),"dt");
+  navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (wallVelocity),"wallVelocity");
+  navierStokesProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (reynoldsNr),"reynoldsNr");
   navierStokesProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (beta),"beta");
-  navierStokesProblem.setCoefficient ("additional_form", dolfin::reference_to_no_delete_pointer (gamma),"gamma");
+  navierStokesProblem.setCoefficient ("additional_form", dolfin::reference_to_no_delete_pointer (reynoldsNr),"reynoldsNr");
+  navierStokesProblem.setCoefficient ("additional_form", dolfin::reference_to_no_delete_pointer (capillaryNr),"capillaryNr");
   navierStokesProblem.setCoefficient ("additional_form", dolfin::reference_to_no_delete_pointer (cosThetaS),"cosThetaS");
   navierStokesProblem.setCoefficient ("additional_form", dolfin::reference_to_no_delete_pointer (t_partialOmega),"t_partialOmega");
 
@@ -186,12 +160,16 @@ dolfin::plot(meshFacets, "meshFacets");dolfin::plot(additionalMeshFacets, "addit
 
   // Save initial condition to file
   dolfin::Constant initialCondition (0,0,0);
-  navierStokesProblem.setInitialSolution (initialCondition);
+  dolfin::Function initialSolution (navierStokesProblem.functionSpace());
+  initialSolution = initialCondition;
+  navierStokesProblem.setInitialSolution (initialSolution);
   dolfin::File file("solution.pvd");
   const dolfin::Function& solution = navierStokesProblem.solution();
   file << std::make_pair(&solution, t0);
 
   // Solve
+  navierStokesProblem.step ();
+  navierStokesProblem.clear ();
   navierStokesProblem.solve ();
 
   // Plot and save solution
@@ -199,9 +177,6 @@ dolfin::plot(meshFacets, "meshFacets");dolfin::plot(additionalMeshFacets, "addit
   dolfin::plot(final_solution[0]);
   dolfin::interactive();
   file << std::make_pair(&final_solution, T);
-
-  // Post-processing [GerbeauLelievre]
-
 
   return 0;
 }

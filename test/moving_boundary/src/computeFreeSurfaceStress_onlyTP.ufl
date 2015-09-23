@@ -50,4 +50,4 @@ A = as_matrix ([ [0 , -1] , [1 , 0] ])
 #    - (6.0/h) * dt * gamma * inner (v, A*n) * ds(5)
 # with GNBC
 L =   (6.0/h) * dt * gamma * cosThetaS * inner(t_partialOmega, v) * ds(4) \
-    + (6.0/h) * dt * gamma * cosThetaS * inner(t_partialOmega, v) * ds(5) \
+    + (6.0/h) * dt * gamma * cosThetaS * inner(t_partialOmega, v) * ds(5)

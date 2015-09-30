@@ -977,8 +977,8 @@ namespace dcp
         }
         
         // At this point, we just need to make sure that the solution on the last iteration was saved even though
-        // timeStep % writeInterval != 0 (but it must not be saved twice!)
-        if (!(writeInterval > 0 && timeStep % writeInterval == 0)) 
+        // timeStep % writeInterval != 0 if writeInterval is greater than 0 (but it must not be saved twice!)
+        if (writeInterval > 0 && timeStep % writeInterval != 0)
         // negation of the condition of the last if, so it is performed if the last if was not
         {
             dolfin::log (dolfin::DBG, "Saving last time step solution in solutions vector...");

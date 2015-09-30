@@ -928,7 +928,7 @@ namespace dcp
     {
         advanceTime ();
         
-        dolfin::log (dolfin::INFO, "TIME = %f s", time_ -> value ());
+        dolfin::log (dolfin::PROGRESS, "TIME = %f s", time_ -> value ());
         
         steadySolve ();
     }
@@ -957,7 +957,7 @@ namespace dcp
         {
             timeStep++;
             
-            dolfin::begin (dolfin::INFO, "===== Timestep %d =====", timeStep);
+            dolfin::begin (dolfin::PROGRESS, "===== Timestep %d =====", timeStep);
             
             step ();
             

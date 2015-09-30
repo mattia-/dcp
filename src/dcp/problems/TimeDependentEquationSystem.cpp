@@ -475,11 +475,11 @@ namespace dcp
         while (isFinished () == 0)
         {
             timeStep++;
-            dolfin::begin (dolfin::INFO, "===== Timestep %d =====", timeStep);
+            dolfin::begin (dolfin::PROGRESS, "===== Timestep %d =====", timeStep);
             
             advanceTime ();
             
-            dolfin::log (dolfin::INFO, "TIME = %f s", time_ -> value ());
+            dolfin::log (dolfin::PROGRESS, "TIME = %f s", time_ -> value ());
             
             auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);
             auto subiterationsEnd = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.second);

@@ -685,7 +685,7 @@ namespace dcp
         
         // solve all the problems the first time. Remember that subiterationsBegin and subiterationsEnd are
         // iterators on solveOrder_
-        dolfin::begin (dolfin::INFO, "Solving all problems once...");
+        dolfin::begin (dolfin::PROGRESS, "Solving all problems once...");
         for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
         {
             solve (*problemName);
@@ -717,7 +717,7 @@ namespace dcp
         while (sumOfNorms >= tolerance && iteration < maxIterations)
         {
             iteration++;
-            dolfin::begin (dolfin::INFO, "===== Iteration %d =====", iteration);
+            dolfin::begin (dolfin::PROGRESS, "===== Iteration %d =====", iteration);
             
             sumOfNorms = 0;
             int counter = 0;
@@ -736,7 +736,7 @@ namespace dcp
                 counter++;
             }
             
-            dolfin::log (dolfin::INFO, "Sum of relative increment norms: %f", sumOfNorms);
+            dolfin::log (dolfin::PROGRESS, "Sum of relative increment norms: %f", sumOfNorms);
             
             dolfin::end (); // ===== Iteration =====
         }

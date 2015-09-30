@@ -190,8 +190,8 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Inserting link in links to previous solutions map...");
             linksToPreviousSolutions_.insert (link);
             
-            // perform linking
-            linkProblemToPreviousSolution (link);
+            // do not perform linking yet. It will be performed once solve is called
+            // linkProblemToPreviousSolution (link);
         }
         else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
         // current link and insert the new one
@@ -231,8 +231,8 @@ namespace dcp
 
             linksToPreviousSolutions_.insert (link);
             
-            // perform linking
-            linkProblemToPreviousSolution (link);
+            // do not perform linking yet. It will be performed once solve is called
+            // linkProblemToPreviousSolution (link);
         }
         else
         {
@@ -286,8 +286,8 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Inserting link in links map...");
             linksToPreviousSolutions_.insert (link);
             
-            // perform linking
-            linkProblemToPreviousSolution (link);
+            // do not perform linking yet. It will be performed once solve is called
+            // linkProblemToPreviousSolution (link);
         }
         else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
         // current link and insert the new one
@@ -329,8 +329,8 @@ namespace dcp
 
             linksToPreviousSolutions_.insert (link);
             
-            // perform linking
-            linkProblemToPreviousSolution (link);
+            // do not perform linking yet. It will be performed once solve is called
+            // linkProblemToPreviousSolution (link);
         }
         else
         {
@@ -500,13 +500,21 @@ namespace dcp
                     {
                         problem.plotSolution ("last");
                     }
+                    
+                    // write solution to file 
+                    int writeInterval = problem.parameters ["write_interval"];
+                    if (writeInterval > 0 && timeStep % writeInterval == 0)
+                    {
+                        problem.writeSolutionToFile ("last");
+                    }
+                    
                     problemName++;
                 }
                 else
                 {
                     subiterate (subiterationsBegin, subiterationsEnd);
                     
-                    // plot solution of all subiterated problems
+                    // plot and write to file solution of all subiterated problems
                     for (problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
                     {
                         dcp::TimeDependentProblem& problem = this -> operator[] (*problemName);
@@ -515,6 +523,12 @@ namespace dcp
                         if (plotInterval > 0 && timeStep % plotInterval == 0)
                         {
                             problem.plotSolution ("last");
+                        }
+                        
+                        int writeInterval = problem.parameters ["write_interval"];
+                        if (writeInterval > 0 && timeStep % writeInterval == 0)
+                        {
+                            problem.writeSolutionToFile ("last");
                         }
                     }
                 }

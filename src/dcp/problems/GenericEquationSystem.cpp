@@ -291,8 +291,8 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Inserting link in links map...");
             problemsLinks_.insert (link);
             
-            // perform linking
-            linkProblems (link);
+            // do not perform linking yet. It will be performed once solve is called
+            // linkProblems (link);
         }
         else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
         // current link and insert the new one
@@ -328,8 +328,8 @@ namespace dcp
 
             problemsLinks_.insert (link);
             
-            // perform linking
-            linkProblems (link);
+            // do not perform linking yet. It will be performed once solve is called
+            // linkProblems (link);
         }
         else
         {
@@ -377,8 +377,8 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Inserting link in links map...");
             problemsLinks_.insert (link);
             
-            // perform linking
-            linkProblems (link);
+            // do not perform linking yet. It will be performed once solve is called
+            // linkProblems (link);
         }
         else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
         // current link and insert the new one
@@ -416,8 +416,8 @@ namespace dcp
 
             problemsLinks_.insert (link);
             
-            // perform linking
-            linkProblems (link);
+            // do not perform linking yet. It will be performed once solve is called
+            // linkProblems (link);
         }
         else
         {

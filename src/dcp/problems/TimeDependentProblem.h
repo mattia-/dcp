@@ -145,7 +145,7 @@ namespace dcp
              *      - \c "write_interval" the interval of time steps to write the solution to file. Basically, the 
              *        solution will be saved to file every \c write_interval time steps. 
              *        A value less than or equal to 0 means that the solution should never be saved to file. 
-             *        Default value: 1
+             *        Default value: 0
              *      - \c "plot_interval" the interval of time steps to plot the solution. Basically, the solution will
              *        be plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
              *        solution should never be plotted. Default value: 0
@@ -228,7 +228,7 @@ namespace dcp
              *      - \c "write_interval" the interval of time steps to write the solution to file. Basically, the 
              *        solution will be saved to file every \c write_interval time steps. 
              *        A value less than or equal to 0 means that the solution should never be saved to file. 
-             *        Default value: 1
+             *        Default value: 0
              *      - \c "plot_interval" the interval of time steps to plot the solution. Basically, the solution will
              *        be plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
              *        solution should never be plotted. Default value: 0

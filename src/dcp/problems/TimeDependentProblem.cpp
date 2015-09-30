@@ -67,7 +67,7 @@ namespace dcp
         parameters.add ("problem_type", "time_dependent");
         parameters.add ("dt_name", "dt");
         parameters.add ("previous_solution_name", "u_old");
-        parameters.add ("write_interval", 1);
+        parameters.add ("write_interval", 0);
         parameters.add ("plot_interval", 0);
         parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("pause", false);
@@ -139,7 +139,7 @@ namespace dcp
         parameters.add ("problem_type", "time_dependent");
         parameters.add ("dt_name", "dt");
         parameters.add ("previous_solution_name", "u_old");
-        parameters.add ("write_interval", 1);
+        parameters.add ("write_interval", 0);
         parameters.add ("plot_interval", 0);
         parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("pause", false);

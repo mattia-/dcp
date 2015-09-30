@@ -174,13 +174,13 @@ int main (int argc, char* argv[])
     dcp::TimeDependentExpression f1 (2, navierstokes::FirstExternalLoad ());
     dcp::TimeDependentExpression f2 (2, navierstokes::SecondExternalLoad ());
     guermondSalgadoMethod.problem ("velocity_problem").addTimeDependentCoefficient 
-        ("f1", 
-         "linear_form", 
-         dolfin::reference_to_no_delete_pointer (f1));
+        ("linear_form", 
+         dolfin::reference_to_no_delete_pointer (f1),
+         "f1");
     guermondSalgadoMethod.problem ("velocity_problem").addTimeDependentCoefficient 
-        ("f2", 
-         "linear_form", 
-         dolfin::reference_to_no_delete_pointer (f2));
+        ("linear_form", 
+         dolfin::reference_to_no_delete_pointer (f1),
+         "f2");
     guermondSalgadoMethod.system ().addLink ("velocity_problem", "rho", "linear_form", "density_problem");
         
     // plots

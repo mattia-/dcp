@@ -136,7 +136,7 @@ namespace dcp
 
         
         // update and solve the problem for the first time
-        dolfin::begin ("Minimization loop initialization...");
+        dolfin::begin (dolfin::PROGRESS, "Minimization loop initialization...");
         
         dolfin::begin (dolfin::PROGRESS, "Updating differential problem using control initial guess...");
         updater (problem, controlVariable);
@@ -179,7 +179,7 @@ namespace dcp
             
         dolfin::log (dolfin::PROGRESS, "***************************"); 
         dolfin::log (dolfin::PROGRESS, "**** MINIMIZATION LOOP ****");
-        dolfin::begin ("***************************"); 
+        dolfin::begin (dolfin::PROGRESS, "***************************"); 
         int minimizationIteration = 0;
         
         // print results to file
@@ -194,7 +194,7 @@ namespace dcp
             
             dolfin::log (dolfin::PROGRESS, "==========================");
             dolfin::log (dolfin::PROGRESS, "Minimization iteration %d", minimizationIteration);
-            dolfin::begin ("==========================");
+            dolfin::begin (dolfin::PROGRESS, "==========================");
             
             // iteration-specific variable initialization
             alpha = alpha_0;

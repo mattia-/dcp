@@ -671,7 +671,8 @@ namespace dcp
     void GenericEquationSystem::subiterate (std::vector<std::string>::const_iterator subiterationsBegin,
                                             std::vector<std::string>::const_iterator subiterationsEnd)
     {
-        dolfin::begin ("===== Subiterating on problems [%s - %s) =====", 
+        dolfin::begin (dolfin::PROGRESS, 
+                       "===== Subiterating on problems [%s - %s) =====", 
                        ("\"" + *subiterationsBegin + "\"").c_str (),
                        subiterationsEnd == solveOrder_.end () ?  "end" : 
                                                                  ("\"" + *subiterationsEnd + "\"").c_str ());
@@ -713,7 +714,7 @@ namespace dcp
         
         // loop until convergence, that is until the sum of the norms of the increment divided by the norm of the
         // current solution is below tolerance or until maximum number of iterations is reached
-        dolfin::begin ("***** SUBITERATIONS LOOP *****");
+        dolfin::begin (dolfin::PROGRESS, "***** SUBITERATIONS LOOP *****");
         while (sumOfNorms >= tolerance && iteration < maxIterations)
         {
             iteration++;

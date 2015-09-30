@@ -983,9 +983,9 @@ namespace dcp
                                previousPressureIncrementName,
                                dtName);
                                
-        (*differentialSystem_) ["velocity_problem"].addTimeDependentCoefficient (externalForceName, 
-                                                                                 "linear_form", 
-                                                                                 externalForce);
+        (*differentialSystem_) ["velocity_problem"].addTimeDependentCoefficient ("linear_form", 
+                                                                                 externalForce,
+                                                                                 externalForceName);
     }
     
 
@@ -1053,9 +1053,9 @@ namespace dcp
                                previousPressureIncrementName,
                                dtName);
                                
-        (*differentialSystem_) ["velocity_problem"].addTimeDependentCoefficient (externalForceName, 
-                                                                                 "linear_form", 
-                                                                                 externalForce);
+        (*differentialSystem_) ["velocity_problem"].addTimeDependentCoefficient ("linear_form", 
+                                                                                 externalForce, 
+                                                                                 externalForceName);
     }
 }
 #endif

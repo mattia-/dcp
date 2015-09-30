@@ -544,7 +544,7 @@ namespace dcp
 
     void TimeDependentEquationSystem::solve (const std::string& problemName)
     {
-        dolfin::begin ("Problem: \"%s\"", problemName.c_str ());
+        dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName.c_str ());
 
         // get problem with given name from map
         dcp::TimeDependentProblem& problem = this -> operator[] (problemName);

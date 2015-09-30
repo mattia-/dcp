@@ -573,20 +573,20 @@ namespace dcp
             
             //! Add an entry to the protected member map \c timeDependentCoefficients_.
             /*
-             *  \param coefficientName the name to identify the coefficient. It will be used in the protected method
-             *  \c setTimeDependentCoefficients(), so it must be the same as the name used in the ufl file
              *  \param coefficientType the type of the coefficient, in a form that will make sense once passed to the
              *  method \c setCoefficient() (that is for example \c "linear_form", \c "bilinear_form" and so on)
              *  \param expression the time dependent expression, whose \c eval() method will be used when setting the
              *  coefficient in \c setTimeDependentCoefficients(). We use a \c shared_ptr because there is no other way 
              *  to call the right \c eval() (unless we forced the user to override a possible \c clone() method in the
              *  class derived from \c dcp::TimeDependentExpression
+             *  \param coefficientName the name to identify the coefficient. It will be used in the protected method
+             *  \c setTimeDependentCoefficients(), so it must be the same as the name used in the ufl file
              *  
              *  \return \c true if the coefficient was inserted in the map, \c false otherwise
              */
-            virtual bool addTimeDependentCoefficient (const std::string& coefficientName, 
-                                                      const std::string& coefficientType,
-                                                      std::shared_ptr<dcp::TimeDependentExpression> expression);
+            virtual bool addTimeDependentCoefficient (const std::string& coefficientType,
+                                                      std::shared_ptr<dcp::TimeDependentExpression> expression,
+                                                      const std::string& coefficientName);
             
             //! Remove the selected element from the protected member map \c timeDependentCoefficients_
             /*!

@@ -490,9 +490,9 @@ namespace dcp
 
 
 
-    bool TimeDependentProblem::addTimeDependentCoefficient (const std::string& coefficientName, 
-                                                            const std::string& coefficientType,
-                                                            std::shared_ptr<dcp::TimeDependentExpression> expression)
+    bool TimeDependentProblem::addTimeDependentCoefficient (const std::string& coefficientType,
+                                                            std::shared_ptr<dcp::TimeDependentExpression> expression,
+                                                            const std::string& coefficientName)
     {
         dolfin::begin (dolfin::DBG, 
                        "Inserting time dependent coefficient in map with name \"%s\" and type \"%s\"...",

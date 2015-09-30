@@ -406,7 +406,7 @@ namespace dcp
 
 
         // define the system
-        dolfin::begin ("Creating time dependent Chorin-Temam system...");
+        dolfin::begin (dolfin::DBG, "Creating time dependent Chorin-Temam system...");
 
         // 0) create the object
         std::shared_ptr<dcp::TimeDependentEquationSystem> chorinTemamSystem 
@@ -603,7 +603,7 @@ namespace dcp
 
 
         // define the system
-        dolfin::begin ("Creating time dependent Chorin-Temam system...");
+        dolfin::begin (dolfin::DBG, "Creating time dependent Chorin-Temam system...");
 
         // 0) create the object
         std::shared_ptr<dcp::TimeDependentEquationSystem> chorinTemamSystem 
@@ -716,7 +716,9 @@ namespace dcp
                                       pressureIncrementName,
                                       dtName);
                                       
-        (*differentialSystem_) ["prediction_problem"].addTimeDependentCoefficient (externalForceName, "linear_form", externalForce);
+        (*differentialSystem_) ["prediction_problem"].addTimeDependentCoefficient ("linear_form", 
+                                                                                   externalForce, 
+                                                                                   externalForceName);
     }
     
 
@@ -770,7 +772,9 @@ namespace dcp
                                       pressureIncrementName,
                                       dtName);
                                       
-        (*differentialSystem_) ["prediction_problem"].addTimeDependentCoefficient (externalForceName, "linear_form", externalForce);
+        (*differentialSystem_) ["prediction_problem"].addTimeDependentCoefficient ("linear_form", 
+                                                                                   externalForce,
+                                                                                   externalForceName);
     }
 }
 #endif

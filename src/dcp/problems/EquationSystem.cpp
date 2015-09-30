@@ -40,7 +40,7 @@ namespace dcp
     {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving
-        dolfin::begin ("Solving problems...");
+        dolfin::begin (dolfin::PROGRESS, "Solving problems...");
         
         auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);
         auto subiterationsEnd = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.second);
@@ -67,7 +67,7 @@ namespace dcp
 
     void EquationSystem::solve (const std::string& problemName)
     {
-        dolfin::begin ("Problem: \"%s\"", problemName.c_str ());
+        dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName.c_str ());
 
         // get problem with given name from map. 
         dcp::GenericProblem& problem = this -> operator[] (problemName);

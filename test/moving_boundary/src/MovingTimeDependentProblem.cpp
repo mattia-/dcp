@@ -17,13 +17,16 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#define COMPUTESTRESS
+#define EVITAPLOT
+//#define MULTISTEP
+
+//#define COMPUTESTRESS
 
 //#include <dcp/differential_problems/MovingTimeDependentProblem.h>
 #include "MovingTimeDependentProblem.h"
 #include <dolfin/log/dolfin_log.h>
 #include <regex>
-#include "utilities.h"
+//#include "utilities.h"
 // per computeFreeSurfaceStress
 #ifdef COMPUTESTRESS
 #include "computeFreeSurfaceStress_onlyTP.h"
@@ -147,6 +150,8 @@ namespace Ivan
         
         // function used to step through the time loop
         dolfin::Function tmpSolution = solution_.back ().second;
+        dolfin::Function oldSolution (tmpSolution);
+        dolfin::Function displacement (tmpSolution);
         
         std::shared_ptr<dolfin::VTKPlotter> plotter;
         
@@ -156,9 +161,9 @@ namespace Ivan
 // è per calcolare la tensione superficiale
     dolfin::FacetFunction<std::size_t> meshFacets (meshManager_->mesh());
     meshFacets.set_all (0);
-    TopBoundary freeSurface;
+    TopBd freeSurface;
     freeSurface.mark (meshFacets, 1);
-    LateralWall wallBoundary;
+    LateralBd wallBoundary;
     wallBoundary.mark (meshFacets, 3);
 TriplePointLeft triplePointLeft;
 triplePointLeft.mark(meshFacets,4);
@@ -171,20 +176,20 @@ dolfin::plot(meshFacets,"MovingTimeDepPb meshFacets");//dolfin::interactive();
         // the first step has already been peformed
         int timeStep = 0;
         bool timeStepFlag = false;
-dolfin::File solutionFile(savepath+"insideMovingTimeDependentProblem.pvd");
+dolfin::File solutionFile(problemData.savepath+"insideMovingTimeDependentProblem.pvd");
 solutionFile << std::pair<dolfin::Function*,double>(&tmpSolution,t_);
-dolfin::HDF5File solutionHDF5File(MPI_COMM_WORLD,savepath+"sol.hdf5","w");
+dolfin::HDF5File solutionHDF5File(MPI_COMM_WORLD,problemData.savepath+"sol.hdf5","w");
 solutionHDF5File.write (tmpSolution,std::to_string(timeStep));
 // per computeFreeSurfaceStress
 #ifdef COMPUTESTRESS
-dolfin::File surfaceStressFile_onlyTP(savepath+"surfaceTension_onlyTP.pvd");
+dolfin::File surfaceStressFile_onlyTP(problemData.savepath+"surfaceTension_onlyTP.pvd");
 //std::ofstream surfaceStressFile_onlyTP_csv; surfaceStressFile_onlyTP_csv.open(savepath+"surfaceTension_onlyTP.csv",std::ios::out|std::ios::app);
-dolfin::File surfaceStressFile_noTP(savepath+"surfaceTension_noTP.pvd");
+dolfin::File surfaceStressFile_noTP(problemData.savepath+"surfaceTension_noTP.pvd");
 //dolfin::File provaFile(savepath+"provaFile.pvd");
 #endif
-dolfin::File displacementFile(savepath+"displacement.pvd");
+dolfin::File displacementFile(problemData.savepath+"displacement.pvd");
 const dolfin::Function * w (meshManager_->displacement().get());
-w = meshManager_->computeDisplacement(tmpSolution[0],"normal",dt).get();
+w = meshManager_->computeDisplacement(displacement[0],"normal",dt).get();
 displacementFile << std::make_pair(w,t_);
 
 dolfin::Constant zero (0,0);
@@ -198,7 +203,7 @@ dolfin::Constant zero (0,0);
             for (auto& i : wCoefficientTypes)
             {
                 timeSteppingProblem_->setCoefficient (i, dolfin::reference_to_no_delete_pointer (*w), "w");
-std::cerr << i << std::endl;
+//std::cerr << i << std::endl;
             } 
         /*    timeSteppingProblem_->setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (w), "w");
             timeSteppingProblem_->setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (w), "w");*/
@@ -221,6 +226,7 @@ std::cerr << i << std::endl;
 #endif
             timeSteppingProblem_->solve ();
             
+            oldSolution = tmpSolution;
             tmpSolution = timeSteppingProblem_->solution ();
 solutionFile << std::pair<dolfin::Function*,double>(&tmpSolution,t_);
 solutionHDF5File.write (tmpSolution,std::to_string(timeStep));
@@ -230,10 +236,10 @@ solutionHDF5File.write (tmpSolution,std::to_string(timeStep));
 // Assembling and storing the surface tension term
 computeFreeSurfaceStress_noTP::FunctionSpace stressSpace_noTP(meshManager_->mesh());
 computeFreeSurfaceStress_onlyTP::FunctionSpace stressSpace(meshManager_->mesh());
-dolfin::Constant stressGamma (7.3e-5);
-dolfin::Constant stressDt (0.05);
-dolfin::Constant beta (betaVal);
-dolfin::Constant cosThetaS (cos(3.14159265/3.0));
+dolfin::Constant stressGamma (problemData.gamma);
+dolfin::Constant stressDt (problemData.dt);
+dolfin::Constant beta (problemData.beta);
+dolfin::Constant cosThetaS (cos ( problemData.thetaS * 3.14159265/180.0 ));
 dolfin::Constant t_partialOmega(0,1);
 // CI FOSSE residualForm() COME METODO PER ESTRARRE I COEFFICIENTI...  stressForm.set_coefficient ("gamma",timeSteppingProblem_->residualForm().coefficient("gamma"));
 computeFreeSurfaceStress_noTP::LinearForm stressForm_noTP(stressSpace_noTP,tmpSolution,stressDt,stressGamma,beta,*(new WallVelocity));
@@ -256,11 +262,13 @@ std::cerr << std::endl;
             // save solution in solution_ according to time step and store interval.
             storeSolution (tmpSolution, timeStep, storeInterval);
             
+#ifndef EVITAPLOT
             // plot solution according to time step and plot interval
  //           plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause);
             plotSolution (tmpSolution, timeStep, 1, 0, false);//dolfin::interactive();
 //            plotSolution (tmpSolution, timeStep, 1, 1, false);//dolfin::interactive();
             dolfin::plot (*meshManager_->mesh(),"inside mesh");//dolfin::interactive();
+#endif
 
             if (oneStepRequested == true)
             {
@@ -273,9 +281,22 @@ std::cerr << std::endl;
                 dolfin::end ();
             }
         
-            w = meshManager_->computeDisplacement(tmpSolution[0],"normal",dt).get();
+            //w =
+            //meshManager_->computeDisplacement(tmpSolution[0],"normal",dt).get();
+//for (unsigned i(0); i<5; ++i) std::cerr << (*tmpSolution.vector())[i] << ' '; std::cerr << std::endl;
+//for (unsigned i(0); i<5; ++i) std::cerr << (*oldSolution.vector())[i] << ' '; std::cerr << std::endl;
+            displacement = tmpSolution;
+#ifdef MULTISTEP
+            *displacement.vector() *= 2;
+            *displacement.vector() -= * oldSolution.vector();
+#endif
+//for (unsigned i(0); i<5; ++i) std::cerr << (*displacement.vector())[i] << ' '; std::cerr << std::endl;
+//for (unsigned i(0); i<5; ++i) std::cerr << (*tmpSolution.vector())[i] << ' '; std::cerr << std::endl;
+            w = meshManager_->computeDisplacement(displacement[0],"normal",dt).get();
             displacementFile << std::make_pair(w,t_);
+#ifndef EVITAPLOT
             dolfin::plot (*w, "w"); //dolfin::interactive();
+#endif
 
             dolfin::end ();
         }
@@ -357,6 +378,12 @@ solutionHDF5File.close();
         return clonedProblem;
     }
     
+    void MovingTimeDependentProblem::initializeMesh (dolfin::Expression & displacement)
+    {
+        dolfin::Function displ (solution_.back().second.function_space());
+        displ = displacement;
+        meshManager_->moveMesh (displ[0]);
+    }
 
 
 } //end of namespace

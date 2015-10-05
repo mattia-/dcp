@@ -47,6 +47,9 @@
 #include "MeshManager.h"
 #include <math.h>
 
+#include "GetPot.h"
+extern GetPot inputData;
+
 namespace Ivan
 {
 //Ivan:: SubDomains
@@ -317,6 +320,12 @@ namespace Ivan
              *  \return a pointer to the cloned object
              */
             virtual MovingTimeDependentProblem* clone () const override;
+
+            //! Method to set an initial displacement preserving all the mesh marking performed before
+            /*!
+             *  \param displacement the displacement to set
+             */
+            virtual void initializeMesh (dolfin::Expression & displacement);
 
             // ---------------------------------------------------------------------------------------------//
 

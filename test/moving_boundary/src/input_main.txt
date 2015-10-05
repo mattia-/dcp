@@ -1,0 +1,31 @@
+# NB : using dots doesn't work: this strange scientific notation is required
+# NB2: default values for float/double in .cpp need the dot,
+#      otherwise an int is read
+
+#----------------- mesh -----------------#
+  lx = 295e-6   #[m]
+#  ly = 
+  nx = 16
+#  ny = 
+
+#----------------- time -----------------#
+  dt = 1e-6   #[s]
+  t0 = 0      #[s]
+  # if T not given or T<t0, nT is considered
+  T  = 4e-1
+#  nT = 100
+  
+#---------------- physics ---------------#
+  mu  = 117e-5     #[Pa.s]
+  rho = 789      #[kg/m3]
+#  re = 
+#  st = 
+#  ca =
+  gamma = 28e-6    #[m3/s2] = [(N/m) / (kg/m3)]
+  beta = 275e-2      #[m/s]   = [(Pa.s/m) / (kg/m3)]
+  thetaS = 80   #[°]
+
+#----------------- misc -----------------#
+#  ustar = 
+  zeta0_x = 0
+  zeta0_y = 0 #-4e-2   # -9.81*(H0-ly)

@@ -63,7 +63,7 @@ a = inner (u, v) * dx \
     - dt * inner (div (u), q) * dx \
     + dt * beta * inner (u, v) * ds(3) \
     + dt * 0.5 * div (u_old) * inner (u, v) * dx \
-    - beta*0.5 * dot (dt*u_old-w, n) * inner (u, v) * ds(1)
+    - 0.5 * dot (dt*u_old-w, n) * inner (u, v) * ds(1)
 #-outer NON SI PUO'    + gamma * dt * tr ((Identity-outer(n,n)) * grad(v))  * ds(1)
 # last 2 lines: stabilization [GerbeauLelièvre2009]
 

@@ -108,7 +108,7 @@ MeshManager<T_MeshMover>::MeshManager (const std::shared_ptr<dolfin::Mesh> mesh,
     displacementIsImposed_ (false)
 {
     const std::vector<double> & coords (mesh_->coordinates());
-for (auto it=coords.begin(); it!=coords.end(); ++it) std::cerr << *it << ' '; std::cerr << std::endl;
+//for (auto it=coords.begin(); it!=coords.end(); ++it) std::cerr << *it << ' '; std::cerr << std::endl;
     std::vector<std::tuple<std::size_t,double,double> > ordered;
     for (std::size_t k=0; k!=coords.size()/2; ++k)
       ordered.push_back (std::make_tuple (k, coords[2*k], coords[2*k+1]));
@@ -133,10 +133,10 @@ void MeshManager<T_MeshMover>::getDofOrder (const dolfin::FunctionSpace & funSp,
     std::sort (ordered.begin(),ordered.end(),compareDofs);
     orderedDisplacementDofs_.resize (ordered.size());
     std::transform (ordered.begin(),ordered.end(),orderedDisplacementDofs_.begin(),getFirstDofs);
-std::cerr << "orderedMeshIdxs_ (" << orderedMeshIdxs_.size() << ")   "; for (auto it=orderedMeshIdxs_.begin(); it!=orderedMeshIdxs_.end(); ++it) std::cerr << *it << ' '; std::cerr << std::endl;
-std::cerr << "orderedDisplacementDofs_ (" << orderedDisplacementDofs_.size() << ")   "; for (auto it=orderedDisplacementDofs_.begin(); it!=orderedDisplacementDofs_.end(); ++it) std::cerr << *it << ' '; std::cerr << std::endl;
-std::cerr << "dofsCoords (" << dofsCoords.size() << ")   "; for (auto it=dofsCoords.begin(); it!=dofsCoords.end(); ++it) std::cerr << *it << ' '; std::cerr << std::endl;
-std::cerr << " OK fino a " << __LINE__ << std::endl;
+//std::cerr << "orderedMeshIdxs_ (" << orderedMeshIdxs_.size() << ")   "; for (auto it=orderedMeshIdxs_.begin(); it!=orderedMeshIdxs_.end(); ++it) std::cerr << *it << ' '; std::cerr << std::endl;
+//std::cerr << "orderedDisplacementDofs_ (" << orderedDisplacementDofs_.size() << ")   "; for (auto it=orderedDisplacementDofs_.begin(); it!=orderedDisplacementDofs_.end(); ++it) std::cerr << *it << ' '; std::cerr << std::endl;
+//std::cerr << "dofsCoords (" << dofsCoords.size() << ")   "; for (auto it=dofsCoords.begin(); it!=dofsCoords.end(); ++it) std::cerr << *it << ' '; std::cerr << std::endl;
+//std::cerr << " OK fino a " << __LINE__ << std::endl;
 }
 
 template <class T_MeshMover>
@@ -209,10 +209,10 @@ std::cerr << "     imposed displacement" << std::endl;
   std::vector<double> newCoords (coords.size());
   double x,y;
   std::size_t k, kDofs;
-assert (ordered.size()==(nx+1)*(ny+1));
-assert (orderedDisplacementDofs_.size()==2*((nx+1)*(ny+1)+3*nx*ny+nx+ny));
+assert (ordered.size()==(problemData.nx+1)*(problemData.ny+1));
+assert (orderedDisplacementDofs_.size()==2*((problemData.nx+1)*(problemData.ny+1)+3*problemData.nx*problemData.ny+problemData.nx+problemData.ny));
 //assert (orderedDisplacementDofs_.size()==nx*ny+displacement.vector()->size());
-  std::vector<double> newy (nx+1);
+  std::vector<double> newy (problemData.nx+1);
   for (std::size_t j=0; j!= newy.size(); ++j)
   {
     k = ordered.size()-newy.size()+j;
@@ -250,23 +250,23 @@ assert (orderedDisplacementDofs_.size()==2*((nx+1)*(ny+1)+3*nx*ny+nx+ny));
     */
   }
 //std::cerr << "displacement.vector   "; for (std::size_t iii=0; iii!=displacement.vector()->size(); ++iii) std::cerr << (*displacement.vector())[iii] << ' '; std::cerr << std::endl;
-std::cerr << "  last     " << std::setprecision(10) << newy[newy.size()-1] << std::endl;
+//std::cerr << "  last     " << std::setprecision(10) << newy[newy.size()-1] << std::endl;
 //std::cerr << '\t' << k << '\t'; for (std::size_t iii=k; iii!=k-20; --iii) std::cerr << displacement[1](std::get<1>(ordered[iii]),std::get<2>(ordered[iii])) << ' '; std::cerr << std::endl;
 
 //std::cerr << "newy    "; for (auto it=newy.begin(); it!=newy.end(); ++it) std::cerr << std::setprecision(10) << *it << ' '; std::cerr << std::endl;
 assert (newy.back()!=0);
-  for (std::size_t i=0; i!=ny+1; ++i)
-  for (std::size_t j=0; j!=nx+1; ++j)
+  for (std::size_t i=0; i!=problemData.ny+1; ++i)
+  for (std::size_t j=0; j!=problemData.nx+1; ++j)
   {
-    k = (nx+1)*i+j;
+    k = (problemData.nx+1)*i+j;
     x = std::get<1>(ordered[k]);
     y = std::get<2>(ordered[k]);
     newCoords [2*std::get<0>(ordered[k])] = x;
     //newCoords [2*std::get<0>(ordered[k])+1] = y + i/(double) ny * (newy[j]-std::get<2>(ordered[j]));
-    newCoords [2*std::get<0>(ordered[k])+1] = i/(double) ny * newy[j];
+    newCoords [2*std::get<0>(ordered[k])+1] = i/(double) problemData.ny * newy[j];
   }
 //std::cerr << "newCoords   "; for (auto it=newCoords.begin(); it!=newCoords.end(); ++it) std::cerr << *it << ' '; std::cerr << std::endl;
-std::cerr << '\t' << k << ' ' << x << ' ' << y << std::endl;
+//std::cerr << '\t' << k << ' ' << x << ' ' << y << std::endl;
 
   dolfin::Mesh newmesh (* mesh_);
   newmesh.coordinates() = newCoords;
@@ -286,7 +286,7 @@ std::cerr << '\t' << k << ' ' << x << ' ' << y << std::endl;
   }
   dolfin::Vector displacementVec (MPI_COMM_WORLD, processedDofDisplacement.size());
   displacementVec.set_local (processedDofDisplacement);
-std::cerr << displacementVec.size() << ' ' << w_.vector()->size() << std::endl;
+//std::cerr << displacementVec.size() << ' ' << w_.vector()->size() << std::endl;
   displacementVec.apply("insert");
   * w_.vector() = displacementVec;
 

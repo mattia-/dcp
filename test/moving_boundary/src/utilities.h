@@ -31,8 +31,152 @@
 #include <math.h>
 #include "myNavierstokesTimeCurvLinear.h"
 
+#include "GetPot.h"
+extern GetPot inputData;
+
+struct ProblemData
+{
+  double lx,ly;
+  std::size_t nx,ny;
+  double dt;
+  double TP_EPS;
+  std::string savepath;
+  double gamma, beta, thetaS;
+};
+
+extern struct ProblemData problemData;
+
+class TopBd : public dolfin::SubDomain
+{
+  public :
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return on_boundary
+               &&
+               dolfin::near (x[1],problemData.ly);
+    }
+};
+class BottomBd : public dolfin::SubDomain
+{
+  public :
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return on_boundary
+               &&
+               dolfin::near (x[1],0);
+    }
+};
+class LateralBd : public dolfin::SubDomain
+{
+  public :
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return on_boundary
+               &&
+               ( dolfin::near (x[0],0) || dolfin::near (x[0],problemData.lx) );
+    }
+};
+
+class LateralInterior : public dolfin::SubDomain
+{
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return on_boundary
+               && ( dolfin::near (x[0],0.0) || dolfin::near(x[0],problemData.lx) )
+               && ( x[1] < problemData.ly-6e-16);
+    }
+
+    friend class TriplePointLeft;
+    friend class TriplePointRight;
+};
+class TriplePointLeft : public dolfin::SubDomain
+{
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return on_boundary
+              && ( dolfin::near(x[0],0,problemData.TP_EPS) && dolfin::near(x[1],problemData.ly) )
+              && !( lateralInterior.inside(x, on_boundary) );
+    }
+
+    LateralInterior lateralInterior;
+};
+class TriplePointRight : public dolfin::SubDomain
+{
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return on_boundary
+              && ( dolfin::near(x[0],problemData.lx,problemData.TP_EPS) && dolfin::near(x[1],problemData.ly) )
+              && !( lateralInterior.inside(x, on_boundary) );
+    }
+
+    LateralInterior lateralInterior;
+};
+class TriplePointLeftVertex : public dolfin::SubDomain
+{
+  public:
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return on_boundary
+              && ( dolfin::near(x[0],0) && dolfin::near(x[1],problemData.ly) );
+    }
+};
+class TriplePointRightVertex : public dolfin::SubDomain
+{
+  public:
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return on_boundary
+              && ( dolfin::near(x[0],problemData.lx) && dolfin::near(x[1],problemData.ly) );
+    }
+};
+class BoundaryStressEvaluator
+{
+
+    public:
+        BoundaryStressEvaluator () = delete;
+        BoundaryStressEvaluator (double nominalStressFirst, double nominalStressSecond) :
+          nominalStress ({nominalStressFirst,nominalStressSecond})
+          {}
+
+        void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
+        {
+            values[0] = 0;
+            values[1] = 9.81 * (problemData.ly-x[1]) * nominalStress.second;
+        }
+
+    private:
+        std::pair<double,double> nominalStress;
+};
+
+class WallVelocity : public dolfin::Expression
+{
+public:
+
+  void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+  {
+      values[0] = 0;
+#if defined(GerbeauLelievre) && !defined(SprittlesShikhmurzaev) && !defined(Yamamoto)
+      values[1] = x[0]<0.5*lx ? -0.25 : 0.25;
+#elif defined(SprittlesShikhmurzaev) && !defined(GerbeauLelievre) && !defined(Yamamoto)
+      values[1] = -1;
+#elif defined(Yamamoto) && !defined(GerbeauLelievre) && !defined(SprittlesShikhmurzaev)
+      values[1] = 0;
+#endif
+  }
+
+  std::size_t value_rank() const
+  {
+    return 1;
+  }
+
+  std::size_t value_dimension(std::size_t i) const
+  {
+    return 2;
+  }
+};
+
 // parameters (defined in utilities.cpp)
-extern std::string savepath;
+/*extern std::string savepath;
 extern double lx,ly,yxratio,ustar,TP_EPS;
 extern std::size_t nx,ny;
 extern double re,st,ca;
@@ -40,6 +184,7 @@ extern double betaVal,cosThetaSVal;
 #ifdef Yamamoto
 extern double rho;
 #endif
+
 
 class MovingLid : public dolfin::SubDomain
 {
@@ -117,19 +262,6 @@ public:
   }
 
 };
-class LateralInterior : public dolfin::SubDomain
-{
-    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-    {
-        return on_boundary
-               && ( dolfin::near (x[0],0.0) || dolfin::near(x[0],lx) )
-               && ( x[1] < ly-6e-16);
-    }
-
-    friend class TriplePoints;
-    friend class TriplePointLeft;
-    friend class TriplePointRight;
-};
 class LateralWall : public dolfin::SubDomain
 {
   public:
@@ -148,11 +280,11 @@ class TopBoundary : public dolfin::SubDomain
                &&
 //              ( x[1] >= ly - 6.0e-16 );
                dolfin::near (x[1],ly);
-/*          //what follows takes away the triple points
-               &&
-             !( dolfin::near(x[0],0) )
-               &&
-             !( dolfin::near(x[0],lx) );*/
+        //  //what follows takes away the triple points
+        //       &&
+        //     !( dolfin::near(x[0],0) )
+        //       &&
+        //     !( dolfin::near(x[0],lx) );
     }
 
   private:
@@ -169,86 +301,38 @@ class BottomBoundary : public dolfin::SubDomain
               (dolfin::near (x[1],0.0));
     }
 };
-/*class TriplePoints : public dolfin::SubDomain
-{
-    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-    {
-        return on_boundary
-              && ( ( dolfin::near(x[0],0,0.006) && dolfin::near(x[1],ly,0.006) )
-                ||
-               ( dolfin::near(x[0],lx,0.006) && dolfin::near(x[1],ly,0.006) ) )
-              && !( lateralInterior.inside(x, on_boundary) );
-        return  ( dolfin::near(x[0], 0) && (x[1]<0.01-6e-16) && (x[1]>6e-16)) //dolfin::near(x[1],0.005) )
-       		     ||
-             		( dolfin::near(x[0], 0.05) && (x[1]<0.01-6e-16) && (x[1]>6e-16)); //dolfin::near(x[1],0.005) );
-    }
-
-    LateralInterior lateralInterior;
-};*/
-class TriplePointLeft : public dolfin::SubDomain
-{
-    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-    {
-        return on_boundary
-              && ( dolfin::near(x[0],0,TP_EPS) && dolfin::near(x[1],ly) )
-              && !( lateralInterior.inside(x, on_boundary) );
-    }
-
-    LateralInterior lateralInterior;
-};
-class TriplePointRight : public dolfin::SubDomain
-{
-    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-    {
-        return on_boundary
-              && ( dolfin::near(x[0],lx,TP_EPS) && dolfin::near(x[1],ly) )
-              && !( lateralInterior.inside(x, on_boundary) );
-    }
-
-    LateralInterior lateralInterior;
-};
-class TriplePointLeftVertex : public dolfin::SubDomain
-{
-  public:
-    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-    {
-        return on_boundary
-              //&& ( dolfin::near(x[0],0) && top_.inside(x,on_boundary) );
-              && ( dolfin::near(x[0],0) && dolfin::near(x[1],ly) );
-    }
-
-  private:
-    TopBoundary top_;
-};
-class TriplePointRightVertex : public dolfin::SubDomain
-{
-  public:
-    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-    {
-        return on_boundary
-              //&& ( dolfin::near(x[0],lx) && top_.inside(x,on_boundary) );
-              && ( dolfin::near(x[0],lx) && dolfin::near(x[1],ly) );
-    }
-
-  private:
-    TopBoundary top_;
-};
+// class TriplePoints : public dolfin::SubDomain
+// {
+//     bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+//     {
+//         return on_boundary
+//               && ( ( dolfin::near(x[0],0,0.006) && dolfin::near(x[1],ly,0.006) )
+//                 ||
+//                ( dolfin::near(x[0],lx,0.006) && dolfin::near(x[1],ly,0.006) ) )
+//               && !( lateralInterior.inside(x, on_boundary) );
+//         return  ( dolfin::near(x[0], 0) && (x[1]<0.01-6e-16) && (x[1]>6e-16)) //dolfin::near(x[1],0.005) )
+//        		     ||
+//              		( dolfin::near(x[0], 0.05) && (x[1]<0.01-6e-16) && (x[1]>6e-16)); //dolfin::near(x[1],0.005) );
+//     }
+// 
+//     LateralInterior lateralInterior;
+// };
 
 //TODO
-/*class TriplePointVertices : public dolfin::SubDomain
-{
-  // To be used with the option "pointwise" in dolfin::DirichletBC
-  // NB: "pointwise" gives always False as value for on_boundary 
-  public:
-    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-    {
-        return SERVE_UNA_MESHFUNCTION...
-    }
-
-  private:
-  TriplePointLeftVertex leftVert_;
-  TriplePointRightVertex rightVert_;
-};*/
+// class TriplePointVertices : public dolfin::SubDomain
+// {
+//   // To be used with the option "pointwise" in dolfin::DirichletBC
+//   // NB: "pointwise" gives always False as value for on_boundary 
+//   public:
+//     bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+//     {
+//         return SERVE_UNA_MESHFUNCTION...
+//     }
+// 
+//   private:
+//   TriplePointLeftVertex leftVert_;
+//   TriplePointRightVertex rightVert_;
+// };
 
 class InflowDirichletData : public dolfin::Expression
 {
@@ -327,25 +411,6 @@ class InflowDirichletBCEvaluator
         }
 };
 
-class BoundaryStressEvaluator
-{
-
-    public:
-        BoundaryStressEvaluator () = delete;
-        BoundaryStressEvaluator (double nominalStressFirst, double nominalStressSecond) :
-          nominalStress ({nominalStressFirst,nominalStressSecond})
-          {}
-
-        void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
-        {
-            values[0] = 0;
-            values[1] = 9.81 * (ly-x[1]) * nominalStress.second;
-        }
-
-    private:
-        std::pair<double,double> nominalStress;
-};
-
 class InitialDisplacement : public dolfin::Expression
 {
 public:
@@ -374,60 +439,33 @@ private:
 
 };
 
-class WallVelocity : public dolfin::Expression
-{
-public:
-
-  void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
-  {
-      values[0] = 0;
-#if defined(GerbeauLelievre) && !defined(SprittlesShikhmurzaev) && !defined(Yamamoto)
-      values[1] = x[0]<0.5*lx ? -0.25 : 0.25;
-#elif defined(SprittlesShikhmurzaev) && !defined(GerbeauLelievre) && !defined(Yamamoto)
-      values[1] = -1;
-#elif defined(Yamamoto) && !defined(GerbeauLelievre) && !defined(SprittlesShikhmurzaev)
-      values[1] = 0;
-#endif
-  }
-
-  std::size_t value_rank() const
-  {
-    return 1;
-  }
-
-  std::size_t value_dimension(std::size_t i) const
-  {
-    return 2;
-  }
-};
-
-/*class MeshFunctionWrapper
-{
-  public:
-    MeshFunctionWrapper(dolfin::FacetFunction<std::size_t> meshFacets) :
-        meshFacets_(meshFacets)
-    {}
-
-    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-    {
-        return ...
-    }
-
-  private:
-    dolfin::FacetFunction<std::size_t> meshFacets_;
-};
-
-class MeshFunctionToSubDomain : public dolfin::SubDomain
-{
-public :
-
-    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-    {
-        return meshFunWrapper_.inside(x,on_boundary);
-    }
-
-    MeshFunctionWrapper meshFunWrapper_;
-};*/
+// class MeshFunctionWrapper
+// {
+//   public:
+//     MeshFunctionWrapper(dolfin::FacetFunction<std::size_t> meshFacets) :
+//         meshFacets_(meshFacets)
+//     {}
+// 
+//     bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+//     {
+//         return ...
+//     }
+// 
+//   private:
+//     dolfin::FacetFunction<std::size_t> meshFacets_;
+// };
+// 
+// class MeshFunctionToSubDomain : public dolfin::SubDomain
+// {
+// public :
+// 
+//     bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+//     {
+//         return meshFunWrapper_.inside(x,on_boundary);
+//     }
+// 
+//     MeshFunctionWrapper meshFunWrapper_;
+// };
 
 class ALEStiffnessVec : public dolfin::Expression
 {
@@ -469,82 +507,57 @@ class myInt
   
   std::size_t val;
 };
-/*class ImposedDisplacement : public dolfin::Expression
-{
-public:
-
-  void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
-  {
-      values[0] = 0;
-//      values[1] = a.val * (x[0]-0.5*lx)*(x[0]-0.5*lx)/(0.5*lx*0.5*lx)/dt;
-      values[1] = ( a.val>0 ) ? 
-//                              (a.val/dt * 0.5*(1.1+cos(2.0*3.14159265/lx*x[0])))
-//                              (a.val/dt * (0.05 + (x[0]-0.5*lx)*(x[0]-0.5*lx)/(0.5*lx*0.5*lx)))
-                              (0.1*a.initVal + a.val * ( 0.05 + (exp(pow((x[0]-0.5*lx)/(0.5*lx),8))-1) / (exp(1)-1) ))
-                              :
-                              (0.1*a.initVal - 0.4*a.val * (0.05 + 1 - (x[0]-0.5*lx)*(x[0]-0.5*lx)/(0.5*lx*0.5*lx)));
-//                              (0.1*a.initVal - 0.4*a.val * ( 0.05 + 1 - (exp(pow((x[0]-0.5*lx)/(0.5*lx),2))-1) / (exp(1)-1) ));
-      values[1] = ( a.val > 0 ) ?
-                                (bar + a.val * pow(x[0]-0.5*lx,4)/pow(0.5*lx,4) + (a.initVal-a.val) * (x[0]-lx/3.0)*(x[0]-lx/3.0)/(lx*lx/9.0)*(x[0]-2.0*lx/3.0)*(x[0]-2.0*lx/3.0)/(4.0*lx*lx/9.0))
-                                :
-                                (bar + b.val * (x[0]-lx/3.0)*(x[0]-lx/3.0)/(lx*lx/9.0)*(x[0]-2.0*lx/3.0)*(x[0]-2.0*lx/3.0)/(4.0*lx*lx/9.0) + (b.initVal-b.val) * (1-(x[0]-0.5*lx)*(x[0]-0.5*lx)/(lx*lx/4.0)));
-
-      double time = timeStep.val*dt;
-      double timeWeight = 9.79e+08*pow(time,4) - 1.08e+07*pow(time,3) + 4.26e+04*time*time - 70.9*time + 0.0700;
-      values[0] *= timeWeight;
-      values[1] *= timeWeight;
-  }
-
-  std::size_t value_rank() const
-  {
-    return 1;
-  }
-
-  std::size_t value_dimension(std::size_t i) const
-  {
-    return 2;
-  }
-
-  void update()
-  {
-//      a.val -= a.initVal/nT;
-//      b.val -= (a.val>0) ? 0 : b.initVal/(2*nT);
-      ++(timeStep.val);
-  }
-private:
-  myDouble a,b;
-  myInt timeStep;
-//  double b = 0.0000002;
-  double bar = 0.03;
-  std::size_t nT = 100;
-  double dt = 0.00002;
-
-};*/
-class ImposedDisplacement : public dolfin::Expression
-{
-public:
-
-  void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
-  {
-      values[0] = 0;
-      values[1] = 0.05;
-      values[2] = 0;
-  }
-
-  std::size_t value_rank() const
-  {
-    return 1;
-  }
-
-  std::size_t value_dimension(std::size_t i) const
-  {
-    return 3;
-  }
-
-  void update()
-  {}
-
-};
+// class ImposedDisplacement : public dolfin::Expression
+// {
+// public:
+// 
+//   void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+//   {
+//       values[0] = 0;
+// //      values[1] = a.val * (x[0]-0.5*lx)*(x[0]-0.5*lx)/(0.5*lx*0.5*lx)/dt;
+//       values[1] = ( a.val>0 ) ? 
+// //                              (a.val/dt * 0.5*(1.1+cos(2.0*3.14159265/lx*x[0])))
+// //                              (a.val/dt * (0.05 + (x[0]-0.5*lx)*(x[0]-0.5*lx)/(0.5*lx*0.5*lx)))
+//                               (0.1*a.initVal + a.val * ( 0.05 + (exp(pow((x[0]-0.5*lx)/(0.5*lx),8))-1) / (exp(1)-1) ))
+//                               :
+//                               (0.1*a.initVal - 0.4*a.val * (0.05 + 1 - (x[0]-0.5*lx)*(x[0]-0.5*lx)/(0.5*lx*0.5*lx)));
+// //                              (0.1*a.initVal - 0.4*a.val * ( 0.05 + 1 - (exp(pow((x[0]-0.5*lx)/(0.5*lx),2))-1) / (exp(1)-1) ));
+//       values[1] = ( a.val > 0 ) ?
+//                                 (bar + a.val * pow(x[0]-0.5*lx,4)/pow(0.5*lx,4) + (a.initVal-a.val) * (x[0]-lx/3.0)*(x[0]-lx/3.0)/(lx*lx/9.0)*(x[0]-2.0*lx/3.0)*(x[0]-2.0*lx/3.0)/(4.0*lx*lx/9.0))
+//                                 :
+//                                 (bar + b.val * (x[0]-lx/3.0)*(x[0]-lx/3.0)/(lx*lx/9.0)*(x[0]-2.0*lx/3.0)*(x[0]-2.0*lx/3.0)/(4.0*lx*lx/9.0) + (b.initVal-b.val) * (1-(x[0]-0.5*lx)*(x[0]-0.5*lx)/(lx*lx/4.0)));
+// 
+//       double time = timeStep.val*dt;
+//       double timeWeight = 9.79e+08*pow(time,4) - 1.08e+07*pow(time,3) + 4.26e+04*time*time - 70.9*time + 0.0700;
+//       values[0] *= timeWeight;
+//       values[1] *= timeWeight;
+//   }
+// 
+//   std::size_t value_rank() const
+//   {
+//     return 1;
+//   }
+// 
+//   std::size_t value_dimension(std::size_t i) const
+//   {
+//     return 2;
+//   }
+// 
+//   void update()
+//   {
+// //      a.val -= a.initVal/nT;
+// //      b.val -= (a.val>0) ? 0 : b.initVal/(2*nT);
+//       ++(timeStep.val);
+//   }
+// private:
+//   myDouble a,b;
+//   myInt timeStep;
+// //  double b = 0.0000002;
+//   double bar = 0.03;
+//   std::size_t nT = 100;
+//   double dt = 0.00002;
+// 
+// };
 
 class myPointer
 {
@@ -559,21 +572,21 @@ class ImposedFromFile : public dolfin::Expression
 public:
   void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
   {
-/*      const std::vector<double>& coords (funSp_->dofmap()->tabulate_all_coordinates(* funSp_->mesh()));
-      std::size_t nearest (0);
-      for (std::size_t i = 0; i!=coords.size()/2; ++i)
-      {
-        if ( (x[0]-coords[2*i])*(x[0]-coords[2*i])+(x[1]-coords[2*i+1])*(x[1]-coords[2*i+1])
-              <
-             (x[0]-coords[2*nearest])*(x[0]-coords[2*nearest])+(x[1]-coords[2*nearest+1])*(x[1]-coords[2*nearest+1]) )
-          nearest = i;
-      }
-      
-*/
-/*        if (timeStep_.val == 40)
-          * fun_->vector() = accumulatedValues_;
-        else
-          (* fun_->vector()) *= 0;*/
+//       const std::vector<double>& coords (funSp_->dofmap()->tabulate_all_coordinates(* funSp_->mesh()));
+//       std::size_t nearest (0);
+//       for (std::size_t i = 0; i!=coords.size()/2; ++i)
+//       {
+//         if ( (x[0]-coords[2*i])*(x[0]-coords[2*i])+(x[1]-coords[2*i+1])*(x[1]-coords[2*i+1])
+//               <
+//              (x[0]-coords[2*nearest])*(x[0]-coords[2*nearest])+(x[1]-coords[2*nearest+1])*(x[1]-coords[2*nearest+1]) )
+//           nearest = i;
+//       }
+//       
+// 
+       // if (timeStep_.val == 40)
+       //   * fun_->vector() = accumulatedValues_;
+       // else
+       //   (* fun_->vector()) *= 0;
         (* fun_)[0].eval (values,x);
   }
   std::size_t value_rank() const
@@ -586,10 +599,10 @@ public:
     return 2;
   }
 
-/*  void setFunSp (dolfin::FunctionSpace& funSp)
-  {
-      funSp_.reset (&funSp);
-  }*/
+//  void setFunSp (dolfin::FunctionSpace& funSp)
+//  {
+//      funSp_.reset (&funSp);
+//  }
   void setMesh (const dolfin::Mesh& mesh)
   {
       funSp_.reset (new myNavierstokesTimeCurvLinear::FunctionSpace(mesh));
@@ -728,6 +741,32 @@ class SecondExtr : public dolfin::SubDomain
     {
       return dolfin::near(x[0],1);
     }
+};*/
+
+class ImposedDisplacement : public dolfin::Expression
+{
+public:
+
+  void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+  {
+      values[0] = 0;
+      values[1] = 0.05;
+      values[2] = 0;
+  }
+
+  std::size_t value_rank() const
+  {
+    return 1;
+  }
+
+  std::size_t value_dimension(std::size_t i) const
+  {
+    return 3;
+  }
+
+  void update()
+  {}
+
 };
 
 bool compare (std::tuple<std::size_t,double,double> p1, std::tuple<std::size_t,double,double> p2);

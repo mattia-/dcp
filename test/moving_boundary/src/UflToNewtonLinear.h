@@ -20,10 +20,12 @@
 #ifndef IVAN_UFLTONEWTONLINEAR_H_INCLUDE_GUARD
 #define IVAN_UFLTONEWTONLINEAR_H_INCLUDE_GUARD
 
+#define EVITAPLOT
+
 #include <dolfin.h>
 #include <dcp/differential_problems/SubdomainType.h>
 #include <dcp/differential_problems/LinearProblem.h>
-#include "utilities.h"
+//#include "utilities.h"
 
 namespace Ivan
 {
@@ -201,8 +203,6 @@ template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_Biline
 void UflToNewtonLinear <T_FunctionSpace, T_AdditionalFunctionSpace, T_BilinearForm, T_LinearForm, T_AdditionalForm, T_LinearSolverFactory>::
   solve (const std::string& type)
   {
-std::cerr << "STAI USANDO L'ALGEBRICO" << std::endl;
-
         dolfin::Assembler assembler;
 
         dolfin::Matrix A;
@@ -212,7 +212,9 @@ std::cerr << "STAI USANDO L'ALGEBRICO" << std::endl;
         assembler.assemble (b, this->linearForm_);
 
         dolfin::Vector vec (MPI_COMM_WORLD,b.size());
-dolfin::plot (*additionalFunctionSpace_.mesh(),"additional mesh"); //dolfin::interactive ();
+#ifndef EVITAPLOT
+  dolfin::plot (*additionalFunctionSpace_.mesh(),"additional mesh"); //dolfin::interactive ();
+#endif
 //TODO sistemare: additionalFunctionSpace non subisce il mesh-moving
 //     forse e' il caso di introdurre un TimeDependentFunctionSpace, cosi' tutto passa attraverso di lui...
         assembler.assemble (vec, this->additionalForm_);
@@ -223,7 +225,10 @@ dolfin::plot (*additionalFunctionSpace_.mesh(),"additional mesh"); //dolfin::int
         b += processedVec;
 
         for (auto it = this->dirichletBCs_.begin(); it != this->dirichletBCs_.end(); it++)
-            {(it->second).apply (A,b); std::cerr<<"TimeBC "<<it->first<<std::endl;}
+        {
+          (it->second).apply (A,b);
+//          std::cerr<<"TimeBC "<<it->first<<std::endl;
+        }
 
         linear_solver_->solve(A, * this->solution_.back().second.vector(), b);
   }

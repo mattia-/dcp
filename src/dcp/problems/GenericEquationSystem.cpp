@@ -718,7 +718,7 @@ namespace dcp
         while (sumOfNorms >= tolerance && iteration < maxIterations)
         {
             iteration++;
-            dolfin::begin (dolfin::PROGRESS, "===== Iteration %d =====", iteration);
+            dolfin::begin (dolfin::PROGRESS, "===== Subiteration %d =====", iteration);
             
             sumOfNorms = 0;
             int counter = 0;

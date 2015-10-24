@@ -891,7 +891,7 @@ namespace dcp
         
         // save new solution in solution_, only if the time of the currently last solution is not the same as the
         // current time value. Otherwise, delete the last solution first
-        if (solution_.back ().first == time_ -> value ())
+        if (dolfin::near (solution_.back ().first, time_ -> value ()))
         {
             solution_.pop_back ();
         }

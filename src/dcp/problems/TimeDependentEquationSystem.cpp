@@ -371,30 +371,30 @@ namespace dcp
     
 
 
-    const dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::string& name) const
+    const dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::string& problemName) const
     {
-        auto problemIterator = storedProblems_.find (name);
+        auto problemIterator = storedProblems_.find (problemName);
         if (problemIterator == storedProblems_.end ())
         {
             dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
                                   "operator[]", 
                                   "Problem \"%s\" not found in stored problems map", 
-                                  name.c_str ());
+                                  problemName.c_str ());
         }
         return *(std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
     }
 
 
 
-    dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::string& name)
+    dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::string& problemName)
     {
-        auto problemIterator = storedProblems_.find (name);
+        auto problemIterator = storedProblems_.find (problemName);
         if (problemIterator == storedProblems_.end ())
         {
             dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
                                   "operator[]", 
                                   "Problem \"%s\" not found in stored problems map", 
-                                  name.c_str ());
+                                  problemName.c_str ());
         }
         return *(std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
     }
@@ -584,6 +584,44 @@ namespace dcp
         problem.solve (solveType_);
         
         dolfin::end ();
+    }
+
+
+
+    void TimeDependentEquationSystem::setInitialSolution (const std::string& problemName,
+                                                          const dolfin::Function& initialSolution, 
+                                                          const unsigned int& stepNumber)
+    {
+        dolfin::begin (dolfin::PROGRESS, "Setting initial solution...");
+        auto problemIterator = storedProblems_.find (problemName);
+        (std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second))->
+            setInitialSolution (initialSolution, stepNumber);
+        dolfin::end (); // "Setting initial solution"
+    }
+    
+
+
+    void TimeDependentEquationSystem::setInitialSolution (const std::string& problemName,
+                                                          const dolfin::Expression& initialSolution, 
+                                                          const unsigned int& stepNumber)
+    {
+        dolfin::begin (dolfin::PROGRESS, "Setting initial solution...");
+        auto problemIterator = storedProblems_.find (problemName);
+        (std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second))->
+            setInitialSolution (initialSolution, stepNumber);
+        dolfin::end (); // "Setting initial solution"
+    }
+
+
+
+    void TimeDependentEquationSystem::setInitialSolution (const std::string& problemName)
+    {
+        std::string solveTypeBackup = solveType_;
+        solveType_ = "steady";
+        dolfin::begin (dolfin::PROGRESS, "Setting initial solution...");
+        solve (problemName);
+        dolfin::end ();
+        solveType_ = solveTypeBackup;
     }
 
 

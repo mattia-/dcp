@@ -191,22 +191,22 @@ namespace dcp
             //! reference to \c dcp::TimeDependentProblem since any problem inserted in a time dependent system will
             //! surely be a time dependent problem
             /*!
-             *  \param name name of the problem to be accessed. If the name is not found, the function prints an
+             *  \param problemName name of the problem to be accessed. If the name is not found, the function prints an
              *  error message through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
-            virtual const dcp::TimeDependentProblem& operator[] (const std::string& name) const override;
+            virtual const dcp::TimeDependentProblem& operator[] (const std::string& problemName) const override;
             
             //! Access problem with given name [2] (read and write)
             /*!
             //! Overrides method in base class \c dcp::GenericEquationSystem. In this overridden method we return a
             //! reference to \c dcp::TimeDependentProblem since any problem inserted in a time dependent system will
             //! surely be a time dependent problem
-             *  \param name name of the problem to be accessed. If the name is not found, the function prints an
+             *  \param problemName name of the problem to be accessed. If the name is not found, the function prints an
              *  error message through the function \c dolfin::dolfin_error()
              *  \return a reference to the problem
              */
-            virtual dcp::TimeDependentProblem& operator[] (const std::string& name) override;
+            virtual dcp::TimeDependentProblem& operator[] (const std::string& problemName) override;
             
             //! Access problem with given position in vector \c solveOrder_ [1] (read only)
             //! Overrides method in base class \c dcp::GenericEquationSystem. In this overridden method we return a
@@ -264,6 +264,40 @@ namespace dcp
              */
             virtual void solve (const std::string& problemName) override;
             
+            //! Set initial solution of the problem with given name [1]
+            /*!
+             *  It is just a wrapper for the call to \c setInitialSolution on the underlying problem
+             *  \param problemName the problem of which too set the initial solution
+             *  \param initialSolution the function to be used as initial solution
+             *  \param stepNumber the number of steps to go back to set the initial solution
+             *
+             *  See \c TimeDependentProblem documentation for more details
+             */
+            virtual void setInitialSolution (const std::string& problemName,
+                                             const dolfin::Function& initialSolution, 
+                                             const unsigned int& stepNumber = 1);
+
+            //! Set initial solution of the problem with given name [2]
+            /*!
+             *  It is just a wrapper for the call to \c setInitialSolution on the underlying problem
+             *  \param problemName the problem of which too set the initial solution
+             *  \param initialSolution the function to be used as initial solution
+             *  \param stepNumber the number of steps to go back to set the initial solution
+             *
+             *  See \c TimeDependentProblem documentation for more details
+             */
+            virtual void setInitialSolution (const std::string& problemName,
+                                             const dolfin::Expression& initialSolution, 
+                                             const unsigned int& stepNumber = 1);
+
+            //! Set intial solution of the problem with given name [3]
+            /*! 
+             *  In this case, set the initial solution by setting all the links and calling the solve method (with type 
+             *  \c "steady) on the given problem.
+             *  \param problemName the problem of which too set the initial solution
+             */
+            virtual void setInitialSolution (const std::string& problemName);
+
         // ---------------------------------------------------------------------------------------------//  
 
         protected:

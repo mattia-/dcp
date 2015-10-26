@@ -116,8 +116,7 @@ namespace dcp
                 {
                     dolfin::dolfin_error ("dcp: DotProduct.cpp", 
                                           "getDotProductComputer",
-                                          "No form to compute dot products and norms for mesh cell type \"%s\" and", 
-                                          "function rank %d", 
+                                          "No form to compute dot products and norms for mesh cell type \"%s\" and function rank %d", 
                                           meshCellType.c_str (),
                                           rank);
                 }
@@ -143,8 +142,7 @@ namespace dcp
                 {
                     dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp", 
                                           "getDotProductComputer",
-                                          "No form to compute dot products and norms for mesh cell type \"%s\" and", 
-                                          "function rank %d", 
+                                          "No form to compute dot products and norms for mesh cell type \"%s\" and function rank %d", 
                                           meshCellType.c_str (),
                                           rank);
                 }
@@ -170,8 +168,7 @@ namespace dcp
                 {
                     dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp", 
                                           "getDotProductComputer",
-                                          "No form to compute dot products and norms for mesh cell type \"%s\" and", 
-                                          "function rank %d", 
+                                          "No form to compute dot products and norms for mesh cell type \"%s\" and function rank %d", 
                                           meshCellType.c_str (),
                                           rank);
                 }

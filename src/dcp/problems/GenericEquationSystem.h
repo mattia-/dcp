@@ -67,6 +67,26 @@ namespace dcp
              *        computed at the last step. Default value: 1e-6
              *      - \c "subiterations_maximum_iterations" the maximum number of iterations allowed in the 
              *        subiterations loop. Default value: 10
+             *      - \c "subiterations_blacklist" a list of problem names whose solution should not be used to check
+             *        for the convergence of the subiterations. If empty, all problems in the subiterations range will
+             *        be considered. It is overridden by the values in \c "subiterations_whitelist". No check is
+             *        performed on the existence of the given names in \c storedProblems_.
+             *        The type of the parameters in this nested paremters set does not matter, since
+             *        only the keys will be considered. This means that when adding names to this parameter set, any
+             *        kind of parameter can be added (even unset parameters), as long as the parameter key matches the 
+             *        name of the problem one wishes to blacklist. 
+             *        Default value: empty (remember to use parenthesis instead of square brackets to access nested
+             *        parameters sets)
+             *      - \c "subiterations_whitelist" a list of problem names whose solution should be used to check for
+             *        the convergence of the subiterations. If empty, all problems in the subiterations range will be
+             *        considered. Overrides values in \c "subiterations_blacklist". No check is performed on the
+             *        existence of the given names in \c storedProblems_.
+             *        The type of the parameters in this nested paremters set does not matter, since
+             *        only the keys will be considered. This means that when adding names to this parameter set, any
+             *        kind of parameter can be added (even unset parameters), as long as the parameter key matches the 
+             *        name of the problem one wishes to whitelist. 
+             *        Default value: empty (remember to use parenthesis instead of square brackets to access nested 
+             *        parameters sets)
              */
             GenericEquationSystem ();
             

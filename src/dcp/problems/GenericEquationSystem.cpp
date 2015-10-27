@@ -42,6 +42,8 @@ namespace dcp
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("subiterations_tolerance", 1e-6);
         parameters.add ("subiterations_maximum_iterations", 10);
+        parameters.add (dolfin::Parameters ("subiterations_blacklist"));
+        parameters.add (dolfin::Parameters ("subiterations_whitelist"));
             
         dolfin::end ();
         
@@ -696,13 +698,40 @@ namespace dcp
         // set solution type so that from now on links are performed on stashed solutions
         solutionType_ = "stashed";
         
-        // vector to contain auxiliary solutions needed to compute the norm of the increment. Size is equal to
-        // the number of problems on which we are subiterating
         dolfin::log (dolfin::DBG, "Setting up subiterations loop variables...");
-        std::vector<dolfin::Function> oldSolutions;
-        for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
+
+        // vector of problem names whose solution should be used in the convergence check
+        std::vector<std::string> convergenceCheckProblemNames;
+
+        // get whitelisted problem names
+        parameters ("subiterations_whitelist").get_parameter_keys (convergenceCheckProblemNames);
+
+        // if convergenceCheckProblemNames is empty, there were no whitelisted problems, so use all the problems in the
+        // subiteration range minus the blacklisted ones
+        if (convergenceCheckProblemNames.empty ())
         {
-            oldSolutions.push_back (solution (*problemName, solutionType_));
+            for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
+            {
+                if (parameters ("subiterations_blacklist").has_parameter (*problemName) == false)
+                {
+                    convergenceCheckProblemNames.push_back (*problemName);
+                }
+            }
+        }
+
+        dolfin::begin (dolfin::DBG, "Problems considered for convergence check are:");
+        for (auto& problemName : convergenceCheckProblemNames)
+        {
+            dolfin::log (dolfin::DBG, "- " + problemName);
+        }
+        dolfin::end (); // Problems considered for convergence check are
+
+        // vector to contain auxiliary solutions needed to compute the norm of the increment. Size is equal to
+        // the number of problems of which we want to keep track in the convergence check
+        std::vector<dolfin::Function> oldSolutions;
+        for (auto& problemName : convergenceCheckProblemNames)
+        {
+            oldSolutions.push_back (solution (problemName, solutionType_));
         }
         
         // loop parameters

@@ -755,15 +755,19 @@ namespace dcp
             {
                 solve (*problemName);
                 
-                dolfin::Function increment ((this -> operator[] (*problemName)).functionSpace ());
-                increment = solution (*problemName, solutionType_) - oldSolutions[counter];
-                
-                oldSolutions[counter] = solution (*problemName, solutionType_);
-                
-                // use DOLFIN_EPS in division in case norm of the current solution is 0
-                sumOfNorms += dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[counter]) + DOLFIN_EPS);
-                
-                counter++;
+                if (std::find (convergenceCheckProblemNames.begin (), convergenceCheckProblemNames.end (), *problemName)
+                    != convergenceCheckProblemNames.end ())
+                {
+                    dolfin::Function increment ((this -> operator[] (*problemName)).functionSpace ());
+                    increment = solution (*problemName, solutionType_) - oldSolutions[counter];
+
+                    oldSolutions[counter] = solution (*problemName, solutionType_);
+
+                    // use DOLFIN_EPS in division in case norm of the current solution is 0
+                    sumOfNorms += dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[counter]) + DOLFIN_EPS);
+
+                    counter++;
+                }
             }
             
             dolfin::log (dolfin::PROGRESS, "Sum of relative increment norms: %f", sumOfNorms);

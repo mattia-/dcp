@@ -17,7 +17,7 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/time/Time.h>
+#include <dcp/time/Time_.h>
 #include <dolfin/log/dolfin_log.h>
 
 namespace dcp

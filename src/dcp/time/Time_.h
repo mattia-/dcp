@@ -22,7 +22,7 @@
 
 namespace dcp
 {
-    /*! class Time Time.h
+    /*! class Time Time_.h
      *  \brief Class for time definition and management.
      *  
      *  This class defines an object that represents the time during the simulations.

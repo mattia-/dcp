@@ -40,7 +40,7 @@
 #include <dcp/problems/SubdomainType.h>
 #include <dcp/expressions/TimeDependentExpression.h>
 #include <dcp/subdomains/Subdomain.h>
-#include <dcp/time/Time.h>
+#include <dcp/time/Time_.h>
 
 namespace dcp
 {

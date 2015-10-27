@@ -1,5 +1,5 @@
 # collect header files
-SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/Time.h
+SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/Time_.h
              ${CMAKE_CURRENT_SOURCE_DIR}/time.h)
 
 # collect source files

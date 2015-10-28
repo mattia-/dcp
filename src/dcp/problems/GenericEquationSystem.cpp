@@ -42,6 +42,7 @@ namespace dcp
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("subiterations_tolerance", 1e-6);
         parameters.add ("subiterations_maximum_iterations", 10);
+        parameters.add ("plot_subiteration_solutions", false);
         parameters.add (dolfin::Parameters ("subiterations_blacklist"));
         parameters.add (dolfin::Parameters ("subiterations_whitelist"));
             
@@ -698,7 +699,7 @@ namespace dcp
         // set solution type so that from now on links are performed on stashed solutions
         solutionType_ = "stashed";
         
-        dolfin::log (dolfin::DBG, "Setting up subiterations loop variables...");
+        dolfin::begin (dolfin::DBG, "Setting up subiterations loop variables...");
 
         // vector of problem names whose solution should be used in the convergence check
         std::vector<std::string> convergenceCheckProblemNames;
@@ -737,9 +738,16 @@ namespace dcp
         // loop parameters
         double tolerance = parameters ["subiterations_tolerance"];
         int maxIterations = parameters ["subiterations_maximum_iterations"];
+        bool plotSubiterationSolutions = parameters["plot_subiteration_solutions"];
+        dolfin::log (dolfin::DBG, "Tolerance: %f ", tolerance);
+        dolfin::log (dolfin::DBG, "Maximum subiterations number: %d ", maxIterations);
+        dolfin::log (dolfin::DBG, "Plot subiterations solutions: %s ", plotSubiterationSolutions ? "true" : "false");
+
         int iteration = 0;
         double sumOfNorms = tolerance + 1;
         dcp::DotProduct dotProduct;
+
+        dolfin::end (); // Setting up subiterations loop variables
         
         // loop until convergence, that is until the sum of the norms of the increment divided by the norm of the
         // current solution is below tolerance or until maximum number of iterations is reached
@@ -768,10 +776,15 @@ namespace dcp
 
                     counter++;
                 }
+
+                if (plotSubiterationSolutions == true)
+                {
+                    (this -> operator[] (*problemName)).plotSolution ("stashed");
+                }
             }
             
             dolfin::log (dolfin::PROGRESS, "Sum of relative increment norms: %f", sumOfNorms);
-            
+
             dolfin::end (); // ===== Iteration =====
         }
         dolfin::end (); // "SUBITERATIONS LOOP"

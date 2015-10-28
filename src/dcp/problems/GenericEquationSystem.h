@@ -67,6 +67,8 @@ namespace dcp
              *        computed at the last step. Default value: 1e-6
              *      - \c "subiterations_maximum_iterations" the maximum number of iterations allowed in the 
              *        subiterations loop. Default value: 10
+             *      - \c "plot_subiteration_solutions": to decide wether to call the \c plotSolution method also during
+             *        subiterations. Default: false
              *      - \c "subiterations_blacklist" a list of problem names whose solution should not be used to check
              *        for the convergence of the subiterations. If empty, all problems in the subiterations range will
              *        be considered. It is overridden by the values in \c "subiterations_whitelist". No check is

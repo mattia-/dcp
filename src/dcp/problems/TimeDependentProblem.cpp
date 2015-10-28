@@ -683,7 +683,7 @@ namespace dcp
         
         dolfin::begin (dolfin::DBG, "Plotting...");
         
-        if (plotType == "all")
+        if (plotType == "default")
         {
             for (auto& timeSolutionPair : solution_)
             {
@@ -693,12 +693,12 @@ namespace dcp
                 if (plotComponent == -1)
                 {
                     functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second);
-                    dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, all components...");
+                    dolfin::log (dolfin::DBG, "Plotting problem solution, all components...");
                 }
                 else
                 {
                     functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second [plotComponent]);
-                    dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, component %d...", plotComponent);
+                    dolfin::log (dolfin::DBG, "Plotting problem solution, component %d...", plotComponent);
                 }
 
                 // actual plotting
@@ -737,12 +737,12 @@ namespace dcp
             if (plotComponent == -1)
             {
                 functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second);
-                dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, all components...");
+                dolfin::log (dolfin::DBG, "Plotting problem solution, all components...");
             }
             else
             {
                 functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second [plotComponent]);
-                dolfin::log (dolfin::DBG, "Plotting time stepping problem solution, component %d...", plotComponent);
+                dolfin::log (dolfin::DBG, "Plotting problem solution, component %d...", plotComponent);
             }
 
             // actual plotting
@@ -769,6 +769,47 @@ namespace dcp
             }
 
         }
+        else if (plotType == "stashed")
+        {
+            // get right function to plot
+            if (plotComponent == -1)
+            {
+                functionToPlot = dolfin::reference_to_no_delete_pointer (stashedSolution_);
+                dolfin::log (dolfin::DBG, "Plotting stashed problem solution, all components...");
+            }
+            else
+            {
+                functionToPlot = dolfin::reference_to_no_delete_pointer (stashedSolution_ [plotComponent]);
+                dolfin::log (dolfin::DBG, "Plotting stashed solution, component %d...", plotComponent);
+            }
+
+            // actual plotting
+            if (solutionPlotter_ == nullptr)
+            {
+                dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
+                solutionPlotter_ = dolfin::plot (functionToPlot,
+                                                 "Time = " + std::to_string (time_->value()) + plotTitle + " (stashed)");
+            }
+            else if (! solutionPlotter_ -> is_compatible (functionToPlot))
+            {
+                dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
+                dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
+                solutionPlotter_ = dolfin::plot (functionToPlot,
+                                                 "Time = " + std::to_string (time_->value()) + plotTitle + " (stashed)");
+            }
+            else 
+            {
+                solutionPlotter_ -> parameters ["title"] = 
+                    std::string ("Time = " + std::to_string (time_ -> value ()) + plotTitle + " (stashed)");
+                solutionPlotter_ -> plot (functionToPlot);
+            }
+
+            if (pause)
+            {
+                dolfin::interactive ();
+            }
+
+        }
         else
         {
             dolfin::warning ("Uknown plot type \"%s\". No plot performed", plotType.c_str ());
@@ -782,7 +823,7 @@ namespace dcp
     void TimeDependentProblem::writeSolutionToFile (const std::string& writeType)
     {
         // check if writeType is known
-        if (writeType != "all" && writeType != "last")
+        if (writeType != "default" && writeType != "last" && writeType != "stashed")
         {
             dolfin::warning ("Uknown write type \"%s\". No write performed", writeType.c_str ());
             return;
@@ -802,9 +843,13 @@ namespace dcp
                 (*solutionWriter_) << std::make_pair (&(element.second), element.first);
             }
         }
-        if (writeType == "last")
+        else if (writeType == "last")
         {
             (*solutionWriter_) << std::make_pair (&(solution_.back ().second), solution_.back ().first);
+        }
+        else if (writeType == "stashed")
+        {
+            (*solutionWriter_) << std::make_pair (&(stashedSolution_), time_ -> value ());
         }
     }
     

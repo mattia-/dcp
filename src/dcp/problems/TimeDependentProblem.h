@@ -664,20 +664,22 @@ namespace dcp
              *  the plot title (\c plot_title will actually be added to the time, which is always plotted in the title).
              *  \param plotType select among different behaviour.
              *  Possible values are:
-             *  \li \c "all" : plot all the functions in \c solution_
+             *  \li \c "default" : plot all the functions in \c solution_
              *  \li \c "last" : plot only the last solution stored in \c solution_
+             *  \li \c "stased" : plot the stashed solution
              */
-            virtual void plotSolution (const std::string& plotType = "all") override;
+            virtual void plotSolution (const std::string& plotType = "default") override;
             
             //! Write the solution to file. 
             /*! Overrides method in \c dcp::GenericProblem to take into account the fact that \c solution_ is now a 
              *  vector with size greater than one. 
              *  \param writeType select among different behaviour.
              *  Possible values are:
-             *  \li \c "all" : write to file all the functions in \c solution_
+             *  \li \c "default" : write to file all the functions in \c solution_
              *  \li \c "last" : write to file only the last solution stored in \c solution_
+             *  \li \c "stased" : write to file the stashed solution
              */
-            virtual void writeSolutionToFile (const std::string& writeType = "all") override;
+            virtual void writeSolutionToFile (const std::string& writeType = "default") override;
             
             //! Clone method. Overrides method in \c GenericProblem
             /*!

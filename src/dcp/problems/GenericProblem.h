@@ -318,23 +318,22 @@ namespace dcp
                 
             //! Plot the solution
             /*!
-             *  \param plotType the type of the plot desired. In this case, it is not very useful, since the only 
-             *  possible value for \c plotType is \c "all" (which will simply plot the only solution stored in the 
-             *  protected member \c solution_), but it is useful to have the possibility to choose among different
-             *  behaviour in derived classes.
+             *  \param plotType the type of the plot desired. Possible values:
+             *  \li \c "default" the real solution, stored in \c solution_
+             *  \li \c "stashed" the stashed solution
+             *
              */
-            virtual void plotSolution (const std::string& plotType = "all");
+            virtual void plotSolution (const std::string& plotType = "default");
             
             //! Write the solution to file
             /*!
              *  It checks if the parameter \c "solution_file_name" and the protected member \c solutionFileName_
              *  coincide. If not, reset \c solutionWriter_ creating a new \c dolfin::File object with the correct name.
-             *  \param writeType the type of the writing desired. In this case, it is not very useful, since the only 
-             *  possible value for \c plotType is \c "all" (which will simply plot the only solution stored in the 
-             *  protected member \c solution_), but it is useful to have the possibility to choose among different
-             *  behaviour in derived classes.
+             *  \param writeType the type of the writing desired. Possible values:
+             *  \li \c "default" the real solution, stored in \c solution_
+             *  \li \c "stashed" the stashed solution
              */
-            virtual void writeSolutionToFile (const std::string& writeType = "all");
+            virtual void writeSolutionToFile (const std::string& writeType = "default");
             
             //! Clone method
             /*!

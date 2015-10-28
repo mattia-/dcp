@@ -325,7 +325,7 @@ namespace dcp
     void GenericProblem::plotSolution (const std::string& plotType)
     {
         // check if plotType is known
-        if (plotType != "all")
+        if (plotType != "default" && plotType != "stashed")
         {
             dolfin::warning ("Uknown plot type \"%s\". No plot performed", plotType.c_str ());
             return;
@@ -340,26 +340,48 @@ namespace dcp
         // get right function to plot
         if (plotComponent == -1)
         {
-            functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ().second);
-            dolfin::log (dolfin::DBG, "Plotting problem solution, all components...");
+            if (plotType == "default")
+            {
+                functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ().second);
+                dolfin::log (dolfin::DBG, "Plotting problem solution, all components...");
+            }
+            else // aka plotType == "stashed", otherwise we would have exited on the first check
+            {
+                functionToPlot = dolfin::reference_to_no_delete_pointer (stashedSolution_);
+                dolfin::log (dolfin::DBG, "Plotting stashed solution, all components...");
+            }
         }
         else
         {
-            functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ().second [plotComponent]);
-            dolfin::log (dolfin::DBG, "Plotting problem solution, component %d...", plotComponent);
+            if (plotType == "default")
+            {
+                functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ().second [plotComponent]);
+                dolfin::log (dolfin::DBG, "Plotting problem solution, component %d...", plotComponent);
+            }
+            else // aka plotType == "stashed", otherwise we would have exited on the first check
+            {
+                functionToPlot = dolfin::reference_to_no_delete_pointer (stashedSolution_ [plotComponent]);
+                dolfin::log (dolfin::DBG, "Plotting stashed solution, component %d...", plotComponent);
+            }
         }
         
+        std::string plotTitle = parameters ["plot_title"];
+        if (plotType == "stashed")
+        {
+            plotTitle += " (stashed)";
+        }
+
         // actual plotting
         if (solutionPlotter_ == nullptr)
         {
             dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
-            solutionPlotter_ = dolfin::plot (functionToPlot, parameters ["plot_title"]);
+            solutionPlotter_ = dolfin::plot (functionToPlot, plotTitle);
         }
         else if (! solutionPlotter_ -> is_compatible (functionToPlot))
         {
             dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
             dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
-            solutionPlotter_ = dolfin::plot (functionToPlot, parameters ["plot_title"]);
+            solutionPlotter_ = dolfin::plot (functionToPlot, plotTitle);
         }
         else 
         {
@@ -375,7 +397,7 @@ namespace dcp
     void GenericProblem::writeSolutionToFile (const std::string& writeType)
     {
         // check if writeType is known
-        if (writeType != "all")
+        if (writeType != "default" && writeType != "stashed")
         {
             dolfin::warning ("Uknown write type \"%s\". No write performed", writeType.c_str ());
             return;
@@ -388,7 +410,14 @@ namespace dcp
             solutionFileName_ = std::string (parameters["solution_file_name"]);
         }
         
-        (*solutionWriter_) << solution_.back ().second;
+        if (writeType == "default")
+        {
+            (*solutionWriter_) << solution_.back ().second;
+        }
+        else // aka writeType == "stashed", otherwise we would have exited on the first check
+        {
+            (*solutionWriter_) << stashedSolution_;
+        }
     }
     
 

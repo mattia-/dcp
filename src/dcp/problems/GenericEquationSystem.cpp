@@ -43,6 +43,7 @@ namespace dcp
         parameters.add ("subiterations_tolerance", 1e-6);
         parameters.add ("subiterations_maximum_iterations", 10);
         parameters.add ("plot_subiteration_solutions", false);
+        parameters.add ("write_subiteration_solutions_to_file", false);
         parameters.add (dolfin::Parameters ("subiterations_blacklist"));
         parameters.add (dolfin::Parameters ("subiterations_whitelist"));
             
@@ -739,9 +740,12 @@ namespace dcp
         double tolerance = parameters ["subiterations_tolerance"];
         int maxIterations = parameters ["subiterations_maximum_iterations"];
         bool plotSubiterationSolutions = parameters["plot_subiteration_solutions"];
+        bool writeSubiterationSolutions = parameters["write_subiteration_solutions_to_file"];
         dolfin::log (dolfin::DBG, "Tolerance: %f ", tolerance);
         dolfin::log (dolfin::DBG, "Maximum subiterations number: %d ", maxIterations);
         dolfin::log (dolfin::DBG, "Plot subiterations solutions: %s ", plotSubiterationSolutions ? "true" : "false");
+        dolfin::log (dolfin::DBG, 
+                     "Write subiterations solutions to file: %s ", writeSubiterationSolutions ? "true" : "false");
 
         int iteration = 0;
         double sumOfNorms = tolerance + 1;
@@ -779,7 +783,16 @@ namespace dcp
 
                 if (plotSubiterationSolutions == true)
                 {
+                    dolfin::begin ("Plotting subiteration solution...");
                     (this -> operator[] (*problemName)).plotSolution ("stashed");
+                    dolfin::end ();
+                }
+
+                if (writeSubiterationSolutions == true)
+                {
+                    dolfin::begin ("Writing subiteration solution to file...");
+                    (this -> operator[] (*problemName)).writeSolutionToFile ("stashed");
+                    dolfin::end ();
                 }
             }
             

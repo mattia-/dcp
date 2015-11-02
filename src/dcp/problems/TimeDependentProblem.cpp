@@ -478,7 +478,7 @@ namespace dcp
                        "Removing dirichlet boundary condition \"%s\" from time stepping problem boundary conditions map...", 
                        bcName.c_str ());
         // call removeDirichletBC to remove the dirichlet bc also from timeSteppingProblem_
-        // We add it to the existing value of nErasedElements so that we know wether both removal operations went fine
+        // We add it to the existing value of nErasedElements so that we know whether both removal operations went fine
         nErasedElements += removeDirichletBC (bcName);
         dolfin::end ();
 

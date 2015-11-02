@@ -32,7 +32,7 @@ namespace dcp
      *  Instead of having the users derive a class from \c dolfin::SubDomain and override the \c inside() method,
      *  this class stores a function wrapper as protected member, initialized upon building through the 
      *  object passed to the constructor. This function wrapper is called when the method \c inside() is called to
-     *  decide wether a point is inside the subdomain or not.
+     *  decide whether a point is inside the subdomain or not.
      */
     class Subdomain : public dolfin::SubDomain
     {

@@ -836,7 +836,7 @@ namespace dcp
             solutionFileName_ = std::string (parameters["solution_file_name"]);
         }
         
-        if (writeType == "all")
+        if (writeType == "default")
         {
             for (const auto& element : solution_)
             {

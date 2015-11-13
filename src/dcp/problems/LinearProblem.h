@@ -82,6 +82,8 @@ namespace dcp
                  *  as input.
                  *  The constructors also sets the following parameters:
                  *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
+                 *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
                  *        \c solver_. Default value: \c "lu_solver"
                  *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
@@ -114,6 +116,8 @@ namespace dcp
                  *  as input.
                  *  The constructors also sets the following parameters:
                  *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
+                 *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
                  *        \c solver_. Default value: \c "lu_solver"
                  *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
@@ -145,6 +149,8 @@ namespace dcp
                  *  input.
                  *  The constructors also sets the following parameters:
                  *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
+                 *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
                  *        \c solver_. Default value: \c "lu_solver"
                  *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
@@ -178,6 +184,8 @@ namespace dcp
                  *  as input.
                  *  The constructors also sets the following parameters:
                  *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
+                 *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
                  *        \c solver_. Default value: \c "lu_solver"
                  *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
@@ -213,6 +221,8 @@ namespace dcp
                  *  input.
                  *  The constructors also sets the following parameters:
                  *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
+                 *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
                  *        \c solver_. Default value: \c "lu_solver"
                  *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
@@ -248,6 +258,8 @@ namespace dcp
                  *  input.
                  *  The constructors also sets the following parameters:
                  *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
+                 *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
+                 *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
                  *        \c solver_. Default value: \c "lu_solver"
                  *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
@@ -456,6 +468,12 @@ namespace dcp
 
                 
                 /******************* METHODS *******************/
+                //! Lump system matrix
+                /*! Performs lumping of the system matrix by substituting the diagonal with the sum of each row and
+                 * setting the extra-diagonal terms to zero. Whether the lumping is performed or not is decided by the
+                 * value of the parameter \c lump_matrix
+                 */
+                virtual void lump ();
 
                 //! Solve problem
                 /*!
@@ -560,6 +578,7 @@ namespace dcp
 
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
+            parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);
             parameters.add ("current_solver_preconditioner", solverPreconditioner);
@@ -600,6 +619,7 @@ namespace dcp
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
+            parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);
             parameters.add ("current_solver_preconditioner", solverPreconditioner);
@@ -640,6 +660,7 @@ namespace dcp
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
+            parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);
             parameters.add ("current_solver_preconditioner", solverPreconditioner);
@@ -682,6 +703,7 @@ namespace dcp
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
+            parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);
             parameters.add ("current_solver_preconditioner", solverPreconditioner);
@@ -724,6 +746,7 @@ namespace dcp
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
+            parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);
             parameters.add ("current_solver_preconditioner", solverPreconditioner);
@@ -766,6 +789,7 @@ namespace dcp
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("problem_type", "linear");
+            parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);
             parameters.add ("current_solver_preconditioner", solverPreconditioner);
@@ -1152,7 +1176,25 @@ namespace dcp
 
 
     /******************* METHODS *******************/
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        void LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        lump () 
+        {
+            // create vector of 1s to get the sum of the rows by computing A*ones
+            dolfin::Vector ones (MPI_COMM_WORLD, problemMatrix_->size (0));
+            ones = 1;
+
+            // vector to contain the result of the multiplication
+            dolfin::Vector result;
+            problemMatrix_->mult (ones, result);
+
+            // set problemMatrix_ to diagonal
+            problemMatrix_->zero ();
+            problemMatrix_->set_diagonal (result);
+        }
     
+
+
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         void LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         solve (const std::string& solveType) 

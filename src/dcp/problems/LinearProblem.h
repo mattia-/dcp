@@ -473,7 +473,7 @@ namespace dcp
                  * setting the extra-diagonal terms to zero. Whether the lumping is performed or not is decided by the
                  * value of the parameter \c lump_matrix
                  */
-                virtual void lump ();
+                virtual void lumpMatrix ();
 
                 //! Solve problem
                 /*!
@@ -1178,8 +1178,9 @@ namespace dcp
     /******************* METHODS *******************/
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         void LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        lump () 
+        lumpMatrix () 
         {
+            dolfin::begin (dolfin::DBG, "Lumping mass matrix...");
             // create vector of 1s to get the sum of the rows by computing A*ones
             dolfin::Vector ones (MPI_COMM_WORLD, problemMatrix_->size (0));
             ones = 1;
@@ -1191,6 +1192,7 @@ namespace dcp
             // set problemMatrix_ to diagonal
             problemMatrix_->zero ();
             problemMatrix_->set_diagonal (result);
+            dolfin::end ();
         }
     
 
@@ -1238,6 +1240,11 @@ namespace dcp
                         dolfin::end ();
                     }
                     dolfin::end ();
+                }
+
+                if (bool(parameters["lump_matrix"]) == true)
+                {
+                    lumpMatrix ();
                 }
                 
                 solver_ -> set_operator (problemMatrix_);

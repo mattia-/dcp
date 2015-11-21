@@ -836,7 +836,7 @@ namespace dcp
             // call DirichletBC* destructor, which means that the pointers will be destroyed but the object they point
             // to will not
             
-            // now solve non linear problem and store solution in solution_ or stashedSolution_ accordinf to solveType.
+            // now solve non linear problem and store solution in solution_ or stashedSolution_ according to solveType.
             // We need to check whether tmpDirichletBCs is empty, and call the appropriate function
             // Parameters passed to the solver are those stored in private member "parameters" in the set identified
             // by parameter "solver_parameters_set_name"

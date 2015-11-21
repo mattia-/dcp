@@ -357,8 +357,8 @@ namespace dcp
                  *  See \c GenericProblem documentation for more details on the function
                  */
                 virtual void setIntegrationSubdomain (const std::string& formType,
-                                                       std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
-                                                       const dcp::SubdomainType& subdomainType) override;
+                                                      std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
+                                                      const dcp::SubdomainType& subdomainType) override;
 
                 //! Add Dirichlet boundary condition to the problem [1]. Overrides method in \c GenericProblem
                 /*!
@@ -469,11 +469,18 @@ namespace dcp
                 
                 /******************* METHODS *******************/
                 //! Lump system matrix
-                /*! Performs lumping of the system matrix by substituting the diagonal with the sum of each row and
-                 * setting the extra-diagonal terms to zero. Whether the lumping is performed or not is decided by the
-                 * value of the parameter \c lump_matrix
+                /*! 
+                 *  Performs lumping of the system matrix by substituting the diagonal with the sum of each row and
+                 *  setting the extra-diagonal terms to zero. Whether the lumping is performed or not is decided by the
+                 *  value of the parameter \c lump_matrix
                  */
                 virtual void lumpMatrix ();
+
+                //! Assemble the linear system
+                /*!
+                 *  Assemble the linear system related to the problem to be solved
+                 */
+                virtual void assembleLinearSystem ();
 
                 //! Solve problem
                 /*!
@@ -535,12 +542,7 @@ namespace dcp
                 std::unique_ptr<dolfin::GenericLinearSolver> solver_;
                 
                 //! Matrix to hold the problem's discrete operator
-                /*!
-                 *  We use a \c std::shared_ptr for compatibility with FEniCS, version 1.3.0.
-                 *  Note that there is no write access to this variable from outside the class,
-                 *  so it is guaranteed to be a unique shared pointer
-                 */
-                std::shared_ptr<dolfin::Matrix> problemMatrix_;
+                dolfin::Matrix problemMatrix_;
 
                 //! Vector to store the right hand side of the discrete problem
                 dolfin::Vector rhsVector_;
@@ -565,7 +567,7 @@ namespace dcp
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
-            problemMatrix_ (new dolfin::Matrix),
+            problemMatrix_ (),
             rhsVector_ ()
         { 
             std::string solverType = "lu_solver";
@@ -606,7 +608,7 @@ namespace dcp
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
-            problemMatrix_ (new dolfin::Matrix),
+            problemMatrix_ (),
             rhsVector_ ()
         { 
             std::string solverType = "lu_solver";
@@ -647,7 +649,7 @@ namespace dcp
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
-            problemMatrix_ (new dolfin::Matrix),
+            problemMatrix_ (),
             rhsVector_ ()
         { 
             std::string solverType = "lu_solver";
@@ -690,7 +692,7 @@ namespace dcp
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
             solver_ (nullptr),
-            problemMatrix_ (new dolfin::Matrix),
+            problemMatrix_ (),
             rhsVector_ ()
         { 
             std::string solverType = "lu_solver";
@@ -733,7 +735,7 @@ namespace dcp
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
             solver_ (nullptr),
-            problemMatrix_ (new dolfin::Matrix),
+            problemMatrix_ (),
             rhsVector_ ()
         { 
             std::string solverType = "lu_solver";
@@ -776,7 +778,7 @@ namespace dcp
             bilinearForm_ (std::move (bilinearForm)),
             linearForm_ (std::move (linearForm)),
             solver_ (nullptr),
-            problemMatrix_ (new dolfin::Matrix),
+            problemMatrix_ (),
             rhsVector_ ()
         {
             std::string solverType = "lu_solver";
@@ -834,7 +836,7 @@ namespace dcp
         const dolfin::Matrix& LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         linearOperator () const
         {
-            return *problemMatrix_;
+            return problemMatrix_;
         }
 
 
@@ -1182,19 +1184,59 @@ namespace dcp
         {
             dolfin::begin (dolfin::DBG, "Lumping mass matrix...");
             // create vector of 1s to get the sum of the rows by computing A*ones
-            dolfin::Vector ones (MPI_COMM_WORLD, problemMatrix_->size (0));
+            dolfin::Vector ones (MPI_COMM_WORLD, problemMatrix_.size (0));
             ones = 1;
 
             // vector to contain the result of the multiplication
             dolfin::Vector result;
-            problemMatrix_->mult (ones, result);
+            problemMatrix_.mult (ones, result);
 
             // set problemMatrix_ to diagonal
-            problemMatrix_->zero ();
-            problemMatrix_->set_diagonal (result);
+            problemMatrix_.zero ();
+            problemMatrix_.set_diagonal (result);
             dolfin::end ();
         }
     
+
+
+    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
+        void LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        assembleLinearSystem () 
+        {
+            // define auxiliary string variables
+            bool systemIsAssembled = parameters ["system_is_assembled"];
+            bool forceReassembleSystem = parameters ["force_reassemble_system"];
+            bool needsReassembling = !systemIsAssembled || forceReassembleSystem;
+            
+            if (needsReassembling)
+            {
+                dolfin::log (dolfin::DBG, "Assembling bilinear form...");
+                dolfin::assemble (problemMatrix_, bilinearForm_);
+                
+                dolfin::log (dolfin::DBG, "Assembling linear form...");
+                dolfin::assemble (rhsVector_, linearForm_);
+                
+                if (!dirichletBCs_.empty ())
+                {
+                    dolfin::begin (dolfin::DBG, "Imposing Dirichlet's boundary conditions...");
+                    for (auto &i : dirichletBCs_)
+                    {
+                        dolfin::begin (dolfin::DBG, "Boundary condition: %s", i.first.c_str ());
+                        i.second.apply (problemMatrix_, rhsVector_);
+                        dolfin::end ();
+                    }
+                    dolfin::end ();
+                }
+
+                if (bool(parameters["lump_matrix"]) == true)
+                {
+                    lumpMatrix ();
+                }
+                
+                parameters ["system_is_assembled"] = true;
+            }
+        }
+
 
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
@@ -1213,47 +1255,12 @@ namespace dcp
             
             update ();
             
-            dolfin::begin (dolfin::PROGRESS, "Solving problem...");
+            dolfin::begin (dolfin::PROGRESS, "Assembling system...");
+            assembleLinearSystem ();
+            dolfin::end (); 
             
-            // define auxiliary string variables
-            bool systemIsAssembled = parameters ["system_is_assembled"];
-            bool forceReassembleSystem = parameters ["force_reassemble_system"];
-            bool needsReassembling = !systemIsAssembled || forceReassembleSystem;
-            
-            if (needsReassembling)
-            {
-                dolfin::begin (dolfin::DBG, "Assembling system...");
-                
-                dolfin::log (dolfin::DBG, "Assembling bilinear form...");
-                dolfin::assemble (*problemMatrix_, bilinearForm_);
-                
-                dolfin::log (dolfin::DBG, "Assembling linear form...");
-                dolfin::assemble (rhsVector_, linearForm_);
-                
-                if (!dirichletBCs_.empty ())
-                {
-                    dolfin::begin (dolfin::DBG, "Imposing Dirichlet's boundary conditions...");
-                    for (auto &i : dirichletBCs_)
-                    {
-                        dolfin::begin (dolfin::DBG, "Boundary condition: %s", i.first.c_str ());
-                        i.second.apply (*problemMatrix_, rhsVector_);
-                        dolfin::end ();
-                    }
-                    dolfin::end ();
-                }
-
-                if (bool(parameters["lump_matrix"]) == true)
-                {
-                    lumpMatrix ();
-                }
-                
-                solver_ -> set_operator (problemMatrix_);
-                
-                parameters ["system_is_assembled"] = true;
-                
-                dolfin::end ();
-            }
-            
+            dolfin::begin (dolfin::PROGRESS, "Solving system...");
+            solver_ -> set_operator (dolfin::reference_to_no_delete_pointer (problemMatrix_));
             if (solveType == "default")
             {
                 solver_ -> solve (*(solution_.back ().second.vector ()), rhsVector_);

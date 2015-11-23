@@ -37,10 +37,10 @@ namespace dcp
 
 
     /************************* OPERATORS ********************/
-    void DirichletControlUpdater::operator() (dcp::GenericEquationSystem& compositeProblem, 
+    void DirichletControlUpdater::operator() (dcp::GenericEquationSystem& system, 
                                               const dolfin::GenericFunction& dirichletBCValue) const
     {
-        dcp::GenericProblem& problem = compositeProblem [problemName_];
+        dcp::GenericProblem& problem = system [problemName_];
         
         problem.removeDirichletBC (dirichletBCName_);
         

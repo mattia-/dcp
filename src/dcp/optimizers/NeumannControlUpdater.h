@@ -62,10 +62,10 @@ namespace dcp
             //! Call operator. This will actually perform the updating of the control parameter
             /*! 
              *  Input parametes are:
-             *  \param compositeProblem the problem on which to operate
+             *  \param system the system on which to operate
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
-            void operator() (dcp::GenericEquationSystem& compositeProblem, 
+            void operator() (dcp::GenericEquationSystem& system, 
                              const dolfin::GenericFunction& coefficientValue) const;
  
         // ---------------------------------------------------------------------------------------------//

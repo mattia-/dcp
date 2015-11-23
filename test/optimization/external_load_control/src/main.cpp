@@ -28,19 +28,6 @@
 #include "adjoint.h"
 #include "objective_functional.h"
 
-class GradientEvaluator
-{
-    public:
-        void operator() (dolfin::Array<double>& values, 
-                         const dolfin::Array<double>& x,
-                         const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables)
-        {
-            variables.find("p")->second -> eval (values, x);
-            values[0] = -values[0];
-            values[1] = -values[1]; // TODO check gradient expression
-        }
-};
-
 class DirichletBoundary
 {
     public:
@@ -57,6 +44,30 @@ class ObservationDomain
         {
             return x[0] <= 0.75 && x[0] >= 0.25 && x[1] <= 0.75 && x[1] >= 0.25;
         }
+};
+
+class GradientEvaluator
+{
+    public:
+        GradientEvaluator () : 
+            observationDomain_ ((ObservationDomain ()))
+        {
+
+        }
+
+        void operator() (dolfin::Array<double>& values, 
+                         const dolfin::Array<double>& x,
+                         const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables)
+        {
+            dolfin::Array<double> uValues (1);
+            dolfin::Array<double> u0Values (1);
+            variables.find("u")->second -> eval (uValues, x);
+            variables.find("u_0")->second -> eval (u0Values, x);
+            values[0] = observationDomain_.inside (x, false) ? (uValues[0] - u0Values[0]) : 0;
+        }
+
+    protected:
+        dcp::Subdomain observationDomain_;
 };
 
     
@@ -137,8 +148,11 @@ int main (int argc, char* argv[])
                                                   dcp::SubdomainType::INTERNAL_CELLS);
     
     objectiveFunctional.setCoefficient ("gradient",
-                                        dolfin::reference_to_no_delete_pointer (problems.solution ("adjoint")),
-                                        "p");
+                                        dolfin::reference_to_no_delete_pointer (problems.solution ("primal")),
+                                        "u");
+    objectiveFunctional.setCoefficient ("gradient",
+                                        dolfin::reference_to_no_delete_pointer (u_0),
+                                        "u_0");
     
     
     // ============

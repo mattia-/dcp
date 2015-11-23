@@ -34,10 +34,10 @@ namespace dcp
 
 
     /************************* OPERATORS ********************/
-    void DistributedControlUpdater::operator() (dcp::GenericEquationSystem& compositeProblem, 
+    void DistributedControlUpdater::operator() (dcp::GenericEquationSystem& system, 
                                                 const dolfin::GenericFunction& coefficientValue) const
     {
-        dcp::GenericProblem& problem = compositeProblem [problemName_];
+        dcp::GenericProblem& problem = system [problemName_];
         
         problem.setCoefficient (coefficientType_, 
                                 dolfin::reference_to_no_delete_pointer (coefficientValue), 

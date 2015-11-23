@@ -120,13 +120,13 @@ namespace dcp
             //! Perform optimization on the input problem using the gradient method with backtracking
             /*! 
              *  Input arguments are:
-             *  \param problem the composite differential problem that represents the primal/adjoint system
+             *  \param problem the system that represents the primal/adjoint system
              *  \param objectiveFunctional the objective functional to be minimized
              *  \param initialGuess the starting point for the minimization algorithm. At the end of the function, it
              *  will containt the final value of the control variable
              *  \param updater callable object to update the control parameter value. It can be either be a function 
              *  pointer, a function object or a lambda expression. Its input argument are:
-             *  \li the composite differential problem to update
+             *  \li the system to update
              *  \li the new value of the control function
              * 
              *  Functors for the most common types of update are provided: see \c dcp::DirichletControlUpdater,

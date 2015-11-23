@@ -95,7 +95,7 @@ namespace dcp
         
         // all linear problems in the EquationSystem "problem" should be reassembled every time. So we
         // set the parameter "force_reassemble_system" to true for every one of them
-        dolfin::begin (dolfin::DBG, "Scanning composite differential problem...");
+        dolfin::begin (dolfin::DBG, "Scanning system...");
         for (std::size_t i = 0; i < problem.size (); ++i)
         {
             if (static_cast<std::string> (problem[i].parameters["problem_type"]) == "linear")
@@ -160,7 +160,7 @@ namespace dcp
 
         dolfin::end (); // "Minimization loop initialization"
 
-        dolfin::log (dolfin::DBG, "=================\nMINIMIZATION LOOP SETTINGS\n=================");
+        dolfin::log (dolfin::DBG, "==========================\nMINIMIZATION LOOP SETTINGS\n==========================");
         dolfin::log (dolfin::DBG, "Parameters value are:");
         dolfin::log (dolfin::DBG, "c_1 = %f", c_1);
         dolfin::log (dolfin::DBG, "alpha_0 = %f", alpha_0);

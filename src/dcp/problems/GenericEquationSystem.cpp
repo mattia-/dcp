@@ -783,7 +783,7 @@ namespace dcp
 
                 if (plotSubiterationSolutions == true)
                 {
-                    dolfin::begin ("Plotting subiteration solution...");
+                    dolfin::begin (dolfin::DBG, "Plotting subiteration solution...");
                     (this -> operator[] (*problemName)).plotSolution ("stashed");
                     dolfin::end ();
                 }

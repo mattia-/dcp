@@ -24,14 +24,12 @@
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/la/LinearSolver.h>
 #include <dolfin/la/GenericLinearSolver.h>
-#include <dolfin/la/Matrix.h>
-#include <dolfin/la/Vector.h>
 #include <dolfin/log/dolfin_log.h>
 #include <dolfin/parameter/Parameters.h>
 #include <vector>
 #include <string>
 #include <memory>
-#include <dcp/problems/GenericProblem.h>
+#include <dcp/problems/GenericLinearProblem.h>
 #include <dcp/factories/LinearSolverFactory.h>
 #include <dcp/problems/SubdomainType.h>
 
@@ -47,9 +45,8 @@ namespace dcp
      *  with \f$ a \left(u, v\right) : V \times V \rightarrow \mathds{R}\f$ bilinear form on \f$V\f$
      *  and \f$ L \left(v\right) : V \rightarrow \mathds{R} \f$ linear form on the same space.
      *  
-     *  It inherits publicly from \c GenericProblem
-     *  and it extends its functionalities to a concrete differential
-     *  problem.
+     *  It inherits publicly from \c GenericLinearProblem and it extends its functionalities to a concrete 
+     *  differential problem.
      *  Template arguments are:
      *  \arg T_BilinearForm the bilinear form type
      *  \arg T_LinearForm the linear form type
@@ -58,7 +55,7 @@ namespace dcp
      */
 
     template <class T_BilinearForm_, class T_LinearForm_, class T_LinearSolverFactory_ = dcp::LinearSolverFactory>
-        class LinearProblem : public dcp::GenericProblem
+        class LinearProblem : public dcp::GenericLinearProblem
         {
             // ---------------------------------------------------------------------------------------------//  
 
@@ -81,7 +78,6 @@ namespace dcp
                  *  bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
@@ -115,7 +111,6 @@ namespace dcp
                  *  bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
@@ -148,7 +143,6 @@ namespace dcp
                  *  and linear form will be created too, calling the constructor which takes the function space as
                  *  input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
@@ -183,7 +177,6 @@ namespace dcp
                  *  bilinear and linear form will be created too, calling the constructor which takes the function space
                  *  as input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
@@ -220,7 +213,6 @@ namespace dcp
                  *  and linear form will be created too, calling the constructor which takes the function space as
                  *  input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
@@ -257,7 +249,6 @@ namespace dcp
                  *  and linear form will be created too, calling the constructor which takes the function space as
                  *  input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
                  *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
@@ -299,27 +290,27 @@ namespace dcp
                 /*! 
                  *  \return a const reference to the problem's linear form
                  */
-                virtual const T_BilinearForm& bilinearForm () const;
+                virtual const T_BilinearForm& bilinearForm () const override;
 
                 //! Get const reference to the problem's linear form
                 /*! 
                  *  \return a const reference to the problem's linear form
                  */
-                virtual const T_LinearForm& linearForm () const;
+                virtual const T_LinearForm& linearForm () const override;
 
                 //! Get const reference to the problem's linear operator
                 /*!
                  *  \return a const reference to the problem's linear operator, which
                  *  is a \c dolfin::Matrix
                  */
-                virtual const dolfin::Matrix& linearOperator () const;
+                virtual const dolfin::Matrix& linearOperator () const override;
 
                 //! Get const reference to the problem's right hand side
                 /*!
                  *  \return a const reference to the problem's right hand side, which
                  *  is a \c dolfin::Vector
                  */
-                virtual const dolfin::Vector& rhs () const;
+                virtual const dolfin::Vector& rhs () const override;
 
 
                 /******************* SETTERS *******************/
@@ -471,16 +462,15 @@ namespace dcp
                 //! Lump system matrix
                 /*! 
                  *  Performs lumping of the system matrix by substituting the diagonal with the sum of each row and
-                 *  setting the extra-diagonal terms to zero. Whether the lumping is performed or not is decided by the
-                 *  value of the parameter \c lump_matrix
+                 *  setting the extra-diagonal terms to zero.
                  */
-                virtual void lumpMatrix ();
+                virtual void lumpMatrix () override;
 
                 //! Assemble the linear system
                 /*!
                  *  Assemble the linear system related to the problem to be solved
                  */
-                virtual void assembleLinearSystem ();
+                virtual void assembleLinearSystem () override;
 
                 //! Solve problem
                 /*!
@@ -563,7 +553,7 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace) :
-            GenericProblem (functionSpace),
+            GenericLinearProblem (functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
@@ -579,7 +569,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
 
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "linear");
             parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);
@@ -604,7 +593,7 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (const dolfin::FunctionSpace& functionSpace) :
-            GenericProblem (functionSpace),
+            GenericLinearProblem (functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
@@ -620,7 +609,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "linear");
             parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);
@@ -645,7 +633,7 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         LinearProblem (dolfin::FunctionSpace&& functionSpace) :
-            GenericProblem (functionSpace),
+            GenericLinearProblem (functionSpace),
             bilinearForm_ (*functionSpace_, *functionSpace_),
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
@@ -661,7 +649,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "linear");
             parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);
@@ -688,7 +675,7 @@ namespace dcp
         LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                        const T_BilinearForm& bilinearForm,
                        const T_LinearForm& linearForm) :
-            GenericProblem (functionSpace),
+            GenericLinearProblem (functionSpace),
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
             solver_ (nullptr),
@@ -704,7 +691,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "linear");
             parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);
@@ -731,7 +717,7 @@ namespace dcp
         LinearProblem (const dolfin::FunctionSpace& functionSpace,
                        const T_BilinearForm& bilinearForm,
                        const T_LinearForm& linearForm) :
-            GenericProblem (functionSpace),
+            GenericLinearProblem (functionSpace),
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
             solver_ (nullptr),
@@ -747,7 +733,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "linear");
             parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);
@@ -774,7 +759,7 @@ namespace dcp
         LinearProblem (dolfin::FunctionSpace&& functionSpace,
                        T_BilinearForm&& bilinearForm,
                        T_LinearForm&& linearForm) :
-            GenericProblem (functionSpace),
+            GenericLinearProblem (functionSpace),
             bilinearForm_ (std::move (bilinearForm)),
             linearForm_ (std::move (linearForm)),
             solver_ (nullptr),
@@ -790,7 +775,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "linear");
             parameters.add ("lump_matrix", false);
             parameters.add ("current_solver_type", solverType);
             parameters.add ("current_solver_method", solverMethod);

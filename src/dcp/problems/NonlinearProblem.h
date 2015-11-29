@@ -29,7 +29,7 @@
 #include <dolfin/parameter/Parameters.h>
 #include <vector>
 #include <string>
-#include <dcp/problems/GenericProblem.h>
+#include <dcp/problems/GenericNonlinearProblem.h>
 #include <dcp/problems/SubdomainType.h>
 
 namespace dcp
@@ -43,9 +43,8 @@ namespace dcp
      *  \f]
      *  with \f$ F \left(u, v\right) : V \times V \rightarrow \mathds{R}\f$ non linear in the problem unknown \f$u\f$.
      *  
-     *  It inherits publicly from \c GenericProblem
-     *  and it extends its functionalities to a concrete differential
-     *  problem.
+     *  It inherits publicly from \c GenericNonlinearProblem and it extends its functionalities to a concrete 
+     *  differential problem.
      *  Template arguments are:
      *  \arg T_ResidualForm the residual form type, that is the type that describes the form \f$F\f$
      *  \arg T_JacobianForm the jacobian form type, that is the type of the derivative of \f$F\f$ with respect to \f$u\f$,
@@ -53,7 +52,7 @@ namespace dcp
      */
 
     template <class T_ResidualForm_, class T_JacobianForm_>
-        class NonlinearProblem : public dcp::GenericProblem
+        class NonlinearProblem : public dcp::GenericNonlinearProblem
         {
             // ---------------------------------------------------------------------------------------------//  
 
@@ -80,7 +79,6 @@ namespace dcp
                  *  argument. The residual and jacobian form will be created too, calling the constructor which takes
                  *  the function space as input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
                  *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
                  *      - \c "residual_form_solution_name" (see input arguments)
                  *      - \c "jacobian_form_solution_name" (see input arguments)
@@ -104,7 +102,6 @@ namespace dcp
                  *  using the \c new operator and functionSpace's copy constructor. The residual and jacobian form will
                  *  be created too, calling the constructor which takes the function space as input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
                  *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
                  *      - \c "residual_form_solution_name" (see input arguments)
                  *      - \c "jacobian_form_solution_name" (see input arguments)
@@ -127,7 +124,6 @@ namespace dcp
                  *  using the \c new operator and mesh's and functionSpace's move constructor. The residual and jacobian
                  *  form will be created too, calling the constructor which takes the function space as input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
                  *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
                  *      - \c "residual_form_solution_name" (see input arguments)
                  *      - \c "jacobian_form_solution_name" (see input arguments)
@@ -154,7 +150,6 @@ namespace dcp
                  *  argument. The residual and jacobian form will be created too, calling the constructor which takes
                  *  the function space as input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
                  *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
                  *      - \c "residual_form_solution_name" (see input arguments)
                  *      - \c "jacobian_form_solution_name" (see input arguments)
@@ -181,7 +176,6 @@ namespace dcp
                  *  using the \c new operator and functionSpace's copy constructor. The residual and jacobian form will
                  *  be created too, calling the constructor which takes the function space as input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
                  *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
                  *      - \c "residual_form_solution_name" (see input arguments)
                  *      - \c "jacobian_form_solution_name" (see input arguments)
@@ -208,7 +202,6 @@ namespace dcp
                  *  using the \c new operator and mesh's and functionSpace's move constructor. The residual and jacobian
                  *  form will be created too, calling the constructor which takes the function space as input.
                  *  The constructors also sets the following parameters:
-                 *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
                  *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
                  *      - \c "residual_form_solution_name" (see input arguments)
                  *      - \c "jacobian_form_solution_name" (see input arguments)
@@ -236,13 +229,13 @@ namespace dcp
                 /*! 
                  *  \return a const reference to the problem's residual form
                  */
-                virtual const T_ResidualForm& residualForm () const;
+                virtual const T_ResidualForm& residualForm () const override;
 
                 //! Get const reference to the problem's jacobian form
                 /*! 
                  *  \return a const reference to the problem's jacobian form
                  */
-                virtual const T_JacobianForm& jacobianForm () const;
+                virtual const T_JacobianForm& jacobianForm () const override;
 
                 /******************* SETTERS *******************/
 
@@ -353,7 +346,7 @@ namespace dcp
         NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            GenericProblem (functionSpace),
+            GenericNonlinearProblem (functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
@@ -362,7 +355,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
             parameters.add ("residual_form_solution_name", residualFormSolutionName);
             if (jacobianFormSolutionName.empty ())
@@ -403,7 +395,7 @@ namespace dcp
         NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            GenericProblem (functionSpace),
+            GenericNonlinearProblem (functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
@@ -412,7 +404,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
             parameters.add ("residual_form_solution_name", residualFormSolutionName);
             if (jacobianFormSolutionName.empty ())
@@ -453,7 +444,7 @@ namespace dcp
         NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            GenericProblem (functionSpace),
+            GenericNonlinearProblem (functionSpace),
             residualForm_ (*functionSpace_),
             jacobianForm_ (*functionSpace_, *functionSpace_)
         { 
@@ -462,7 +453,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
             parameters.add ("residual_form_solution_name", residualFormSolutionName);
             if (jacobianFormSolutionName.empty ())
@@ -505,7 +495,7 @@ namespace dcp
                           const T_JacobianForm& jacobianForm,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            GenericProblem (functionSpace),
+            GenericNonlinearProblem (functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 
@@ -514,7 +504,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
             parameters.add ("residual_form_solution_name", residualFormSolutionName);
             if (jacobianFormSolutionName.empty ())
@@ -557,7 +546,7 @@ namespace dcp
                           const T_JacobianForm& jacobianForm,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            GenericProblem (functionSpace),
+            GenericNonlinearProblem (functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 
@@ -566,7 +555,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
             parameters.add ("residual_form_solution_name", residualFormSolutionName);
             if (jacobianFormSolutionName.empty ())
@@ -609,7 +597,7 @@ namespace dcp
                           T_JacobianForm&& jacobianForm,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
-            GenericProblem (functionSpace),
+            GenericNonlinearProblem (functionSpace),
             residualForm_ (residualForm),
             jacobianForm_ (jacobianForm)
         { 
@@ -618,7 +606,6 @@ namespace dcp
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("problem_type", "nonlinear");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
             parameters.add ("residual_form_solution_name", residualFormSolutionName);
             if (jacobianFormSolutionName.empty ())

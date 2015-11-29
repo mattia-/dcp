@@ -1,5 +1,7 @@
 # collect header files
 SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericProblem.h 
+             ${CMAKE_CURRENT_SOURCE_DIR}/GenericLinearProblem.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/GenericNonlinearProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/LinearProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/NonlinearProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentProblem.h
@@ -15,6 +17,8 @@ SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/EquationSystem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentEquationSystem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentProblem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/GenericProblem.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/GenericLinearProblem.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/GenericNonlinearProblem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/AlgebraicProblem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/GenericEquationSystem.cpp)
 

@@ -316,6 +316,9 @@ namespace dcp
             //! Copy stashed solution to \c solution_, thus making it the actual solution of the problem
             virtual void applyStashedSolution ();
                 
+            //! Copy current solution in \c stashedSolution_
+            virtual void stashSolution ();
+
             //! Plot the solution
             /*!
              *  \param plotType the type of the plot desired. Possible values:

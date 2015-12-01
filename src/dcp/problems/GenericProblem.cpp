@@ -322,6 +322,21 @@ namespace dcp
     
 
     /********************** METHODS ***********************/
+    void GenericProblem::applyStashedSolution ()
+    {
+        solution_.back ().second = stashedSolution_;
+        stashedSolution_ = dolfin::Function (*functionSpace_);
+    }
+
+
+
+    void GenericProblem::stashSolution ()
+    {
+        stashedSolution_ = solution_.back ().second;
+    }
+
+
+
     void GenericProblem::plotSolution (const std::string& plotType)
     {
         // check if plotType is known
@@ -418,13 +433,5 @@ namespace dcp
         {
             (*solutionWriter_) << stashedSolution_;
         }
-    }
-    
-
-
-    void GenericProblem::applyStashedSolution ()
-    {
-        solution_.back ().second = stashedSolution_;
-        stashedSolution_ = dolfin::Function (*functionSpace_);
     }
 }

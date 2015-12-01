@@ -696,8 +696,17 @@ namespace dcp
         std::string solveTypeBackup = solveType_;
         std::string solutionTypeBackup = solutionType_;
         
+        // stash current solution of problems in subiterations range so that linking is performed correctly
+        for (auto problemName = solveOrder_.begin (); problemName != solveOrder_.end (); problemName++)
+        {
+            (this -> operator[] (*problemName)).stashSolution ();
+        }
+
         // set solveType_ so that during subiterations solve of type "stash" is called
         solveType_ = "stash";
+        
+        // set solution type so that from now on links are performed on stashed solutions
+        solutionType_ = "stashed";
         
         // solve all the problems the first time. Remember that subiterationsBegin and subiterationsEnd are
         // iterators on solveOrder_
@@ -708,22 +717,19 @@ namespace dcp
             if (plotSubiterationSolutions == true)
             {
                 dolfin::begin (dolfin::DBG, "Plotting subiteration solution...");
-                (this -> operator[] (*problemName)).plotSolution ("stashed");
+                (this -> operator[] (*problemName)).plotSolution (solutionType_);
                 dolfin::end ();
             }
 
             if (writeSubiterationSolutions == true)
             {
                 dolfin::begin ("Writing subiteration solution to file...");
-                (this -> operator[] (*problemName)).writeSolutionToFile ("stashed");
+                (this -> operator[] (*problemName)).writeSolutionToFile (solutionType_);
                 dolfin::end ();
             }
         }
         dolfin::end (); // Solving all problems once
             
-        // set solution type so that from now on links are performed on stashed solutions
-        solutionType_ = "stashed";
-        
         dolfin::begin (dolfin::DBG, "Setting up subiterations loop variables...");
 
         // vector of problem names whose solution should be used in the convergence check
@@ -797,14 +803,14 @@ namespace dcp
                 if (plotSubiterationSolutions == true)
                 {
                     dolfin::begin (dolfin::DBG, "Plotting subiteration solution...");
-                    (this -> operator[] (*problemName)).plotSolution ("stashed");
+                    (this -> operator[] (*problemName)).plotSolution (solutionType_);
                     dolfin::end ();
                 }
 
                 if (writeSubiterationSolutions == true)
                 {
                     dolfin::begin ("Writing subiteration solution to file...");
-                    (this -> operator[] (*problemName)).writeSolutionToFile ("stashed");
+                    (this -> operator[] (*problemName)).writeSolutionToFile (solutionType_);
                     dolfin::end ();
                 }
             }

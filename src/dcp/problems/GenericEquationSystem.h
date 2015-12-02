@@ -120,12 +120,15 @@ namespace dcp
             /*!
              *  The parameters are:
              *  \param problemName the problem name. Empty names are not allowed.
-             *  \param problem a const reference to an \c GenericProblem 
+             *  \param problem a const reference to a \c GenericProblem 
              *  
              *  The class will make a copy of the input problem calling the method \c clone().
              *  The problem's name is inserted at the end of \c solveOrder_
+             *
+             *  \return \c true if the problem was added, \c false otherwise
              */
-            virtual void addProblem (const std::string& problemName, dcp::GenericProblem& problem);
+            virtual bool addProblem (const std::string& problemName, 
+                                     dcp::GenericProblem& problem);
             
             //! Add problem to the map of problems to be solved [2]
             /*!
@@ -134,13 +137,56 @@ namespace dcp
              *  \param problem a shared pointer to a \c dcp::GenericProblem. 
              *  
              *  The problem's name is inserted at the end of \c solveOrder_
+             *
+             *  \return \c true if the problem was added, \c false otherwise
              */
-            virtual void addProblem (const std::string& problemName, 
+            virtual bool addProblem (const std::string& problemName, 
                                      const std::shared_ptr<dcp::GenericProblem> problem);
             
-            //! Remove problem with the given name from the private member variables. A warning is issued if the name is 
-            //! not found
-            virtual void removeProblem (const std::string& problemName);
+            //! Add problem to the map of problems to be used to set the initial guesses in the subiteration loop [1]
+            /*!
+             *  The parameters are:
+             *  \param problemName the name of the problem in \c storedProblems_ whose initial guess will be set using
+             *  the problem passed as second parameter (no check is performed to determine whether there is a problem
+             *  with this name in \c storedProblems_)
+             *  \param problem the problem to be used to set the initial guess
+             *  
+             *  The class will make a copy of the input problem calling the method \c clone().
+             *
+             *  \return \c true if the problem was added, \c false otherwise
+             */
+            virtual bool addInitialGuessSetter (const std::string& name, 
+                                                dcp::GenericProblem& problem);
+            
+            //! Add problem to the map of problems to be used to set the initial guesses in the subiteration loop [2]
+            /*!
+             *  The parameters are:
+             *  the problem passed as second parameter (no check is performed to determine whether there is a problem
+             *  with this name in \c storedProblems_)
+             *  \param problem the problem to be used to set the initial guess
+             *  
+             *  \return \c true if the problem was added, \c false otherwise
+             */
+            virtual bool addInitialGuessSetter (const std::string& name, 
+                                                const std::shared_ptr<dcp::GenericProblem> problem);
+            
+            //! Remove problem with the given name from the map where the system problems are stored
+            /*! 
+             *  Parameters:
+             *  \param problemName the name of the problem to be removed
+             *
+             *  \return \c true if the problem was removed, \c false otherwise
+             */
+            virtual bool removeProblem (const std::string& problemName);
+            
+            //! Remove problem with the given name from the map where initial guess setters are stored
+            /*! 
+             *  Parameters:
+             *  \param problemName the name of the problem to be removed
+             *
+             *  \return \c true if the problem was removed, \c false otherwise
+             */
+            virtual bool removeInitialGuessSetter (const std::string& name);
             
             //! Set solve order of the problems
             /*!
@@ -149,13 +195,15 @@ namespace dcp
              *  the input vector or on vectors' size. The function will, however, check for double entries and empty 
              *  names, since neither of them are allowed. Use \c setSubiterationRange if you want a problems solved more
              *  than once at each timestep
+             *
+             *  \return \c true if the problems were reordered, \c false otherwise
              */
-            virtual void reorderProblems (const std::vector<std::string>& solveOrder);
+            virtual bool reorderProblems (const std::vector<std::string>& solveOrder);
             
             //! Adds link between problems' coefficient and solution [1]
             /*!
-             *  This function will add to the stored map \c problemsLinks_ a \c std::pair created on the input arguments
-             *  and perform the actual linking calling \c linkProblems
+             *  This function will add to the stored map \c problemsLinks_ a \c std::pair created on the input
+             *  arguments.
              *  \param linkFrom identifies the problem whose parameter (passed as second argument to the function) 
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
@@ -168,8 +216,10 @@ namespace dcp
              *  appears in the protected member variable \c problemsLinks_, it will be relinked using the \c std::pair
              *  passed as first argument if \c forceRelinking is true, and not relinked if it is false (but issuing a
              *  warning in this case)
+             *
+             *  \return \c true if the link was added, \c false otherwise
              */
-            virtual void addLink (const std::string& linkFrom, 
+            virtual bool addLink (const std::string& linkFrom, 
                                   const std::string& linkedCoefficientName,
                                   const std::string& linkedCoefficientType, 
                                   const std::string& linkTo,
@@ -177,8 +227,8 @@ namespace dcp
 
             //! Adds link between problems' coefficient and solution [2]
             /*!
-             *  This function will add to the stored map \c problemsLinks_ a \c std::pair created on the input arguments
-             *  and perform the actual linking calling \c linkProblems
+             *  This function will add to the stored map \c problemsLinks_ a \c std::pair created on the input
+             *  arguments.
              *  \param linkFrom identifies the problem whose parameter (passed as second argument to the function) 
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
@@ -193,8 +243,10 @@ namespace dcp
              *  appears in the protected member variable \c problemsLinks_, it will be relinked using the \c std::pair
              *  passed as first argument if \c forceRelinking is true, and not relinked if it is false (but issuing a
              *  warning in this case)
+             *
+             *  \return \c true if the link was added, \c false otherwise
              */
-            virtual void addLink (const std::string& linkFrom, 
+            virtual bool addLink (const std::string& linkFrom, 
                                   const std::string& linkedCoefficientName,
                                   const std::string& linkedCoefficientType, 
                                   const std::string& linkTo,
@@ -203,17 +255,49 @@ namespace dcp
             
             //! Remove link between problems' coefficient and solution
             /*!
-             *  Removes the link identified by the input arguments from the protected member \c problemsLinks_ .
+             *  Removes the link identified by the input arguments from the protected members.
              *  The input arguments will be used to create an object of \c dcp::GenericProblem::LinkKey to use
-             *  to erase the corresponding entry from \c problemsLinks_ .
+             *  to erase the corresponding entry from \c problemsLinks_ . See \c addLink documentation for more details.
+             *  The parameter \c linkType has two possible values (\c "system" and \c "initial_guess") with the same
+             *  meaning as it is described in the documentation for \c addLink()
              *  
              *  \return \c true if the link was removed, \c false otherwise
              */
             virtual bool removeLink (const std::string& linkFrom, 
                                      const std::string& linkedCoefficientName, 
-                                     const std::string& linkedCoefficientType);
+                                     const std::string& linkedCoefficientType,
+                                     const std::string& linkType);
             
-            //! Access problem with given name [1] (read only)
+            //! Adds link between problems' coefficient and solution for the initial guess setters [1]
+            /*!
+             *  This function will add to the stored map \c initialGuessesSettersLinks_ a \c std::pair created on the 
+             *  input arguments.
+             *  See documentation for \c addLink() for more details on the input arguments.
+             *
+             *  \return \c true if the link was added, \c false otherwise
+             */
+            virtual bool addInitialGuessSetterLink (const std::string& linkFrom, 
+                                                    const std::string& linkedCoefficientName,
+                                                    const std::string& linkedCoefficientType, 
+                                                    const std::string& linkTo,
+                                                    const bool& forceRelinking = false);
+
+            //! Adds link between problems' coefficient and solution [2]
+            /*!
+             *  This function will add to the stored map \c initialGuessesSettersLinks_ a \c std::pair created on the 
+             *  input arguments.
+             *  See documentation for \c addLink() for more details on the input arguments.
+             *
+             *  \return \c true if the link was added, \c false otherwise
+             */
+            virtual bool addInitialGuessSetterLink (const std::string& linkFrom, 
+                                                    const std::string& linkedCoefficientName,
+                                                    const std::string& linkedCoefficientType, 
+                                                    const std::string& linkTo,
+                                                    const int& linkToComponent,
+                                                    const bool& forceRelinking = false);
+            
+            //! Access system problem with given name [1] (read only)
             /*!
              *  \param name name of the problem to be accessed. If the name is not found, the function prints an
              *  error message through the function \c dolfin::dolfin_error()
@@ -221,7 +305,7 @@ namespace dcp
              */
             virtual const dcp::GenericProblem& operator[] (const std::string& name) const;
             
-            //! Access problem with given name [2] (read and write)
+            //! Access system problem with given name [2] (read and write)
             /*!
              *  \param name name of the problem to be accessed. If the name is not found, the function prints an
              *  error message through the function \c dolfin::dolfin_error()
@@ -229,7 +313,7 @@ namespace dcp
              */
             virtual dcp::GenericProblem& operator[] (const std::string& name);
             
-            //! Access problem with given position in vector \c solveOrder_ [1] (read only)
+            //! Access system problem with given position in vector \c solveOrder_ [1] (read only)
             /*!
              *  \param position position of the problem to be accessed in the private member vector \c solveOrder_. 
              *  If \c position is greater than vector size, the function prints an error message 
@@ -238,7 +322,7 @@ namespace dcp
              */
             virtual const dcp::GenericProblem& operator[] (const std::size_t& position) const;
             
-            //! Access problem with given position in vector \c solveOrder_ [2] (read and write)
+            //! Access system problem with given position in vector \c solveOrder_ [2] (read and write)
             /*!
              *  \param position position of the problem to be accessed in the private member vector \c solveOrder_. 
              *  If \c position is greater than vector size, the function prints an error message 
@@ -314,6 +398,61 @@ namespace dcp
 
         protected:
             /******************** METHODS *********************/
+            //! Add problem to the map of problems to be solved
+            /*!
+             *  The parameters are:
+             *  \param map the map to which the problem should be added
+             *  \param problemName the name of the problem 
+             *  \param problem a const reference to a \c GenericProblem
+             *
+             *  \return \c true if the problem was added, \c false otherwise
+             */
+            virtual bool addProblemToMap (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
+                                          const std::string& problemName, 
+                                          const std::shared_ptr<dcp::GenericProblem> problem);
+            
+            //! Remove problem with the given name from the private member variables. A warning is issued if the name is 
+            //! not found
+            /*!
+             *  Parameters:
+             *  \param map the map from which the problem should be removed
+             *  \param the name of the problem to be removed
+             *
+             *  \return \c true if the problem was removed, \c false otherwise
+             */
+            virtual bool removeProblemFromMap (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
+                                               const std::string& problemName);
+            
+            //! Add link to given map
+            /*!
+             *  Parameters:
+             *  \param map the map to which the link should be added
+             *  \param link the link to add to the map
+             *  \param forceRelinking boolean value. If true, overwrite link
+             *
+             *  \return \c true if the link was added, \c false otherwise
+             */
+            virtual bool addLinkToMap (std::map<LinkKey, LinkValue>& map, const Link& link, const bool& forceRelinking);
+
+            //! Remove link between problems' coefficient and solution
+            /*!
+             *  Parameters:
+             *  \param map the map from which the link should be removed
+             *  \param linkKey the key of link to remove
+             *  
+             *  \return \c true if the link was removed, \c false otherwise
+             */
+            virtual bool removeLinkFromMap (std::map<LinkKey, LinkValue>& map, const LinkKey& linkKey);
+            
+            //! Performs the actual linking between problems 
+            /*!
+             *  Parameters:
+             *  \param link a \c std::pair of the type contained by the protected member links maps
+             *  \param problemsMap the map in which the problem whose coefficient we want to link is stored
+             */
+            virtual void linkProblems (const Link& link,
+                                       std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& problemsMap);
+            
             //! Subiterate on given problems
             /*!
              *  The function will subiterate on the problems whose names are stored in \c solveOrder_ 
@@ -326,19 +465,12 @@ namespace dcp
                                      std::vector<std::string>::const_iterator subiterationsEnd);
                 
             /******************** VARIABLES *********************/
-            //! Performs the actual linking between problems
-            /*!
-             *  Being a protected member, this method is just called from library functions. 
-             *  \param link a \c std::pair of the type contained by the protected member \c problemsLinks_
-             */
-            virtual void linkProblems (const Link& link);
-            
             //! The stored problems
             std::map<std::string, std::shared_ptr <dcp::GenericProblem>> storedProblems_;
 
             //! The solution order of the problems
             std::vector<std::string> solveOrder_;
-            
+
             //! The map of links between problems. 
             /*!
              *  It is stored as a <tt> map <(string, string, string), (string, int)> </tt> where:
@@ -360,6 +492,22 @@ namespace dcp
             //! The strings specifying the name of the first and last problem on which we must subiterate
             std::pair<std::string, std::string> subiterationsRange_;
             
+            //! The problems used to set the initial guesses for the subiterations
+            /*! It contains pairs <tt> name - problem </tt>, where \c name identifies a problem in \c storedProblems_
+             *  and \c problem contains a \c dcp::GenericProblem that will be solved to set the initial guess for the
+             *  problem given by \c name in the subiterations loop. If a problem contained in \c storedProblems_ is not
+             *  found in \c initialGuessesSetters_ , then the solution stored in the protected member \c solution_ of
+             *  the problem itself (aka: the last computed solution) is used as initial guess.
+             */
+            std::map<std::string, std::shared_ptr <dcp::GenericProblem>> initialGuessesSetters_;
+            
+            //! The map of links for the initial guesses setters
+            /*! See documentation for \c problemsLinks_ for details. This works exactly in the same way. The only
+             *  difference is that while \c problemsLinks_ is used for the problems stored in \c storedProblems_ , 
+             *  initialGuessesSettersLinks_ is used for the problems in \c initialGuessesSetters_
+             */
+            std::map<LinkKey, LinkValue> initialGuessesSettersLinks_;
+
             //! Solve type to be used in the \c solve() method when solving stored problems
             /*! 
              *  Initial value: \c "default"

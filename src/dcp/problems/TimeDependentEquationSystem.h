@@ -93,7 +93,7 @@ namespace dcp
              *  the usage of this function to a single clone type, while the user may want to derive a new class from
              *  \c dcp::TimeDependentProblem with a new clone method
              */
-            virtual void addProblem (const std::string& problemName, dcp::GenericProblem& problem);
+            virtual bool addProblem (const std::string& problemName, dcp::GenericProblem& problem) override;
             
             //! Add problem to the map of problems to be solved [2]
             /*!
@@ -108,8 +108,8 @@ namespace dcp
              *  that one wants to store in an equation system must share the same \c dcp::Time object and have the same
              *  values for start time, end time and time step.
              */
-            virtual void addProblem (const std::string& problemName, 
-                                     const std::shared_ptr<dcp::GenericProblem> problem);
+            virtual bool addProblem (const std::string& problemName, 
+                                     const std::shared_ptr<dcp::GenericProblem> problem) override;
             
             //! Adds link between problems' coefficient and solution at a previous time step [1]
             /*!

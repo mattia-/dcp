@@ -34,6 +34,8 @@ namespace dcp
         solveOrder_ (),
         problemsLinks_ (),
         subiterationsRange_ (),
+        initialGuessesSetters_ (),
+        initialGuessesSettersLinks_ (),
         solveType_ ("default"),
         solutionType_ ("default")
     { 
@@ -77,113 +79,83 @@ namespace dcp
             
 
     /******************* METHODS *******************/
-    void GenericEquationSystem::addProblem (const std::string& problemName, 
+    bool GenericEquationSystem::addProblem (const std::string& problemName, 
                                             dcp::GenericProblem& problem)
     {
-        if (problemName.empty ())
-        {
-            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
-                                  "addProblem",
-                                  "Empty problem names not allowed");
-        }
-
-        dolfin::begin (dolfin::DBG, 
-                       "Inserting problem \"%s\" in equation system...", 
-                       problemName.c_str ());
-         
-        // insert problem into storedProblems_ 
-        dolfin::log (dolfin::DBG, 
-                     "Inserting problem in problems map with name \"%s\"...", 
-                     problemName.c_str ());
-        auto result = storedProblems_.insert 
-            (std::make_pair (problemName, std::shared_ptr<dcp::GenericProblem> (problem.clone ())));
-        
-        // if problem was not inserted in map, issue a warning; else, add it to solveOrder_
-        if (result.second == false)
-        {
-            dolfin::warning ("Problem \"%s\" already exist in equation system", 
-                             problemName.c_str ());
-        }
-        else
-        {
-            dolfin::log (dolfin::DBG, 
-                         "Inserting problem in problem-names vector with name \"%s\"...", 
-                         problemName.c_str ());
-            solveOrder_.emplace_back (problemName);
-        }
-        dolfin::end ();
+        return addProblem (problemName, 
+                           std::shared_ptr<dcp::GenericProblem> (problem.clone ()));
     }
     
     
 
-    void GenericEquationSystem::addProblem (const std::string& problemName, 
+    bool GenericEquationSystem::addProblem (const std::string& problemName, 
                                             const std::shared_ptr<dcp::GenericProblem> problem)
     {
-        if (problemName.empty ())
-        {
-            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
-                                  "addProblem",
-                                  "Empty problem names not allowed");
-        }
-
         dolfin::begin (dolfin::DBG, 
-                       "Inserting problem \"%s\" in equation system...", 
+                       "Inserting problem \"%s\" in system problems map...", 
                        problemName.c_str ());
-        
-        // insert problem into storedProblems_ 
-        dolfin::log (dolfin::DBG, 
-                     "Inserting problem in problems map with name \"%s\"...", 
-                     problemName.c_str ());
-        auto result = storedProblems_.insert (std::make_pair (problemName, problem));
-        
-        // if problem was not inserted in map, issue a warning; else, add it to vector solveOrder_
-        if (result.second == false)
-        {
-            dolfin::warning ("Problem \"%s\" already exist in equation system", 
-                             problemName.c_str ());
-        }
-        else
+         
+        bool problemWasAdded = addProblemToMap (storedProblems_, problemName, problem);
+
+        // if problem was added, add it also to solveOrder_ (if problemType is "system")
+        if (problemWasAdded == true)
         {
             dolfin::log (dolfin::DBG, 
                          "Inserting problem in problem-names vector with name \"%s\"...", 
                          problemName.c_str ());
             solveOrder_.emplace_back (problemName);
         }
+
         dolfin::end ();
+
+        return problemWasAdded;
     }
 
 
 
-    void GenericEquationSystem::removeProblem (const std::string& problemName)
+    bool GenericEquationSystem::addInitialGuessSetter (const std::string& name, 
+                                                       dcp::GenericProblem& problem)
+    {
+        return addInitialGuessSetter (name, 
+                                      std::shared_ptr<dcp::GenericProblem> (problem.clone ()));
+    }
+    
+    
+
+    bool GenericEquationSystem::addInitialGuessSetter (const std::string& name, 
+                                                       const std::shared_ptr<dcp::GenericProblem> problem)
     {
         dolfin::begin (dolfin::DBG, 
-                       "Removing problem \"%s\" from equation system...", 
+                       "Inserting problem \"%s\" in initial guesses setters map...", 
+                       name.c_str ());
+         
+        bool problemWasAdded = addProblemToMap (initialGuessesSetters_, name, problem);
+
+        dolfin::end ();
+
+        return problemWasAdded;
+    }
+
+
+
+    bool GenericEquationSystem::removeProblem (const std::string& problemName)
+    {
+        dolfin::begin (dolfin::DBG, 
+                       "Removing problem \"%s\" from map ...", 
                        problemName.c_str ());
         
         // 1) 
         // delete problem from storedProblems_
-        dolfin::log (dolfin::DBG, 
-                     "Removing problem \"%s\" from problems map...", 
-                     problemName.c_str ());
-        auto result = storedProblems_.erase (problemName);
-        
-        // if problem was not found in map, issue a warning; else, erase it also from solveOrder_
-        // remember that erase returns the number of elements removed, which in the case of a map is at most 1
-        if (result < 1) 
-        {
-            dolfin::warning ("Problem \"%s\" was not found in equation system. Maybe you used a wrong name?",
-                             problemName.c_str ());
-        }
+        bool problemWasRemoved = removeProblemFromMap (storedProblems_, problemName);
         
         // 2)
         // remove problemName from solveOrder_. Remember that we are sure that such name is 
-        // unique in vector, since it was either inserted either by the function addProblem 
-        // (and if two problems with the same name are inserted, the second one does not get 
-        // added either to the map or to the vector) or by the function reorderProblems, 
-        // which checks the input vector for double entries when called).
+        // unique in vector, since it was either inserted either by the function addProblem (and if two problems with
+        // the same name are inserted, the second one does not get added either to the map or to the vector) or by the
+        // function reorderProblems, which checks the input vector for double entries when called).
         dolfin::log (dolfin::DBG, "Removing problem \"%s\" from problem-names vector...", problemName.c_str ());
         int erasedCount = 0;
-        
+
         // std::find will return an iterator to the element if found and vector::end () if not found
         auto problemPosition = find (solveOrder_.begin (), solveOrder_.end (), problemName);
         if (problemPosition != solveOrder_.end ())
@@ -195,13 +167,13 @@ namespace dcp
 
         // 3)
         // remove problemName from problemsLinks_.
-        // We use an important statement from the c++ standard: 
-        // When erasing from a map, iterators, pointers and references referring to elements removed by the 
-        // function are invalidated. All other iterators, pointers and references keep their validity.
+        // Remember (c++ standard):
+        // "When erasing from a map, iterators, pointers and references referring to elements removed by the 
+        // function are invalidated. All other iterators, pointers and references keep their validity."
         dolfin::log (dolfin::DBG, 
                      "Removing every occurrence of problem \"%s\" from links map...", 
                      problemName.c_str ());
-        
+
         erasedCount = 0;
         auto linksIterator = problemsLinks_.begin (); // iterator pointing to the first element of the set
         while (linksIterator != problemsLinks_.end ())
@@ -228,11 +200,64 @@ namespace dcp
         dolfin::log (dolfin::DBG, "Removed %d entries from links map", erasedCount);
 
         dolfin::end ();
+
+        return problemWasRemoved;
     }
 
 
 
-    void GenericEquationSystem::reorderProblems (const std::vector<std::string>& solveOrder)
+    bool GenericEquationSystem::removeInitialGuessSetter (const std::string& name)
+    {
+        dolfin::begin (dolfin::DBG, 
+                       "Removing problem \"%s\" from map...", 
+                       name.c_str ());
+        
+        // 1) 
+        // delete problem from initialGuessesSetters_
+        bool problemWasRemoved = removeProblemFromMap (initialGuessesSetters_, name);
+        
+        // 2)
+        // remove problemName from initialGuessesSettersLinks_
+        // Remember (c++ standard):
+        // "When erasing from a map, iterators, pointers and references referring to elements removed by the 
+        // function are invalidated. All other iterators, pointers and references keep their validity."
+        dolfin::log (dolfin::DBG, 
+                     "Removing every occurrence of problem \"%s\" from links map...", 
+                     name.c_str ());
+
+        int erasedCount = 0;
+        auto linksIterator = initialGuessesSettersLinks_.begin (); // iterator pointing to the first element of the set
+        while (linksIterator != initialGuessesSettersLinks_.end ())
+        {
+            // delete element if problemName appears either as first or as fourth string in the map
+            if (std::get<0> (linksIterator->first) == name 
+                || 
+                std::get<0> (linksIterator->second) == name)
+            {
+                auto auxIterator = linksIterator; // this will be used for the call to function erase
+                
+                // Increment iterator to point to next element. This is performed before erasing element, 
+                // so that increment is still valid
+                ++linksIterator;
+
+                initialGuessesSettersLinks_.erase (auxIterator);
+                ++erasedCount;
+            }
+            else
+            {
+                ++linksIterator;
+            }
+        }
+        dolfin::log (dolfin::DBG, "Removed %d entries from links map", erasedCount);
+
+        dolfin::end ();
+
+        return problemWasRemoved;
+    }
+
+
+
+    bool GenericEquationSystem::reorderProblems (const std::vector<std::string>& solveOrder)
     {
         dolfin::log (dolfin::DBG, "Setting problems order...");
 
@@ -241,7 +266,7 @@ namespace dcp
         if (emptyName != solveOrder.end ())
         {
             dolfin::warning ("Input vector to reorderProblems() contains empty names. No reordering performed");
-            return;
+            return false;
         }
 
         // check for duplicates. Basically, sort the vector and delete double entries, then 
@@ -257,15 +282,17 @@ namespace dcp
         if (solveOrder.size () != orderedInputVector.size ())
         {
             dolfin::warning ("Input vector to reorderProblems() contains duplicates. No reordering performed");
-            return;
+            return false;
         }
         
         solveOrder_ = solveOrder;
+
+        return true;
     }
 
 
 
-    void GenericEquationSystem::addLink (const std::string& linkFrom, 
+    bool GenericEquationSystem::addLink (const std::string& linkFrom, 
                                          const std::string& linkedCoefficientName,
                                          const std::string& linkedCoefficientType, 
                                          const std::string& linkTo,
@@ -279,76 +306,19 @@ namespace dcp
                        linkTo.c_str ());
         
         // create pair containing the link information passed as input arguments.
-        // auto keyword used in place of std::pair <std::tuple <std::string, std::string, std::string>, std::string> 
-        // to enhance readability
         auto link = std::make_pair (std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType), 
                                     std::make_pair (linkTo, -1));
 
-        // search for map key in problemsLinks_. 
-        // remember that the key (i.e. link.first) is an std::tuple<std::string, std::string, std::string>
-        // auto keyword used to enhance readability in place of 
-        // std::map <std::tuple <std::string, std::string, std::string>, std::string>::iterator 
-        auto linkPosition = problemsLinks_.find (link.first);
+        bool  linkWasInserted = addLinkToMap (problemsLinks_, link, forceRelinking);
 
-        if (linkPosition == problemsLinks_.end ()) // if key not found in map, insert link
-        {
-            dolfin::log (dolfin::DBG, "Inserting link in links map...");
-            problemsLinks_.insert (link);
-            
-            // do not perform linking yet. It will be performed once solve is called
-            // linkProblems (link);
-        }
-        else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
-        // current link and insert the new one
-        {
-            dolfin::cout << "In equation system: erasing link:" << dolfin::endl;
-            dolfin::cout << "\t(" 
-                << std::get<0> (linkPosition->first) 
-                << ", " 
-                << std::get<1> (linkPosition->first) 
-                << ", " 
-                << std::get<2> (linkPosition->first) 
-                << ") -> (" 
-                << std::get<0> (linkPosition->second)
-                << ", "
-                << std::string (std::get<1> (linkPosition->second) == -1 ? 
-                                "all solution components)" : 
-                                "component " + std::to_string (std::get<1> (linkPosition->second)) + ")")
-                << dolfin::endl;
+        dolfin::end (); // Setting up link
 
-            problemsLinks_.erase (linkPosition);
-
-            dolfin::cout << "and inserting link: " << dolfin::endl;
-            dolfin::cout << "\t(" 
-                << std::get<0> (link.first)
-                << ", " 
-                << std::get<1> (link.first)
-                << ", " 
-                << std::get<2> (link.first)
-                << ") -> (" 
-                << std::get<0> (link.second)
-                << ", all solution components)" 
-                << dolfin::endl;
-
-            problemsLinks_.insert (link);
-            
-            // do not perform linking yet. It will be performed once solve is called
-            // linkProblems (link);
-        }
-        else
-        {
-            dolfin::warning ("Link (%s, %s, %s) -> (%s, all solution components) not added. Key is already present in map",
-                             linkFrom.c_str (),
-                             linkedCoefficientName.c_str (),
-                             linkedCoefficientType.c_str (),
-                             linkTo.c_str ());
-        }
-        dolfin::end ();
+        return linkWasInserted;
     }
 
 
 
-    void GenericEquationSystem::addLink (const std::string& linkFrom, 
+    bool GenericEquationSystem::addLink (const std::string& linkFrom, 
                                          const std::string& linkedCoefficientName,
                                          const std::string& linkedCoefficientType, 
                                          const std::string& linkTo,
@@ -363,88 +333,99 @@ namespace dcp
                        linkTo.c_str (),
                        linkToComponent);
         
-        // create pair containing the link information passed as input arguments.
-        // auto keyword used in place of 
-        // std::pair <std::tuple <std::string, std::string, std::string>, std::pair <std::string, int>> 
-        // to enhance readability
         auto link = std::make_pair (std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType), 
                                     std::make_pair (linkTo, linkToComponent));
 
-        // search for map key in problemsLinks_. 
-        // remember that the key (i.e. link.first) is an std::tuple<std::string, std::string, std::string>
-        // auto keyword used to enhance readability in place of 
-        // std::map <std::tuple <std::string, std::string, std::string>, std::pair <std::string, int>>::iterator 
-        auto linkPosition = problemsLinks_.find (link.first);
+        bool linkWasInserted = addLinkToMap (problemsLinks_, link, forceRelinking);
 
-        if (linkPosition == problemsLinks_.end ()) // if key not found in map, insert link
-        {
-            dolfin::log (dolfin::DBG, "Inserting link in links map...");
-            problemsLinks_.insert (link);
-            
-            // do not perform linking yet. It will be performed once solve is called
-            // linkProblems (link);
-        }
-        else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
-        // current link and insert the new one
-        {
-            dolfin::cout << "In equation system: erasing link:" << dolfin::endl;
-            dolfin::cout << "\t(" 
-                << std::get<0> (linkPosition->first) 
-                << ", " 
-                << std::get<1> (linkPosition->first) 
-                << ", " 
-                << std::get<2> (linkPosition->first) 
-                << ") -> (" 
-                << std::get<0> (linkPosition->second)
-                << ", "
-                << std::string (std::get<1> (linkPosition->second) == -1 ? 
-                                "all solution components)" : 
-                                "component " + std::to_string (std::get<1> (linkPosition->second)) + ")")
-                << dolfin::endl;
+        dolfin::end (); // Setting up link
 
-            problemsLinks_.erase (linkPosition);
-
-            dolfin::cout << "and inserting link: " << dolfin::endl;
-            dolfin::cout << "\t(" 
-                << std::get<0> (link.first)
-                << ", " 
-                << std::get<1> (link.first)
-                << ", " 
-                << std::get<2> (link.first)
-                << ") -> (" 
-                << std::get<0> (link.second)
-                << ", component " 
-                << std::get<1> (link.second)
-                << ")"
-                << dolfin::endl;
-
-            problemsLinks_.insert (link);
-            
-            // do not perform linking yet. It will be performed once solve is called
-            // linkProblems (link);
-        }
-        else
-        {
-            dolfin::warning ("Link (%s, %s, %s) -> (%s, component %d) not added. Key is already present in map",
-                             linkFrom.c_str (),
-                             linkedCoefficientName.c_str (),
-                             linkedCoefficientType.c_str (),
-                             linkTo.c_str (),
-                             linkToComponent);
-        }
-        dolfin::end ();
+        return linkWasInserted;
     }
     
 
 
     bool GenericEquationSystem::removeLink (const std::string& linkFrom, 
                                             const std::string& linkedCoefficientName, 
-                                            const std::string& linkedCoefficientType)
+                                            const std::string& linkedCoefficientType,
+                                            const std::string& linkType)
     {
         auto linkKey = std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType);
-        return (problemsLinks_.erase (linkKey)) == 1 ? true : false;
+
+        bool linkWasRemoved;
+        if (linkType == "system")
+        {
+            linkWasRemoved = removeLinkFromMap (problemsLinks_, linkKey);
+        }
+        else if (linkType == "initial_guess")
+        {
+            linkWasRemoved = removeLinkFromMap (initialGuessesSettersLinks_, linkKey);
+        }
+        else
+        {
+            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
+                                  "removeLink",
+                                  "Unknown link type: %s", 
+                                  linkType.c_str ());
+            return false;
+        }
+
+        return linkWasRemoved;
     }
             
+
+
+    bool GenericEquationSystem::addInitialGuessSetterLink (const std::string& linkFrom, 
+                                                           const std::string& linkedCoefficientName,
+                                                           const std::string& linkedCoefficientType, 
+                                                           const std::string& linkTo,
+                                                           const bool& forceRelinking)
+    {
+        dolfin::begin (dolfin::DBG, 
+                       "Setting up link (%s, %s, %s) -> (%s, all solution components) (initial guess setter)...",
+                       linkFrom.c_str (),
+                       linkedCoefficientName.c_str (),
+                       linkedCoefficientType.c_str (),
+                       linkTo.c_str ());
+        
+        // create pair containing the link information passed as input arguments.
+        auto link = std::make_pair (std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType), 
+                                    std::make_pair (linkTo, -1));
+
+        bool  linkWasInserted = addLinkToMap (initialGuessesSettersLinks_, link, forceRelinking);
+
+        dolfin::end (); // Setting up link
+
+        return linkWasInserted;
+    }
+
+
+
+    bool GenericEquationSystem::addInitialGuessSetterLink (const std::string& linkFrom, 
+                                                           const std::string& linkedCoefficientName,
+                                                           const std::string& linkedCoefficientType, 
+                                                           const std::string& linkTo,
+                                                           const int& linkToComponent,
+                                                           const bool& forceRelinking)
+    {
+        dolfin::begin (dolfin::DBG, 
+                       "Setting up link (%s, %s, %s) -> (%s, component %d) (initial guess setter)...",
+                       linkFrom.c_str (),
+                       linkedCoefficientName.c_str (),
+                       linkedCoefficientType.c_str (),
+                       linkTo.c_str (),
+                       linkToComponent);
+        
+        auto link = std::make_pair (std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType), 
+                                    std::make_pair (linkTo, linkToComponent));
+
+        bool linkWasInserted = addLinkToMap (initialGuessesSettersLinks_, link, forceRelinking);
+
+        dolfin::end (); // Setting up link
+
+        return linkWasInserted;
+    }
+    
 
 
     const dcp::GenericProblem& GenericEquationSystem::operator[] (const std::string& name) const
@@ -580,7 +561,134 @@ namespace dcp
 
 
     /******************* PROTECTED METHODS *******************/
-    void GenericEquationSystem::linkProblems (const dcp::GenericEquationSystem::Link& link)
+    bool GenericEquationSystem::addProblemToMap (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
+                                                 const std::string& problemName, 
+                                                 const std::shared_ptr<dcp::GenericProblem> problem)
+    {
+        if (problemName.empty ())
+        {
+            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
+                                  "addProblemToMap",
+                                  "Empty problem names not allowed");
+        }
+
+        dolfin::log (dolfin::DBG, 
+                     "Inserting problem in problems map with name \"%s\"...", 
+                     problemName.c_str ());
+
+        auto result = map.insert (std::make_pair (problemName, problem));
+
+        // if problem was not inserted in map, issue a warning
+        if (result.second == false)
+        {
+            dolfin::warning ("Problem \"%s\" already exist in equation system", 
+                             problemName.c_str ());
+        }
+
+        return result.second;
+    }
+
+
+
+    bool GenericEquationSystem::removeProblemFromMap (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
+                                                      const std::string& problemName)
+    {
+        dolfin::log (dolfin::DBG, 
+                     "Removing problem \"%s\" from problems map...", 
+                     problemName.c_str ());
+        auto result = map.erase (problemName);
+        
+        // if problem was not found in map, issue a warning; else, erase it also from solveOrder_
+        // remember that erase returns the number of elements removed, which in the case of a map is at most 1
+        if (result < 1) 
+        {
+            dolfin::warning ("Problem \"%s\" was not found in equation system. Maybe you used a wrong name?",
+                             problemName.c_str ());
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+    bool GenericEquationSystem::addLinkToMap (std::map<dcp::GenericEquationSystem::LinkKey, 
+                                                       dcp::GenericEquationSystem::LinkValue>& map, 
+                                              const dcp::GenericEquationSystem::Link& link,
+                                              const bool& forceRelinking)
+    {
+        auto linkPosition = map.find (link.first);
+
+        bool linkWasInserted;
+
+        if (linkPosition == map.end ()) // if key not found in map, insert link
+        {
+            dolfin::log (dolfin::DBG, "Inserting link in links map...");
+            auto result = map.insert (link);
+            linkWasInserted = result.second;
+            
+            // do not perform linking yet. It will be performed once solve is called
+        }
+        else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
+        // current link and insert the new one
+        {
+            dolfin::cout << "In equation system: erasing link:" << dolfin::endl;
+            dolfin::cout << "\t(" 
+                << std::get<0> (linkPosition->first) 
+                << ", " 
+                << std::get<1> (linkPosition->first) 
+                << ", " 
+                << std::get<2> (linkPosition->first) 
+                << ") -> (" 
+                << std::get<0> (linkPosition->second)
+                << ", "
+                << std::string (std::get<1> (linkPosition->second) == -1 ? 
+                                "all solution components)" : 
+                                "component " + std::to_string (std::get<1> (linkPosition->second)) + ")")
+                << dolfin::endl;
+
+            map.erase (linkPosition);
+
+            dolfin::cout << "and inserting link: " << dolfin::endl;
+            dolfin::cout << "\t(" 
+                << std::get<0> (link.first)
+                << ", " 
+                << std::get<1> (link.first)
+                << ", " 
+                << std::get<2> (link.first)
+                << ") -> (" 
+                << std::get<0> (link.second)
+                << ", all solution components)" 
+                << dolfin::endl;
+
+            auto result = map.insert (link);
+            linkWasInserted = result.second;
+            
+            // do not perform linking yet. It will be performed once solve is called
+        }
+        else
+        {
+            dolfin::warning ("Link not added. Key is already present in map");
+            return false;
+        }
+
+        return linkWasInserted;
+    }
+
+
+
+    bool GenericEquationSystem::removeLinkFromMap (std::map<dcp::GenericEquationSystem::LinkKey, 
+                                                            dcp::GenericEquationSystem::LinkValue>& map, 
+                                                   const dcp::GenericEquationSystem::LinkKey& linkKey)
+    {
+        return (map.erase (linkKey)) == 1 ? true : false;
+        
+    }
+
+
+
+    void GenericEquationSystem::linkProblems (const dcp::GenericEquationSystem::Link& link,
+                                              std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& problemsMap)
     {
         if (std::get<1> (link.second) == -1)
         {
@@ -602,15 +710,15 @@ namespace dcp
                             std::get<1> (link.second));
         }
         
-        // check if problem that needs linking exists
+        // check if problem whose coefficient we want to set exists
         dolfin::log (dolfin::DBG, 
                      "Looking for problem \"%s\" in problems map...", 
                      (std::get<0> (link.first)).c_str ());
-        auto problemIterator = storedProblems_.find (std::get<0> (link.first));
+        auto problemIterator = problemsMap.find (std::get<0> (link.first));
 
-        if (problemIterator == storedProblems_.end ())
+        if (problemIterator == problemsMap.end ())
         {
-            dolfin::warning ("Problem \"%s\" not found in stored problems map", 
+            dolfin::warning ("Problem \"%s\" not found in problems map", 
                              (std::get<0> (link.first)).c_str ());
             dolfin::end ();
             return;
@@ -623,7 +731,7 @@ namespace dcp
         auto targetProblemIterator = storedProblems_.find (std::get<0> (link.second));
         if (targetProblemIterator == storedProblems_.end ())
         {
-            dolfin::warning ("Cannot link problem \"%s\" to problem \"%s\". No such problem found in stored problems map",
+            dolfin::warning ("Cannot link problem \"%s\" to problem \"%s\". No such problem found in problems map",
                              (std::get<0> (link.first)).c_str (),
                              (std::get<0> (link.second)).c_str ());
             dolfin::end ();
@@ -695,17 +803,80 @@ namespace dcp
         // get backups for solveType_ and solutionType_
         std::string solveTypeBackup = solveType_;
         std::string solutionTypeBackup = solutionType_;
-        
-        // stash current solution of problems in subiterations range so that linking is performed correctly
+
+        // set initial guesses
+        dolfin::begin (dolfin::PROGRESS, "Setting initial guesses...");
+
         for (auto problemName = solveOrder_.begin (); problemName != solveOrder_.end (); problemName++)
         {
-            (this -> operator[] (*problemName)).stashSolution ();
+            // TODO SOLUTION TYPE TODO
+            dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", (*problemName).c_str ());
+
+            // look for given problem name in initialGuessesSetters_
+            auto problemIterator = initialGuessesSetters_.find (*problemName);
+            if (problemIterator == initialGuessesSetters_.end ()) // if not found, use current solution as initial guess
+            {
+                dolfin::log (dolfin::DBG, "Using current solution as initial guess");
+                (*this)[*problemName].stashedSolution_ = (*this)[*problemName].solution_.back ().second;
+            }
+            else // if found, solve the initial guess setter problem
+            {
+                dolfin::begin (dolfin::PROGRESS, "Solving initial guess setter problem...");
+                
+                // get problem with given name from map
+                dcp::GenericProblem& problem = *(problemIterator->second);
+
+                // 1)
+                // loop over initialGuessesSettersLinks_ to reset all links.
+                // Remember it is a map: elements in it are order according to the default lexicographic ordering
+                dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
+
+                auto linksIterator = initialGuessesSettersLinks_.begin ();
+                while (linksIterator != initialGuessesSettersLinks_.end () 
+                       && 
+                       std::get<0>(linksIterator->first) <= *problemName)
+                {
+                    if (std::get<0> (linksIterator->first) == *problemName)
+                    {
+                        linkProblems (*linksIterator, initialGuessesSetters_);
+                    }
+                    ++linksIterator;
+                }
+
+                dolfin::end (); // Scanning problems links
+
+                // 2)
+                // solve problem
+                problem.solve ();
+
+                // 3) set computed solution as initial guess
+                (*this)[*problemName].stashedSolution_ = problem.solution_.back ().second;
+
+                dolfin::end (); // Solving initial guess setter problem
+            }
+
+            // plot and write to file
+            if (plotSubiterationSolutions == true)
+            {
+                dolfin::begin (dolfin::DBG, "Plotting subiteration solution...");
+                (this -> operator[] (*problemName)).plotSolution ("stashed");
+                dolfin::end ();
+            }
+
+            if (writeSubiterationSolutions == true)
+            {
+                dolfin::begin ("Writing subiteration solution to file...");
+                (this -> operator[] (*problemName)).writeSolutionToFile ("stashed");
+                dolfin::end ();
+            }
+
+            dolfin::end (); // Problem %s
         }
 
-        // set solveType_ so that during subiterations solve of type "stash" is called
+        dolfin::end (); // Setting initial guesses
+
+        // set solveType_ and solutionType_ so that during subiterations stashed solutions are used
         solveType_ = "stash";
-        
-        // set solution type so that from now on links are performed on stashed solutions
         solutionType_ = "stashed";
         
         // solve all the problems the first time. Remember that subiterationsBegin and subiterationsEnd are

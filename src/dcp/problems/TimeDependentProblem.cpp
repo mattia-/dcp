@@ -812,7 +812,7 @@ namespace dcp
         }
         else
         {
-            dolfin::warning ("Uknown plot type \"%s\". No plot performed", plotType.c_str ());
+            dolfin::warning ("Unknown plot type \"%s\". No plot performed", plotType.c_str ());
         }
             
         dolfin::end ();
@@ -825,7 +825,7 @@ namespace dcp
         // check if writeType is known
         if (writeType != "default" && writeType != "last" && writeType != "stashed")
         {
-            dolfin::warning ("Uknown write type \"%s\". No write performed", writeType.c_str ());
+            dolfin::warning ("Unknown write type \"%s\". No write performed", writeType.c_str ());
             return;
         }
         

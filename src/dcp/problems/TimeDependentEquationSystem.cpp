@@ -45,7 +45,7 @@ namespace dcp
     
 
     /******************* METHODS *******************/
-    void TimeDependentEquationSystem::addProblem (const std::string& problemName, dcp::GenericProblem& problem)
+    bool TimeDependentEquationSystem::addProblem (const std::string& problemName, dcp::GenericProblem& problem)
     {
         // try-catch block to check if problem is actually a dcp::TimeDependentProblem&
         try
@@ -86,7 +86,7 @@ namespace dcp
             }
             
             // if we got here, everything is fine, so just call the base class function
-            dcp::GenericEquationSystem::addProblem (problemName, problem);
+            return dcp::GenericEquationSystem::addProblem (problemName, problem);
         }
         catch (std::bad_cast& badCast)
         {
@@ -94,12 +94,13 @@ namespace dcp
             dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
                                   "addProblem",
                                   "Problem given as input argument is not a dcp::TimeDependentProblem");
+            return false; // just to suppress the compilation warning
         }
     }
         
 
 
-    void TimeDependentEquationSystem::addProblem (const std::string& problemName, 
+    bool TimeDependentEquationSystem::addProblem (const std::string& problemName, 
                                                   const std::shared_ptr<dcp::GenericProblem> problem)
     {
         std::shared_ptr<dcp::TimeDependentProblem> castProblem = 
@@ -112,6 +113,7 @@ namespace dcp
             dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
                                   "addProblem",
                                   "Problem given as input argument is not a dcp::TimeDependentProblem");
+            return false; // just to suppress the compilation warning
         }
         else
         {
@@ -149,7 +151,7 @@ namespace dcp
             }
             
             // if we got here, everything is fine, so just call the base class function
-            dcp::GenericEquationSystem::addProblem (problemName, problem);
+            return dcp::GenericEquationSystem::addProblem (problemName, problem);
         }
     }
     
@@ -560,7 +562,7 @@ namespace dcp
         {
             if (std::get<0> (linksIterator->first) == problemName)
             {
-                linkProblems (*linksIterator);
+                linkProblems (*linksIterator, storedProblems_);
             }
             ++linksIterator;
         }

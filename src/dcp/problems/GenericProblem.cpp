@@ -330,19 +330,12 @@ namespace dcp
 
 
 
-    void GenericProblem::stashSolution ()
-    {
-        stashedSolution_ = solution_.back ().second;
-    }
-
-
-
     void GenericProblem::plotSolution (const std::string& plotType)
     {
         // check if plotType is known
         if (plotType != "default" && plotType != "stashed")
         {
-            dolfin::warning ("Uknown plot type \"%s\". No plot performed", plotType.c_str ());
+            dolfin::warning ("Unknown plot type \"%s\". No plot performed", plotType.c_str ());
             return;
         }
         
@@ -414,7 +407,7 @@ namespace dcp
         // check if writeType is known
         if (writeType != "default" && writeType != "stashed")
         {
-            dolfin::warning ("Uknown write type \"%s\". No write performed", writeType.c_str ());
+            dolfin::warning ("Unknown write type \"%s\". No write performed", writeType.c_str ());
             return;
         }
         

@@ -60,7 +60,7 @@ namespace dcp
             }
         }
         
-        dolfin::end ();
+        dolfin::end (); // Solving problems
     }
 
 
@@ -83,17 +83,17 @@ namespace dcp
         {
             if (std::get<0> (linksIterator->first) == problemName)
             {
-                linkProblems (*linksIterator);
+                linkProblems (*linksIterator, storedProblems_);
             }
             ++linksIterator;
         }
 
-        dolfin::end ();
+        dolfin::end (); // Scanning problems links
 
         // 2)
         // solve problem
         problem.solve (solveType_);
         
-        dolfin::end ();
+        dolfin::end (); // Problem %s
     }
 }

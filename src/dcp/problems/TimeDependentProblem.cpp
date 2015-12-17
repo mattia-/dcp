@@ -835,22 +835,45 @@ namespace dcp
             solutionWriter_.reset (new dolfin::File (parameters ["solution_file_name"]));
             solutionFileName_ = std::string (parameters["solution_file_name"]);
         }
-        
-        if (writeType == "default")
+
+        // try-catch block because we don't know if the file format allows std::pair on the operator << 
+        try
         {
-            for (const auto& element : solution_)
+            if (writeType == "default")
             {
-                (*solutionWriter_) << std::make_pair (&(element.second), element.first);
+                for (const auto& element : solution_)
+                {
+                    (*solutionWriter_) << std::make_pair (&(element.second), element.first);
+                }
+            }
+            else if (writeType == "last")
+            {
+                (*solutionWriter_) << std::make_pair (&(solution_.back ().second), solution_.back ().first);
+            }
+            else if (writeType == "stashed")
+            {
+                (*solutionWriter_) << std::make_pair (&(stashedSolution_), time_ -> value ());
             }
         }
-        else if (writeType == "last")
+        catch (std::runtime_error& e)
         {
-            (*solutionWriter_) << std::make_pair (&(solution_.back ().second), solution_.back ().first);
+            if (writeType == "default")
+            {
+                for (const auto& element : solution_)
+                {
+                    (*solutionWriter_) << element.second;
+                }
+            }
+            else if (writeType == "last")
+            {
+                (*solutionWriter_) << solution_.back ().second;
+            }
+            else if (writeType == "stashed")
+            {
+                (*solutionWriter_) << stashedSolution_;
+            }
         }
-        else if (writeType == "stashed")
-        {
-            (*solutionWriter_) << std::make_pair (&(stashedSolution_), time_ -> value ());
-        }
+
     }
     
 

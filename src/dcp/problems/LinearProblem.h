@@ -1166,7 +1166,6 @@ namespace dcp
         void LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         lumpMatrix () 
         {
-            dolfin::begin (dolfin::DBG, "Lumping mass matrix...");
             // create vector of 1s to get the sum of the rows by computing A*ones
             dolfin::Vector ones (MPI_COMM_WORLD, problemMatrix_.size (0));
             ones = 1;
@@ -1178,7 +1177,6 @@ namespace dcp
             // set problemMatrix_ to diagonal
             problemMatrix_.zero ();
             problemMatrix_.set_diagonal (result);
-            dolfin::end ();
         }
     
 
@@ -1205,16 +1203,17 @@ namespace dcp
                     dolfin::begin (dolfin::DBG, "Imposing Dirichlet's boundary conditions...");
                     for (auto &i : dirichletBCs_)
                     {
-                        dolfin::begin (dolfin::DBG, "Boundary condition: %s", i.first.c_str ());
+                        dolfin::log (dolfin::DBG, "Boundary condition: %s", i.first.c_str ());
                         i.second.apply (problemMatrix_, rhsVector_);
-                        dolfin::end ();
                     }
                     dolfin::end ();
                 }
 
                 if (bool(parameters["lump_matrix"]) == true)
                 {
+                    dolfin::begin (dolfin::DBG, "Lumping mass matrix...");
                     lumpMatrix ();
+                    dolfin::end ();
                 }
                 
                 parameters ["system_is_assembled"] = true;
@@ -1239,9 +1238,7 @@ namespace dcp
             
             update ();
             
-            dolfin::begin (dolfin::DBG, "Assembling system...");
             assembleLinearSystem ();
-            dolfin::end (); 
             
             dolfin::begin (dolfin::DBG, "Solving system...");
             solver_ -> set_operator (dolfin::reference_to_no_delete_pointer (problemMatrix_));

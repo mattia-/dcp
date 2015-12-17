@@ -807,8 +807,6 @@ namespace dcp
             
             dolfin::log (dolfin::DBG, "Solve type: %s", solveType.c_str ());
             
-            dolfin::begin (dolfin::PROGRESS, "Solving problem...");
-            
             dolfin::log (dolfin::DBG, "Creating temporary vectors of dolfin::DirichletBC pointers...");
             // create vector of POINTERS to DirichletBC. This is needed to call the function dolfin::solve
             std::vector<const dolfin::DirichletBC*> tmpDirichletBCs (dirichletBCs_.size (), nullptr);
@@ -870,8 +868,6 @@ namespace dcp
                                    parameters (solverParametersSetName));
                 }
             }
-            
-            dolfin::end ();
         }
 
 

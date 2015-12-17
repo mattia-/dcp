@@ -930,7 +930,7 @@ namespace dcp
 
         setPreviousSolutionsCoefficients ();
         
-        dolfin::begin (dolfin::PROGRESS, "Solving time stepping problem...");
+        dolfin::begin (dolfin::DBG, "Solving time stepping problem...");
         timeSteppingProblem_->solve ("default");
         dolfin::end ();
         
@@ -959,7 +959,7 @@ namespace dcp
 
         setPreviousSolutionsCoefficients ();
         
-        dolfin::begin (dolfin::PROGRESS, "Solving time stepping problem...");
+        dolfin::begin (dolfin::DBG, "Solving time stepping problem...");
         timeSteppingProblem_->solve ("default");
         dolfin::end ();
         
@@ -990,7 +990,7 @@ namespace dcp
 
 
         // ---- Problem solution ---- //
-        dolfin::begin (dolfin::DBG, "Solving time dependent problem...");
+        dolfin::begin (dolfin::DBG, "Start time dependent problem solution...");
         
         
         // function used to plot and save to file the solution through the time loop

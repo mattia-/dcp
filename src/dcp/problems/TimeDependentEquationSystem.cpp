@@ -471,8 +471,7 @@ namespace dcp
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving.
         // The loop is repeated until isFinished() returns true, that is until all problems' time loops are ended
-        dolfin::begin (dolfin::PROGRESS, "Solving problems...");
-        
+        dolfin::begin (dolfin::DBG, "Starting solution loop...");
         int timeStep = 0;
         while (isFinished () == 0)
         {
@@ -492,7 +491,9 @@ namespace dcp
                 if (problemName != subiterationsBegin)
                 {
                     // solve problem
+                    dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
                     solve (*problemName);
+                    dolfin::end ();
                     
                     // plot solution
                     dcp::TimeDependentProblem& problem = this -> operator[] (*problemName);
@@ -535,10 +536,10 @@ namespace dcp
                     }
                 }
             }
-            
+
             dolfin::end ();
         }
-        
+
         dolfin::end ();
     }
 
@@ -546,8 +547,6 @@ namespace dcp
 
     void TimeDependentEquationSystem::solve (const std::string& problemName)
     {
-        dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName.c_str ());
-
         // get problem with given name from map
         dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
 
@@ -555,7 +554,7 @@ namespace dcp
         // loop over problemsLinks_ to reset all links to take changes to coefficients 
         // into account. Remember it is a map: elements in it are order according to 
         // the default lexicographical ordering
-        dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
+        dolfin::begin (dolfin::DBG, "Scanning problems links...");
 
         auto linksIterator = problemsLinks_.begin ();
         while (linksIterator != problemsLinks_.end () && std::get<0> (linksIterator->first) <= problemName)
@@ -584,8 +583,6 @@ namespace dcp
         // 2)
         // solve problem
         problem.solve (solveType_);
-        
-        dolfin::end ();
     }
 
 
@@ -594,7 +591,7 @@ namespace dcp
                                                           const dolfin::Function& initialSolution, 
                                                           const unsigned int& stepNumber)
     {
-        dolfin::begin (dolfin::PROGRESS, "Setting initial solution...");
+        dolfin::begin (dolfin::DBG, "Setting initial solution...");
         auto problemIterator = storedProblems_.find (problemName);
         (std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second))->
             setInitialSolution (initialSolution, stepNumber);
@@ -607,7 +604,7 @@ namespace dcp
                                                           const dolfin::Expression& initialSolution, 
                                                           const unsigned int& stepNumber)
     {
-        dolfin::begin (dolfin::PROGRESS, "Setting initial solution...");
+        dolfin::begin (dolfin::DBG, "Setting initial solution...");
         auto problemIterator = storedProblems_.find (problemName);
         (std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second))->
             setInitialSolution (initialSolution, stepNumber);
@@ -620,7 +617,7 @@ namespace dcp
     {
         std::string solveTypeBackup = solveType_;
         solveType_ = "steady";
-        dolfin::begin (dolfin::PROGRESS, "Setting initial solution...");
+        dolfin::begin (dolfin::DBG, "Setting initial solution...");
         solve (problemName);
         dolfin::end ();
         solveType_ = solveTypeBackup;
@@ -633,7 +630,7 @@ namespace dcp
     {
         if (std::get<1> (link.second) == -1)
         {
-            dolfin::begin (dolfin::DBG, 
+        dolfin::begin (dolfin::DBG, 
                            "Considering link: (%s, %s, %s) -> (%s, all solution components, %d time steps back)...",
                            (std::get<0> (link.first)).c_str (),
                            (std::get<1> (link.first)).c_str (),

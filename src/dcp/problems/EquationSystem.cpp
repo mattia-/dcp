@@ -40,7 +40,7 @@ namespace dcp
     {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving
-        dolfin::begin (dolfin::PROGRESS, "Solving problems...");
+        dolfin::begin (dolfin::DBG, "Start problem solution...");
         
         auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);
         auto subiterationsEnd = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.second);
@@ -50,7 +50,10 @@ namespace dcp
         {
             if (problemName != subiterationsBegin)
             {
+                dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
                 solve (*problemName);
+                dolfin::end (); // Problem %s
+
                 problemName++;
             }
             else
@@ -67,8 +70,6 @@ namespace dcp
 
     void EquationSystem::solve (const std::string& problemName)
     {
-        dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName.c_str ());
-
         // get problem with given name from map. 
         dcp::GenericProblem& problem = this -> operator[] (problemName);
 
@@ -76,7 +77,7 @@ namespace dcp
         // loop over problemsLinks_ to reset all links to take changes to coefficients 
         // into account. Remember it is a map: elements in it are order according to 
         // the default lexicographic ordering
-        dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
+        dolfin::begin (dolfin::DBG, "Scanning problems links...");
 
         auto linksIterator = problemsLinks_.begin ();
         while (linksIterator != problemsLinks_.end () && std::get<0> (linksIterator->first) <= problemName)
@@ -93,7 +94,5 @@ namespace dcp
         // 2)
         // solve problem
         problem.solve (solveType_);
-        
-        dolfin::end (); // Problem %s
     }
 }

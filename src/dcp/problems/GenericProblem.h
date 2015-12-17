@@ -332,6 +332,7 @@ namespace dcp
             
             //! Write the solution to file
             /*!
+             *  All the filetypes supported by FEniCS are supported, with the same suffix-filetype convention.
              *  It checks if the parameter \c "solution_file_name" and the protected member \c solutionFileName_
              *  coincide. If not, reset \c solutionWriter_ creating a new \c dolfin::File object with the correct name.
              *  \param writeType the type of the writing desired. Possible values:

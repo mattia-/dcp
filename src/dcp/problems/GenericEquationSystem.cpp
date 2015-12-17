@@ -821,7 +821,7 @@ namespace dcp
             }
             else // if found, solve the initial guess setter problem
             {
-                dolfin::begin (dolfin::PROGRESS, "Solving initial guess setter problem...");
+                dolfin::begin (dolfin::DBG, "Solving initial guess setter problem...");
                 
                 // get problem with given name from map
                 dcp::GenericProblem& problem = *(problemIterator->second);
@@ -829,7 +829,7 @@ namespace dcp
                 // 1)
                 // loop over initialGuessesSettersLinks_ to reset all links.
                 // Remember it is a map: elements in it are order according to the default lexicographic ordering
-                dolfin::begin (dolfin::PROGRESS, "Scanning problems links...");
+                dolfin::begin (dolfin::DBG, "Scanning problems links...");
 
                 auto linksIterator = initialGuessesSettersLinks_.begin ();
                 while (linksIterator != initialGuessesSettersLinks_.end () 
@@ -884,7 +884,10 @@ namespace dcp
         dolfin::begin (dolfin::PROGRESS, "Solving all problems once...");
         for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
         {
+            dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
             solve (*problemName);
+            dolfin::end ();
+
             if (plotSubiterationSolutions == true)
             {
                 dolfin::begin (dolfin::DBG, "Plotting subiteration solution...");
@@ -955,7 +958,9 @@ namespace dcp
             int counter = 0;
             for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
             {
+                dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
                 solve (*problemName);
+                dolfin::end ();
                 
                 if (std::find (convergenceCheckProblemNames.begin (), convergenceCheckProblemNames.end (), *problemName)
                     != convergenceCheckProblemNames.end ())

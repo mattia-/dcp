@@ -138,7 +138,7 @@ namespace dcp
         // update and solve the problem for the first time
         dolfin::begin (dolfin::PROGRESS, "Minimization loop initialization...");
         
-        dolfin::begin (dolfin::PROGRESS, "Updating differential problem using control initial guess...");
+        dolfin::begin (dolfin::DBG, "Updating differential problem using control initial guess...");
         updater (problem, controlVariable);
         dolfin::end ();
 
@@ -147,14 +147,14 @@ namespace dcp
         
         
         // initialize loop variables
-        dolfin::begin (dolfin::PROGRESS, "Computing norm of functional gradient...");
+        dolfin::begin (dolfin::DBG, "Computing norm of functional gradient...");
         gradientNorm = dotProduct_.norm (objectiveFunctional.gradient (), 
                                          *(controlVariable.function_space ()->mesh ()));
         dolfin::end ();
         
         relativeIncrement = relativeIncrementTolerance + 1; // just an initialization to be sure that the first iteration 
                                                             // of the minimization loop is performed
-        dolfin::begin (dolfin::PROGRESS, "Evaluating functional...");
+        dolfin::begin (dolfin::DBG, "Evaluating functional...");
         currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
         dolfin::end ();
 
@@ -206,23 +206,23 @@ namespace dcp
             dolfin::end ();
             
             // compute dot product between gradient and search direction
-            dolfin::begin (dolfin::PROGRESS, "Computing dot product between gradient and search direction...");
+            dolfin::begin (dolfin::DBG, "Computing dot product between gradient and search direction...");
             gradientDotSearchDirection = dotProduct_.compute (objectiveFunctional.gradient (), 
                                                               searchDirection,
                                                               *(controlVariable.function_space ()->mesh ()));
             dolfin::end ();
             
             // solution of problem with alpha_0
-            dolfin::log (dolfin::PROGRESS, "Alpha = %f", alpha);
+            dolfin::log (dolfin::DBG, "Alpha = %f", alpha);
 
             // update control variable value
-            dolfin::begin (dolfin::PROGRESS, "Updating control variable...");
+            dolfin::begin (dolfin::DBG, "Updating control variable...");
             dolfin::Function previousControlVariable (controlVariable);
             controlVariable = previousControlVariable + (searchDirection * alpha);
             dolfin::end ();
 
             // update problem 
-            dolfin::begin (dolfin::PROGRESS, "Updating differential problem...");
+            dolfin::begin (dolfin::DBG, "Updating differential problem...");
             updater (problem, controlVariable);
             dolfin::end ();
 
@@ -230,11 +230,11 @@ namespace dcp
             problem.solve ();
 
             // update value of the functional
-            dolfin::begin (dolfin::PROGRESS, "Evaluating functional...");
+            dolfin::begin (dolfin::DBG, "Evaluating functional...");
             currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
             dolfin::end ();
             
-            dolfin::log (dolfin::PROGRESS, "Functional value = %f\n", currentFunctionalValue);
+            dolfin::log (dolfin::DBG, "Functional value = %f\n", currentFunctionalValue);
             
             
             // backtracking loop
@@ -253,7 +253,7 @@ namespace dcp
             // update gradient norm if necessary for convergence check
             if (convergenceCriterion == "gradient" || convergenceCriterion == "both")
             {
-                dolfin::begin (dolfin::PROGRESS, "Computing norm of functional gradient...");
+                dolfin::begin (dolfin::DBG, "Computing norm of functional gradient...");
                 gradientNorm = dotProduct_.norm (objectiveFunctional.gradient (), 
                                                  *(controlVariable.function_space ()->mesh ()));
                 dolfin::end ();
@@ -265,7 +265,7 @@ namespace dcp
             // update relative increment if necessary for convergence check
             if (convergenceCriterion == "increment" || convergenceCriterion == "both")
             {
-                dolfin::begin (dolfin::PROGRESS, "Computing relative increment...");
+                dolfin::begin (dolfin::DBG, "Computing relative increment...");
                 previousControlVariableNorm = dotProduct_.norm (previousControlVariable);
                 dolfin::end ();
 
@@ -365,12 +365,12 @@ namespace dcp
             dolfin::log (dolfin::PROGRESS, "Alpha = %f", alpha);
     
             // update control variable value
-            dolfin::begin (dolfin::PROGRESS, "Updating control variable...");
+            dolfin::begin (dolfin::DBG, "Updating control variable...");
             controlVariable = previousControlVariable + (searchDirection * alpha);
             dolfin::end ();
     
             // update problem 
-            dolfin::begin (dolfin::PROGRESS, "Updating differential problem...");
+            dolfin::begin (dolfin::DBG, "Updating differential problem...");
             updater (problem, controlVariable);
             dolfin::end ();
     
@@ -380,7 +380,7 @@ namespace dcp
             dolfin::end ();
     
             // update value of the functional
-            dolfin::begin (dolfin::PROGRESS, "Evaluating functional...");
+            dolfin::begin (dolfin::DBG, "Evaluating functional...");
             currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
             dolfin::end ();
     

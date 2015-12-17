@@ -677,7 +677,7 @@ namespace dcp
              *  Possible values are:
              *  \li \c "default" : write to file all the functions in \c solution_
              *  \li \c "last" : write to file only the last solution stored in \c solution_
-             *  \li \c "stased" : write to file the stashed solution
+             *  \li \c "stahed" : write to file the stashed solution
              */
             virtual void writeSolutionToFile (const std::string& writeType = "default") override;
             

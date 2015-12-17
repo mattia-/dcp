@@ -186,8 +186,6 @@ namespace dcp
 
         dolfin::log (dolfin::DBG, "Solve type: %s", solveType.c_str ());
 
-        dolfin::begin (dolfin::PROGRESS, "Solving problem...");
-
         if (solveType == "default")
         {
             solution_.back ().second = *(expression_);
@@ -201,8 +199,6 @@ namespace dcp
         {
             stashedSolution_ = *(expression_);
         }
-
-        dolfin::end ();
     }
 
 

@@ -1239,11 +1239,11 @@ namespace dcp
             
             update ();
             
-            dolfin::begin (dolfin::PROGRESS, "Assembling system...");
+            dolfin::begin (dolfin::DBG, "Assembling system...");
             assembleLinearSystem ();
             dolfin::end (); 
             
-            dolfin::begin (dolfin::PROGRESS, "Solving system...");
+            dolfin::begin (dolfin::DBG, "Solving system...");
             solver_ -> set_operator (dolfin::reference_to_no_delete_pointer (problemMatrix_));
             if (solveType == "default")
             {

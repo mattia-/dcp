@@ -655,7 +655,7 @@ namespace dcp
              *  Note that if time value is the same as the last stored solution, that solution is erased before 
              *  copying the stased solution to \c solution_. Otherwise, it is simply added at the end of the vector
              */
-            virtual void applyStashedSolution ();
+            virtual void applyStashedSolution () override;
                 
             //! Plot the solution. 
             /*! Overrides method in \c dcp::GenericProblem to take into account the fact that 

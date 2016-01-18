@@ -21,7 +21,7 @@
 #include <string>
 #include <dolfin.h>
 #include <mshr.h>
-#include <differential_problems/differential_problems.h>
+#include <dcp/problems/problems.h>
 #include "convectiondiffusion.h"
 
 namespace convectiondiffusion
@@ -34,12 +34,13 @@ namespace convectiondiffusion
         }
     };
     
-    class initialSolution : public dolfin::Expression
+    class InitialSolution : public dolfin::Expression
     {
-        void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
-        {
-            values[0] = exp (-((x[0] - 1) * (x[0] - 1) + (x[1] - 3) * (x[1] - 3)) / 0.2);
-        }
+        public:
+            void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+            {
+                values[0] = exp (-((x[0] - 1) * (x[0] - 1) + (x[1] - 3) * (x[1] - 3)) / 0.2);
+            }
     };
 }
 
@@ -55,24 +56,22 @@ int main (int argc, char* argv[])
     convectiondiffusion::FunctionSpace V (mesh);
     
     // define problem
+    std::cout << "Define the problem..." << std::endl;
     double t0 = 0;
     double dt = 0.1;
     double T = 4;
-    std::cout << "Define the problem..." << std::endl;
-    dcp::TimeDependentProblem convectionDiffusionProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                                                          dolfin::reference_to_no_delete_pointer (V),
+    
+    dcp::LinearProblem <convectiondiffusion::BilinearForm, convectiondiffusion::LinearForm>
+        timeSteppingProblem (dolfin::reference_to_no_delete_pointer (V));
+    
+    dcp::TimeDependentProblem convectionDiffusionProblem (dolfin::reference_to_no_delete_pointer (timeSteppingProblem),
                                                           t0,
                                                           dt,
                                                           T,
-                                                          std::vector<std::string> ({"bilinear_form"}),
-                                                          std::vector<std::string> ({"linear_form"}));
+                                                          {"bilinear_form"},
+                                                          {"linear_form"});
     
-    dcp::LinearProblem <convectiondiffusion::BilinearForm, convectiondiffusion::LinearForm>
-        timeSteppingProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                             dolfin::reference_to_no_delete_pointer (V));
     
-    convectionDiffusionProblem.setTimeSteppingProblem (dolfin::reference_to_no_delete_pointer (timeSteppingProblem));
-
     // define coefficients
     std::cout << "Define the problem's coefficients..." << std::endl;
     dolfin::Constant k (0.01);
@@ -82,7 +81,7 @@ int main (int argc, char* argv[])
     std::cout << "Define the problem's Dirichlet boundary conditions..." << std::endl;
     convectiondiffusion::DirichletBoundary dirichletBoundary;
     dolfin::Constant dirichletValue (0.0);
-    convectionDiffusionProblem.addDirichletBC (dolfin::DirichletBC (V, dirichletValue, dirichletBoundary));
+    convectionDiffusionProblem.addDirichletBC (dirichletValue, dirichletBoundary);
     
     // set problem coefficients
     std::cout << "Set the problem's coefficients..." << std::endl;
@@ -90,14 +89,15 @@ int main (int argc, char* argv[])
     convectionDiffusionProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (b), "b");
 
     // solve problem
-    convectionDiffusionProblem.setInitialSolution (convectiondiffusion::initialSolution ());
+    convectionDiffusionProblem.setInitialSolution (convectiondiffusion::InitialSolution ());
+    convectionDiffusionProblem.parameters ["plot_interval"] = 1;
     std::cout << "Solve the problem..." << std::endl;
     convectionDiffusionProblem.solve ();
   
     // plots
     dolfin::plot (mesh);
     
-    dolfin::interactive ();
+    // dolfin::interactive ();
   
     return 0;
 }

@@ -1,0 +1,94 @@
+#/* 
+# *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
+# * 
+# *  This file is part of the DCP library
+# *   
+# *   The DCP library is free software: you can redistribute it and/or modify
+# *   it under the terms of the GNU General Public License as published by
+# *   the Free Software Foundation, either version 3 of the License, or
+# *   (at your option) any later version.
+# *
+# *   The DCP library is distributed in the hope that it will be useful,
+# *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+# *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# *   GNU General Public License for more details.
+# *
+# *   You should have received a copy of the GNU General Public License
+# *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
+# */ 
+
+# This file contains auxiliary forms used by the optimizer
+
+# ------------------------------------------------------------------- #
+# ------------------------------------------------------------------- #
+#
+# ---------------------------------------------------------------- #
+# define form to compute the dot product of two 1D scalar functions
+# ---------------------------------------------------------------- #
+# function space
+scalar1DElement = FiniteElement ("Lagrange", interval, 1)                                       
+
+# the function whose norm we wish to compute
+scalar1D_f = Coefficient (scalar1DElement)
+scalar1D_g = Coefficient (scalar1DElement)
+
+# the form itself
+scalar1D_dotProduct = inner (scalar1D_f, scalar1D_g) * dx
+
+# ---------------------------------------------------------------- #
+# define form to compute the dot product of two 2D scalar functions
+# ---------------------------------------------------------------- #
+# function space
+scalar2DElement = FiniteElement ("Lagrange", triangle, 1)                                       
+
+# the function whose norm we wish to compute
+scalar2D_f = Coefficient (scalar2DElement)
+scalar2D_g = Coefficient (scalar2DElement)
+
+# the form itself
+scalar2D_dotProduct = inner (scalar2D_f, scalar2D_g) * dx
+
+# ------------------------------------------------------------------- #
+# define form to compute the dot product of two 2D vector functions
+# ------------------------------------------------------------------- #
+# function space
+vector2DElement = VectorElement ("Lagrange", triangle, 1)                                       
+
+# the function whose norm we wish to compute
+vector2D_f = Coefficient (vector2DElement)
+vector2D_g = Coefficient (vector2DElement)
+
+# the form itself
+vector2D_dotProduct = inner (vector2D_f, vector2D_g) * dx
+
+# ---------------------------------------------------------------- #
+# define form to compute the dot product of two 3D scalar functions
+# ---------------------------------------------------------------- #
+# function space
+scalar3DElement = FiniteElement ("Lagrange", tetrahedron, 1)                                       
+
+# the function whose norm we wish to compute
+scalar3D_f = Coefficient (scalar3DElement)
+scalar3D_g = Coefficient (scalar3DElement)
+
+# the form itself
+scalar3D_dotProduct = inner (scalar3D_f, scalar3D_g) * dx
+
+# ------------------------------------------------------------------- #
+# define form to compute the dot product of two 3D vector functions
+# ------------------------------------------------------------------- #
+# function space
+vector3DElement = VectorElement ("Lagrange", tetrahedron, 1)                                       
+
+# the function whose norm we wish to compute
+vector3D_f = Coefficient (vector3DElement)
+vector3D_g = Coefficient (vector3DElement)
+
+# the form itself
+vector3D_dotProduct = inner (vector3D_f, vector3D_g) * dx
+
+# ------------------------------------------------------------------- #
+# ------------------------------------------------------------------- #
+
+# get all the forms
+forms = [scalar1D_dotProduct, scalar2D_dotProduct, vector2D_dotProduct, scalar3D_dotProduct, vector3D_dotProduct]

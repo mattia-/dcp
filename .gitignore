@@ -29,6 +29,8 @@ lib
 *.swp
 *~
 
-# mesh files
-*.msh
-*.unv
+# helper files
+*.install
+
+# todo files
+todo

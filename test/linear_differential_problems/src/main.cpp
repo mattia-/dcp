@@ -20,7 +20,7 @@
 #include <iostream>
 #include <string>
 #include <dolfin.h>
-#include <differential_problems/differential_problems.h>
+#include <dcp/problems/problems.h>
 #include "poisson.h"
 
 namespace poisson
@@ -55,8 +55,7 @@ int main (int argc, char* argv[])
     
     // define problem
     dolfin::info ("Define the problem...");
-    dcp::LinearProblem <poisson::BilinearForm, poisson::LinearForm> poissonProblem (dolfin::reference_to_no_delete_pointer (mesh), 
-                                                                                    dolfin::reference_to_no_delete_pointer (V));
+    dcp::LinearProblem <poisson::BilinearForm, poisson::LinearForm> poissonProblem (dolfin::reference_to_no_delete_pointer (V));
 
     // define coefficients
     dolfin::info ("Define the problem's coefficients...");
@@ -68,7 +67,7 @@ int main (int argc, char* argv[])
     // define dirichlet boundary conditions 
     dolfin::info ("Define the problem's Dirichlet boundary conditions...");
     poisson::DirichletBoundary dirichletBoundary;
-    poissonProblem.addDirichletBC (dolfin::DirichletBC (V, h, dirichletBoundary));
+    poissonProblem.addDirichletBC (h, dirichletBoundary);
     
     // define neumann boundary conditions 
     dolfin::info ("Define the problem's Neumann boundary conditions...");
@@ -76,11 +75,13 @@ int main (int argc, char* argv[])
     dolfin::FacetFunction<std::size_t> meshFacets (mesh);
     meshFacets.set_all (0);
     neumannBoundary.mark (meshFacets, 1);
+    poissonProblem.setIntegrationSubdomain ("linear_form", 
+                                             dolfin::reference_to_no_delete_pointer (meshFacets), 
+                                             dcp::SubdomainType::BOUNDARY_FACETS);
     
     // set problem coefficients
     dolfin::info ("Set the problem's coefficients...");
     poissonProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (k), "k");
-    poissonProblem.setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (k), "k");
     poissonProblem.setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (f), "f");
     poissonProblem.setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (g), "g");
 
@@ -90,9 +91,9 @@ int main (int argc, char* argv[])
     
     // plots
     dolfin::plot (mesh);
-    dolfin::plot (poissonProblem.solution ());
+    poissonProblem.plotSolution ();
     
-    dolfin::interactive ();
+    // dolfin::interactive ();
     
     return 0;
 }

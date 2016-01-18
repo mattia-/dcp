@@ -1,0 +1,23 @@
+# second step of the Chorin-Temam splitting method
+
+# domain type
+cell = triangle
+
+# function space
+V = VectorElement ("Lagrange", cell, 2)
+Q = FiniteElement ("Lagrange", cell, 1)
+
+# coefficients
+dt = Constant (cell)
+u_star = Coefficient (V)
+
+# test and trial function
+dp = TrialFunction (Q)
+q = TestFunction (Q)
+
+# correction equation:
+# lhs
+a = - dt * inner (grad (dp), grad (q)) * dx
+
+# rhs
+L = inner (div (u_star), q) * dx

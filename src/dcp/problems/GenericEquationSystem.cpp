@@ -807,7 +807,7 @@ namespace dcp
         // set initial guesses
         dolfin::begin (dolfin::PROGRESS, "Setting initial guesses...");
 
-        for (auto problemName = solveOrder_.begin (); problemName != solveOrder_.end (); problemName++)
+        for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
         {
             // TODO SOLUTION TYPE TODO
             dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", (*problemName).c_str ());

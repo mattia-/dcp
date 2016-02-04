@@ -69,6 +69,7 @@ namespace dcp
         parameters.add ("previous_solution_name", "u_old");
         parameters.add ("write_interval", 0);
         parameters.add ("plot_interval", 0);
+        parameters.add ("purge_interval", int (nTimeSchemeSteps_));
         parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("pause", false);
         parameters.add ("previous_solution_is_set_externally", false);
@@ -141,6 +142,7 @@ namespace dcp
         parameters.add ("previous_solution_name", "u_old");
         parameters.add ("write_interval", 0);
         parameters.add ("plot_interval", 0);
+        parameters.add ("purge_interval", int (nTimeSchemeSteps_));
         parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("pause", false);
         parameters.add ("previous_solution_is_set_externally", false);
@@ -660,6 +662,8 @@ namespace dcp
             solution_.pop_back ();
         }
         solution_.push_back (std::make_pair (time_ -> value (), stashedSolution_));
+
+        purgeSolutionsVector ();
         
         stashedSolution_ = dolfin::Function (*functionSpace_);
     }
@@ -965,8 +969,7 @@ namespace dcp
         }
         solution_.push_back (std::make_pair (time_ -> value (), timeSteppingProblem_->solution ("default")));
         
-        // TODO save only the number of soultions needed to advance in time (i.e. one if the method is a one-step time
-        // scheme, two for 2-steps time scheme....)
+        purgeSolutionsVector ();
         
         // set stashedSolution_ to be equal to the last computed solution, so that when solution() is called
         // from a subiterations loop it gets the right one. In the case of "default" solveType, indeed, the
@@ -1263,4 +1266,17 @@ namespace dcp
             dolfin::end ();
         }
     }
+
+
+
+    void TimeDependentProblem::purgeSolutionsVector ()
+    {
+        int purgeInterval = parameters["purge_interval"];
+
+        if (purgeInterval >= nTimeSchemeSteps_ && purgeInterval < solution_.size ())
+        {
+            dolfin::log (dolfin::DBG, "Purging solution vector...");
+            solution_.erase (solution_.begin ());
+        }
+    }       
 }

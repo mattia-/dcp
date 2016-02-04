@@ -142,13 +142,22 @@ namespace dcp
              *        used must be called \c <"previous_solution_name">, \c <"previous_solution_name">_2, 
              *        \c <"previous_solution_name">_3 and so on.
              *        Default value for \c "previous_solution_name": "u_old"
-             *      - \c "write_interval" the interval of time steps to write the solution to file. Basically, the 
-             *        solution will be saved to file every \c write_interval time steps. 
-             *        A value less than or equal to 0 means that the solution should never be saved to file. 
+             *      - \c "write_interval" controls when the computed solution is stored to file. Basically, the solution 
+             *        will be saved every \c write_interval time steps. A value less than or equal to 0 means that the 
+             *        solution should never be saved to file. 
              *        Default value: 0
-             *      - \c "plot_interval" the interval of time steps to plot the solution. Basically, the solution will
-             *        be plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
-             *        solution should never be plotted. Default value: 0
+             *      - \c "plot_interval" controls when the computed solution is plotted. Basically, the solution will be 
+             *        plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
+             *        solution should never be plotted.
+             *        Default value: 0
+             *      - \c "purge_interval" controls when the computed solution is purged. Basically, the solution vector
+             *        will only ever contain no more than \c purge_interval elements (but in any case no less than the
+             *        number of elements needed to compute the solution at the nex time step, aka \c nTimeSchemeSteps_),
+             *        unless a value lower than \c nTimeSchemeSteps_ is used. In that case the solutions vector is never
+             *        purged. Notice that this means that the front of the \c std::vector containing the solutions will
+             *        be erased (and all the following elements in the vector shifted accordingly), so this is a
+             *        potentially inefficient and costly operation if the value used for this parameter is high.
+             *        Default value: \c nTimeSchemeSteps_
              *      - \c "time_stepping_solution_component" the component of the solution to be used when advancing the 
              *        time loop (if the solution is vectorial). The function whose name is stored in the parameter
              *        \c "previous_solution_name" will be set using only the component of \c solution_ set in this 
@@ -225,13 +234,22 @@ namespace dcp
              *        used must be called \c <"previous_solution_name">, \c <"previous_solution_name">_2, 
              *        \c <"previous_solution_name">_3 and so on.
              *        Default value for \c "previous_solution_name": "u_old"
-             *      - \c "write_interval" the interval of time steps to write the solution to file. Basically, the 
-             *        solution will be saved to file every \c write_interval time steps. 
-             *        A value less than or equal to 0 means that the solution should never be saved to file. 
+             *      - \c "write_interval" controls when the computed solution is stored to file. Basically, the solution 
+             *        will be saved every \c write_interval time steps. A value less than or equal to 0 means that the 
+             *        solution should never be saved to file. 
              *        Default value: 0
-             *      - \c "plot_interval" the interval of time steps to plot the solution. Basically, the solution will
-             *        be plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
-             *        solution should never be plotted. Default value: 0
+             *      - \c "plot_interval" controls when the computed solution is plotted. Basically, the solution will be 
+             *        plotted every \c plot_interval time steps. A value less than or equal to 0 means that the 
+             *        solution should never be plotted.
+             *        Default value: 0
+             *      - \c "purge_interval" controls when the computed solution is purged. Basically, the solution vector
+             *        will only ever contain no more than \c purge_interval elements (but in any case no less than the
+             *        number of elements needed to compute the solution at the nex time step, aka \c nTimeSchemeSteps_),
+             *        unless a value lower than \c nTimeSchemeSteps_ is used. In that case the solutions vector is never
+             *        purged. Notice that this means that the front of the \c std::vector containing the solutions will
+             *        be erased (and all the following elements in the vector shifted accordingly), so this is a
+             *        potentially inefficient and costly operation if the value used for this parameter is high.
+             *        Default value: \c nTimeSchemeSteps_
              *      - \c "time_stepping_solution_component" the component of the solution to be used when advancing the 
              *        time loop (if the solution is vectorial). The function whose name is stored in the parameter
              *        \c "previous_solution_name" will be set using only the component of \c solution_ set in this 
@@ -342,7 +360,7 @@ namespace dcp
             /******************* SETTERS *******************/
             //! Set initial solution for the time loop using a \c dolfin::Function. 
             //! Note that this will not clear the solutions vector. Instead, it will change the value of the last
-            //! solutions stored in \c solutions_ which will then be used to advance in time.
+            //! solutions stored in \c solution_ which will then be used to advance in time.
             /*!
              *  \param initialSolution the function to be used as initial solution
              *  \param stepNumber the number of steps to go back to set the initial solution. This is mostly useful for
@@ -355,7 +373,7 @@ namespace dcp
             
             //! Set initial solution for the time loop using a \c dolfin::Expression.
             //! Note that this will not clear the solutions vector. Instead, it will change the value of the last
-            //! solutions stored in \c solutions_ which will then be used to advance in time.
+            //! solutions stored in \c solution_ which will then be used to advance in time.
             /*!
              *  \param initialSolution the function to be used as initial solution
              *  \param stepNumber the number of steps to go back to set the initial solution. This is mostly useful for
@@ -831,6 +849,9 @@ namespace dcp
                                        const int& plotInterval, 
                                        const int& plotComponent,
                                        const bool& pause);
+
+            //! Delete elements from \c solution_ according to \c parameters["purge_interval"]
+            virtual void purgeSolutionsVector ();
 
             // ---------------------------------------------------------------------------------------------//
 

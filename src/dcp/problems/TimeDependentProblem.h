@@ -545,6 +545,9 @@ namespace dcp
              *  This function adds the two object defining the time dependent expression (passed as input arguments) to 
              *  \c timeDependentDirichletBCs_ and sets the time dependent Dirichlet boundary condition for the 
              *  protected member \c timeSteppingProblem_.
+             *  Note that both \c condition and \c boundary will be cloned, so be sure the object passed are indeed
+             *  clonable. Expressions and subdomains defined in DCP provide a clone method, but if you decide to derive
+             *  those classes to add any functionality be sure to override the clone method.
              *
              *  \param condition the boundary condition to enforce
              *  \param boundary the boundary on which to enforce the condition
@@ -562,6 +565,9 @@ namespace dcp
              *  This function adds the two object defining the time dependent expression (passed as input arguments) to 
              *  \c timeDependentDirichletBCs_ and sets the time dependent Dirichlet boundary condition for the 
              *  protected member \c timeSteppingProblem_.
+             *  Note that both \c condition and \c boundary will be cloned, so be sure the object passed are indeed
+             *  clonable. Expressions and subdomains defined in DCP provide a clone method, but if you decide to derive
+             *  those classes to add any functionality be sure to override the clone method.
              *
              *  \param condition the boundary condition to enforce
              *  \param boundary the boundary on which to enforce the condition
@@ -578,8 +584,52 @@ namespace dcp
                                                       const std::size_t& component,
                                                       std::string bcName = "");
 
-            //! Remove time dependent Dirichlet boundary condition with given name. 
-            //! This function removes the given Dirichlet boundary conditions from the protected member 
+            //! Add time dependend Dirichlet boundary condition to the problem [3]
+            /*!
+             *  This function adds the two object defining the time dependent expression (passed as input arguments) to
+             *  \c timeDependentDirichletBCs_ and sets the time dependent Dirichlet boundary condition for the
+             *  protected member \c timeSteppingProblem_.
+             *  Note that both \c condition and \c boundary will be cloned, so be sure the object passed are indeed
+             *  clonable. Expressions and subdomains defined in DCP provide a clone method, but if you decide to derive
+             *  those classes to add any functionality be sure to override the clone method.
+             *
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addTimeDependentDirichletBC (const std::shared_ptr<const dcp::TimeDependentExpression> condition,
+                                                      const std::shared_ptr<const dcp::Subdomain> boundary,
+                                                      std::string bcName = "");
+
+            //! Add time dependend Dirichlet boundary condition to the problem [4]
+            /*!
+             *  This function adds the two object defining the time dependent expression (passed as input arguments) to
+             *  \c timeDependentDirichletBCs_ and sets the time dependent Dirichlet boundary condition for the
+             *  protected member \c timeSteppingProblem_.
+             *  Note that both \c condition and \c boundary will be cloned, so be sure the object passed are indeed
+             *  clonable. Expressions and subdomains defined in DCP provide a clone method, but if you decide to derive
+             *  those classes to add any functionality be sure to override the clone method.
+             *
+             *  \param condition the boundary condition to enforce
+             *  \param boundary the boundary on which to enforce the condition
+             *  \param component the function space component on which the boundary condition should be imposed.
+             *  For instance, this can be useful if we have a vector space and we want only the orizontal component to
+             *  have a fixed value
+             *  \param bcName the name identifying the boundary condition. If empty,
+             *  "dirichlet_condition_<dirichletBCsCounter>" will be used as default name
+             *
+             *  \return boolean flag, with \c true representing success and \c false representing failure
+             */
+            virtual bool addTimeDependentDirichletBC (const std::shared_ptr<const dcp::TimeDependentExpression> condition,
+                                                      const std::shared_ptr<const dcp::Subdomain> boundary,
+                                                      const std::size_t& component,
+                                                      std::string bcName = "");
+
+            //! Remove time dependent Dirichlet boundary condition with given name.
+            //! This function removes the given Dirichlet boundary conditions from the protected member
             //! \c timeSteppingProblem_.
             /*!
              *  This method adds to the base class method the setting of parameter \c system_is_assembled to \c false.

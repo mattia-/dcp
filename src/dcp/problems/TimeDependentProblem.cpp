@@ -460,8 +460,29 @@ namespace dcp
 
         return result.second;
     }
-    
-    
+
+
+
+    bool TimeDependentProblem::addTimeDependentDirichletBC 
+        (const std::shared_ptr<const dcp::TimeDependentExpression> condition,
+         const std::shared_ptr<const dcp::Subdomain> boundary,
+         std::string bcName)
+    {
+        return addTimeDependentDirichletBC (*condition, *boundary, bcName);
+    }
+
+
+
+    bool TimeDependentProblem::addTimeDependentDirichletBC 
+        (const std::shared_ptr<const dcp::TimeDependentExpression> condition,
+         const std::shared_ptr<const dcp::Subdomain> boundary,
+         const std::size_t& component,
+         std::string bcName)
+    {
+        return addTimeDependentDirichletBC (*condition, *boundary, component, bcName);
+    }
+
+
 
     bool TimeDependentProblem::removeTimeDependentDirichletBC (const std::string& bcName)
     {

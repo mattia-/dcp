@@ -809,7 +809,6 @@ namespace dcp
 
         for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
         {
-            // TODO SOLUTION TYPE TODO
             dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", (*problemName).c_str ());
 
             // look for given problem name in initialGuessesSetters_
@@ -859,7 +858,17 @@ namespace dcp
             if (plotSubiterationSolutions == true)
             {
                 dolfin::begin (dolfin::DBG, "Plotting subiteration solution...");
+
+                // set plot name to include subiteration number
+                std::string oldPlotTitle = (this -> operator[] (*problemName)).parameters["plot_title"];
+                std::string newPlotTitle = oldPlotTitle + " (subiteration initial solution)";
+                (this -> operator[] (*problemName)).parameters["plot_title"] = newPlotTitle;
+
+                // actual plotting
                 (this -> operator[] (*problemName)).plotSolution ("stashed");
+
+                // reset plot title
+                (this -> operator[] (*problemName)).parameters["plot_title"] = oldPlotTitle;
                 dolfin::end ();
             }
 
@@ -891,14 +900,24 @@ namespace dcp
             if (plotSubiterationSolutions == true)
             {
                 dolfin::begin (dolfin::DBG, "Plotting subiteration solution...");
-                (this -> operator[] (*problemName)).plotSolution (solutionType_);
+
+                // set plot name to include subiteration number
+                std::string oldPlotTitle = (this -> operator[] (*problemName)).parameters["plot_title"];
+                std::string newPlotTitle = oldPlotTitle + " (subiteration iteration " + std::to_string (0) + ")";
+                (this -> operator[] (*problemName)).parameters["plot_title"] = newPlotTitle;
+
+                // actual plotting
+                (this -> operator[] (*problemName)).plotSolution ("stashed");
+
+                // reset plot title
+                (this -> operator[] (*problemName)).parameters["plot_title"] = oldPlotTitle;
                 dolfin::end ();
             }
 
             if (writeSubiterationSolutions == true)
             {
                 dolfin::begin ("Writing subiteration solution to file...");
-                (this -> operator[] (*problemName)).writeSolutionToFile (solutionType_);
+                (this -> operator[] (*problemName)).writeSolutionToFile ("stashed");
                 dolfin::end ();
             }
         }
@@ -979,14 +998,27 @@ namespace dcp
                 if (plotSubiterationSolutions == true)
                 {
                     dolfin::begin (dolfin::DBG, "Plotting subiteration solution...");
-                    (this -> operator[] (*problemName)).plotSolution (solutionType_);
+
+                    // set plot name to include subiteration number
+                    std::string oldPlotTitle = (this -> operator[] (*problemName)).parameters["plot_title"];
+                    std::string newPlotTitle = oldPlotTitle + 
+                                               " (subiteration iteration " 
+                                               + std::to_string (iteration) 
+                                               + ")";
+                    (this -> operator[] (*problemName)).parameters["plot_title"] = newPlotTitle;
+
+                    // actual plotting
+                    (this -> operator[] (*problemName)).plotSolution ("stashed");
+
+                    // reset plot title
+                    (this -> operator[] (*problemName)).parameters["plot_title"] = oldPlotTitle;
                     dolfin::end ();
                 }
 
                 if (writeSubiterationSolutions == true)
                 {
                     dolfin::begin ("Writing subiteration solution to file...");
-                    (this -> operator[] (*problemName)).writeSolutionToFile (solutionType_);
+                    (this -> operator[] (*problemName)).writeSolutionToFile ("stashed");
                     dolfin::end ();
                 }
             }

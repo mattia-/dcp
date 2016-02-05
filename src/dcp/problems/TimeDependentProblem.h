@@ -684,7 +684,7 @@ namespace dcp
              *  Possible values are:
              *  \li \c "default" : plot all the functions in \c solution_
              *  \li \c "last" : plot only the last solution stored in \c solution_
-             *  \li \c "stased" : plot the stashed solution
+             *  \li \c "stashed" : plot the stashed solution
              */
             virtual void plotSolution (const std::string& plotType = "default") override;
             

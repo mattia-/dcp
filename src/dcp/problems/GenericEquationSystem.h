@@ -258,8 +258,9 @@ namespace dcp
              *  Removes the link identified by the input arguments from the protected members.
              *  The input arguments will be used to create an object of \c dcp::GenericProblem::LinkKey to use
              *  to erase the corresponding entry from \c problemsLinks_ . See \c addLink documentation for more details.
-             *  The parameter \c linkType has two possible values (\c "system" and \c "initial_guess") with the same
-             *  meaning as it is described in the documentation for \c addLink()
+             *  The parameter \c linkType has two possible values (\c "system" and \c "initial_guess") which identify
+             *  the map from which the link should be removed (respectively, the map of system links used to solve the
+             *  system and the map used to set the initial guesses)
              *  
              *  \return \c true if the link was removed, \c false otherwise
              */

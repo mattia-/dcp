@@ -353,11 +353,11 @@ namespace dcp
         auto linkKey = std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType);
 
         dolfin::log (dolfin::DBG, 
-                       "Removing link (%s, %s, %s) from \"%s\" map",
-                       linkFrom.c_str (),
-                       linkedCoefficientName.c_str (),
-                       linkedCoefficientType.c_str (),
-                       linkType.c_str ());
+                     "Removing link (%s, %s, %s) from \"%s\" map",
+                     linkFrom.c_str (),
+                     linkedCoefficientName.c_str (),
+                     linkedCoefficientType.c_str (),
+                     linkType.c_str ());
 
         bool linkWasRemoved;
         if (linkType == "system")

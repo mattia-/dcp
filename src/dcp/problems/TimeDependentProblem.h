@@ -703,8 +703,8 @@ namespace dcp
              *  Note that the value of the solution on the intermediate time steps will be saved int the protected
              *  member \c solution_.  The solution will be plotted every \c plotInterval time steps. 
              *  This value is read from  <tt>parameters ["plot_interval"]</tt>. To change the component of the solution 
-             *  that will be plotted  set <tt>parameters ["plot_component"]</tt> accordingly. By default, this parameter 
-             *  is set to -1 (a placeholder that stands for "all the components").
+             *  that will be plotted  set <tt>parameters ["plot_components"]</tt> accordingly. By default, this parameter 
+             *  is set to "-1" (a placeholder that stands for "all the components").
              *  
              *  \param solveType the solution type requested. Possible values are:
              *  \li \c "default" the entire time loop is performed
@@ -884,22 +884,6 @@ namespace dcp
             //! method clearer to read
             virtual void printFinishedWarning ();
             
-            //! Plot the solution, used inside the time loop and thus kept protected. It overloads the 
-            //! plot method in \c dcp::GenericProblem, which is still usable (and actually overridden in this class
-            //! to take into account the fact that \c solution_ is now a vector with size greater than one)
-            /*!
-             *  \param solution the solution to be plotted
-             *  \param timeStep the current time step
-             *  \param plotInterval the plot interval (see constructor documentation)
-             *  \param plotComponent the component of the solution to be plotted (see constructor documentation)
-             *  \param pause boolean flag, true if the function should wait after plotting
-            */
-            virtual void plotSolution (dolfin::Function& solution, 
-                                       const int& timeStep, 
-                                       const int& plotInterval, 
-                                       const int& plotComponent,
-                                       const bool& pause);
-
             //! Delete elements from \c solution_ according to \c parameters["purge_interval"]
             virtual void purgeSolutionsVector ();
 

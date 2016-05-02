@@ -33,7 +33,7 @@ namespace dcp
         solution_ (),
         stashedSolution_ (*functionSpace_),
         dirichletBCsCounter_ (0),
-        solutionPlotter_ (),
+        solutionPlotters_ (),
         solutionFileName_ ("solution.pvd"),
         solutionWriter_ (new dolfin::File (solutionFileName_))
     { 
@@ -41,7 +41,7 @@ namespace dcp
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("solution_file_name", "solution.pvd");
-        parameters.add ("plot_component", -1);
+        parameters.add ("plot_components", "-1");
         parameters.add ("plot_title", "Solution");
         parameters.add ("clone_method", "shallow_clone");
             
@@ -59,7 +59,7 @@ namespace dcp
         solution_ (),
         stashedSolution_ (functionSpace_),
         dirichletBCsCounter_ (0),
-        solutionPlotter_ (),
+        solutionPlotters_ (),
         solutionFileName_ ("solution.pvd"),
         solutionWriter_ (new dolfin::File (solutionFileName_))
     { 
@@ -67,7 +67,7 @@ namespace dcp
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("solution_file_name", "solution.pvd");
-        parameters.add ("plot_component", -1);
+        parameters.add ("plot_components", "-1");
         parameters.add ("plot_title", "Solution");
         parameters.add ("clone_method", "shallow_clone");
             
@@ -85,7 +85,7 @@ namespace dcp
         solution_ (),
         stashedSolution_ (functionSpace_),
         dirichletBCsCounter_ (0),
-        solutionPlotter_ (),
+        solutionPlotters_ (),
         solutionFileName_ ("solution.pvd"),
         solutionWriter_ (new dolfin::File (solutionFileName_))
     { 
@@ -93,7 +93,7 @@ namespace dcp
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("solution_file_name", "solution.pvd");
-        parameters.add ("plot_component", -1);
+        parameters.add ("plot_components", "-1");
         parameters.add ("plot_title", "Solution");
         parameters.add ("clone_method", "shallow_clone");
             
@@ -340,61 +340,73 @@ namespace dcp
         }
         
         dolfin::begin (dolfin::DBG, "Plotting...");
-        int plotComponent = parameters ["plot_component"];
+
+        // get vector of plot components
+        std::vector<int> plotComponents;
+        std::stringstream plotComponentsStream ((std::string (parameters ["plot_components"])));
+
+        // auxiliary variable to push the stream values into the vector
+        int component; 
+        while (plotComponentsStream >> component)
+        {
+            plotComponents.push_back (component);
+        }
         
+        // check if solutionPlotters_ has right size. If not, clear it and reinitialize it with null pointers
+        if (solutionPlotters_.size() != plotComponents.size())
+        {
+            solutionPlotters_.clear();
+            solutionPlotters_.resize (plotComponents.size(), nullptr);
+        }
+
         // auxiliary variable, to enhance readability
         std::shared_ptr<dolfin::Function> functionToPlot;
         
-        // get right function to plot
-        if (plotComponent == -1)
+        for (auto i = 0; i < plotComponents.size (); ++i)
         {
-            if (plotType == "default")
+            int component = plotComponents[i];
+ 
+            // get right function to plot
+            if (component == -1)
             {
-                functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ().second);
-                dolfin::log (dolfin::DBG, "Plotting problem solution, all components...");
+                if (plotType == "default")
+                {
+                    functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ().second);
+                    dolfin::log (dolfin::DBG, "Plotting problem solution, all components...");
+                }
+                else // aka plotType == "stashed", otherwise we would have exited on the first check
+                {
+                    functionToPlot = dolfin::reference_to_no_delete_pointer (stashedSolution_);
+                    dolfin::log (dolfin::DBG, "Plotting stashed solution, all components...");
+                }
             }
-            else // aka plotType == "stashed", otherwise we would have exited on the first check
+            else
             {
-                functionToPlot = dolfin::reference_to_no_delete_pointer (stashedSolution_);
-                dolfin::log (dolfin::DBG, "Plotting stashed solution, all components...");
+                if (plotType == "default")
+                {
+                    functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ().second [component]);
+                    dolfin::log (dolfin::DBG, "Plotting problem solution, component %d...", component);
+                }
+                else // aka plotType == "stashed", otherwise we would have exited on the first check
+                {
+                    functionToPlot = dolfin::reference_to_no_delete_pointer (stashedSolution_ [component]);
+                    dolfin::log (dolfin::DBG, "Plotting stashed solution, component %d...", component);
+                }
             }
-        }
-        else
-        {
-            if (plotType == "default")
-            {
-                functionToPlot = dolfin::reference_to_no_delete_pointer (solution_.back ().second [plotComponent]);
-                dolfin::log (dolfin::DBG, "Plotting problem solution, component %d...", plotComponent);
-            }
-            else // aka plotType == "stashed", otherwise we would have exited on the first check
-            {
-                functionToPlot = dolfin::reference_to_no_delete_pointer (stashedSolution_ [plotComponent]);
-                dolfin::log (dolfin::DBG, "Plotting stashed solution, component %d...", plotComponent);
-            }
-        }
-        
-        std::string plotTitle = parameters ["plot_title"];
-        if (plotType == "stashed")
-        {
-            plotTitle += " (stashed)";
-        }
 
-        // actual plotting
-        if (solutionPlotter_ == nullptr)
-        {
-            dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
-            solutionPlotter_ = dolfin::plot (functionToPlot, plotTitle);
-        }
-        else if (! solutionPlotter_ -> is_compatible (functionToPlot))
-        {
-            dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
-            dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
-            solutionPlotter_ = dolfin::plot (functionToPlot, plotTitle);
-        }
-        else 
-        {
-            solutionPlotter_ -> parameters ["title"] = parameters ["plot_title"];
-            solutionPlotter_ -> plot (functionToPlot);
+            std::string plotTitle = parameters ["plot_title"];
+            if (component != -1)
+            {
+                plotTitle += ", component " + std::to_string (component);
+            }
+
+            if (plotType == "stashed")
+            {
+                plotTitle += " (stashed)";
+            }
+
+            // actual plotting
+            plot (solutionPlotters_[i], functionToPlot, plotTitle);
         }
         
         dolfin::end ();
@@ -404,6 +416,8 @@ namespace dcp
 
     void GenericProblem::writeSolutionToFile (const std::string& writeType)
     {
+        dolfin::begin (dolfin::DBG, "Saving solution to file...");
+
         // check if writeType is known
         if (writeType != "default" && writeType != "stashed")
         {
@@ -426,5 +440,36 @@ namespace dcp
         {
             (*solutionWriter_) << stashedSolution_;
         }
+
+        dolfin::end (); // Saving solution to file
+    }
+
+
+
+    // ---------------------------------------------------------------------------------------------//
+
+
+
+    void GenericProblem::plot (std::shared_ptr<dolfin::VTKPlotter>& plotter, 
+                               const std::shared_ptr<const dolfin::Function> function,
+                               const std::string& title)
+    {
+        if (plotter == nullptr)
+        {
+            dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
+            plotter = dolfin::plot (function, title);
+        }
+        else if (plotter -> is_compatible (function) == false)
+        {
+            dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
+            dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
+            plotter = dolfin::plot (function, title);
+        }
+        else 
+        {
+            plotter -> parameters ["title"] = title;
+            plotter -> plot (function);
+        }
+
     }
 }

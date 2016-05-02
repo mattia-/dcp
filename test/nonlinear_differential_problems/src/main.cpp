@@ -139,15 +139,13 @@ int main (int argc, char* argv[])
 
     // plots
     dolfin::plot (mesh, "Mesh");
-    navierStokesProblem.parameters ["plot_component"] = 0;
-    navierStokesProblem.plotSolution ();
-    navierStokesProblem.parameters ["plot_component"] = 1;
+    navierStokesProblem.parameters ["plot_components"] = "0 1";
     navierStokesProblem.plotSolution ();
     /* ALSO:
      * dolfin::plot (navierStokesProblem.solution ()[0], "Velocity");
      * dolfin::plot (navierStokesProblem.solution ()[1], "Pressure");
      */
-    // dolfin::interactive ();
+    dolfin::interactive ();
     
     return 0;
 }

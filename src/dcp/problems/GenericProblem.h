@@ -32,6 +32,8 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <vector>
+#include <sstream>
 
 
 namespace dcp
@@ -65,8 +67,9 @@ namespace dcp
              *  The constructors also sets the following parameters:
              *      - \c "solution_file_name" the name of the file on which the solution will be written when/if required.
              *        Default value: \c "solution.pvd"
-             *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
-             *        A negative value stands for all the components. Default value: -1
+             *      - \c "plot_components" the components of the solution to be plotted (if the solution is vectorial),
+             *        as a string of whitespace-separated integers. A negative value stands for all the components.
+             *        Default value: "-1"
              *      - \c "plot_title" the title of the plot. Default value: "Solution"
              *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
@@ -83,8 +86,9 @@ namespace dcp
              *  The constructors also sets the following parameters:
              *      - \c "solution_file_name" the name of the file on which the solution will be written when/if required.
              *        Default value: \c "solution.pvd"
-             *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
-             *        A negative value stands for all the components. Default value: -1
+             *      - \c "plot_components" the components of the solution to be plotted (if the solution is vectorial),
+             *        as a string of whitespace-separated integers. A negative value stands for all the components.
+             *        Default value: "-1"
              *      - \c "plot_title" the title of the plot. Default value: "Solution"
              *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
@@ -100,8 +104,8 @@ namespace dcp
              *  The constructors also sets the following parameters:
              *      - \c "solution_file_name" the name of the file on which the solution will be written when/if required.
              *        Default value: \c "solution.pvd"
-             *      - \c "plot_component" the component of the solution to be plotted (if the solution is vectorial).
-             *        A negative value stands for all the components. Default value: -1
+             *      - \c "plot_components" the component of the solution to be plotted (if the solution is vectorial).
+             *        A negative value stands for all the components. Default value: "-1"
              *      - \c "plot_title" the title of the plot. Default value: "Solution"
              *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
@@ -356,6 +360,16 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//
 
         protected:
+            //! Plot given solution component on given VTKPlotter with given title. Internal use only
+            /*!
+             *  \param plotter the plotter to be used
+             *  \param function the function to be plotter
+             *  \param title the title of the plot
+             */
+            void plot (std::shared_ptr<dolfin::VTKPlotter>& plotter, 
+                       const std::shared_ptr<const dolfin::Function> function,
+                       const std::string& title);
+
             //! The problem finite element space
             /*! 
              *  Stored as a \c std::shared_ptr because it may be common to more than 
@@ -391,8 +405,8 @@ namespace dcp
              */
             int dirichletBCsCounter_;
             
-            //! The plotter for the solution of the problem
-            std::shared_ptr<dolfin::VTKPlotter> solutionPlotter_;
+            //! The plotters for the (possibly more than one) components of the solution of the problem
+            std::vector<std::shared_ptr<dolfin::VTKPlotter>> solutionPlotters_;
             
             //! The name of the file on which to write the solution
             std::string solutionFileName_;

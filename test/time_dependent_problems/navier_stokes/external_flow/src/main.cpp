@@ -145,7 +145,7 @@ int main (int argc, char* argv[])
     navierStokesProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
     
     navierStokesProblem.parameters ["time_stepping_solution_component"] = 0;
-    navierStokesProblem.parameters ["plot_component"] = 0;
+    navierStokesProblem.parameters ["plot_components"] = "0";
     navierStokesProblem.parameters ["plot_interval"] = 1;
 
     // plots

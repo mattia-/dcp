@@ -166,18 +166,18 @@ namespace dcp
              *  \return \c true if the sufficient decrease condition is satisfied at the exit of the loop, 
              *  \c false otherwise
              */
-            bool backtrackingLoop (const double& previousFunctionalValue,
-                                   double& currentFunctionalValue, 
-                                   const double& gradientDotSearchDirection,
-                                   double& alpha,
-                                   int& backtrackingIteration,
-                                   dolfin::Function& controlVariable,
-                                   const dolfin::Function& previousControlVariable,
-                                   const dolfin::Function& searchDirection,
-                                   dcp::GenericEquationSystem& problem,
-                                   const dcp::GenericObjectiveFunctional& objectiveFunctional, 
-                                   const dcp::GenericDescentMethod::Updater& updater);
-            
+            bool backtrackingLoop_ (const double& previousFunctionalValue,
+                                    double& currentFunctionalValue, 
+                                    const double& gradientDotSearchDirection,
+                                    double& alpha,
+                                    int& backtrackingIteration,
+                                    dolfin::Function& controlVariable,
+                                    const dolfin::Function& previousControlVariable,
+                                    const dolfin::Function& searchDirection,
+                                    dcp::GenericEquationSystem& problem,
+                                    const dcp::GenericObjectiveFunctional& objectiveFunctional, 
+                                    const dcp::GenericDescentMethod::Updater& updater);
+
             //! Function to print to file some values. It is mostly useful to avoid code repetition inside this class
             /*! 
              *  Input parameters:
@@ -189,13 +189,13 @@ namespace dcp
              *  \param gradientNorm the norm of the gradient of the functional
              *  \param relativeIncrement the relative increment of the optimal solution found
              */
-            void print (std::ostream& OUTSTREAM, 
-                        const int& iteration,
-                        const double& functionalValue,
-                        const double& alpha,
-                        const int& backtrackingIterations,
-                        const double& gradientNorm,
-                        const double& relativeIncrement);
+            void print_ (std::ostream& OUTSTREAM, 
+                         const int& iteration,
+                         const double& functionalValue,
+                         const double& alpha,
+                         const int& backtrackingIterations,
+                         const double& gradientNorm,
+                         const double& relativeIncrement);
             
             //! Function to open output file and print the header
             /*!
@@ -203,7 +203,7 @@ namespace dcp
              *  
              *  \return \c true if the file was opened, \c false otherwise
              */
-            bool openOutputFile (std::ofstream& OUTFILE);
+            bool openOutputFile_ (std::ofstream& OUTFILE);
             
             /********************** MEMBERS ***********************/
             

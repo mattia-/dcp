@@ -366,9 +366,9 @@ namespace dcp
              *  \param function the function to be plotter
              *  \param title the title of the plot
              */
-            void plot (std::shared_ptr<dolfin::VTKPlotter>& plotter, 
-                       const std::shared_ptr<const dolfin::Function> function,
-                       const std::string& title);
+            void plot_ (std::shared_ptr<dolfin::VTKPlotter>& plotter, 
+                        const std::shared_ptr<const dolfin::Function> function,
+                        const std::string& title);
 
             //! The problem finite element space
             /*! 

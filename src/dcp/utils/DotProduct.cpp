@@ -31,7 +31,7 @@ namespace dcp
                                 const dolfin::GenericFunction& second,
                                 const dolfin::Mesh& mesh)
     {
-        std::shared_ptr<dolfin::Form> dotProductComputer = getDotProductComputer (first, second, mesh);
+        std::shared_ptr<dolfin::Form> dotProductComputer = getDotProductComputer_ (first, second, mesh);
         
         dotProductComputer -> set_coefficient (0, dolfin::reference_to_no_delete_pointer (first));
         dotProductComputer -> set_coefficient (1, dolfin::reference_to_no_delete_pointer (second));
@@ -69,9 +69,9 @@ namespace dcp
 
 
     /********************** PROTECTED METHODS ***********************/
-    std::shared_ptr<dolfin::Form> DotProduct::getDotProductComputer (const dolfin::GenericFunction& first,
-                                                                     const dolfin::GenericFunction& second,
-                                                                     const dolfin::Mesh& mesh)
+    std::shared_ptr<dolfin::Form> DotProduct::getDotProductComputer_ (const dolfin::GenericFunction& first,
+                                                                      const dolfin::GenericFunction& second,
+                                                                      const dolfin::Mesh& mesh)
     {
         if (dotProductComputer_ != nullptr)
         {
@@ -96,7 +96,7 @@ namespace dcp
             if (firstFunctionRank != secondFunctionRank)
             {
                 dolfin::dolfin_error ("dcp: DotProduct.cpp",
-                                      "getDotProductComputer",
+                                      "getDotProductComputer_",
                                       "Ranks of first and second function do not match");
                 return nullptr;
             }
@@ -115,7 +115,7 @@ namespace dcp
                 else
                 {
                     dolfin::dolfin_error ("dcp: DotProduct.cpp", 
-                                          "getDotProductComputer",
+                                          "getDotProductComputer_",
                                           "No form to compute dot products and norms for mesh cell type \"%s\" and function rank %d", 
                                           meshCellType.c_str (),
                                           rank);
@@ -141,7 +141,7 @@ namespace dcp
                 else
                 {
                     dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp", 
-                                          "getDotProductComputer",
+                                          "getDotProductComputer_",
                                           "No form to compute dot products and norms for mesh cell type \"%s\" and function rank %d", 
                                           meshCellType.c_str (),
                                           rank);
@@ -167,7 +167,7 @@ namespace dcp
                 else
                 {
                     dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp", 
-                                          "getDotProductComputer",
+                                          "getDotProductComputer_",
                                           "No form to compute dot products and norms for mesh cell type \"%s\" and function rank %d", 
                                           meshCellType.c_str (),
                                           rank);

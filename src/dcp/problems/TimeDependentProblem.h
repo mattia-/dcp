@@ -644,11 +644,11 @@ namespace dcp
              *  \param coefficientType the type of the coefficient, in a form that will make sense once passed to the
              *  method \c setCoefficient() (that is for example \c "linear_form", \c "bilinear_form" and so on)
              *  \param expression the time dependent expression, whose \c eval() method will be used when setting the
-             *  coefficient in \c setTimeDependentCoefficients(). We use a \c shared_ptr because there is no other way 
+             *  coefficient in \c setTimeDependentCoefficients_(). We use a \c shared_ptr because there is no other way 
              *  to call the right \c eval() (unless we forced the user to override a possible \c clone() method in the
              *  class derived from \c dcp::TimeDependentExpression
              *  \param coefficientName the name to identify the coefficient. It will be used in the protected method
-             *  \c setTimeDependentCoefficients(), so it must be the same as the name used in the ufl file
+             *  \c setTimeDependentCoefficients_(), so it must be the same as the name used in the ufl file
              *  
              *  \return \c true if the coefficient was inserted in the map, \c false otherwise
              */
@@ -813,7 +813,7 @@ namespace dcp
              *  It uses the protected members' value to set the problem. The last element of \c solution_ will be used 
              *  as the previous time step solution. To change it, use the method \c setInitialSolution.
              */ 
-            virtual void steadySolve ();
+            virtual void steadySolve_ ();
             
             //! Solve the time stepping problem just once without incrementing \c time_ and store solution in 
             //! \c stashedSolution_
@@ -823,7 +823,7 @@ namespace dcp
              *  as the previous time step solution. To change it, use the method \c setInitialSolution.
              *  The computed solution will be stored in \c stashedSolution_
              */ 
-            virtual void stashSolve ();
+            virtual void stashSolve_ ();
             
             //! Perform one step of the time loop
             /*!
@@ -834,16 +834,16 @@ namespace dcp
              *  change it, use the method \c setInitialSolution.  The protected member \c time_ will be incremented using 
              *  the value stored in \c parameters["dt"]
              */
-            virtual void step ();
+            virtual void step_ ();
 
             //! Solve the time problem looping through time from \c startTime_ to \c endTime_
             /*!
              *  This method solves the time problem at every time step between \c startTime_ and \c endTime_ by calling
-             *  \c step() on each time step. It will also save the solution to file and plot it according to the values 
+             *  \c step_() on each time step. It will also save the solution to file and plot it according to the values 
              *  stored in \c parameters["write_interval"] and \c parameters["plot_interval"]
              * 
              */
-            virtual void solveLoop ();
+            virtual void solveLoop_ ();
 
             //! Set the time dependent Dirichlet boundary conditions at every step of the solve loop
             /*! 
@@ -859,7 +859,7 @@ namespace dcp
              *  in this case - see the documentation for \c dcp::LinearProblem , and in particular the role of
              *  the parameter \c "system_is_assembled" )
              */
-            virtual void setTimeDependentDirichletBCs ();
+            virtual void setTimeDependentDirichletBCs_ ();
             
             //! Reset the time dependent Dirichlet boundary condition pointed by the given iterator
             /*!
@@ -867,7 +867,7 @@ namespace dcp
              *  and replaces it with a new one with the same name but value updated to the new value of \c t_
              *  \param bcIterator the iterator pointing to the bc that should be replaced
              */
-            virtual void resetTimeDependentDirichletBC 
+            virtual void resetTimeDependentDirichletBC_ 
                 (std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue>::iterator bcIterator);
             
             //! Set the time dependent coefficients at every step of the solve loop
@@ -875,17 +875,17 @@ namespace dcp
              *  For each \c element in \c timeDependentCoefficients_ , it will set the coefficient's time using \c t_ 
              *  and call \c setCoefficient()
              */
-            virtual void setTimeDependentCoefficients ();
+            virtual void setTimeDependentCoefficients_ ();
             
             //! Set the previous solution coefficients at every step of the solve loop
-            virtual void setPreviousSolutionsCoefficients ();
+            virtual void setPreviousSolutionsCoefficients_ ();
             
             //! Method to print a warning if \c isFinished() returns \c true. It is just useful to make \c solve()
             //! method clearer to read
-            virtual void printFinishedWarning ();
+            virtual void printFinishedWarning_ ();
             
             //! Delete elements from \c solution_ according to \c parameters["purge_interval"]
-            virtual void purgeSolutionsVector ();
+            virtual void purgeSolutionsVector_ ();
 
             // ---------------------------------------------------------------------------------------------//
 

@@ -193,7 +193,7 @@ namespace dcp
             linksToPreviousSolutions_.insert (link);
             
             // do not perform linking yet. It will be performed once solve is called
-            // linkProblemToPreviousSolution (link);
+            // linkProblemToPreviousSolution_ (link);
         }
         else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
         // current link and insert the new one
@@ -234,7 +234,7 @@ namespace dcp
             linksToPreviousSolutions_.insert (link);
             
             // do not perform linking yet. It will be performed once solve is called
-            // linkProblemToPreviousSolution (link);
+            // linkProblemToPreviousSolution_ (link);
         }
         else
         {
@@ -289,7 +289,7 @@ namespace dcp
             linksToPreviousSolutions_.insert (link);
             
             // do not perform linking yet. It will be performed once solve is called
-            // linkProblemToPreviousSolution (link);
+            // linkProblemToPreviousSolution_ (link);
         }
         else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
         // current link and insert the new one
@@ -332,7 +332,7 @@ namespace dcp
             linksToPreviousSolutions_.insert (link);
             
             // do not perform linking yet. It will be performed once solve is called
-            // linkProblemToPreviousSolution (link);
+            // linkProblemToPreviousSolution_ (link);
         }
         else
         {
@@ -515,7 +515,7 @@ namespace dcp
                 }
                 else
                 {
-                    subiterate (subiterationsBegin, subiterationsEnd);
+                    subiterate_ (subiterationsBegin, subiterationsEnd);
                     
                     // plot and write to file solution of all subiterated problems
                     for (problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
@@ -561,7 +561,7 @@ namespace dcp
         {
             if (std::get<0> (linksIterator->first) == problemName)
             {
-                linkProblems (*linksIterator, storedProblems_);
+                linkProblems_ (*linksIterator, storedProblems_);
             }
             ++linksIterator;
         }
@@ -573,7 +573,7 @@ namespace dcp
         {
             if (std::get<0> (previousSolutionsLinksIterator->first) == problemName)
             {
-                linkProblemToPreviousSolution (*previousSolutionsLinksIterator);
+                linkProblemToPreviousSolution_ (*previousSolutionsLinksIterator);
             }
             ++previousSolutionsLinksIterator;
         }
@@ -626,7 +626,7 @@ namespace dcp
 
 
     /******************* PROTECTED METHODS *******************/
-    void TimeDependentEquationSystem::linkProblemToPreviousSolution (const PreviousSolutionLink& link)
+    void TimeDependentEquationSystem::linkProblemToPreviousSolution_ (const PreviousSolutionLink& link)
     {
         if (std::get<1> (link.second) == -1)
         {

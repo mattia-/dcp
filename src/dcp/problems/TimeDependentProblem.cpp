@@ -592,7 +592,7 @@ namespace dcp
              bcIterator != timeDependentDirichletBCs_.end (); 
              bcIterator++)
         {
-            resetTimeDependentDirichletBC (bcIterator);
+            resetTimeDependentDirichletBC_ (bcIterator);
         }
     }
     
@@ -627,7 +627,7 @@ namespace dcp
         // check only when solveType is not "steady" or "stash", since these solve type do not increment time
         if (isFinished () && solveType != "steady" && solveType != "stash")
         {
-            printFinishedWarning ();
+            printFinishedWarning_ ();
             return;
         }
             
@@ -656,19 +656,19 @@ namespace dcp
         // call right method depending on solveType
         if (solveType == "default" || solveType == "clear+default")
         {
-             solveLoop (); 
+             solveLoop_ (); 
         }
         else if (solveType == "step" || solveType == "clear+step")
         {
-             step ();
+             step_ ();
         }
         else if (solveType == "steady")
         {
-             steadySolve ();
+             steadySolve_ ();
         }
         else if (solveType == "stash")
         {
-             stashSolve ();
+             stashSolve_ ();
         }
     }
     
@@ -684,7 +684,7 @@ namespace dcp
         }
         solution_.push_back (std::make_pair (time_ -> value (), stashedSolution_));
 
-        purgeSolutionsVector ();
+        purgeSolutionsVector_ ();
         
         stashedSolution_ = dolfin::Function (*functionSpace_);
     }
@@ -763,7 +763,7 @@ namespace dcp
                     }
 
                     // actual plotting
-                    plot (solutionPlotters_[i], functionToPlot, plotTitle);
+                    plot_ (solutionPlotters_[i], functionToPlot, plotTitle);
                 }
 
                 if (pause)
@@ -812,7 +812,7 @@ namespace dcp
                 }
 
                 // actual plotting
-                plot (solutionPlotters_[i], functionToPlot, plotTitle);
+                plot_ (solutionPlotters_[i], functionToPlot, plotTitle);
             }
 
             if (pause)
@@ -857,7 +857,7 @@ namespace dcp
                 plotTitle += " (stashed)";
 
                 // actual plotting
-                plot (solutionPlotters_[i], functionToPlot, plotTitle);
+                plot_ (solutionPlotters_[i], functionToPlot, plotTitle);
             }
 
             if (pause)
@@ -999,13 +999,13 @@ namespace dcp
 
 
     /******************* PROTECTED METHODS *******************/
-    void TimeDependentProblem::steadySolve ()
+    void TimeDependentProblem::steadySolve_ ()
     {
-        setTimeDependentCoefficients ();
+        setTimeDependentCoefficients_ ();
 
-        setTimeDependentDirichletBCs ();
+        setTimeDependentDirichletBCs_ ();
 
-        setPreviousSolutionsCoefficients ();
+        setPreviousSolutionsCoefficients_ ();
         
         dolfin::begin (dolfin::DBG, "Solving time stepping problem...");
         timeSteppingProblem_->solve ("default");
@@ -1019,7 +1019,7 @@ namespace dcp
         }
         solution_.push_back (std::make_pair (time_ -> value (), timeSteppingProblem_->solution ("default")));
         
-        purgeSolutionsVector ();
+        purgeSolutionsVector_ ();
         
         // set stashedSolution_ to be equal to the last computed solution, so that when solution() is called
         // from a subiterations loop it gets the right one. In the case of "default" solveType, indeed, the
@@ -1027,13 +1027,13 @@ namespace dcp
         stashedSolution_ = solution_.back ().second;
     }
 
-    void TimeDependentProblem::stashSolve ()
+    void TimeDependentProblem::stashSolve_ ()
     {
-        setTimeDependentCoefficients ();
+        setTimeDependentCoefficients_ ();
 
-        setTimeDependentDirichletBCs ();
+        setTimeDependentDirichletBCs_ ();
 
-        setPreviousSolutionsCoefficients ();
+        setPreviousSolutionsCoefficients_ ();
         
         dolfin::begin (dolfin::DBG, "Solving time stepping problem...");
         timeSteppingProblem_->solve ("default");
@@ -1045,18 +1045,18 @@ namespace dcp
     
 
 
-    void TimeDependentProblem::step ()
+    void TimeDependentProblem::step_ ()
     {
         advanceTime ();
         
         dolfin::log (dolfin::PROGRESS, "TIME = %f s", time_ -> value ());
         
-        steadySolve ();
+        steadySolve_ ();
     }
 
     
     
-    void TimeDependentProblem::solveLoop ()
+    void TimeDependentProblem::solveLoop_ ()
     {
         // ---- Problem settings ---- //
         int writeInterval = parameters ["write_interval"];
@@ -1073,7 +1073,7 @@ namespace dcp
             
             dolfin::begin (dolfin::PROGRESS, "===== Timestep %d =====", timeStep);
             
-            step ();
+            step_ ();
             
             // save solution to file according to time step and write interval.
             if (writeInterval > 0 && timeStep % writeInterval == 0)
@@ -1104,7 +1104,7 @@ namespace dcp
 
 
 
-    void TimeDependentProblem::setTimeDependentDirichletBCs ()
+    void TimeDependentProblem::setTimeDependentDirichletBCs_ ()
     {
         dolfin::begin (dolfin::DBG, "Setting time dependent Dirichlet's boudary conditions...");
         
@@ -1113,7 +1113,7 @@ namespace dcp
              bcIterator != timeDependentDirichletBCs_.end (); 
              bcIterator++)
         {
-            resetTimeDependentDirichletBC (bcIterator);
+            resetTimeDependentDirichletBC_ (bcIterator);
         }
 
         dolfin::end ();
@@ -1121,7 +1121,7 @@ namespace dcp
 
     
     
-    void TimeDependentProblem::resetTimeDependentDirichletBC 
+    void TimeDependentProblem::resetTimeDependentDirichletBC_ 
         (std::map <TimeDependentProblem::TimeDependentDirichletBCKey, 
                    TimeDependentProblem::TimeDependentDirichletBCValue>
                    ::iterator bcIterator)
@@ -1161,7 +1161,7 @@ namespace dcp
 
     
 
-    void TimeDependentProblem::setTimeDependentCoefficients ()
+    void TimeDependentProblem::setTimeDependentCoefficients_ ()
     {
         dolfin::begin (dolfin::DBG, "Setting time dependent coefficients...");
         
@@ -1188,7 +1188,7 @@ namespace dcp
     
     
 
-    void TimeDependentProblem::setPreviousSolutionsCoefficients ()
+    void TimeDependentProblem::setPreviousSolutionsCoefficients_ ()
     {
         std::vector<std::string> previousSolutionCoefficientTypes;
         parameters ("previous_solution_coefficient_types").get_parameter_keys (previousSolutionCoefficientTypes);
@@ -1237,14 +1237,14 @@ namespace dcp
 
 
 
-    void TimeDependentProblem::printFinishedWarning ()
+    void TimeDependentProblem::printFinishedWarning_ ()
     {
         dolfin::warning ("No time iteration performed in solve() function. End time already reached.");
     }
 
 
 
-    void TimeDependentProblem::purgeSolutionsVector ()
+    void TimeDependentProblem::purgeSolutionsVector_ ()
     {
         int purgeInterval = parameters["purge_interval"];
 

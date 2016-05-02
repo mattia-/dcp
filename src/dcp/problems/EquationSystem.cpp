@@ -58,7 +58,7 @@ namespace dcp
             }
             else
             {
-                subiterate (subiterationsBegin, subiterationsEnd);
+                subiterate_ (subiterationsBegin, subiterationsEnd);
                 problemName = subiterationsEnd;
             }
         }
@@ -84,7 +84,7 @@ namespace dcp
         {
             if (std::get<0> (linksIterator->first) == problemName)
             {
-                linkProblems (*linksIterator, storedProblems_);
+                linkProblems_ (*linksIterator, storedProblems_);
             }
             ++linksIterator;
         }

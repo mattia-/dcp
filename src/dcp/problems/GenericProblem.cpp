@@ -406,7 +406,7 @@ namespace dcp
             }
 
             // actual plotting
-            plot (solutionPlotters_[i], functionToPlot, plotTitle);
+            plot_ (solutionPlotters_[i], functionToPlot, plotTitle);
         }
         
         dolfin::end ();
@@ -450,9 +450,9 @@ namespace dcp
 
 
 
-    void GenericProblem::plot (std::shared_ptr<dolfin::VTKPlotter>& plotter, 
-                               const std::shared_ptr<const dolfin::Function> function,
-                               const std::string& title)
+    void GenericProblem::plot_ (std::shared_ptr<dolfin::VTKPlotter>& plotter, 
+                                const std::shared_ptr<const dolfin::Function> function,
+                                const std::string& title)
     {
         if (plotter == nullptr)
         {

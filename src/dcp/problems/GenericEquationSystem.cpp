@@ -95,7 +95,7 @@ namespace dcp
                        "Inserting problem \"%s\" in system problems map...", 
                        problemName.c_str ());
          
-        bool problemWasAdded = addProblemToMap (storedProblems_, problemName, problem);
+        bool problemWasAdded = addProblemToMap_ (storedProblems_, problemName, problem);
 
         // if problem was added, add it also to solveOrder_ (if problemType is "system")
         if (problemWasAdded == true)
@@ -129,7 +129,7 @@ namespace dcp
                        "Inserting problem \"%s\" in initial guesses setters map...", 
                        name.c_str ());
          
-        bool problemWasAdded = addProblemToMap (initialGuessesSetters_, name, problem);
+        bool problemWasAdded = addProblemToMap_ (initialGuessesSetters_, name, problem);
 
         dolfin::end ();
 
@@ -146,7 +146,7 @@ namespace dcp
         
         // 1) 
         // delete problem from storedProblems_
-        bool problemWasRemoved = removeProblemFromMap (storedProblems_, problemName);
+        bool problemWasRemoved = removeProblemFromMap_ (storedProblems_, problemName);
         
         // 2)
         // remove problemName from solveOrder_. Remember that we are sure that such name is 
@@ -214,7 +214,7 @@ namespace dcp
         
         // 1) 
         // delete problem from initialGuessesSetters_
-        bool problemWasRemoved = removeProblemFromMap (initialGuessesSetters_, name);
+        bool problemWasRemoved = removeProblemFromMap_ (initialGuessesSetters_, name);
         
         // 2)
         // remove problemName from initialGuessesSettersLinks_
@@ -309,7 +309,7 @@ namespace dcp
         auto link = std::make_pair (std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType), 
                                     std::make_pair (linkTo, -1));
 
-        bool  linkWasInserted = addLinkToMap (problemsLinks_, link, forceRelinking);
+        bool  linkWasInserted = addLinkToMap_ (problemsLinks_, link, forceRelinking);
 
         dolfin::end (); // Setting up link
 
@@ -336,7 +336,7 @@ namespace dcp
         auto link = std::make_pair (std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType), 
                                     std::make_pair (linkTo, linkToComponent));
 
-        bool linkWasInserted = addLinkToMap (problemsLinks_, link, forceRelinking);
+        bool linkWasInserted = addLinkToMap_ (problemsLinks_, link, forceRelinking);
 
         dolfin::end (); // Setting up link
 
@@ -362,11 +362,11 @@ namespace dcp
         bool linkWasRemoved;
         if (linkType == "system")
         {
-            linkWasRemoved = removeLinkFromMap (problemsLinks_, linkKey);
+            linkWasRemoved = removeLinkFromMap_ (problemsLinks_, linkKey);
         }
         else if (linkType == "initial_guess")
         {
-            linkWasRemoved = removeLinkFromMap (initialGuessesSettersLinks_, linkKey);
+            linkWasRemoved = removeLinkFromMap_ (initialGuessesSettersLinks_, linkKey);
         }
         else
         {
@@ -399,7 +399,7 @@ namespace dcp
         auto link = std::make_pair (std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType), 
                                     std::make_pair (linkTo, -1));
 
-        bool  linkWasInserted = addLinkToMap (initialGuessesSettersLinks_, link, forceRelinking);
+        bool  linkWasInserted = addLinkToMap_ (initialGuessesSettersLinks_, link, forceRelinking);
 
         dolfin::end (); // Setting up link
 
@@ -426,7 +426,7 @@ namespace dcp
         auto link = std::make_pair (std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType), 
                                     std::make_pair (linkTo, linkToComponent));
 
-        bool linkWasInserted = addLinkToMap (initialGuessesSettersLinks_, link, forceRelinking);
+        bool linkWasInserted = addLinkToMap_ (initialGuessesSettersLinks_, link, forceRelinking);
 
         dolfin::end (); // Setting up link
 
@@ -568,14 +568,14 @@ namespace dcp
 
 
     /******************* PROTECTED METHODS *******************/
-    bool GenericEquationSystem::addProblemToMap (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
-                                                 const std::string& problemName, 
-                                                 const std::shared_ptr<dcp::GenericProblem> problem)
+    bool GenericEquationSystem::addProblemToMap_ (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
+                                                  const std::string& problemName, 
+                                                  const std::shared_ptr<dcp::GenericProblem> problem)
     {
         if (problemName.empty ())
         {
             dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
-                                  "addProblemToMap",
+                                  "addProblemToMap_",
                                   "Empty problem names not allowed");
         }
 
@@ -597,8 +597,8 @@ namespace dcp
 
 
 
-    bool GenericEquationSystem::removeProblemFromMap (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
-                                                      const std::string& problemName)
+    bool GenericEquationSystem::removeProblemFromMap_ (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
+                                                       const std::string& problemName)
     {
         dolfin::log (dolfin::DBG, 
                      "Removing problem \"%s\" from problems map...", 
@@ -619,10 +619,10 @@ namespace dcp
 
 
 
-    bool GenericEquationSystem::addLinkToMap (std::map<dcp::GenericEquationSystem::LinkKey, 
-                                                       dcp::GenericEquationSystem::LinkValue>& map, 
-                                              const dcp::GenericEquationSystem::Link& link,
-                                              const bool& forceRelinking)
+    bool GenericEquationSystem::addLinkToMap_ (std::map<dcp::GenericEquationSystem::LinkKey, 
+                                                        dcp::GenericEquationSystem::LinkValue>& map, 
+                                               const dcp::GenericEquationSystem::Link& link,
+                                               const bool& forceRelinking)
     {
         auto linkPosition = map.find (link.first);
 
@@ -684,17 +684,17 @@ namespace dcp
 
 
 
-    bool GenericEquationSystem::removeLinkFromMap (std::map<dcp::GenericEquationSystem::LinkKey, 
-                                                            dcp::GenericEquationSystem::LinkValue>& map, 
-                                                   const dcp::GenericEquationSystem::LinkKey& linkKey)
+    bool GenericEquationSystem::removeLinkFromMap_ (std::map<dcp::GenericEquationSystem::LinkKey, 
+                                                             dcp::GenericEquationSystem::LinkValue>& map, 
+                                                    const dcp::GenericEquationSystem::LinkKey& linkKey)
     {
         return (map.erase (linkKey)) == 1 ? true : false;
     }
 
 
 
-    void GenericEquationSystem::linkProblems (const dcp::GenericEquationSystem::Link& link,
-                                              std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& problemsMap)
+    void GenericEquationSystem::linkProblems_ (const dcp::GenericEquationSystem::Link& link,
+                                               std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& problemsMap)
     {
         if (std::get<1> (link.second) == -1)
         {
@@ -755,7 +755,7 @@ namespace dcp
                          (std::get<0> (link.first)).c_str (),
                          (std::get<0> (link.second)).c_str ());
 
-            // we use solutionType_. Remember that in subiterate() it was set to "stashed", so when relinking takes 
+            // we use solutionType_. Remember that in subiterate_() it was set to "stashed", so when relinking takes 
             // place during subiterations the stashed solution will be used
             problem.setCoefficient (std::get<2> (link.first), 
                                     dolfin::reference_to_no_delete_pointer (targetProblem.solution (solutionType_)),
@@ -773,7 +773,7 @@ namespace dcp
 
             int component = std::get<1> (link.second);
             
-            // we use solutionType_. Remember that in subiterate() it was set to "stashed", so when relinking takes 
+            // we use solutionType_. Remember that in subiterate_() it was set to "stashed", so when relinking takes 
             // place during subiterations the stashed solution will be used
             problem.setCoefficient (std::get<2> (link.first), 
                                     dolfin::reference_to_no_delete_pointer (targetProblem.solution (solutionType_)[component]),
@@ -786,8 +786,8 @@ namespace dcp
     
 
 
-    void GenericEquationSystem::subiterate (std::vector<std::string>::const_iterator subiterationsBegin,
-                                            std::vector<std::string>::const_iterator subiterationsEnd)
+    void GenericEquationSystem::subiterate_ (std::vector<std::string>::const_iterator subiterationsBegin,
+                                             std::vector<std::string>::const_iterator subiterationsEnd)
     {
         dolfin::begin (dolfin::PROGRESS, 
                        "===== Subiterating on problems [%s - %s) =====", 
@@ -843,7 +843,7 @@ namespace dcp
                 {
                     if (std::get<0> (linksIterator->first) == *problemName)
                     {
-                        linkProblems (*linksIterator, initialGuessesSetters_);
+                        linkProblems_ (*linksIterator, initialGuessesSetters_);
                     }
                     ++linksIterator;
                 }

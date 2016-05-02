@@ -123,9 +123,9 @@ namespace dcp
              *  
              *  \return the dotProductComputer itself
              */
-            std::shared_ptr<dolfin::Form> getDotProductComputer (const dolfin::GenericFunction& first,
-                                                                 const dolfin::GenericFunction& second,
-                                                                 const dolfin::Mesh& mesh);
+            std::shared_ptr<dolfin::Form> getDotProductComputer_ (const dolfin::GenericFunction& first,
+                                                                  const dolfin::GenericFunction& second,
+                                                                  const dolfin::Mesh& mesh);
             
             /********************** MEMBERS ***********************/
             //! The form that will be used to compute the dot product

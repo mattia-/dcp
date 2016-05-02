@@ -90,7 +90,7 @@ namespace dcp
         
         // define output file and print header if necessary
         std::ofstream OUTFILE;
-        bool hasOutputFile = openOutputFile (OUTFILE);
+        bool hasOutputFile = openOutputFile_ (OUTFILE);
         
         
         // all linear problems in the EquationSystem "problem" should be reassembled every time. So we
@@ -185,7 +185,7 @@ namespace dcp
         // print results to file
         if (hasOutputFile)
         {
-            print (OUTFILE, minimizationIteration, currentFunctionalValue, 0, 0, gradientNorm, relativeIncrement);
+            print_ (OUTFILE, minimizationIteration, currentFunctionalValue, 0, 0, gradientNorm, relativeIncrement);
         }
         
         while (isConverged () == false && minimizationIteration < maxMinimizationIterations)
@@ -238,18 +238,18 @@ namespace dcp
             
             
             // backtracking loop
-            backtrackingLoop (previousFunctionalValue, 
-                              currentFunctionalValue, 
-                              gradientDotSearchDirection, 
-                              alpha,
-                              backtrackingIteration,
-                              controlVariable,
-                              previousControlVariable,
-                              searchDirection,
-                              problem,
-                              objectiveFunctional,
-                              updater);
-             
+            backtrackingLoop_ (previousFunctionalValue, 
+                               currentFunctionalValue, 
+                               gradientDotSearchDirection, 
+                               alpha,
+                               backtrackingIteration,
+                               controlVariable,
+                               previousControlVariable,
+                               searchDirection,
+                               problem,
+                               objectiveFunctional,
+                               updater);
+
             // update gradient norm if necessary for convergence check
             if (convergenceCriterion == "gradient" || convergenceCriterion == "both")
             {
@@ -283,13 +283,13 @@ namespace dcp
             if (hasOutputFile)
             {
                 dolfin::log (dolfin::DBG, "Printing results to file...");
-                print (OUTFILE, 
-                       minimizationIteration, 
-                       currentFunctionalValue, 
-                       alpha, 
-                       backtrackingIteration, 
-                       gradientNorm, 
-                       relativeIncrement);
+                print_ (OUTFILE, 
+                        minimizationIteration, 
+                        currentFunctionalValue, 
+                        alpha, 
+                        backtrackingIteration, 
+                        gradientNorm, 
+                        relativeIncrement);
             }
             
             dolfin::end (); // "Minimization iteration %d"
@@ -329,7 +329,7 @@ namespace dcp
     // ***************************************** //
     // ********** PRIVATE MEMBERS ************** //
     // ***************************************** //
-    bool BacktrackingOptimizer:: backtrackingLoop (const double& previousFunctionalValue,
+    bool BacktrackingOptimizer::backtrackingLoop_ (const double& previousFunctionalValue,
                                                    double& currentFunctionalValue, 
                                                    const double& gradientDotSearchDirection,
                                                    double& alpha,
@@ -409,13 +409,13 @@ namespace dcp
     
     
     
-    void BacktrackingOptimizer::print (std::ostream& OUTSTREAM, 
-                                       const int& iteration,
-                                       const double& functionalValue,
-                                       const double& alpha,
-                                       const int& backtrackingIterations,
-                                       const double& gradientNorm,
-                                       const double& relativeIncrement)
+    void BacktrackingOptimizer::print_ (std::ostream& OUTSTREAM, 
+                                        const int& iteration,
+                                        const double& functionalValue,
+                                        const double& alpha,
+                                        const int& backtrackingIterations,
+                                        const double& gradientNorm,
+                                        const double& relativeIncrement)
     {
         dolfin::log (dolfin::DBG, "Printing results to file...");
         std::string convergenceCriterion = this->parameters ["convergence_criterion"];
@@ -481,7 +481,7 @@ namespace dcp
     
 
 
-    bool BacktrackingOptimizer::openOutputFile (std::ofstream& OUTFILE)
+    bool BacktrackingOptimizer::openOutputFile_ (std::ofstream& OUTFILE)
     {
         std::string outputFileName = this->parameters ["output_file_name"];
         std::string convergenceCriterion = this->parameters ["convergence_criterion"];
@@ -492,7 +492,7 @@ namespace dcp
             if (OUTFILE.fail ())
             {
                 dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp",
-                                      "openOutputFile",
+                                      "openOutputFile_",
                                       "Cannot open output file \"%s\"", 
                                       outputFileName.c_str ());
             }
@@ -540,7 +540,7 @@ namespace dcp
             else
             {
                 dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp",
-                                      "openOutputFile",
+                                      "openOutputFile_",
                                       "Unknown convergence criterion \"%s\"", 
                                       convergenceCriterion.c_str ());
                 

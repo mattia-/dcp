@@ -59,7 +59,7 @@ namespace dcp
              *  The strings in \c subiterationsRange_ are initialized with empty strings. 
              *  This way, no subiteration is performed (unless \c setSubiterationRange() is explicitly called), 
              *  since empty name are not allowed for problems. See documentation for \c setSubiterationRange() and
-             *  \c subiterate() for more details.
+             *  \c subiterate_() for more details.
              *  The strings \c solutionType_ and \c solveType_ are initialized with \c "default".
              *  The constructors also sets the following parameters:
              *      - \c "subiterations_tolerance" the tolerance for the convergence check in the subiterations loop.
@@ -408,9 +408,9 @@ namespace dcp
              *
              *  \return \c true if the problem was added, \c false otherwise
              */
-            virtual bool addProblemToMap (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
-                                          const std::string& problemName, 
-                                          const std::shared_ptr<dcp::GenericProblem> problem);
+            virtual bool addProblemToMap_ (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
+                                           const std::string& problemName, 
+                                           const std::shared_ptr<dcp::GenericProblem> problem);
             
             //! Remove problem with the given name from the private member variables. A warning is issued if the name is 
             //! not found
@@ -421,8 +421,8 @@ namespace dcp
              *
              *  \return \c true if the problem was removed, \c false otherwise
              */
-            virtual bool removeProblemFromMap (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
-                                               const std::string& problemName);
+            virtual bool removeProblemFromMap_ (std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& map,
+                                                const std::string& problemName);
             
             //! Add link to given map
             /*!
@@ -433,7 +433,7 @@ namespace dcp
              *
              *  \return \c true if the link was added, \c false otherwise
              */
-            virtual bool addLinkToMap (std::map<LinkKey, LinkValue>& map, const Link& link, const bool& forceRelinking);
+            virtual bool addLinkToMap_ (std::map<LinkKey, LinkValue>& map, const Link& link, const bool& forceRelinking);
 
             //! Remove link between problems' coefficient and solution
             /*!
@@ -443,7 +443,7 @@ namespace dcp
              *  
              *  \return \c true if the link was removed, \c false otherwise
              */
-            virtual bool removeLinkFromMap (std::map<LinkKey, LinkValue>& map, const LinkKey& linkKey);
+            virtual bool removeLinkFromMap_ (std::map<LinkKey, LinkValue>& map, const LinkKey& linkKey);
             
             //! Performs the actual linking between problems 
             /*!
@@ -451,8 +451,8 @@ namespace dcp
              *  \param link a \c std::pair of the type contained by the protected member links maps
              *  \param problemsMap the map in which the problem whose coefficient we want to link is stored
              */
-            virtual void linkProblems (const Link& link,
-                                       std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& problemsMap);
+            virtual void linkProblems_ (const Link& link,
+                                        std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& problemsMap);
             
             //! Subiterate on given problems
             /*!
@@ -462,8 +462,8 @@ namespace dcp
              *  Each problem is solved by calling the method \c solve(problemName)
              *  TODO allow choice of convergence check. For now: sum of the norms of the increment and max iter
              */
-            virtual void subiterate (std::vector<std::string>::const_iterator subiterationsBegin,
-                                     std::vector<std::string>::const_iterator subiterationsEnd);
+            virtual void subiterate_ (std::vector<std::string>::const_iterator subiterationsBegin,
+                                      std::vector<std::string>::const_iterator subiterationsEnd);
                 
             /******************** VARIABLES *********************/
             //! The stored problems

@@ -114,7 +114,7 @@ namespace dcp
             //! Adds link between problems' coefficient and solution at a previous time step [1]
             /*!
              *  This function will add to the stored map \c linksToPreviousSolutions_ a \c std::pair created on the
-             *  input arguments and perform the actual linking calling \c linkProblemToPreviousSolution.
+             *  input arguments and perform the actual linking calling \c linkProblemToPreviousSolution_.
              *  \param linkFrom identifies the problem whose parameter (passed as second argument to the function) 
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
@@ -139,7 +139,7 @@ namespace dcp
             //! Adds link between problems' coefficient and solution at a previous time step [2]
             /*!
              *  This function will add to the stored map \c linksToPreviousSolutions_ a \c std::pair created on the
-             *  input arguments and perform the actual linking calling \c linkProblemToPreviousSolution.
+             *  input arguments and perform the actual linking calling \c linkProblemToPreviousSolution_.
              *  \param linkFrom identifies the problem whose parameter (passed as second argument to the function) 
              *  should be linked with the solution of the problem identified by the fourth parameter (\c linkTo)
              *  \param linkedCoefficientName identifies the coefficient to be linked with said solution
@@ -306,7 +306,7 @@ namespace dcp
              *  Being a protected member, this method is just called from library functions. 
              *  \param link a \c std::pair of the type contained by the protected member \c linksToPreviousSolutions_
              */
-            virtual void linkProblemToPreviousSolution (const PreviousSolutionLink& link);
+            virtual void linkProblemToPreviousSolution_ (const PreviousSolutionLink& link);
             
             //! The map of the old solutions needed for the system
             /*!

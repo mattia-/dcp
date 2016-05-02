@@ -482,7 +482,7 @@ namespace dcp
                  *  \c parameters to decided whether problem's matrix and vector should be reassembled and if
                  *  the values of the parameters \c desired_solver_type, \c desired_solver_method and 
                  *  \c desired_solver_preconditioner match the values of \c current_solver_type, \c current_solver_method
-                 *  and \c current_solver_preconditioner. If they differ, it calls \c createSolver().
+                 *  and \c current_solver_preconditioner. If they differ, it calls \c createSolver_().
                  * 
                  *  \param solveType the solution type wanted. Possible values are:
                  *  \li \c "default" : the normal solution process
@@ -517,7 +517,7 @@ namespace dcp
                  *  \c current_solver_preconditioner in the same set of parameters substituting the current values with 
                  *  the values being used to create the solver
                  */
-                std::unique_ptr<dolfin::GenericLinearSolver> createSolver ();
+                std::unique_ptr<dolfin::GenericLinearSolver> createSolver_ ();
                 
                 //! The bilinear form
                 T_BilinearForm bilinearForm_;
@@ -580,7 +580,7 @@ namespace dcp
             parameters.add ("force_reassemble_system", false);  
 
             dolfin::begin (dolfin::DBG, "Creating solver...");
-            solver_ = createSolver ();
+            solver_ = createSolver_ ();
             dolfin::end ();
 
             dolfin::end ();
@@ -620,7 +620,7 @@ namespace dcp
             parameters.add ("force_reassemble_system", false);  
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
-            solver_ = createSolver ();
+            solver_ = createSolver_ ();
             dolfin::end ();
             
             dolfin::end ();
@@ -660,7 +660,7 @@ namespace dcp
             parameters.add ("force_reassemble_system", false);
         
             dolfin::begin (dolfin::DBG, "Creating solver...");
-            solver_ = createSolver ();
+            solver_ = createSolver_ ();
             dolfin::end ();
             
             dolfin::end ();
@@ -702,7 +702,7 @@ namespace dcp
             parameters.add ("force_reassemble_system", false);
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
-            solver_ = createSolver ();
+            solver_ = createSolver_ ();
             dolfin::end ();
             
             dolfin::end ();
@@ -744,7 +744,7 @@ namespace dcp
             parameters.add ("force_reassemble_system", false);  
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
-            solver_ = createSolver ();
+            solver_ = createSolver_ ();
             dolfin::end ();
             
             dolfin::end ();
@@ -786,7 +786,7 @@ namespace dcp
             parameters.add ("force_reassemble_system", false);  
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
-            solver_ = createSolver ();
+            solver_ = createSolver_ ();
             dolfin::end ();
             
             dolfin::end ();
@@ -1152,7 +1152,7 @@ namespace dcp
             if (needsSolverUpdating)
             {
                 dolfin::begin (dolfin::DBG, "Updating solver...");
-                solver_ = createSolver ();
+                solver_ = createSolver_ ();
                 dolfin::end ();
                 
                 parameters ["system_is_assembled"] = false;
@@ -1329,7 +1329,7 @@ namespace dcp
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         std::unique_ptr<dolfin::GenericLinearSolver> 
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        createSolver ()
+        createSolver_ ()
         {
             std::string currentSolverType = parameters["current_solver_type"];
             std::string currentSolverMethod = parameters["current_solver_method"];

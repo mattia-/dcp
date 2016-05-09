@@ -966,7 +966,7 @@ namespace dcp
         }
         
         int iteration = 0;
-        double sumOfNorms = tolerance + 1;
+        double maxIncrementNorm = tolerance + 1;
         dcp::DotProduct dotProduct;
 
         dolfin::end (); // Setting up subiterations loop variables
@@ -974,12 +974,12 @@ namespace dcp
         // loop until convergence, that is until the sum of the norms of the increment divided by the norm of the
         // current solution is below tolerance or until maximum number of iterations is reached
         dolfin::begin (dolfin::PROGRESS, "***** SUBITERATIONS LOOP *****");
-        while (sumOfNorms >= tolerance && iteration < maxIterations)
+        while (maxIncrementNorm >= tolerance && iteration < maxIterations)
         {
             iteration++;
             dolfin::begin (dolfin::PROGRESS, "===== Subiteration %d =====", iteration);
             
-            sumOfNorms = 0;
+            std::vector<double> incrementsNorms;
             int counter = 0;
             for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
             {
@@ -996,7 +996,8 @@ namespace dcp
                     oldSolutions[counter] = solution (*problemName, solutionType_);
 
                     // use DOLFIN_EPS in division in case norm of the current solution is 0
-                    sumOfNorms += dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[counter]) + DOLFIN_EPS);
+                    incrementsNorms.push_back 
+                        (dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[counter]) + DOLFIN_EPS));
 
                     counter++;
                 }
@@ -1028,8 +1029,20 @@ namespace dcp
                     dolfin::end ();
                 }
             }
+
+            maxIncrementNorm = *(std::max_element (incrementsNorms.begin (), incrementsNorms.end ()));
             
-            dolfin::log (dolfin::PROGRESS, "Sum of relative increment norms: %f", sumOfNorms);
+            dolfin::log (dolfin::PROGRESS, "Max norm of relative increment: %f", maxIncrementNorm);
+
+            dolfin::begin (dolfin::DBG, "Relative increments norms are:");
+            for (auto i = 0; i < convergenceCheckProblemNames.size (); ++i)
+            {
+                dolfin::log (dolfin::DBG, 
+                             "Problem \"%s\": norm of relative increment = %f", 
+                             convergenceCheckProblemNames[i].c_str (), 
+                             incrementsNorms[i]);
+            }
+            dolfin::end (); // "Relative increments norms are:"
 
             dolfin::end (); // ===== Iteration =====
         }

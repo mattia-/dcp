@@ -460,7 +460,7 @@ namespace dcp
              *  between \c subiterationsBegin (inclusive) and \c subiterationsEnd (exclusive), 
              *  solving each once in the order provided by \c solveOrder_ until convergence. 
              *  Each problem is solved by calling the method \c solve(problemName)
-             *  TODO allow choice of convergence check. For now: sum of the norms of the increment and max iter
+             *  TODO allow choice of convergence check. For now: max of the norms of the increment and max iter
              */
             virtual void subiterate_ (std::vector<std::string>::const_iterator subiterationsBegin,
                                       std::vector<std::string>::const_iterator subiterationsEnd);

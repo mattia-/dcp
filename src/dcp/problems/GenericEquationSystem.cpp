@@ -34,6 +34,7 @@ namespace dcp
         solveOrder_ (),
         problemsLinks_ (),
         subiterationsRange_ (),
+        dotProducts_ (),
         initialGuessesSetters_ (),
         initialGuessesSettersLinks_ (),
         solveType_ ("default"),
@@ -433,6 +434,22 @@ namespace dcp
         return linkWasInserted;
     }
     
+
+
+    bool GenericEquationSystem::setDotProduct (const std::string& problemName, const dolfin::Form& dotProductComputer)
+    {
+        dolfin::begin (dolfin::DBG, "Setting dot product computer for problem \"%s\"", problemName.c_str ());
+
+        dcp::DotProduct dotProduct;
+        dotProduct.setDotProductComputer (dotProductComputer);
+
+        auto result = dotProducts_.insert (std::pair<std::string, dcp::DotProduct> (problemName, dotProduct));
+
+        dolfin::end (); // "Adding dot product computer for problem \"%s\"", problemName.c_str ()
+
+        return result.second;
+    }
+
 
 
     const dcp::GenericProblem& GenericEquationSystem::operator[] (const std::string& name) const
@@ -967,7 +984,6 @@ namespace dcp
         
         int iteration = 0;
         double maxIncrementNorm = tolerance + 1;
-        dcp::DotProduct dotProduct;
 
         dolfin::end (); // Setting up subiterations loop variables
         
@@ -995,9 +1011,26 @@ namespace dcp
 
                     oldSolutions[counter] = solution (*problemName, solutionType_);
 
-                    // use DOLFIN_EPS in division in case norm of the current solution is 0
-                    incrementsNorms.push_back 
-                        (dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[counter]) + DOLFIN_EPS));
+                    // search for current problem in dotProductComputers_
+                    auto position = dotProducts_.find (*problemName);
+
+                    // if found, use the dotProduct in the map. Else, create it and use the default
+                    if (position != dotProducts_.end ())
+                    {
+                        dcp::DotProduct& dotProduct = position->second;
+
+                        // use DOLFIN_EPS in division in case norm of the current solution is 0
+                        incrementsNorms.push_back 
+                            (dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[counter]) + DOLFIN_EPS));
+                    }
+                    else
+                    {
+                        dcp::DotProduct dotProduct;
+
+                        // use DOLFIN_EPS in division in case norm of the current solution is 0
+                        incrementsNorms.push_back 
+                            (dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[counter]) + DOLFIN_EPS));
+                    }
 
                     counter++;
                 }

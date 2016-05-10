@@ -21,6 +21,8 @@
 #define SRC_PROBLEMS_GENERICEQUATIONSYSTEM_H_INCLUDE_GUARD
 
 #include <dcp/problems/GenericProblem.h>
+#include <dcp/utils/DotProduct.h>
+#include <dolfin/fem/Form.h>
 #include <map>
 #include <tuple>
 #include <memory>
@@ -298,6 +300,17 @@ namespace dcp
                                                     const int& linkToComponent,
                                                     const bool& forceRelinking = false);
             
+            //! Set a new element in \c dotProducts_
+            /*!
+             *  Adds a new pair in \c dotProducts_ to associate a problem and the \c dcp::DotProduct used to
+             *  compute the norm of the increment of its solution.
+             *  \param problemName the name of the problem
+             *  \param dotProductComputer the dolfin::Form to be used in the \c dcp::DotProduct
+             *
+             *  \return \c true or \c false indicating the success of the operation
+             */
+            virtual bool setDotProduct (const std::string& problemName, const dolfin::Form& dotProductComputer);
+
             //! Access system problem with given name [1] (read only)
             /*!
              *  \param name name of the problem to be accessed. If the name is not found, the function prints an
@@ -493,6 +506,17 @@ namespace dcp
             //! The strings specifying the name of the first and last problem on which we must subiterate
             std::pair<std::string, std::string> subiterationsRange_;
             
+            //! A map containing pairing between problems names and the \c dcp::DotProduct s used to compute the norm of 
+            //! the increment of the solution of such problems.
+            /*!
+             *  Basically, the funcion \c subiterate_() looks for the name of the problem that is being solved inside
+             *  this map. If found, it uses the \c dcp::DotProduct stored as value in the pair identified by such name
+             *  to compute the norm of the increment of the solution of the problem. If not found, it uses the 
+             *  default \c dcp::DotProduct class. This map is created empty, and can be populated with the function
+             *  \c setDotProductComputer
+             */
+            std::map <std::string, dcp::DotProduct> dotProducts_;
+
             //! The problems used to set the initial guesses for the subiterations
             /*! It contains pairs <tt> name - problem </tt>, where \c name identifies a problem in \c storedProblems_
              *  and \c problem contains a \c dcp::GenericProblem that will be solved to set the initial guess for the

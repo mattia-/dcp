@@ -977,9 +977,17 @@ namespace dcp
         // vector to contain auxiliary solutions needed to compute the norm of the increment. Size is equal to
         // the number of problems of which we want to keep track in the convergence check
         std::vector<dolfin::Function> oldSolutions;
-        for (auto& problemName : convergenceCheckProblemNames)
+        for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
         {
-            oldSolutions.push_back (solution (problemName, solutionType_));
+            auto found = std::find (convergenceCheckProblemNames.begin (),
+                                    convergenceCheckProblemNames.end (), 
+                                    *problemName)
+                         != convergenceCheckProblemNames.end ();
+
+            if (found == true)
+            {
+                oldSolutions.push_back (solution (*problemName, solutionType_));
+            }
         }
         
         int iteration = 0;
@@ -996,20 +1004,23 @@ namespace dcp
             dolfin::begin (dolfin::PROGRESS, "===== Subiteration %d =====", iteration);
             
             std::vector<double> incrementsNorms;
-            int counter = 0;
+            int problemCounter = 0;
             for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
             {
                 dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
                 solve (*problemName);
                 dolfin::end ();
                 
-                if (std::find (convergenceCheckProblemNames.begin (), convergenceCheckProblemNames.end (), *problemName)
-                    != convergenceCheckProblemNames.end ())
+                auto found = std::find (convergenceCheckProblemNames.begin (),
+                                        convergenceCheckProblemNames.end (), 
+                                        *problemName)
+                             != convergenceCheckProblemNames.end ();
+                if (found == true)
                 {
                     dolfin::Function increment ((this -> operator[] (*problemName)).functionSpace ());
-                    increment = solution (*problemName, solutionType_) - oldSolutions[counter];
+                    increment = solution (*problemName, solutionType_) - oldSolutions[problemCounter];
 
-                    oldSolutions[counter] = solution (*problemName, solutionType_);
+                    oldSolutions[problemCounter] = solution (*problemName, solutionType_);
 
                     // search for current problem in dotProductComputers_
                     auto position = dotProducts_.find (*problemName);
@@ -1021,7 +1032,7 @@ namespace dcp
 
                         // use DOLFIN_EPS in division in case norm of the current solution is 0
                         incrementsNorms.push_back 
-                            (dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[counter]) + DOLFIN_EPS));
+                            (dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[problemCounter]) + DOLFIN_EPS));
                     }
                     else
                     {
@@ -1029,10 +1040,10 @@ namespace dcp
 
                         // use DOLFIN_EPS in division in case norm of the current solution is 0
                         incrementsNorms.push_back 
-                            (dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[counter]) + DOLFIN_EPS));
+                            (dotProduct.norm (increment) / (dotProduct.norm (oldSolutions[problemCounter]) + DOLFIN_EPS));
                     }
 
-                    counter++;
+                    problemCounter++;
                 }
 
                 if (plotSubiterationSolutions == true)

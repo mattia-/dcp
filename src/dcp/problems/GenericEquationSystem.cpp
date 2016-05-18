@@ -974,9 +974,9 @@ namespace dcp
         }
         dolfin::end (); // Problems considered for convergence check are
 
-        // vector to contain auxiliary solutions needed to compute the norm of the increment. Size is equal to
-        // the number of problems of which we want to keep track in the convergence check
-        std::vector<dolfin::Function> oldSolutions;
+        // create vector with the elements of convergenceCheckProblemNames but with the same order as the subiteration
+        // sequence
+        std::vector<std::string> sortedConvergenceCheckProblemNames;
         for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
         {
             auto found = std::find (convergenceCheckProblemNames.begin (),
@@ -986,8 +986,15 @@ namespace dcp
 
             if (found == true)
             {
-                oldSolutions.push_back (solution (*problemName, solutionType_));
+                sortedConvergenceCheckProblemNames.push_back (*problemName);
             }
+        }
+
+        // vector to contain auxiliary solutions needed to compute the norm of the increment
+        std::vector<dolfin::Function> oldSolutions;
+        for (auto i = 0; i < sortedConvergenceCheckProblemNames.size(); ++i)
+        {
+            oldSolutions.push_back (solution (sortedConvergenceCheckProblemNames[i], solutionType_));
         }
         
         int iteration = 0;
@@ -1011,11 +1018,7 @@ namespace dcp
                 solve (*problemName);
                 dolfin::end ();
                 
-                auto found = std::find (convergenceCheckProblemNames.begin (),
-                                        convergenceCheckProblemNames.end (), 
-                                        *problemName)
-                             != convergenceCheckProblemNames.end ();
-                if (found == true)
+                if (*problemName == sortedConvergenceCheckProblemNames[problemCounter])
                 {
                     dolfin::Function increment ((this -> operator[] (*problemName)).functionSpace ());
                     increment = solution (*problemName, solutionType_) - oldSolutions[problemCounter];
@@ -1079,11 +1082,11 @@ namespace dcp
             dolfin::log (dolfin::PROGRESS, "Max norm of relative increment: %f", maxIncrementNorm);
 
             dolfin::begin (dolfin::DBG, "Relative increments norms are:");
-            for (auto i = 0; i < convergenceCheckProblemNames.size (); ++i)
+            for (auto i = 0; i < sortedConvergenceCheckProblemNames.size (); ++i)
             {
                 dolfin::log (dolfin::DBG, 
                              "Problem \"%s\": norm of relative increment = %f", 
-                             convergenceCheckProblemNames[i].c_str (), 
+                             sortedConvergenceCheckProblemNames[i].c_str (), 
                              incrementsNorms[i]);
             }
             dolfin::end (); // "Relative increments norms are:"

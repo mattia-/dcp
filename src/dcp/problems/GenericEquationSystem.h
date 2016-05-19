@@ -473,11 +473,62 @@ namespace dcp
              *  between \c subiterationsBegin (inclusive) and \c subiterationsEnd (exclusive), 
              *  solving each once in the order provided by \c solveOrder_ until convergence. 
              *  Each problem is solved by calling the method \c solve(problemName)
-             *  TODO allow choice of convergence check. For now: max of the norms of the increment and max iter
+             *
+             *  \param subiterationsBegin iterator to the initial problem on which to subiterate
+             *  \param subiterationsEnd iterator to the problem after the last problem on which to subiterate
              */
-            virtual void subiterate_ (std::vector<std::string>::const_iterator subiterationsBegin,
-                                      std::vector<std::string>::const_iterator subiterationsEnd);
+            //  TODO allow choice of convergence check. For now: max of the norms of the increment and max iter
+            virtual void subiterate_ (const std::vector<std::string>::const_iterator subiterationsBegin,
+                                      const std::vector<std::string>::const_iterator subiterationsEnd);
                 
+            //! Auxilary function to set initial guesses for subiterations
+            /*! 
+             *  \param subiterationsBegin iterator to the initial problem on which to subiterate
+             *  \param subiterationsEnd iterator to the problem after the last problem on which to subiterate
+             *  \param plotSubiterationSolutions boolean flag
+             *  \param writeSubiterationSolutions boolean flag
+             */
+            virtual void setSubiterationInitialGuesses_ 
+                (const std::vector<std::string>::const_iterator subiterationsBegin,
+                 const std::vector<std::string>::const_iterator subiterationsEnd,
+                 const bool plotSubiterationSolutions,
+                 const bool writeSubiterationSolutions);
+
+            //! Auxilary function to solve the problems in the subiterations range
+            /*! 
+             *  \param subiterationsBegin iterator to the initial problem on which to subiterate
+             *  \param subiterationsEnd iterator to the problem after the last problem on which to subiterate
+             *  \param plotSubiterationSolutions boolean flag
+             *  \param writeSubiterationSolutions boolean flag
+             *  \param incrementsNorms vector of the norms of the increments
+             *  \param sortedConvergenceCheckProblemNames names of the problems to be used for the convergence check
+             *  \oaram oldSolutions vector of the old solutions
+             *  \param inLoop boolean flag indicating whether we are in the subiterations loop or before it
+             */
+            virtual void solveSubiterationProblems_ 
+                (const std::vector<std::string>::const_iterator subiterationsBegin,
+                 const std::vector<std::string>::const_iterator subiterationsEnd,
+                 const int& iteration,
+                 const bool plotSubiterationSolutions,
+                 const bool writeSubiterationSolutions,
+                 std::vector<double>& incrementsNorms,
+                 const std::vector<std::string>& sortedConvergenceCheckProblemNames,
+                 std::vector<dolfin::Function>& oldSolutions, 
+                 const bool inLoop);
+
+            //! Auxilary function to set some subiteration loop variables (the ones that require more instructions)
+            /*! 
+             *  \param subiterationsBegin iterator to the initial problem on which to subiterate
+             *  \param subiterationsEnd iterator to the problem after the last problem on which to subiterate
+             *  \param sortedConvergenceCheckProblemNames vector to contain the names of the problems to be used in the
+             *  convergence check, sorted as the subiteration sequence
+             *  \param oldSolutions vector to contain the solution at the previous subiteration
+             */
+            virtual void setSubiterationLoopVariables_ (const std::vector<std::string>::const_iterator subiterationsBegin,
+                                                        const std::vector<std::string>::const_iterator subiterationsEnd,
+                                                        std::vector<std::string>& sortedConvergenceCheckProblemNames,
+                                                        std::vector<dolfin::Function>& oldSolutions);
+
             /******************** VARIABLES *********************/
             //! The stored problems
             std::map<std::string, std::shared_ptr <dcp::GenericProblem>> storedProblems_;

@@ -823,13 +823,126 @@ namespace dcp
         dolfin::log (dolfin::DBG, 
                      "Write subiterations solutions to file: %s ", writeSubiterationSolutions ? "true" : "false");
 
+
+        // variables to be used later in the function:
+        // norms of the increments of the solutions
+        std::vector<double> incrementsNorms;
+        // problem names whose solution should be used in the convergence check ordered as the subiteration sequence
+        std::vector<std::string> sortedConvergenceCheckProblemNames;
+        // auxiliary solutions needed to compute the norm of the increment
+        std::vector<dolfin::Function> oldSolutions;
+
+
+        // set initial guesses
+        dolfin::begin (dolfin::PROGRESS, "Setting initial guesses...");
+        setSubiterationInitialGuesses_ (subiterationsBegin, 
+                                        subiterationsEnd,
+                                        plotSubiterationSolutions, 
+                                        writeSubiterationSolutions);
+        dolfin::end (); // Setting initial guesses
+            
+
         // get backups for solveType_ and solutionType_
         std::string solveTypeBackup = solveType_;
         std::string solutionTypeBackup = solutionType_;
 
-        // set initial guesses
-        dolfin::begin (dolfin::PROGRESS, "Setting initial guesses...");
+        // set solveType_ and solutionType_ so that during subiterations stashed solutions are used
+        solveType_ = "stash";
+        solutionType_ = "stashed";
+        
 
+        // solve all the problems the first time
+        dolfin::begin (dolfin::PROGRESS, "Solving all problems once...");
+        solveSubiterationProblems_ (subiterationsBegin, 
+                                    subiterationsEnd,
+                                    0,
+                                    plotSubiterationSolutions, 
+                                    writeSubiterationSolutions,
+                                    incrementsNorms,
+                                    sortedConvergenceCheckProblemNames,
+                                    oldSolutions,
+                                    false);
+        dolfin::end (); // Solving all problems once
+            
+
+        dolfin::begin (dolfin::DBG, "Setting up subiterations loop variables...");
+        setSubiterationLoopVariables_ (subiterationsBegin,
+                                       subiterationsEnd, 
+                                       sortedConvergenceCheckProblemNames, 
+                                       oldSolutions);
+
+        int iteration = 0;
+        double maxIncrementNorm = tolerance + 1;
+
+        dolfin::end (); // Setting up subiterations loop variables
+        
+
+        // loop until convergence, that is until the max of the norms of the increment divided by the norm of the
+        // current solution is below tolerance or until maximum number of iterations is reached
+        dolfin::begin (dolfin::PROGRESS, "***** SUBITERATIONS LOOP *****");
+        while (maxIncrementNorm >= tolerance && iteration < maxIterations)
+        {
+            iteration++;
+            dolfin::begin (dolfin::PROGRESS, "===== Subiteration %d =====", iteration);
+            
+            incrementsNorms.clear ();
+
+            solveSubiterationProblems_ (subiterationsBegin, 
+                                        subiterationsEnd,
+                                        iteration,
+                                        plotSubiterationSolutions, 
+                                        writeSubiterationSolutions,
+                                        incrementsNorms,
+                                        sortedConvergenceCheckProblemNames,
+                                        oldSolutions,
+                                        true);
+
+            maxIncrementNorm = *(std::max_element (incrementsNorms.begin (), incrementsNorms.end ()));
+            
+            dolfin::log (dolfin::PROGRESS, "Max norm of relative increment: %f", maxIncrementNorm);
+
+            dolfin::begin (dolfin::DBG, "Relative increments norms are:");
+            for (auto i = 0; i < sortedConvergenceCheckProblemNames.size (); ++i)
+            {
+                dolfin::log (dolfin::DBG, 
+                             "Problem \"%s\": norm of relative increment = %f", 
+                             sortedConvergenceCheckProblemNames[i].c_str (), 
+                             incrementsNorms[i]);
+            }
+            dolfin::end (); // "Relative increments norms are:"
+
+            dolfin::end (); // ===== Iteration =====
+        }
+        dolfin::end (); // "SUBITERATIONS LOOP"
+        
+        if (iteration == maxIterations)
+        {
+            dolfin::warning ("Maximum number of iterations reached in subiterations loop");
+        }
+        
+        // apply stashed solutions
+        dolfin::log (dolfin::DBG, "Applying subiterations solutions to problems...");
+        for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
+        {
+            (this -> operator[] (*problemName)).applyStashedSolution ();
+        }
+        
+        // restore original values for solveType_ and solutionType_
+        solveType_ = solveTypeBackup;
+        solutionType_ = solutionTypeBackup;
+        
+        dolfin::end (); // "Subiterating on problems begin - end"
+    }
+
+
+
+    void GenericEquationSystem::setSubiterationInitialGuesses_ 
+        (const std::vector<std::string>::const_iterator subiterationsBegin,
+         const std::vector<std::string>::const_iterator subiterationsEnd,
+         const bool plotSubiterationSolutions,
+         const bool writeSubiterationSolutions)
+    {
+        // remember that subiterationsBegin and subiterationsEnd are iterators on solveOrder_
         for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
         {
             dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", (*problemName).c_str ());
@@ -904,120 +1017,33 @@ namespace dcp
 
             dolfin::end (); // Problem %s
         }
+    }
 
-        dolfin::end (); // Setting initial guesses
 
-        // set solveType_ and solutionType_ so that during subiterations stashed solutions are used
-        solveType_ = "stash";
-        solutionType_ = "stashed";
-        
-        // solve all the problems the first time. Remember that subiterationsBegin and subiterationsEnd are
-        // iterators on solveOrder_
-        dolfin::begin (dolfin::PROGRESS, "Solving all problems once...");
+
+    void GenericEquationSystem::solveSubiterationProblems_ 
+        (const std::vector<std::string>::const_iterator subiterationsBegin,
+         const std::vector<std::string>::const_iterator subiterationsEnd,
+         const int& iteration,
+         const bool plotSubiterationSolutions,
+         const bool writeSubiterationSolutions,
+         std::vector<double>& incrementsNorms,
+         const std::vector<std::string>& sortedConvergenceCheckProblemNames,
+         std::vector<dolfin::Function>& oldSolutions,
+         const bool inLoop)
+    {
+        // counter to loop through the convergence check problems. Only used if inLoop is true
+        int problemCounter = 0;
+
+        // remember that subiterationsBegin and subiterationsEnd are iterators on solveOrder_
         for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
         {
             dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
             solve (*problemName);
             dolfin::end ();
-
-            if (plotSubiterationSolutions == true)
-            {
-                dolfin::begin (dolfin::DBG, "Plotting subiteration solution...");
-
-                // set plot name to include subiteration number
-                std::string oldPlotTitle = (this -> operator[] (*problemName)).parameters["plot_title"];
-                std::string newPlotTitle = oldPlotTitle + " (subiteration iteration " + std::to_string (0) + ")";
-                (this -> operator[] (*problemName)).parameters["plot_title"] = newPlotTitle;
-
-                // actual plotting
-                (this -> operator[] (*problemName)).plotSolution ("stashed");
-
-                // reset plot title
-                (this -> operator[] (*problemName)).parameters["plot_title"] = oldPlotTitle;
-                dolfin::end ();
-            }
-
-            if (writeSubiterationSolutions == true)
-            {
-                dolfin::begin ("Writing subiteration solution to file...");
-                (this -> operator[] (*problemName)).writeSolutionToFile ("stashed");
-                dolfin::end ();
-            }
-        }
-        dolfin::end (); // Solving all problems once
             
-        dolfin::begin (dolfin::DBG, "Setting up subiterations loop variables...");
-
-        // vector of problem names whose solution should be used in the convergence check
-        std::vector<std::string> convergenceCheckProblemNames;
-
-        // get whitelisted problem names
-        parameters ("subiterations_whitelist").get_parameter_keys (convergenceCheckProblemNames);
-
-        // if convergenceCheckProblemNames is empty, there were no whitelisted problems, so use all the problems in the
-        // subiteration range minus the blacklisted ones
-        if (convergenceCheckProblemNames.empty ())
-        {
-            for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
+            if (inLoop == true)
             {
-                if (parameters ("subiterations_blacklist").has_parameter (*problemName) == false)
-                {
-                    convergenceCheckProblemNames.push_back (*problemName);
-                }
-            }
-        }
-
-        dolfin::begin (dolfin::DBG, "Problems considered for convergence check are:");
-        for (auto& problemName : convergenceCheckProblemNames)
-        {
-            dolfin::log (dolfin::DBG, "- " + problemName);
-        }
-        dolfin::end (); // Problems considered for convergence check are
-
-        // create vector with the elements of convergenceCheckProblemNames but with the same order as the subiteration
-        // sequence
-        std::vector<std::string> sortedConvergenceCheckProblemNames;
-        for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
-        {
-            auto found = std::find (convergenceCheckProblemNames.begin (),
-                                    convergenceCheckProblemNames.end (), 
-                                    *problemName)
-                         != convergenceCheckProblemNames.end ();
-
-            if (found == true)
-            {
-                sortedConvergenceCheckProblemNames.push_back (*problemName);
-            }
-        }
-
-        // vector to contain auxiliary solutions needed to compute the norm of the increment
-        std::vector<dolfin::Function> oldSolutions;
-        for (auto i = 0; i < sortedConvergenceCheckProblemNames.size(); ++i)
-        {
-            oldSolutions.push_back (solution (sortedConvergenceCheckProblemNames[i], solutionType_));
-        }
-        
-        int iteration = 0;
-        double maxIncrementNorm = tolerance + 1;
-
-        dolfin::end (); // Setting up subiterations loop variables
-        
-        // loop until convergence, that is until the sum of the norms of the increment divided by the norm of the
-        // current solution is below tolerance or until maximum number of iterations is reached
-        dolfin::begin (dolfin::PROGRESS, "***** SUBITERATIONS LOOP *****");
-        while (maxIncrementNorm >= tolerance && iteration < maxIterations)
-        {
-            iteration++;
-            dolfin::begin (dolfin::PROGRESS, "===== Subiteration %d =====", iteration);
-            
-            std::vector<double> incrementsNorms;
-            int problemCounter = 0;
-            for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
-            {
-                dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
-                solve (*problemName);
-                dolfin::end ();
-                
                 if (*problemName == sortedConvergenceCheckProblemNames[problemCounter])
                 {
                     dolfin::Function increment ((this -> operator[] (*problemName)).functionSpace ());
@@ -1048,69 +1074,84 @@ namespace dcp
 
                     problemCounter++;
                 }
-
-                if (plotSubiterationSolutions == true)
-                {
-                    dolfin::begin (dolfin::DBG, "Plotting subiteration solution...");
-
-                    // set plot name to include subiteration number
-                    std::string oldPlotTitle = (this -> operator[] (*problemName)).parameters["plot_title"];
-                    std::string newPlotTitle = oldPlotTitle + 
-                                               " (subiteration iteration " 
-                                               + std::to_string (iteration) 
-                                               + ")";
-                    (this -> operator[] (*problemName)).parameters["plot_title"] = newPlotTitle;
-
-                    // actual plotting
-                    (this -> operator[] (*problemName)).plotSolution ("stashed");
-
-                    // reset plot title
-                    (this -> operator[] (*problemName)).parameters["plot_title"] = oldPlotTitle;
-                    dolfin::end ();
-                }
-
-                if (writeSubiterationSolutions == true)
-                {
-                    dolfin::begin ("Writing subiteration solution to file...");
-                    (this -> operator[] (*problemName)).writeSolutionToFile ("stashed");
-                    dolfin::end ();
-                }
             }
 
-            maxIncrementNorm = *(std::max_element (incrementsNorms.begin (), incrementsNorms.end ()));
-            
-            dolfin::log (dolfin::PROGRESS, "Max norm of relative increment: %f", maxIncrementNorm);
-
-            dolfin::begin (dolfin::DBG, "Relative increments norms are:");
-            for (auto i = 0; i < sortedConvergenceCheckProblemNames.size (); ++i)
+            if (plotSubiterationSolutions == true)
             {
-                dolfin::log (dolfin::DBG, 
-                             "Problem \"%s\": norm of relative increment = %f", 
-                             sortedConvergenceCheckProblemNames[i].c_str (), 
-                             incrementsNorms[i]);
-            }
-            dolfin::end (); // "Relative increments norms are:"
+                dolfin::begin (dolfin::DBG, "Plotting subiteration solution...");
 
-            dolfin::end (); // ===== Iteration =====
+                // set plot name to include subiteration number
+                std::string oldPlotTitle = (this -> operator[] (*problemName)).parameters["plot_title"];
+                std::string newPlotTitle = oldPlotTitle + " (subiteration iteration " + std::to_string (iteration) + ")";
+                (this -> operator[] (*problemName)).parameters["plot_title"] = newPlotTitle;
+
+                // actual plotting
+                (this -> operator[] (*problemName)).plotSolution ("stashed");
+
+                // reset plot title
+                (this -> operator[] (*problemName)).parameters["plot_title"] = oldPlotTitle;
+                dolfin::end ();
+            }
+
+            if (writeSubiterationSolutions == true)
+            {
+                dolfin::begin ("Writing subiteration solution to file...");
+                (this -> operator[] (*problemName)).writeSolutionToFile ("stashed");
+                dolfin::end ();
+            }
         }
-        dolfin::end (); // "SUBITERATIONS LOOP"
-        
-        if (iteration == maxIterations)
-        {
-            dolfin::warning ("Maximum number of iterations reached in subiterations loop");
-        }
-        
-        // apply stashed solutions
-        dolfin::log (dolfin::DBG, "Applying subiterations solutions to problems...");
-        for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
-        {
-            (this -> operator[] (*problemName)).applyStashedSolution ();
-        }
-        
-        // restore original values for solveType_ and solutionType_
-        solveType_ = solveTypeBackup;
-        solutionType_ = solutionTypeBackup;
-        
-        dolfin::end (); // "Subiterating on problems begin - end"
     }
+
+
+
+    void GenericEquationSystem::setSubiterationLoopVariables_ 
+        (const std::vector<std::string>::const_iterator subiterationsBegin,
+         const std::vector<std::string>::const_iterator subiterationsEnd,
+         std::vector<std::string>& sortedConvergenceCheckProblemNames,
+         std::vector<dolfin::Function>& oldSolutions)
+        {
+            // get whitelisted problem names
+            std::vector<std::string> convergenceCheckProblemNames;
+            parameters ("subiterations_whitelist").get_parameter_keys (convergenceCheckProblemNames);
+
+            // if convergenceCheckProblemNames is empty, there were no whitelisted problems, so use all the problems in the
+            // subiteration range minus the blacklisted ones
+            if (convergenceCheckProblemNames.empty ())
+            {
+                for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
+                {
+                    if (parameters ("subiterations_blacklist").has_parameter (*problemName) == false)
+                    {
+                        convergenceCheckProblemNames.push_back (*problemName);
+                    }
+                }
+            }
+
+            // sort problems in convergenceCheckProblemNames using the order in the subiteration sequence
+            for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
+            {
+                auto found = std::find (convergenceCheckProblemNames.begin (),
+                                        convergenceCheckProblemNames.end (), 
+                                        *problemName)
+                             != convergenceCheckProblemNames.end ();
+
+                if (found == true)
+                {
+                    sortedConvergenceCheckProblemNames.push_back (*problemName);
+                }
+            }
+
+            dolfin::begin (dolfin::DBG, "Problems considered for convergence check are:");
+            for (auto& problemName : sortedConvergenceCheckProblemNames)
+            {
+                dolfin::log (dolfin::DBG, "- " + problemName);
+            }
+            dolfin::end (); // Problems considered for convergence check are
+        
+            // get solutions at the initial timestep to be used for the convergence check
+            for (auto i = 0; i < sortedConvergenceCheckProblemNames.size(); ++i)
+            {
+                oldSolutions.push_back (solution (sortedConvergenceCheckProblemNames[i], solutionType_));
+            }
+        }
 }

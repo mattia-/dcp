@@ -598,6 +598,32 @@ namespace dcp
     
 
 
+    void TimeDependentProblem::reserve (std::size_t nElements)
+    {
+        dolfin::begin (dolfin::DBG, "Setting solutions vector capacity...");
+        solution_.reserve (nElements);
+        dolfin::log (dolfin::DBG, "Solutions vector capacity is now %d", solution_.capacity());
+        dolfin::end(); // Setting solutions vector capacity
+    }
+
+
+
+    void TimeDependentProblem::reserve ()
+    {
+        // reserve space for solution_, so that as few reallocations as possible happen.
+        // The capacity needed is equal to the purge interval (if it is greater than the number of steps in the time
+        // scheme) or the number of time steps to be performed (otherwise)
+        int purgeInterval = parameters["purge_interval"];
+
+        // Estimate number of steps to be performed
+        int nSteps = int ((endTime_ - startTime_) / dt_);
+        int neededCapacity = purgeInterval >= nTimeSchemeSteps_ ? purgeInterval : nSteps;
+
+        this->reserve (neededCapacity);
+    }
+
+
+
     void TimeDependentProblem::advanceTime ()
     {
         time_ -> add (dt_);
@@ -656,23 +682,23 @@ namespace dcp
         // call right method depending on solveType
         if (solveType == "default" || solveType == "clear+default")
         {
-             solveLoop_ (); 
+            solveLoop_ (); 
         }
         else if (solveType == "step" || solveType == "clear+step")
         {
-             step_ ();
+            step_ ();
         }
         else if (solveType == "steady")
         {
-             steadySolve_ ();
+            steadySolve_ ();
         }
         else if (solveType == "stash")
         {
-             stashSolve_ ();
+            stashSolve_ ();
         }
     }
-    
-    
+
+
 
     void TimeDependentProblem::applyStashedSolution ()
     {
@@ -1058,6 +1084,9 @@ namespace dcp
     
     void TimeDependentProblem::solveLoop_ ()
     {
+        // reserve space for solutions vector
+        this->reserve();
+
         // ---- Problem settings ---- //
         int writeInterval = parameters ["write_interval"];
         int plotInterval = parameters ["plot_interval"];

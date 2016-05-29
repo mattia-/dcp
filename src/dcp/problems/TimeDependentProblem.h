@@ -688,6 +688,23 @@ namespace dcp
              */  
             virtual void clear ();
              
+            //! Reserve memory for solutions vector [1]
+            /*! 
+             *  This method calls \c reserve() on \c solution_ so that enough space is allocated to contain a given
+             *  amount of elements without reallocation.
+             *  \param nElements number of elements to be passed to \c reserve()
+             */
+            virtual void reserve (std::size_t nElements);
+
+            //! Reserve memory for solutions vector [2]
+            /*! 
+             *  This method calls \c reserve() on \c solution_ so that enough space is allocated to contain a given
+             *  amount of elements without reallocation. In this second version of the method, no input argument is
+             *  given, so it automatically selects the best capacity for the solutions vector based on initial and
+             *  final time, time step and purge interval
+             */
+            virtual void reserve ();
+
             //! Advance time value \c time_. It just calls the increment function <tt>time_ -> add ()</tt> 
             //! with <tt>parameters ["dt"]</tt> as input argument.
             //! This allows us to automatically have a backwards time dependent problem if \c dt_ is negative.

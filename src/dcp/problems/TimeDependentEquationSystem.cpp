@@ -471,6 +471,16 @@ namespace dcp
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving.
         // The loop is repeated until isFinished() returns true, that is until all problems' time loops are ended
+ 
+        // Reserve space for solutions vector of each problem
+        for (const auto& element : storedProblems_)
+        {
+            std::string problemName = element.first;
+            dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
+            problem.reserve();
+        }
+
+        // Solutions loop
         dolfin::begin (dolfin::DBG, "Starting solution loop...");
         int timeStep = 0;
         while (isFinished () == 0)

@@ -51,7 +51,7 @@ namespace dcp
             if (problemName != subiterationsBegin)
             {
                 dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
-                solve (*problemName);
+                solve_ (*problemName);
                 dolfin::end (); // Problem %s
 
                 problemName++;
@@ -68,7 +68,8 @@ namespace dcp
 
 
 
-    void EquationSystem::solve (const std::string& problemName)
+    /******************* PROTECTED METHODS *******************/
+    void EquationSystem::solve_ (const std::string& problemName)
     {
         // get problem with given name from map. 
         dcp::GenericProblem& problem = this -> operator[] (problemName);

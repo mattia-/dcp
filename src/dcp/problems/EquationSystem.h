@@ -57,16 +57,15 @@ namespace dcp
             //! Solve all the problems in the order specified by the private member \c solveOrder_
             virtual void solve () override;
             
-            //! Solve the problem corresponding to the name given [1]
-            /*!
-             *  \param problemName a string identifying the problem to be solved. If no problem with that name
-             *  is found, a warning is issued
-             */
-            virtual void solve (const std::string& problemName) override;
-            
-        // ---------------------------------------------------------------------------------------------//  
+        // ---------------------------------------------------------------------------------------------//
 
         protected:
+            //! Solve the problem corresponding to the name given
+            /*!
+             *  \param problemName a string identifying the problem to be solved. 
+             */
+            virtual void solve_ (const std::string& problemName) override;
+            
     };
 }
 

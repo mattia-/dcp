@@ -370,13 +370,6 @@ namespace dcp
              */
             virtual void solve () = 0;
             
-            //! Solve the problem corresponding to the name given
-            /*!
-             *  \param problemName a string identifying the problem to be solved. If no problem with that name
-             *  is found, a warning is issued
-             */
-            virtual void solve (const std::string& problemName) = 0;
-            
             //! Access solution of the problem identified by given name
             /*!
              *  \param problemName name of the problem to be accessed. If the name is not found, the function prints an
@@ -412,6 +405,12 @@ namespace dcp
 
         protected:
             /******************** METHODS *********************/
+            //! Solve the problem corresponding to the name given
+            /*!
+             *  \param problemName a string identifying the problem to be solved
+             */
+            virtual void solve_ (const std::string& problemName) = 0;
+
             //! Add problem to the map of problems to be solved
             /*!
              *  The parameters are:

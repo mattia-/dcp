@@ -256,14 +256,6 @@ namespace dcp
              */
             virtual void solve () override;
             
-            //! Solve the problem corresponding to the name given (once)
-            /*!
-             *  The problem will be solved calling the \c solve method with \c type argument equal to \c "steady".
-             *  \param problemName a string identifying the problem to be solved. If no problem with that name
-             *  is found, a warning is issued
-             */
-            virtual void solve (const std::string& problemName) override;
-            
             //! Set initial solution of the problem with given name [1]
             /*!
              *  It is just a wrapper for the call to \c setInitialSolution on the underlying problem
@@ -301,6 +293,12 @@ namespace dcp
         // ---------------------------------------------------------------------------------------------//  
 
         protected:
+            //! Solve the problem corresponding to the name given (once)
+            /*!
+             *  \param problemName a string identifying the problem to be solved
+             */
+            virtual void solve_ (const std::string& problemName) override;
+
             //! Performs the actual linking to previous solutions
             /*!
              *  Being a protected member, this method is just called from library functions. 

@@ -1039,7 +1039,7 @@ namespace dcp
         for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
         {
             dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
-            solve (*problemName);
+            solve_ (*problemName);
             dolfin::end ();
             
             if (inLoop == true)

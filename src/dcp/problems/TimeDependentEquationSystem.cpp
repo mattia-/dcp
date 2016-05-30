@@ -502,7 +502,7 @@ namespace dcp
                 {
                     // solve problem
                     dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
-                    solve (*problemName);
+                    solve_ (*problemName);
                     dolfin::end ();
                     
                     // plot solution
@@ -555,7 +555,46 @@ namespace dcp
 
 
 
-    void TimeDependentEquationSystem::solve (const std::string& problemName)
+    void TimeDependentEquationSystem::setInitialSolution (const std::string& problemName,
+                                                          const dolfin::Function& initialSolution, 
+                                                          const unsigned int& stepNumber)
+    {
+        dolfin::begin (dolfin::DBG, "Setting initial solution...");
+        auto problemIterator = storedProblems_.find (problemName);
+        (std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second))->
+            setInitialSolution (initialSolution, stepNumber);
+        dolfin::end (); // "Setting initial solution"
+    }
+    
+
+
+    void TimeDependentEquationSystem::setInitialSolution (const std::string& problemName,
+                                                          const dolfin::Expression& initialSolution, 
+                                                          const unsigned int& stepNumber)
+    {
+        dolfin::begin (dolfin::DBG, "Setting initial solution...");
+        auto problemIterator = storedProblems_.find (problemName);
+        (std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second))->
+            setInitialSolution (initialSolution, stepNumber);
+        dolfin::end (); // "Setting initial solution"
+    }
+
+
+
+    void TimeDependentEquationSystem::setInitialSolution (const std::string& problemName)
+    {
+        std::string solveTypeBackup = solveType_;
+        solveType_ = "steady";
+        dolfin::begin (dolfin::DBG, "Setting initial solution...");
+        solve_ (problemName);
+        dolfin::end ();
+        solveType_ = solveTypeBackup;
+    }
+
+
+
+    /******************* PROTECTED METHODS *******************/
+    void TimeDependentEquationSystem::solve_ (const std::string& problemName)
     {
         // get problem with given name from map
         dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
@@ -597,45 +636,6 @@ namespace dcp
 
 
 
-    void TimeDependentEquationSystem::setInitialSolution (const std::string& problemName,
-                                                          const dolfin::Function& initialSolution, 
-                                                          const unsigned int& stepNumber)
-    {
-        dolfin::begin (dolfin::DBG, "Setting initial solution...");
-        auto problemIterator = storedProblems_.find (problemName);
-        (std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second))->
-            setInitialSolution (initialSolution, stepNumber);
-        dolfin::end (); // "Setting initial solution"
-    }
-    
-
-
-    void TimeDependentEquationSystem::setInitialSolution (const std::string& problemName,
-                                                          const dolfin::Expression& initialSolution, 
-                                                          const unsigned int& stepNumber)
-    {
-        dolfin::begin (dolfin::DBG, "Setting initial solution...");
-        auto problemIterator = storedProblems_.find (problemName);
-        (std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second))->
-            setInitialSolution (initialSolution, stepNumber);
-        dolfin::end (); // "Setting initial solution"
-    }
-
-
-
-    void TimeDependentEquationSystem::setInitialSolution (const std::string& problemName)
-    {
-        std::string solveTypeBackup = solveType_;
-        solveType_ = "steady";
-        dolfin::begin (dolfin::DBG, "Setting initial solution...");
-        solve (problemName);
-        dolfin::end ();
-        solveType_ = solveTypeBackup;
-    }
-
-
-
-    /******************* PROTECTED METHODS *******************/
     void TimeDependentEquationSystem::linkProblemToPreviousSolution_ (const PreviousSolutionLink& link)
     {
         if (std::get<1> (link.second) == -1)

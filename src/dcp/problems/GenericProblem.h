@@ -314,8 +314,7 @@ namespace dcp
             //! Solve method
             /*!
              * Solves differential problem storing the solution in the private member \c solution_.
-             * It is a pure virtual method that needs to be overridden
-             * in any concrete instance of the class.
+             * It is a pure virtual method that needs to be overridden in any concrete instance of the class.
              * 
              * \param solveType the solve type requested. It may be useful to differentiate among different behaviours in
              * the derived classes

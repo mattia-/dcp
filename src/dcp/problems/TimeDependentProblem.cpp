@@ -1106,7 +1106,7 @@ namespace dcp
 
     void TimeDependentProblem::setTimeDependentDirichletBCs_ ()
     {
-        dolfin::begin (dolfin::DBG, "Setting time dependent Dirichlet's boudary conditions...");
+        dolfin::begin (dolfin::DBG, "Setting time dependent Dirichlet's boundary conditions...");
         
         // reset time dependent Dirichlet BCs
         for (auto bcIterator = timeDependentDirichletBCs_.begin (); 

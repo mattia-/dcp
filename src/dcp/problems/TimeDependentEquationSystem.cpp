@@ -38,7 +38,7 @@ namespace dcp
         dt_ (dt),
         endTime_ (endTime)
     { 
-        solveType_ = "steady";
+        storedProblemsSolveType_ = "steady";
         dolfin::log (dolfin::DBG, "TimeDependentEquationSystem object created");
     }
 
@@ -583,12 +583,12 @@ namespace dcp
 
     void TimeDependentEquationSystem::setInitialSolution (const std::string& problemName)
     {
-        std::string solveTypeBackup = solveType_;
-        solveType_ = "steady";
+        std::string storedProblemsSolveTypeBackup = storedProblemsSolveType_;
+        storedProblemsSolveType_ = "steady";
         dolfin::begin (dolfin::DBG, "Setting initial solution...");
         solve_ (problemName);
         dolfin::end ();
-        solveType_ = solveTypeBackup;
+        storedProblemsSolveType_ = storedProblemsSolveTypeBackup;
     }
 
 
@@ -631,7 +631,7 @@ namespace dcp
 
         // 2)
         // solve problem
-        problem.solve (solveType_);
+        problem.solve (storedProblemsSolveType_);
     }
 
 

@@ -37,8 +37,8 @@ namespace dcp
         dotProducts_ (),
         initialGuessesSetters_ (),
         initialGuessesSettersLinks_ (),
-        solveType_ ("default"),
-        solutionType_ ("default")
+        storedProblemsSolveType_ ("default"),
+        storedProblemsSolutionType_ ("default")
     { 
         dolfin::begin (dolfin::DBG, "Building GenericEquationSystem...");
         
@@ -772,11 +772,12 @@ namespace dcp
                          (std::get<0> (link.first)).c_str (),
                          (std::get<0> (link.second)).c_str ());
 
-            // we use solutionType_. Remember that in subiterate_() it was set to "stashed", so when relinking takes 
-            // place during subiterations the stashed solution will be used
-            problem.setCoefficient (std::get<2> (link.first), 
-                                    dolfin::reference_to_no_delete_pointer (targetProblem.solution (solutionType_)),
-                                    std::get<1> (link.first));
+            // we use storedProblemsSolutionType_. Remember that in subiterate_() it was set to "stashed", 
+            // so when relinking takes place during subiterations the stashed solution will be used
+            problem.setCoefficient 
+                (std::get<2> (link.first), 
+                 dolfin::reference_to_no_delete_pointer (targetProblem.solution (storedProblemsSolutionType_)),
+                 std::get<1> (link.first));
         }
         else
         {
@@ -790,11 +791,12 @@ namespace dcp
 
             int component = std::get<1> (link.second);
             
-            // we use solutionType_. Remember that in subiterate_() it was set to "stashed", so when relinking takes 
-            // place during subiterations the stashed solution will be used
-            problem.setCoefficient (std::get<2> (link.first), 
-                                    dolfin::reference_to_no_delete_pointer (targetProblem.solution (solutionType_)[component]),
-                                    std::get<1> (link.first));
+            // we use storedProblemsSolutionType_. Remember that in subiterate_() it was set to "stashed", 
+            // so when relinking takes place during subiterations the stashed solution will be used
+            problem.setCoefficient 
+                (std::get<2> (link.first), 
+                 dolfin::reference_to_no_delete_pointer (targetProblem.solution (storedProblemsSolutionType_)[component]),
+                 std::get<1> (link.first));
 
         }
         
@@ -842,13 +844,14 @@ namespace dcp
         dolfin::end (); // Setting initial guesses
             
 
-        // get backups for solveType_ and solutionType_
-        std::string solveTypeBackup = solveType_;
-        std::string solutionTypeBackup = solutionType_;
+        // get backups for storedProblemsSolveType_ and storedProblemsSolutionType_
+        std::string storedProblemsSolveTypeBackup = storedProblemsSolveType_;
+        std::string storedProblemsSolutionTypeBackup = storedProblemsSolutionType_;
 
-        // set solveType_ and solutionType_ so that during subiterations stashed solutions are used
-        solveType_ = "stash";
-        solutionType_ = "stashed";
+        // set storedProblemsSolveType_ and storedProblemsSolutionType_ so that during subiterations stashed 
+        // solutions are used
+        storedProblemsSolveType_ = "stash";
+        storedProblemsSolutionType_ = "stashed";
         
 
         // solve all the problems the first time
@@ -927,9 +930,9 @@ namespace dcp
             (this -> operator[] (*problemName)).applyStashedSolution ();
         }
         
-        // restore original values for solveType_ and solutionType_
-        solveType_ = solveTypeBackup;
-        solutionType_ = solutionTypeBackup;
+        // restore original values for storedProblemsSolveType_ and storedProblemsSolutionType_
+        storedProblemsSolveType_ = storedProblemsSolveTypeBackup;
+        storedProblemsSolutionType_ = storedProblemsSolutionTypeBackup;
         
         dolfin::end (); // "Subiterating on problems begin - end"
     }
@@ -1048,9 +1051,9 @@ namespace dcp
                     && *problemName == sortedConvergenceCheckProblemNames[problemCounter])
                 {
                     dolfin::Function increment ((this -> operator[] (*problemName)).functionSpace ());
-                    increment = solution (*problemName, solutionType_) - oldSolutions[problemCounter];
+                    increment = solution (*problemName, storedProblemsSolutionType_) - oldSolutions[problemCounter];
 
-                    oldSolutions[problemCounter] = solution (*problemName, solutionType_);
+                    oldSolutions[problemCounter] = solution (*problemName, storedProblemsSolutionType_);
 
                     // search for current problem in dotProductComputers_
                     auto position = dotProducts_.find (*problemName);
@@ -1152,7 +1155,7 @@ namespace dcp
             // get solutions at the initial timestep to be used for the convergence check
             for (auto i = 0; i < sortedConvergenceCheckProblemNames.size(); ++i)
             {
-                oldSolutions.push_back (solution (sortedConvergenceCheckProblemNames[i], solutionType_));
+                oldSolutions.push_back (solution (sortedConvergenceCheckProblemNames[i], storedProblemsSolutionType_));
             }
         }
 }

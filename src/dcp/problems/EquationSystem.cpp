@@ -94,6 +94,6 @@ namespace dcp
 
         // 2)
         // solve problem
-        problem.solve (solveType_);
+        problem.solve (storedProblemsSolveType_);
     }
 }

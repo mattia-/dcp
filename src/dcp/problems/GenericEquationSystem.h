@@ -62,7 +62,8 @@ namespace dcp
              *  This way, no subiteration is performed (unless \c setSubiterationRange() is explicitly called), 
              *  since empty name are not allowed for problems. See documentation for \c setSubiterationRange() and
              *  \c subiterate_() for more details.
-             *  The strings \c solutionType_ and \c solveType_ are initialized with \c "default".
+             *  The strings \c storedProblemsSolutionType_ and \c storedProblemsSolveType_ are initialized with
+             *  \c "default".
              *  The constructors also sets the following parameters:
              *      - \c "subiterations_tolerance" the tolerance for the convergence check in the subiterations loop.
              *        It will be compared against the sum of the increments' norms divided by the norm of the solution
@@ -587,13 +588,13 @@ namespace dcp
             /*! 
              *  Initial value: \c "default"
              */
-            std::string solveType_;
+            std::string storedProblemsSolveType_;
             
             //! Solution type to be used when calling \c solution() on stored problems
             /*! 
              *  Initial value: \c "default"
              */
-            std::string solutionType_;
+            std::string storedProblemsSolutionType_;
         // ---------------------------------------------------------------------------------------------//  
 
         private:

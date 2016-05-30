@@ -1044,7 +1044,8 @@ namespace dcp
             
             if (inLoop == true)
             {
-                if (*problemName == sortedConvergenceCheckProblemNames[problemCounter])
+                if (problemCounter < sortedConvergenceCheckProblemNames.size()
+                    && *problemName == sortedConvergenceCheckProblemNames[problemCounter])
                 {
                     dolfin::Function increment ((this -> operator[] (*problemName)).functionSpace ());
                     increment = solution (*problemName, solutionType_) - oldSolutions[problemCounter];

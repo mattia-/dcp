@@ -617,7 +617,7 @@ namespace dcp
 
         // Estimate number of steps to be performed
         int nSteps = int ((endTime_ - startTime_) / dt_);
-        int neededCapacity = purgeInterval >= nTimeSchemeSteps_ ? purgeInterval : nSteps;
+        int neededCapacity = purgeInterval >= nTimeSchemeSteps_ ? purgeInterval + 1 : nSteps;
 
         this->reserve (neededCapacity);
     }

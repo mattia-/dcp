@@ -69,7 +69,7 @@ namespace dcp
             virtual void add (const double& timeIncrement);
             
             //! Get time value
-            virtual const double& value ();
+            virtual const double& value () const;
             
 
         // ---------------------------------------------------------------------------------------------//  

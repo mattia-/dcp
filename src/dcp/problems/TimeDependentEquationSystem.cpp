@@ -431,7 +431,7 @@ namespace dcp
 
     
 
-    std::shared_ptr<dcp::Time> TimeDependentEquationSystem::time () const
+    std::shared_ptr<const dcp::Time> TimeDependentEquationSystem::time () const
     {
         return time_;
     }

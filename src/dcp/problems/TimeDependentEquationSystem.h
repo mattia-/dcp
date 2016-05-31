@@ -233,7 +233,7 @@ namespace dcp
             virtual dcp::TimeDependentProblem& operator[] (const std::size_t& position) override;
             
             //! Return the time object of the simulation
-            std::shared_ptr<dcp::Time> time () const;
+            std::shared_ptr<const dcp::Time> time () const;
             
             //! Return the start time of the simulation
             const double& startTime () const;

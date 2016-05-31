@@ -51,7 +51,7 @@ namespace dcp
 
     
 
-    const double& Time::value ()
+    const double& Time::value () const
     {
         return time_;
     }

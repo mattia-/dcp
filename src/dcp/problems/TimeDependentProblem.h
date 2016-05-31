@@ -330,7 +330,7 @@ namespace dcp
              *  non-const since one may want to use this function to set a different value for the time or to 
              *  build a new time dependent object sharing the same time object.
              */
-            virtual std::shared_ptr<dcp::Time> time () const;
+            virtual std::shared_ptr<const dcp::Time> time () const;
             
             //! Get a reference to the simulation start time
             /*!

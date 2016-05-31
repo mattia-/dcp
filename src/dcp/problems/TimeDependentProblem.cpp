@@ -206,7 +206,7 @@ namespace dcp
     
 
 
-    std::shared_ptr<dcp::Time> TimeDependentProblem::time () const
+    std::shared_ptr<const dcp::Time> TimeDependentProblem::time () const
     {
         return time_;
     }

@@ -251,10 +251,12 @@ namespace dcp
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_. 
             /*! 
-             *  The single problems will be solved calling the \c solve method with \c solveType argument equal 
-             *  to \c "step"
+             *  \param solveType the solve type requested. Possible values are: 
+             *  \li \c "default" : the entire time loop is performed. In this case, the method \c reserve() is
+             *  automatically called. This is the default value.
+             *  \li \c "step" : just one step is performed. No call is made to \c reserve()
              */
-            virtual void solve () override;
+            virtual void solve (const std::string& solveType = "default") override;
             
             //! Set initial solution of the problem with given name [1]
             /*!
@@ -306,6 +308,24 @@ namespace dcp
              */
             virtual void linkProblemToPreviousSolution_ (const PreviousSolutionLink& link);
             
+            //! Performs the complete solve loop until endTime_ is reached
+            /*! 
+             *  \param subiterationsBegin iterator to the first problem in \c solveOrder_ on which to subiterate
+             *  \param subiterationsEnd iterator to the problem in \c solveOrder_ following the last problem on which
+             *  to subiterate
+             */
+            virtual void solveLoop_ (const std::vector<std::string>::const_iterator subiterationsBegin, 
+                                     const std::vector<std::string>::const_iterator subiterationsEnd);
+
+            //! Performs a single solution step
+            /*!
+             *  \param subiterationsBegin iterator to the first problem in \c solveOrder_ on which to subiterate
+             *  \param subiterationsEnd iterator to the problem in \c solveOrder_ following the last problem on which
+             *  to subiterate
+             */
+            virtual void step_ (const std::vector<std::string>::const_iterator subiterationsBegin, 
+                                const std::vector<std::string>::const_iterator subiterationsEnd);
+
             //! The map of the old solutions needed for the system
             /*!
              *  A system may need to have access to old solutions of the single time dependent problems which it is made 

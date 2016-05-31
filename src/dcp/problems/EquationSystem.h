@@ -55,7 +55,11 @@ namespace dcp
 
             /******************** METHODS *********************/
             //! Solve all the problems in the order specified by the private member \c solveOrder_
-            virtual void solve () override;
+            /*!
+             *  \param solveType the solve type requested. In this class, the only possible value for \c solveType is 
+             *  \c "default"
+             */
+            virtual void solve (const std::string& solveType = "default") override;
             
         // ---------------------------------------------------------------------------------------------//
 

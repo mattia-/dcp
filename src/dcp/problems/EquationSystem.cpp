@@ -36,10 +36,21 @@ namespace dcp
     
 
     /******************* METHODS *******************/
-    void EquationSystem::solve ()
+    void EquationSystem::solve (const std::string& solveType)
     {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving
+
+        // check solveType
+        if (solveType != "default")
+        {
+            dolfin::dolfin_error ("dcp: EquationSystem.cpp", 
+                                  "solve",
+                                  "Unknown solve type \"%s\" requested",
+                                  solveType.c_str ());
+        }
+        dolfin::log (dolfin::DBG, "Selected solve type: %s", solveType.c_str ());
+
         dolfin::begin (dolfin::DBG, "Start problem solution...");
         
         auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);

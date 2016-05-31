@@ -897,10 +897,6 @@ namespace dcp
             //! Set the previous solution coefficients at every step of the solve loop
             virtual void setPreviousSolutionsCoefficients_ ();
             
-            //! Method to print a warning if \c isFinished() returns \c true. It is just useful to make \c solve()
-            //! method clearer to read
-            virtual void printFinishedWarning_ ();
-            
             //! Delete elements from \c solution_ according to \c parameters["purge_interval"]
             virtual void purgeSolutionsVector_ ();
 

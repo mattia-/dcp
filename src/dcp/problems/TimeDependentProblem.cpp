@@ -653,7 +653,7 @@ namespace dcp
         // check only when solveType is not "steady" or "stash", since these solve type do not increment time
         if (isFinished () && solveType != "steady" && solveType != "stash")
         {
-            printFinishedWarning_ ();
+            dolfin::warning ("No time iteration performed in solve() function. End time already reached.");
             return;
         }
             
@@ -1262,13 +1262,6 @@ namespace dcp
         {
             dolfin::log (dolfin::DBG, "Skipping previous solution setting loop since it is set externally.");
         }
-    }
-
-
-
-    void TimeDependentProblem::printFinishedWarning_ ()
-    {
-        dolfin::warning ("No time iteration performed in solve() function. End time already reached.");
     }
 
 

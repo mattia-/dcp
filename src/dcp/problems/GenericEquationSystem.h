@@ -367,9 +367,9 @@ namespace dcp
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_
             /*!
-             *  This is be performed by calling \c solve() on each problem
+             *  \param solveType the solve type requested
              */
-            virtual void solve () = 0;
+            virtual void solve (const std::string& solveType = "default") = 0;
             
             //! Access solution of the problem identified by given name
             /*!

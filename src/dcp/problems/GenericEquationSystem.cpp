@@ -805,8 +805,8 @@ namespace dcp
     
 
 
-    void GenericEquationSystem::subiterate_ (std::vector<std::string>::const_iterator subiterationsBegin,
-                                             std::vector<std::string>::const_iterator subiterationsEnd)
+    void GenericEquationSystem::subiterate_ (const std::vector<std::string>::const_iterator subiterationsBegin,
+                                             const std::vector<std::string>::const_iterator subiterationsEnd)
     {
         dolfin::begin (dolfin::PROGRESS, 
                        "===== Subiterating on problems [%s - %s) =====", 

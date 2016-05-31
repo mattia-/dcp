@@ -466,91 +466,35 @@ namespace dcp
     
 
 
-    void TimeDependentEquationSystem::solve ()
+    void TimeDependentEquationSystem::solve (const std::string& solveType)
     {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving.
-        // The loop is repeated until isFinished() returns true, that is until all problems' time loops are ended
- 
-        // Reserve space for solutions vector of each problem
-        for (const auto& element : storedProblems_)
+
+        // check solveType value
+        if (solveType != "default" && solveType != "step")
         {
-            std::string problemName = element.first;
-            dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
-            problem.reserve();
+            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp", 
+                                  "solve",
+                                  "Unknown solve type \"%s\" requested",
+                                  solveType.c_str ());
         }
+        
+        dolfin::log (dolfin::DBG, "Selected solve type: %s", solveType.c_str ());
 
-        // Solutions loop
-        dolfin::begin (dolfin::DBG, "Starting solution loop...");
-        int timeStep = 0;
-        while (isFinished () == 0)
+        // find subiterations problems
+        auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);
+        auto subiterationsEnd = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.second);
+
+        // call right method depending on solveType
+        if (solveType == "default")
         {
-            timeStep++;
-            dolfin::begin (dolfin::PROGRESS, "===== Timestep %d =====", timeStep);
-            
-            advanceTime ();
-            
-            dolfin::log (dolfin::PROGRESS, "TIME = %f s", time_ -> value ());
-            
-            auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);
-            auto subiterationsEnd = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.second);
-
-            auto problemName = solveOrder_.begin ();
-            while (problemName != solveOrder_.end ())
-            {
-                if (problemName != subiterationsBegin)
-                {
-                    // solve problem
-                    dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
-                    solve_ (*problemName);
-                    dolfin::end ();
-                    
-                    // plot solution
-                    dcp::TimeDependentProblem& problem = this -> operator[] (*problemName);
-                    int plotInterval = problem.parameters["plot_interval"];
-                    
-                    if (plotInterval > 0 && timeStep % plotInterval == 0)
-                    {
-                        problem.plotSolution ("last");
-                    }
-                    
-                    // write solution to file 
-                    int writeInterval = problem.parameters ["write_interval"];
-                    if (writeInterval > 0 && timeStep % writeInterval == 0)
-                    {
-                        problem.writeSolutionToFile ("last");
-                    }
-                    
-                    problemName++;
-                }
-                else
-                {
-                    subiterate_ (subiterationsBegin, subiterationsEnd);
-                    
-                    // plot and write to file solution of all subiterated problems
-                    for (problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
-                    {
-                        dcp::TimeDependentProblem& problem = this -> operator[] (*problemName);
-                        int plotInterval = problem.parameters["plot_interval"];
-
-                        if (plotInterval > 0 && timeStep % plotInterval == 0)
-                        {
-                            problem.plotSolution ("last");
-                        }
-                        
-                        int writeInterval = problem.parameters ["write_interval"];
-                        if (writeInterval > 0 && timeStep % writeInterval == 0)
-                        {
-                            problem.writeSolutionToFile ("last");
-                        }
-                    }
-                }
-            }
-
-            dolfin::end ();
+            solveLoop_ (subiterationsBegin, subiterationsEnd);
         }
-
-        dolfin::end ();
+        else if (solveType == "step")
+        {
+            step_ (subiterationsBegin, subiterationsEnd);
+        }
     }
 
 
@@ -779,5 +723,88 @@ namespace dcp
         }
         
         dolfin::end ();
+    }
+
+
+
+    void TimeDependentEquationSystem::solveLoop_ (const std::vector<std::string>::const_iterator subiterationsBegin, 
+                                                  const std::vector<std::string>::const_iterator subiterationsEnd)
+    {
+        // Reserve space for solutions vector of each problem
+        for (const auto& element : storedProblems_)
+        {
+            std::string problemName = element.first;
+            dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
+            problem.reserve();
+        }
+
+        // Solutions loop
+        dolfin::begin (dolfin::DBG, "Solution loop...");
+        int timeStep = 0;
+        while (isFinished () == 0)
+        {
+            timeStep++;
+            dolfin::begin (dolfin::PROGRESS, "===== Timestep %d =====", timeStep);
+            
+            step_ (subiterationsBegin, subiterationsEnd);
+
+            // plot and write to file problems solutions
+            for (const auto& problemName : solveOrder_)
+            {
+                // plot solution
+                dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
+                int plotInterval = problem.parameters["plot_interval"];
+
+                if (plotInterval > 0 && timeStep % plotInterval == 0)
+                {
+                    problem.plotSolution ("last");
+                }
+
+                // write solution to file 
+                int writeInterval = problem.parameters ["write_interval"];
+                if (writeInterval > 0 && timeStep % writeInterval == 0)
+                {
+                    problem.writeSolutionToFile ("last");
+                }
+            }
+
+            dolfin::end (); // Timestep %d
+        }
+
+        dolfin::end (); // Solution loop
+    }
+        
+
+
+    void TimeDependentEquationSystem::step_ (const std::vector<std::string>::const_iterator subiterationsBegin, 
+                                             const std::vector<std::string>::const_iterator subiterationsEnd)
+    {
+        advanceTime ();
+
+        dolfin::log (dolfin::PROGRESS, "TIME = %f s", time_ -> value ());
+
+        auto problemName = solveOrder_.cbegin ();
+        while (problemName != solveOrder_.cend ())
+        {
+            if (problemName != subiterationsBegin)
+            {
+                // solve problem
+                dolfin::begin (dolfin::PROGRESS, "Problem: \"%s\"", problemName->c_str ());
+                solve_ (*problemName);
+                dolfin::end ();
+
+                problemName++;
+            }
+            else
+            {
+                // subiterate on problems
+                subiterate_ (subiterationsBegin, subiterationsEnd);
+
+                // set problemName to subiterationsEnd, since all problems in subiterations range have already been
+                // solved
+                problemName = subiterationsEnd;
+            }
+        }
+
     }
 }

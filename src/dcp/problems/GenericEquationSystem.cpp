@@ -902,7 +902,7 @@ namespace dcp
 
             maxIncrementNorm = *(std::max_element (incrementsNorms.begin (), incrementsNorms.end ()));
             
-            dolfin::log (dolfin::PROGRESS, "Max norm of relative increment: %f", maxIncrementNorm);
+            dolfin::log (dolfin::INFO, "Max norm of relative increment: %f", maxIncrementNorm);
 
             dolfin::begin (dolfin::DBG, "Relative increments norms are:");
             for (auto i = 0; i < sortedConvergenceCheckProblemNames.size (); ++i)

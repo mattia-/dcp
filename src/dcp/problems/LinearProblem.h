@@ -80,21 +80,10 @@ namespace dcp
                  *  The constructors also sets the following parameters:
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
-                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
-                 *        \c solver_. Default value: \c "lu_solver"
-                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
-                 *        member \c solver_. Default value: \c "default"
-                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
-                 *        the protected member \c solver_. Default value: \c "default"
-                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
-                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "lu_solver"
-                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
-                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "default"
-                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
-                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
-                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "solver_type" the type of the solver to be used. Default value: \c "lu_solver"
+                 *      - \c "solver_method" the method to be used by the solver. Default value: \c "default"
+                 *      - \c "solver_preconditioner" the preconditioner to be used by the solver. 
+                 *        Default value: \c "default"
                  *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
@@ -113,21 +102,10 @@ namespace dcp
                  *  The constructors also sets the following parameters:
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
-                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
-                 *        \c solver_. Default value: \c "lu_solver"
-                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
-                 *        member \c solver_. Default value: \c "default"
-                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
-                 *        the protected member \c solver_. Default value: \c "default"
-                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
-                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "lu_solver"
-                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
-                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "default"
-                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
-                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
-                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "solver_type" the type of the solver to be used. Default value: \c "lu_solver"
+                 *      - \c "solver_method" the method to be used by the solver. Default value: \c "default"
+                 *      - \c "solver_preconditioner" the preconditioner to be used by the solver. 
+                 *        Default value: \c "default"
                  *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
@@ -145,21 +123,10 @@ namespace dcp
                  *  The constructors also sets the following parameters:
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
-                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
-                 *        \c solver_. Default value: \c "lu_solver"
-                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
-                 *        member \c solver_. Default value: \c "default"
-                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
-                 *        the protected member \c solver_. Default value: \c "default"
-                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
-                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "lu_solver"
-                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
-                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "default"
-                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
-                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
-                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "solver_type" the type of the solver to be used. Default value: \c "lu_solver"
+                 *      - \c "solver_method" the method to be used by the solver. Default value: \c "default"
+                 *      - \c "solver_preconditioner" the preconditioner to be used by the solver. 
+                 *        Default value: \c "default"
                  *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
@@ -179,21 +146,10 @@ namespace dcp
                  *  The constructors also sets the following parameters:
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
-                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
-                 *        \c solver_. Default value: \c "lu_solver"
-                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
-                 *        member \c solver_. Default value: \c "default"
-                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
-                 *        the protected member \c solver_. Default value: \c "default"
-                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
-                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "lu_solver"
-                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
-                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "default"
-                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
-                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
-                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "solver_type" the type of the solver to be used. Default value: \c "lu_solver"
+                 *      - \c "solver_method" the method to be used by the solver. Default value: \c "default"
+                 *      - \c "solver_preconditioner" the preconditioner to be used by the solver. 
+                 *        Default value: \c "default"
                  *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
@@ -215,21 +171,10 @@ namespace dcp
                  *  The constructors also sets the following parameters:
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
-                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
-                 *        \c solver_. Default value: \c "lu_solver"
-                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
-                 *        member \c solver_. Default value: \c "default"
-                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
-                 *        the protected member \c solver_. Default value: \c "default"
-                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
-                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "lu_solver"
-                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
-                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "default"
-                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
-                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
-                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "solver_type" the type of the solver to be used. Default value: \c "lu_solver"
+                 *      - \c "solver_method" the method to be used by the solver. Default value: \c "default"
+                 *      - \c "solver_preconditioner" the preconditioner to be used by the solver. 
+                 *        Default value: \c "default"
                  *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
@@ -251,21 +196,10 @@ namespace dcp
                  *  The constructors also sets the following parameters:
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
-                 *      - \c "current_solver_type" the type of the solver currently stored in the protected member 
-                 *        \c solver_. Default value: \c "lu_solver"
-                 *      - \c "current_solver_method" the method used by the solver currently stored in the protected 
-                 *        member \c solver_. Default value: \c "default"
-                 *      - \c "current_solver_preconditioner" the preconditioner used by the solver currently stored in 
-                 *        the protected member \c solver_. Default value: \c "default"
-                 *      - \c "desired_solver_type" the desired solver type. If it differs from 
-                 *        \c "current_solver_type" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "lu_solver"
-                 *      - \c "desired_solver_method" the desired solver method. If it differs from 
-                 *        \c "current_solver_method" when the \c solve method is called, the protected member \c solver_
-                 *        will be updated accordingly. Default value: \c "default"
-                 *      - \c "desired_solver_preconditioner" the desired solver preconditioner. If it differs from 
-                 *        \c "current_solver_preconditioner" when the \c solve method is called, the protected member 
-                 *        \c solver_ will be updated accordingly. Default value: \c "default"
+                 *      - \c "solver_type" the type of the solver to be used. Default value: \c "lu_solver"
+                 *      - \c "solver_method" the method to be used by the solver. Default value: \c "default"
+                 *      - \c "solver_preconditioner" the preconditioner to be used by the solver. 
+                 *        Default value: \c "default"
                  *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
@@ -480,9 +414,9 @@ namespace dcp
                  *  \c std::pair.
                  *  Note that the method \c solve() checks the problem's member
                  *  \c parameters to decided whether problem's matrix and vector should be reassembled and if
-                 *  the values of the parameters \c desired_solver_type, \c desired_solver_method and 
-                 *  \c desired_solver_preconditioner match the values of \c current_solver_type, \c current_solver_method
-                 *  and \c current_solver_preconditioner. If they differ, it calls \c createSolver_().
+                 *  the values of the parameters \c solver_type, \c solver_method and \c solver_preconditioner 
+                 *  match the values of \c solverType_, \c solverMethod_ and \c solverPreconditioner_.
+                 *  If they differ, it calls \c createSolver_().
                  * 
                  *  \param solveType the solution type wanted. Possible values are:
                  *  \li \c "default" : the normal solution process
@@ -511,11 +445,9 @@ namespace dcp
             protected:
                 //! Creates a linear solver object of type passed as input. 
                 /*!
-                 *  The solver will be created using the parameters \c desired_solver_type, \c desired_solver_method
-                 *  and \c desired_solver_preconditioner set in the protected member \c parameters. It will
-                 *  also set the parameters \c current_solver_type, \c current_solver_method and 
-                 *  \c current_solver_preconditioner in the same set of parameters substituting the current values with 
-                 *  the values being used to create the solver
+                 *  The solver will be created using the parameters \c solver_type, \c solver_method
+                 *  and \c solver_preconditioner. It will also set the protected members \c solverType_, \c
+                 *  solverMethod_ and \c solverPreconditioner_.
                  */
                 std::unique_ptr<dolfin::GenericLinearSolver> createSolver_ ();
                 
@@ -537,6 +469,14 @@ namespace dcp
                 //! Vector to store the right hand side of the discrete problem
                 dolfin::Vector rhsVector_;
 
+                //! String to contain the current solver type being used
+                std::string solverType_;
+
+                //! String to contain the current solver method being used
+                std::string solverMethod_;
+
+                //! String to contain the current solver preconditioner being used
+                std::string solverPreconditioner_;
                 // ---------------------------------------------------------------------------------------------//
 
             private:
@@ -558,24 +498,20 @@ namespace dcp
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
             problemMatrix_ (),
-            rhsVector_ ()
+            rhsVector_ (),
+            solverType_ ("lu_solver"),
+            solverMethod_ ("default"),
+            solverPreconditioner_ ("default")
         { 
-            std::string solverType = "lu_solver";
-            std::string solverMethod = "default";
-            std::string solverPreconditioner = "default";
-
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
 
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
 
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("lump_matrix", false);
-            parameters.add ("current_solver_type", solverType);
-            parameters.add ("current_solver_method", solverMethod);
-            parameters.add ("current_solver_preconditioner", solverPreconditioner);
-            parameters.add ("desired_solver_type", solverType);
-            parameters.add ("desired_solver_method", solverMethod);
-            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("solver_type", solverType_);
+            parameters.add ("solver_method", solverMethod_);
+            parameters.add ("solver_preconditioner", solverPreconditioner_);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
 
@@ -598,24 +534,20 @@ namespace dcp
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
             problemMatrix_ (),
-            rhsVector_ ()
+            rhsVector_ (),
+            solverType_ ("lu_solver"),
+            solverMethod_ ("default"),
+            solverPreconditioner_ ("default")
         { 
-            std::string solverType = "lu_solver";
-            std::string solverMethod = "default";
-            std::string solverPreconditioner = "default";
-
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("lump_matrix", false);
-            parameters.add ("current_solver_type", solverType);
-            parameters.add ("current_solver_method", solverMethod);
-            parameters.add ("current_solver_preconditioner", solverPreconditioner);
-            parameters.add ("desired_solver_type", solverType);
-            parameters.add ("desired_solver_method", solverMethod);
-            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("solver_type", solverType_);
+            parameters.add ("solver_method", solverMethod_);
+            parameters.add ("solver_preconditioner", solverPreconditioner_);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
             
@@ -638,24 +570,20 @@ namespace dcp
             linearForm_ (*functionSpace_),
             solver_ (nullptr),
             problemMatrix_ (),
-            rhsVector_ ()
+            rhsVector_ (),
+            solverType_ ("lu_solver"),
+            solverMethod_ ("default"),
+            solverPreconditioner_ ("default")
         { 
-            std::string solverType = "lu_solver";
-            std::string solverMethod = "default";
-            std::string solverPreconditioner = "default";
-
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("lump_matrix", false);
-            parameters.add ("current_solver_type", solverType);
-            parameters.add ("current_solver_method", solverMethod);
-            parameters.add ("current_solver_preconditioner", solverPreconditioner);
-            parameters.add ("desired_solver_type", solverType);
-            parameters.add ("desired_solver_method", solverMethod);
-            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("solver_type", solverType_);
+            parameters.add ("solver_method", solverMethod_);
+            parameters.add ("solver_preconditioner", solverPreconditioner_);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);
         
@@ -680,24 +608,20 @@ namespace dcp
             linearForm_ (linearForm),
             solver_ (nullptr),
             problemMatrix_ (),
-            rhsVector_ ()
+            rhsVector_ (),
+            solverType_ ("lu_solver"),
+            solverMethod_ ("default"),
+            solverPreconditioner_ ("default")
         { 
-            std::string solverType = "lu_solver";
-            std::string solverMethod = "default";
-            std::string solverPreconditioner = "default";
-
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("lump_matrix", false);
-            parameters.add ("current_solver_type", solverType);
-            parameters.add ("current_solver_method", solverMethod);
-            parameters.add ("current_solver_preconditioner", solverPreconditioner);
-            parameters.add ("desired_solver_type", solverType);
-            parameters.add ("desired_solver_method", solverMethod);
-            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("solver_type", solverType_);
+            parameters.add ("solver_method", solverMethod_);
+            parameters.add ("solver_preconditioner", solverPreconditioner_);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);
             
@@ -722,24 +646,20 @@ namespace dcp
             linearForm_ (linearForm),
             solver_ (nullptr),
             problemMatrix_ (),
-            rhsVector_ ()
+            rhsVector_ (),
+            solverType_ ("lu_solver"),
+            solverMethod_ ("default"),
+            solverPreconditioner_ ("default")
         { 
-            std::string solverType = "lu_solver";
-            std::string solverMethod = "default";
-            std::string solverPreconditioner = "default";
-
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("lump_matrix", false);
-            parameters.add ("current_solver_type", solverType);
-            parameters.add ("current_solver_method", solverMethod);
-            parameters.add ("current_solver_preconditioner", solverPreconditioner);
-            parameters.add ("desired_solver_type", solverType);
-            parameters.add ("desired_solver_method", solverMethod);
-            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("solver_type", solverType_);
+            parameters.add ("solver_method", solverMethod_);
+            parameters.add ("solver_preconditioner", solverPreconditioner_);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
             
@@ -764,24 +684,20 @@ namespace dcp
             linearForm_ (std::move (linearForm)),
             solver_ (nullptr),
             problemMatrix_ (),
-            rhsVector_ ()
+            rhsVector_ (),
+            solverType_ ("lu_solver"),
+            solverMethod_ ("default"),
+            solverPreconditioner_ ("default")
         {
-            std::string solverType = "lu_solver";
-            std::string solverMethod = "default";
-            std::string solverPreconditioner = "default";
-
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
             solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("lump_matrix", false);
-            parameters.add ("current_solver_type", solverType);
-            parameters.add ("current_solver_method", solverMethod);
-            parameters.add ("current_solver_preconditioner", solverPreconditioner);
-            parameters.add ("desired_solver_type", solverType);
-            parameters.add ("desired_solver_method", solverMethod);
-            parameters.add ("desired_solver_preconditioner", solverPreconditioner);
+            parameters.add ("solver_type", solverType_);
+            parameters.add ("solver_method", solverMethod_);
+            parameters.add ("solver_preconditioner", solverPreconditioner_);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);  
             
@@ -1137,17 +1053,13 @@ namespace dcp
         update ()
         {
             // define auxiliary string variables
-            std::string desiredSolverType = parameters ["desired_solver_type"];
-            std::string desiredSolverMethod = parameters ["desired_solver_method"];
-            std::string desiredSolverPreconditioner = parameters ["desired_solver_preconditioner"];
+            std::string desiredSolverType = parameters ["solver_type"];
+            std::string desiredSolverMethod = parameters ["solver_method"];
+            std::string desiredSolverPreconditioner = parameters ["solver_preconditioner"];
             
-            std::string currentSolverType = parameters ["current_solver_type"];
-            std::string currentSolverMethod = parameters ["current_solver_method"];
-            std::string currentSolverPreconditioner = parameters ["current_solver_preconditioner"];
-            
-            bool needsSolverUpdating = (desiredSolverType != currentSolverType)
-                                       || (desiredSolverMethod != currentSolverMethod) 
-                                       || (desiredSolverPreconditioner != currentSolverPreconditioner);
+            bool needsSolverUpdating = (desiredSolverType != solverType_)
+                                       || (desiredSolverMethod != solverMethod_) 
+                                       || (desiredSolverPreconditioner != solverPreconditioner_);
             
             if (needsSolverUpdating)
             {
@@ -1331,123 +1243,62 @@ namespace dcp
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         createSolver_ ()
         {
-            std::string currentSolverType = parameters["current_solver_type"];
-            std::string currentSolverMethod = parameters["current_solver_method"];
-            std::string currentSolverPreconditioner = parameters["current_solver_preconditioner"];
-            std::string desiredSolverType = parameters["desired_solver_type"];
-            std::string desiredSolverMethod = parameters["desired_solver_method"];
-            std::string desiredSolverPreconditioner = parameters["desired_solver_preconditioner"];
+            std::string desiredSolverType = parameters["solver_type"];
+            std::string desiredSolverMethod = parameters["solver_method"];
+            std::string desiredSolverPreconditioner = parameters["solver_preconditioner"];
             
+            std::unique_ptr<dolfin::GenericLinearSolver> solver;
+
             if (desiredSolverType == "lu_solver")
             {
                 dolfin::log (dolfin::DBG, "Creating lu_solver...");
-                std::unique_ptr<dolfin::GenericLinearSolver> solver (new dolfin::LUSolver (desiredSolverMethod));
-                
-                dolfin::log (dolfin::DBG, "Updating parameters...");
-                
-                // check if solver type has changed:
-                // ----- if the solver is still the same, just update the parameters
-                // ----- if the parameters do not have a parameters set corresponding to the one being created but
-                //       current and desired solver set are the same, that means that there is no solver at all, so
-                //       add solver parameters to parameters set
-                // ----- otherwise, remove current solver parameters and add new ones
-                if (parameters.has_parameter_set (desiredSolverType)) 
-                {
-                    parameters.update (solver -> parameters);
-                }
-                else if (currentSolverType == desiredSolverType 
-                         && currentSolverMethod == desiredSolverMethod 
-                         && currentSolverPreconditioner == desiredSolverPreconditioner)
-                {
-                    parameters.add (solver -> parameters);
-                }
-                else
-                {
-                    parameters.remove (currentSolverType);
-                    parameters.add (solver -> parameters);
-                }
-                
-                parameters ["current_solver_type"] = desiredSolverType;
-                parameters ["current_solver_method"] = desiredSolverMethod;
-                parameters ["current_solver_preconditioner"] = desiredSolverPreconditioner;
-
-                
-                return solver;
+                solver.reset (new dolfin::LUSolver (desiredSolverMethod));
             }
             else if (desiredSolverType == "krylov_solver")
             {
                 dolfin::log (dolfin::DBG, "Creating krylov_solver...");
-                std::unique_ptr<dolfin::GenericLinearSolver> solver (new dolfin::KrylovSolver (desiredSolverMethod, 
-                                                                                               desiredSolverPreconditioner));
-                
-                dolfin::log (dolfin::DBG, "Updating parameters...");
-                
-                // check if solver type has changed:
-                // ----- if the solver is still the same, just update the parameters
-                // ----- if the parameters do not have a parameters set corresponding to the one being created but
-                //       current and desired solver set are the same, that means that there is no solver at all, so
-                //       add solver parameters to parameters set
-                // ----- otherwise, remove current solver parameters and add new ones
-                if (parameters.has_parameter_set (desiredSolverType)) 
-                {
-                    parameters.update (solver -> parameters);
-                }
-                else if (currentSolverType == desiredSolverType 
-                         && currentSolverMethod == desiredSolverMethod 
-                         && currentSolverPreconditioner == desiredSolverPreconditioner)
-                {
-                    parameters.add (solver -> parameters);
-                }
-                else
-                {
-                    parameters.remove (currentSolverType);
-                    parameters.add (solver -> parameters);
-                }
-                
-                parameters ["current_solver_type"] = desiredSolverType;
-                parameters ["current_solver_method"] = desiredSolverMethod;
-                parameters ["current_solver_preconditioner"] = desiredSolverPreconditioner;
-
-                
-                return solver;
+                solver.reset (new dolfin::KrylovSolver (desiredSolverMethod, desiredSolverPreconditioner));
             }
             else
             {
                 dolfin::log (dolfin::DBG, "Creating solver of type \"%s\"...", desiredSolverType.c_str ());
                 dcp::LinearSolverFactory& factory = dcp::LinearSolverFactory::Instance ();
-                auto solver = factory.create (desiredSolverType);
-                
-                dolfin::log (dolfin::DBG, "Updating parameters...");
-                
-                // check if solver type has changed:
-                // ----- if the solver is still the same, just update the parameters
-                // ----- if the parameters do not have a parameters set corresponding to the one being created but
-                //       current and desired solver set are the same, that means that there is no solver at all, so
-                //       add solver parameters to parameters set
-                // ----- otherwise, remove current solver parameters and add new ones
-                if (parameters.has_parameter_set (desiredSolverType)) 
-                {
-                    parameters.update (solver -> parameters);
-                }
-                else if (currentSolverType == desiredSolverType 
-                         && currentSolverMethod == desiredSolverMethod 
-                         && currentSolverPreconditioner == desiredSolverPreconditioner)
-                {
-                    parameters.add (solver -> parameters);
-                }
-                else
-                {
-                    parameters.remove (currentSolverType);
-                    parameters.add (solver -> parameters);
-                }
-                
-                parameters ["current_solver_type"] = desiredSolverType;
-                parameters ["current_solver_method"] = desiredSolverMethod;
-                parameters ["current_solver_preconditioner"] = desiredSolverPreconditioner;
+                solver = factory.create (desiredSolverType);
+            }
+
+            dolfin::log (dolfin::DBG, "Updating parameters...");
+
+            // check if solver type has changed:
+            // ----- if the solver is still the same, just update the parameters
+            // ----- if the parameters do not have a parameters set corresponding to the one being created but
+            //       current and desired solver set are the same, that means that there is no solver at all, so
+            //       add solver parameters to parameters set
+            // ----- otherwise, remove current solver parameters and add new ones
+            if (parameters.has_parameter_set (desiredSolverType)) 
+            {
+                parameters.update (solver -> parameters);
+                dolfin::log (dolfin::DBG, "Solver parameters have been updated.");
+            }
+            else if (solverType_ == desiredSolverType 
+                     && solverMethod_ == desiredSolverMethod 
+                     && solverPreconditioner_ == desiredSolverPreconditioner)
+            {
+                parameters.add (solver -> parameters);
+                dolfin::log (dolfin::DBG, "Solver parameter set added to existing parameters.");
+            }
+            else
+            {
+                parameters.remove (solverType_);
+                parameters.add (solver -> parameters);
+                dolfin::log (dolfin::DBG, "Old solver parameter set replaced with new one.");
+            }
+
+            solverType_ = desiredSolverType;
+            solverMethod_ = desiredSolverMethod;
+            solverPreconditioner_ = desiredSolverPreconditioner;
 
                 
-                return solver;
-            }
+            return solver;
         }
 }
 #endif

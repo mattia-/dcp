@@ -22,6 +22,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <regex>
 
 namespace dcp
 {
@@ -35,7 +36,8 @@ namespace dcp
         dirichletBCsCounter_ (0),
         solutionPlotters_ (),
         solutionFileName_ ("solution.pvd"),
-        solutionWriter_ (new dolfin::File (solutionFileName_))
+        writeComponents_ (),
+        solutionWriters_ ()
     { 
         dolfin::begin (dolfin::DBG, "Building GenericProblem...");
         
@@ -43,6 +45,7 @@ namespace dcp
         parameters.add ("solution_file_name", "solution.pvd");
         parameters.add ("plot_components", "-1");
         parameters.add ("plot_title", "Solution");
+        parameters.add ("write_components", "-1");
         parameters.add ("clone_method", "shallow_clone");
             
         dolfin::end ();
@@ -61,7 +64,8 @@ namespace dcp
         dirichletBCsCounter_ (0),
         solutionPlotters_ (),
         solutionFileName_ ("solution.pvd"),
-        solutionWriter_ (new dolfin::File (solutionFileName_))
+        writeComponents_ (),
+        solutionWriters_ ()
     { 
         dolfin::begin (dolfin::DBG, "Building GenericProblem...");
         
@@ -69,6 +73,7 @@ namespace dcp
         parameters.add ("solution_file_name", "solution.pvd");
         parameters.add ("plot_components", "-1");
         parameters.add ("plot_title", "Solution");
+        parameters.add ("write_components", "-1");
         parameters.add ("clone_method", "shallow_clone");
             
         dolfin::end ();
@@ -87,7 +92,8 @@ namespace dcp
         dirichletBCsCounter_ (0),
         solutionPlotters_ (),
         solutionFileName_ ("solution.pvd"),
-        solutionWriter_ (new dolfin::File (solutionFileName_))
+        writeComponents_ (),
+        solutionWriters_ ()
     { 
         dolfin::begin (dolfin::DBG, "Building GenericProblem...");
         
@@ -95,6 +101,7 @@ namespace dcp
         parameters.add ("solution_file_name", "solution.pvd");
         parameters.add ("plot_components", "-1");
         parameters.add ("plot_title", "Solution");
+        parameters.add ("write_components", "-1");
         parameters.add ("clone_method", "shallow_clone");
             
         dolfin::end ();
@@ -416,8 +423,6 @@ namespace dcp
 
     void GenericProblem::writeSolutionToFile (const std::string& writeType)
     {
-        dolfin::begin (dolfin::DBG, "Saving solution to file...");
-
         // check if writeType is known
         if (writeType != "default" && writeType != "stashed")
         {
@@ -425,20 +430,81 @@ namespace dcp
             return;
         }
         
-        // check if solutionFileName_ and parameters["solution_file_name"] coincide. If not, change solutionWriter_
-        if (solutionFileName_ != std::string (parameters["solution_file_name"]))
+        dolfin::begin (dolfin::DBG, "Saving solution to file...");
+
+        // get vector of write components
+        std::vector<int> writeComponents;
+        std::stringstream writeComponentsStream ((std::string (parameters ["write_components"])));
+
+        // auxiliary variable to push the stream values into the vector
+        int component; 
+        while (writeComponentsStream >> component)
         {
-            solutionWriter_.reset (new dolfin::File (parameters ["solution_file_name"]));
-            solutionFileName_ = std::string (parameters["solution_file_name"]);
+            writeComponents.push_back (component);
         }
         
-        if (writeType == "default")
+        // check if solutionFileName_ and parameters["solution_file_name"] coincide, if solutionWriters_ has right
+        // size and if writeComponents_ contains the same values as writeComponents
+        if (solutionFileName_ != std::string (parameters["solution_file_name"])
+            ||
+            solutionWriters_.size() != writeComponents.size()
+            ||
+            writeComponents_ != writeComponents)
         {
-            (*solutionWriter_) << solution_.back ().second;
+            solutionFileName_ = std::string (parameters["solution_file_name"]);
+            writeComponents_ = writeComponents;
+
+            solutionWriters_.clear ();
+            solutionWriters_.resize (writeComponents.size(), nullptr);
         }
-        else // aka writeType == "stashed", otherwise we would have exited on the first check
+        
+
+        // auxiliary variable
+        std::shared_ptr<dolfin::Function> functionToWrite;
+
+        for (auto i = 0; i < writeComponents.size (); ++i)
         {
-            (*solutionWriter_) << stashedSolution_;
+            int component = writeComponents[i];
+
+            if (component == -1)
+            {
+                if (writeType == "default")
+                {
+                    functionToWrite = dolfin::reference_to_no_delete_pointer (solution_.back().second);
+                }
+                else // aka writeType == "stashed", otherwise we would have exited on the first check
+                {
+                    functionToWrite = dolfin::reference_to_no_delete_pointer (stashedSolution_);
+                }
+            }
+
+            else
+            {
+                if (writeType == "default")
+                {
+                    functionToWrite = dolfin::reference_to_no_delete_pointer (solution_.back().second [component]);
+                }
+                else // aka writeType == "stashed", otherwise we would have exited on the first check
+                {
+                    functionToWrite = dolfin::reference_to_no_delete_pointer (stashedSolution_ [component]);
+                }
+            }
+
+            // file name that keeps track also of the component to be written to file
+            std::string filenameWithComponent = solutionFileName_;
+            if (component != -1)
+            {
+                // regex matching the extension, aka all the characters after the last dot (included)
+                std::regex extensionRegex ("(\\.[^.]*$)");
+
+                // add the component number before the extension ($n is the n-th backreference of the match)
+                filenameWithComponent = std::regex_replace (filenameWithComponent, 
+                                                            extensionRegex, 
+                                                            "_component" + std::to_string (component) + "$1");
+            }
+
+            // actual writing to file
+            write_ (solutionWriters_[i], functionToWrite, filenameWithComponent);
         }
 
         dolfin::end (); // Saving solution to file
@@ -470,6 +536,19 @@ namespace dcp
             plotter -> parameters ["title"] = title;
             plotter -> plot (function);
         }
+    }
 
+
+
+    void GenericProblem::write_ (std::shared_ptr<dolfin::File>& writer, 
+                                 const std::shared_ptr<const dolfin::Function> function,
+                                 const std::string& filename)
+    {
+        if (writer == nullptr)
+        {
+            writer.reset (new dolfin::File (filename));
+        }
+
+        (*writer) << (*function);
     }
 }

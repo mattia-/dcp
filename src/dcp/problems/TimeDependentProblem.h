@@ -785,45 +785,7 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//
 
         protected:
-            //! The problem to be solved on each time step
-            std::shared_ptr <dcp::GenericProblem> timeSteppingProblem_;
-            
-            //! Pointer to the object keeping time for this problem
-            std::shared_ptr <dcp::Time> time_;
-            
-            //! The start time of the simulation
-            double startTime_;
-            
-            //! The time step of the simulation
-            double dt_;
-            
-            //! The end time of the simulation
-            double endTime_;
-            
-            //! A map containing the time dependent expressions needed for the time dependent problem
-            /*!
-             *  If for example a problem had an external force that depends on time, its corresponding coefficient in
-             *  the time stepping problem would need to be reset at every step, since the time parameter changes. 
-             *  The coefficient is identified by a \c pair containing its name and its type and is associated in the map
-             *  to a pointer to \c dcp::TimeDependentExpression (the use of the pointer is necessary to call the 
-             *  \c eval() function defined in the user-defined class derived from \c dcp::TimeDependentExpression )
-             */
-            std::map <TimeDependentCoefficientKey, TimeDependentCoefficientValue> timeDependentCoefficients_;
-            
-            //! The time dependent Dirichlet's boundary conditions. The map associates the bc's name to the tuple 
-            //! <time dependent expression, boundary, solution component> identifying the condition itself. 
-            //! If the condition should be enforced on all the function space components, \c -1 is used as a placeholder
-            std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue> timeDependentDirichletBCs_;
-            
-            //! The number of steps in the time scheme. For example, implicit Euler method is a 1-step scheme, while
-            //! BDF2 is a 2-steps scheme.
-            unsigned int nTimeSchemeSteps_;
-            
-            //! Counter of time dependent dirichletBC inserted in the protected member map. It is used to create a 
-            //! unique name for insertion of dirichlet bcs if the input argument \c bcName to 
-            //! \c addTimeDependentDirichletBC() is left empty
-            int timeDependentDirichletBCsCounter_;
-            
+            /******************** METHODS *********************/
             //! Solve the time stepping problem just once without incrementing \c time_
             /*!
              *  This method solves the time stepping problem one time without incrementing the value stored in \c time_.
@@ -899,6 +861,59 @@ namespace dcp
             
             //! Delete elements from \c solution_ according to \c parameters["purge_interval"]
             virtual void purgeSolutionsVector_ ();
+
+            //! Write given solution to given file. Internal use only
+            /*!
+             *  \param writer the file writer to be used
+             *  \param function the function to be written to file
+             *  \param filename name of the file, in case \c writer is \c nullptr
+             *  \param t current time value
+             */
+            virtual void write_ (std::shared_ptr<dolfin::File>& writer,
+                                 const std::shared_ptr<const dolfin::Function> function,
+                                 const std::string& filename,
+                                 const double& t);
+
+
+            /******************** VARIABLES *********************/
+            //! The problem to be solved on each time step
+            std::shared_ptr <dcp::GenericProblem> timeSteppingProblem_;
+
+            //! Pointer to the object keeping time for this problem
+            std::shared_ptr <dcp::Time> time_;
+
+            //! The start time of the simulation
+            double startTime_;
+
+            //! The time step of the simulation
+            double dt_;
+
+            //! The end time of the simulation
+            double endTime_;
+
+            //! A map containing the time dependent expressions needed for the time dependent problem
+            /*!
+             *  If for example a problem had an external force that depends on time, its corresponding coefficient in
+             *  the time stepping problem would need to be reset at every step, since the time parameter changes.
+             *  The coefficient is identified by a \c pair containing its name and its type and is associated in the map
+             *  to a pointer to \c dcp::TimeDependentExpression (the use of the pointer is necessary to call the
+             *  \c eval() function defined in the user-defined class derived from \c dcp::TimeDependentExpression )
+             */
+            std::map <TimeDependentCoefficientKey, TimeDependentCoefficientValue> timeDependentCoefficients_;
+
+            //! The time dependent Dirichlet's boundary conditions. The map associates the bc's name to the tuple
+            //! <time dependent expression, boundary, solution component> identifying the condition itself.
+            //! If the condition should be enforced on all the function space components, \c -1 is used as a placeholder
+            std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue> timeDependentDirichletBCs_;
+
+            //! The number of steps in the time scheme. For example, implicit Euler method is a 1-step scheme, while
+            //! BDF2 is a 2-steps scheme.
+            unsigned int nTimeSchemeSteps_;
+
+            //! Counter of time dependent dirichletBC inserted in the protected member map. It is used to create a
+            //! unique name for insertion of dirichlet bcs if the input argument \c bcName to
+            //! \c addTimeDependentDirichletBC() is left empty
+            int timeDependentDirichletBCsCounter_;
 
             // ---------------------------------------------------------------------------------------------//
 

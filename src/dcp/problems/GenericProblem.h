@@ -71,6 +71,9 @@ namespace dcp
              *        as a string of whitespace-separated integers. A negative value stands for all the components.
              *        Default value: "-1"
              *      - \c "plot_title" the title of the plot. Default value: "Solution"
+             *      - \c "write_components "the components of the solution to be written to file (if the solution is 
+             *        vectorial), as a string of whitespace-separated integers. A negative value stands for all the 
+             *        components. Default value: "-1"
              *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
              *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
@@ -90,6 +93,9 @@ namespace dcp
              *        as a string of whitespace-separated integers. A negative value stands for all the components.
              *        Default value: "-1"
              *      - \c "plot_title" the title of the plot. Default value: "Solution"
+             *      - \c "write_components "the components of the solution to be written to file (if the solution is 
+             *        vectorial), as a string of whitespace-separated integers. A negative value stands for all the 
+             *        components. Default value: "-1"
              *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
              *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
@@ -107,6 +113,9 @@ namespace dcp
              *      - \c "plot_components" the component of the solution to be plotted (if the solution is vectorial).
              *        A negative value stands for all the components. Default value: "-1"
              *      - \c "plot_title" the title of the plot. Default value: "Solution"
+             *      - \c "write_components "the components of the solution to be written to file (if the solution is 
+             *        vectorial), as a string of whitespace-separated integers. A negative value stands for all the 
+             *        components. Default value: "-1"
              *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
              *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
@@ -336,8 +345,9 @@ namespace dcp
             //! Write the solution to file
             /*!
              *  All the filetypes supported by FEniCS are supported, with the same suffix-filetype convention.
-             *  It checks if the parameter \c "solution_file_name" and the protected member \c solutionFileName_
-             *  coincide. If not, reset \c solutionWriter_ creating a new \c dolfin::File object with the correct name.
+             *  It checks if the parameters \c "solution_file_name" and \c "write_components" and the protected members
+             *  \c solutionFileName_ and \c writeComponents_ (respectively) coincide.
+             *  If not, it resets \c solutionWriters_ creating new \c dolfin::File objects with the correct names.
              *  \param writeType the type of the writing desired. Possible values:
              *  \li \c "default" the real solution, stored in \c solution_
              *  \li \c "stashed" the stashed solution
@@ -368,6 +378,16 @@ namespace dcp
             void plot_ (std::shared_ptr<dolfin::VTKPlotter>& plotter, 
                         const std::shared_ptr<const dolfin::Function> function,
                         const std::string& title);
+
+            //! Write given solution to given file. Internal use only
+            /*!
+             *  \param writer the file writer to be used
+             *  \param function the function to be written to file
+             *  \param filename name of the file, in case \c writer is \c nullptr
+             */
+            void write_ (std::shared_ptr<dolfin::File>& writer, 
+                         const std::shared_ptr<const dolfin::Function> function,
+                         const std::string& filename);
 
             //! The problem finite element space
             /*! 
@@ -410,8 +430,11 @@ namespace dcp
             //! The name of the file on which to write the solution
             std::string solutionFileName_;
                 
-            //! The output stream for the solution
-            std::shared_ptr<dolfin::File> solutionWriter_;
+            //! The components to be written to file
+            std::vector<int> writeComponents_;
+
+            //! The output streams for the (possibly more than one) components of the solution solution of the problem
+            std::vector <std::shared_ptr<dolfin::File>> solutionWriters_;
 
             // ---------------------------------------------------------------------------------------------//
 

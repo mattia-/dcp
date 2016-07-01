@@ -908,51 +908,147 @@ namespace dcp
             return;
         }
         
-        // check if solutionFileName_ and parameters["solution_file_name"] coincide. If not, change solutionWriter_
-        if (solutionFileName_ != std::string (parameters["solution_file_name"]))
+        // get vector of write components
+        std::vector<int> writeComponents;
+        std::stringstream writeComponentsStream ((std::string (parameters ["write_components"])));
+
+        // auxiliary variable to push the stream values into the vector
+        int component; 
+        while (writeComponentsStream >> component)
         {
-            solutionWriter_.reset (new dolfin::File (parameters ["solution_file_name"]));
+            writeComponents.push_back (component);
+        }
+        
+        // check if solutionFileName_ and parameters["solution_file_name"] coincide, if solutionWriters_ has right
+        // size and if writeComponents_ contains the same values as writeComponents
+        if (solutionFileName_ != std::string (parameters["solution_file_name"])
+            ||
+            solutionWriters_.size() != writeComponents.size()
+            ||
+            writeComponents_ != writeComponents)
+        {
             solutionFileName_ = std::string (parameters["solution_file_name"]);
+            writeComponents_ = writeComponents;
+
+            solutionWriters_.clear ();
+            solutionWriters_.resize (writeComponents.size(), nullptr);
         }
 
-        // try-catch block because we don't know if the file format allows std::pair on the operator << 
-        try
-        {
-            if (writeType == "default")
-            {
-                for (const auto& element : solution_)
-                {
-                    (*solutionWriter_) << std::make_pair (&(element.second), element.first);
-                }
-            }
-            else if (writeType == "last")
-            {
-                (*solutionWriter_) << std::make_pair (&(solution_.back ().second), solution_.back ().first);
-            }
-            else if (writeType == "stashed")
-            {
-                (*solutionWriter_) << std::make_pair (&(stashedSolution_), time_ -> value ());
-            }
-        }
-        catch (std::runtime_error& e)
-        {
-            if (writeType == "default")
-            {
-                for (const auto& element : solution_)
-                {
-                    (*solutionWriter_) << element.second;
-                }
-            }
-            else if (writeType == "last")
-            {
-                (*solutionWriter_) << solution_.back ().second;
-            }
-            else if (writeType == "stashed")
-            {
-                (*solutionWriter_) << stashedSolution_;
-            }
-        }
+        // auxiliary variable, to enhance readability
+        std::shared_ptr<dolfin::Function> functionToWrite;
 
+        if (writeType == "default")
+        {
+            for (auto& timeSolutionPair : solution_)
+            {
+                double time = timeSolutionPair.first;
+                
+                for (auto i = 0; i < writeComponents.size (); ++i)
+                {
+                    int component = writeComponents[i];
+
+                    // get right function to write
+                    if (component == -1)
+                    {
+                        functionToWrite = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second);
+                    }
+                    else
+                    {
+                        functionToWrite = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second [component]);
+                    }
+
+                    // file name that keeps track also of the component to be written to file
+                    std::string filenameWithComponent = solutionFileName_;
+                    if (component != -1)
+                    {
+                        // regex matching the extension, aka all the characters after the last dot (included)
+                        std::regex extensionRegex ("(\\.[^.]*$)");
+
+                        // add the component number before the extension ($n is the n-th backreference of the match)
+                        filenameWithComponent = std::regex_replace (filenameWithComponent, 
+                                                                    extensionRegex, 
+                                                                    "_component" + std::to_string (component) + "$1");
+                    }
+
+                    // actual writing
+                    write_ (solutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                }
+            }
+        }
+        else if (writeType == "last")
+        {
+            // get last element in vector
+            auto timeSolutionPair = solution_.back ();
+            
+            // get time
+            double time = timeSolutionPair.first;
+            
+            for (auto i = 0; i < writeComponents.size (); ++i)
+            {
+                int component = writeComponents[i];
+
+                // get right function to write
+                if (component == -1)
+                {
+                    functionToWrite = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second);
+                }
+                else
+                {
+                    functionToWrite = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second [component]);
+                }
+
+                // file name that keeps track also of the component to be written to file
+                std::string filenameWithComponent = solutionFileName_;
+                if (component != -1)
+                {
+                    // regex matching the extension, aka all the characters after the last dot (included)
+                    std::regex extensionRegex ("(\\.[^.]*$)");
+
+                    // add the component number before the extension ($n is the n-th backreference of the match)
+                    filenameWithComponent = std::regex_replace (filenameWithComponent, 
+                                                                extensionRegex, 
+                                                                "_component" + std::to_string (component) + "$1");
+                }
+
+                // actual writing
+                write_ (solutionWriters_[i], functionToWrite, filenameWithComponent, time);
+            }
+        }
+        else // aka writeType == "stashed", otherwise we would have exited on the first check
+        {
+            double time = time_ -> value();
+            for (auto i = 0; i < writeComponents.size (); ++i)
+            {
+                int component = writeComponents[i];
+
+                // get right function to write
+                if (component == -1)
+                {
+                    functionToWrite = dolfin::reference_to_no_delete_pointer (stashedSolution_);
+                }
+                else
+                {
+                    functionToWrite = dolfin::reference_to_no_delete_pointer (stashedSolution_ [component]);
+                }
+
+                // file name that keeps track also of the component to be written to file
+                std::string filenameWithComponent = solutionFileName_;
+                if (component != -1)
+                {
+                    // regex matching the extension, aka all the characters after the last dot (included)
+                    std::regex extensionRegex ("(\\.[^.]*$)");
+
+                    // add the component number before the extension ($n is the n-th backreference of the match)
+                    filenameWithComponent = std::regex_replace (filenameWithComponent, 
+                                                                extensionRegex, 
+                                                                "_component" + std::to_string (component) + "$1");
+                }
+
+                // actual writing
+                write_ (solutionWriters_[i], functionToWrite, filenameWithComponent, time);
+            }
+        }
+        
         dolfin::end (); // Saving solution to file
     }
     
@@ -1276,4 +1372,27 @@ namespace dcp
             solution_.erase (solution_.begin ());
         }
     }       
+
+
+
+    void TimeDependentProblem::write_ (std::shared_ptr<dolfin::File>& writer, 
+                                       const std::shared_ptr<const dolfin::Function> function,
+                                       const std::string& filename,
+                                       const double& t)
+    {
+        if (writer == nullptr)
+        {
+            writer.reset (new dolfin::File (filename));
+        }
+
+        // try-catch block because we don't know if the file format allows std::pair on the operator << 
+        try
+        {
+            (*writer) << std::make_pair (function.get(), t);
+        }
+        catch (std::runtime_error& e)
+        {
+            (*writer) << (*function);
+        }
+    }
 }

@@ -1123,7 +1123,7 @@ namespace dcp
 
                 if (bool(parameters["lump_matrix"]) == true)
                 {
-                    dolfin::begin (dolfin::DBG, "Lumping mass matrix...");
+                    dolfin::begin (dolfin::DBG, "Lumping matrix...");
                     lumpMatrix ();
                     dolfin::end ();
                 }

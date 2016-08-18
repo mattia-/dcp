@@ -101,37 +101,36 @@ int main (int argc, char* argv[])
     std::cout << "Create mesh and finite element space..." << std::endl;
     mshr::Rectangle rectangle (dolfin::Point (0.0, 0.0), dolfin::Point (10.0, 7.0));
     mshr::Circle circle (dolfin::Point (3.5, 3.5), 0.5);
-    dolfin::Mesh mesh;
-    mshr::generate (mesh, *(rectangle - circle), 50);
+    auto mesh = mshr::generate_mesh (*(rectangle - circle), 50);
     
-    navierstokes::FunctionSpace V (mesh);
+    auto V = std::make_shared<navierstokes::FunctionSpace> (mesh);
     
     // define problem
     std::cout << "Define the problem..." << std::endl;
     dcp::NonlinearProblem <navierstokes::ResidualForm, navierstokes::JacobianForm> 
-        navierStokesProblem (dolfin::reference_to_no_delete_pointer (V), "trial");
+        navierStokesProblem (V, "trial");
     
     // define constant
     std::cout << "Define the problem's coefficients..." << std::endl;
-    dolfin::Constant nu (1e-1);
-    dolfin::Constant inflowDirichletBC (1.0, 0.0);
-    dolfin::Constant symmetryDirichletBC (0.0);
-    dolfin::Constant noSlipDirichletBC (0.0, 0.0);
+    auto nu = std::make_shared<dolfin::Constant> (1e-1);
+    auto inflowDirichletBC = std::make_shared<dolfin::Constant> (1.0, 0.0);
+    auto symmetryDirichletBC = std::make_shared<dolfin::Constant> (0.0);
+    auto noSlipDirichletBC = std::make_shared<dolfin::Constant> (0.0, 0.0);
 
     // define dirichlet boundary conditions
     std::cout << "Define the problem's Dirichlet boundary conditions..." << std::endl;
-    navierstokes::InflowBoundary inflowBoundary;
-    navierstokes::GammaSD gammaSD;
-    navierstokes::NoSlipBoundary noSlipBoundary;
+    auto inflowBoundary = std::make_shared<navierstokes::InflowBoundary> ();
+    auto gammaSD = std::make_shared<navierstokes::GammaSD> ();
+    auto noSlipBoundary = std::make_shared<navierstokes::NoSlipBoundary> ();
     
     navierStokesProblem.addDirichletBC (inflowDirichletBC, inflowBoundary, 0);
-    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*V[0], noSlipDirichletBC, noSlipBoundary, "topological", false));
-    navierStokesProblem.addDirichletBC (dolfin::DirichletBC (*(*V[0])[1], symmetryDirichletBC, gammaSD));
+    navierStokesProblem.addDirichletBC (dolfin::DirichletBC ((*V)[0], noSlipDirichletBC, noSlipBoundary, "topological", false));
+    navierStokesProblem.addDirichletBC (dolfin::DirichletBC ((*(*V)[0])[1], symmetryDirichletBC, gammaSD));
 
     // problem settings
     std::cout << "Set the problem's coefficients..." << std::endl;
-    navierStokesProblem.setCoefficient ("residual_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
-    navierStokesProblem.setCoefficient ("jacobian_form", dolfin::reference_to_no_delete_pointer (nu), "nu");
+    navierStokesProblem.setCoefficient ("residual_form", nu, "nu");
+    navierStokesProblem.setCoefficient ("jacobian_form", nu, "nu");
     
     // solve problem
     std::cout << "Solve the problem..." << std::endl;
@@ -145,7 +144,7 @@ int main (int argc, char* argv[])
      * dolfin::plot (navierStokesProblem.solution ()[0], "Velocity");
      * dolfin::plot (navierStokesProblem.solution ()[1], "Pressure");
      */
-    dolfin::interactive ();
+    // dolfin::interactive ();
     
     return 0;
 }

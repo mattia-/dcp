@@ -72,18 +72,18 @@ int main (int argc, char* argv[])
 {
     // create mesh and finite element space 
     dolfin::info ("Create mesh and finite element space...");
-    dolfin::UnitSquareMesh mesh (20, 20);
-    poisson::FunctionSpace V (mesh);
+    auto mesh = std::make_shared<dolfin::UnitSquareMesh> (20, 20);
+    auto V = std::make_shared<poisson::FunctionSpace> (mesh);
     
     // define linear problem
     dolfin::info ("Define the linear problem...");
-    dcp::LinearProblem <poisson::BilinearForm, poisson::LinearForm> poissonProblem (dolfin::reference_to_no_delete_pointer (V));
+    dcp::LinearProblem <poisson::BilinearForm, poisson::LinearForm> poissonProblem (V);
 
     // define coefficients
     dolfin::info ("Define the linear problem's coefficients...");
-    dolfin::Constant k (1.0);
-    dolfin::Constant f (1.0);
-    dolfin::Constant g (1.0);
+    auto k = std::make_shared<dolfin::Constant> (1.0);
+    auto f = std::make_shared<dolfin::Constant> (1.0);
+    auto g = std::make_shared<dolfin::Constant> (1.0);
     dolfin::Constant h (0.0);
 
     // define dirichlet boundary conditions 
@@ -103,9 +103,9 @@ int main (int argc, char* argv[])
     
     // set problem coefficients
     dolfin::info ("Set the linear problem's coefficients...");
-    poissonProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (k), "k");
-    poissonProblem.setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (f), "f");
-    poissonProblem.setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (g), "g");
+    poissonProblem.setCoefficient ("bilinear_form", k, "k");
+    poissonProblem.setCoefficient ("linear_form", f, "f");
+    poissonProblem.setCoefficient ("linear_form", g, "g");
 
     // solve problem
     dolfin::info ("Solve the linear problem...");
@@ -117,7 +117,7 @@ int main (int argc, char* argv[])
     
     // define algebraic problem
     dolfin::info ("Define the algebraic problem...");
-    dcp::AlgebraicProblem problem (dolfin::reference_to_no_delete_pointer (V), 
+    dcp::AlgebraicProblem problem (V, 
                                    std::shared_ptr<dcp::GenericExpression> (new dcp::VariableExpression (Solver ())));
     
     // set algebraic problem coefficients

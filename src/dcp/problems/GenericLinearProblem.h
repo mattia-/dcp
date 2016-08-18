@@ -53,42 +53,14 @@ namespace dcp
             //! Default constructor is deleted. The class is not default constructable.
             GenericLinearProblem () = delete;
 
-            //!  Constructor with shared pointers
+            //!  Constructor
             /*!
-             *  \param functionSpace the problem finite element space as a <tt> const std::shared_ptr </tt> to 
-             *  \c dolfin::FunctionSpace
-             *  The stored function space's ownership will be shared between the object and the input argument. The
-             *  bilinear and linear form will be created too, calling the constructor which takes the function space
-             *  as input.
+             *  \param functionSpace the problem finite element space 
              *  The constructors also sets the following parameters:
              *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
              */
-            GenericLinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
+            GenericLinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
 
-
-            //! Constructor with references
-            /*!
-             *  \param functionSpace the problem finite element space as a <tt> const dolfin::FunctionSpace& </tt>
-             *  The stored function space's ownership will be unique to the object, since the protected member
-             *  variable is initialized using the \c new operator and functionSpace's copy constructor. The
-             *  bilinear and linear form will be created too, calling the constructor which takes the function space
-             *  as input.
-             *  The constructors also sets the following parameters:
-             *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
-             */
-            GenericLinearProblem (const dolfin::FunctionSpace& functionSpace);
-
-            //! Constructor with rvalue references
-            /*!
-             *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
-             *  The stored function space's ownership will be unique to the object, since the protected member
-             *  variable is initialized using the \c new operator and functionSpace's move constructor. The bilinear
-             *  and linear form will be created too, calling the constructor which takes the function space as
-             *  input.
-             *  The constructors also sets the following parameters:
-             *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
-             */
-            GenericLinearProblem (dolfin::FunctionSpace&& functionSpace);
 
             /******************* DESTRUCTOR *******************/
             //! Destructor

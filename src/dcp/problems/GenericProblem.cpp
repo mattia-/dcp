@@ -27,39 +27,11 @@
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    GenericProblem::GenericProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
+    GenericProblem::GenericProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace) : 
         parameters ("differential_problem_parameters"),
         functionSpace_ (functionSpace),
         dirichletBCs_ (),
         solution_ (),
-        stashedSolution_ (*functionSpace_),
-        dirichletBCsCounter_ (0),
-        solutionPlotters_ (),
-        solutionFileName_ ("solution.pvd"),
-        writeComponents_ (),
-        solutionWriters_ ()
-    { 
-        dolfin::begin (dolfin::DBG, "Building GenericProblem...");
-        
-        dolfin::log (dolfin::DBG, "Setting up parameters...");
-        parameters.add ("solution_file_name", "solution.pvd");
-        parameters.add ("plot_components", "-1");
-        parameters.add ("plot_title", "Solution");
-        parameters.add ("write_components", "-1");
-        parameters.add ("clone_method", "shallow_clone");
-            
-        dolfin::end ();
-        
-        dolfin::log (dolfin::DBG, "GenericProblem object created");
-    }
-
-
-
-    GenericProblem::GenericProblem (const dolfin::FunctionSpace& functionSpace) : 
-        parameters ("differential_problem_parameters"),
-        functionSpace_ (new dolfin::FunctionSpace (functionSpace)),
-        dirichletBCs_ (),
-        solution_ (),
         stashedSolution_ (functionSpace_),
         dirichletBCsCounter_ (0),
         solutionPlotters_ (),
@@ -80,35 +52,6 @@ namespace dcp
         
         dolfin::log (dolfin::DBG, "GenericProblem object created");
     }
-
-
-
-    GenericProblem::GenericProblem (dolfin::FunctionSpace&& functionSpace) : 
-        parameters ("differential_problem_parameters"),
-        functionSpace_ (new dolfin::FunctionSpace (std::move (functionSpace))),
-        dirichletBCs_ (),
-        solution_ (),
-        stashedSolution_ (functionSpace_),
-        dirichletBCsCounter_ (0),
-        solutionPlotters_ (),
-        solutionFileName_ ("solution.pvd"),
-        writeComponents_ (),
-        solutionWriters_ ()
-    { 
-        dolfin::begin (dolfin::DBG, "Building GenericProblem...");
-        
-        dolfin::log (dolfin::DBG, "Setting up parameters...");
-        parameters.add ("solution_file_name", "solution.pvd");
-        parameters.add ("plot_components", "-1");
-        parameters.add ("plot_title", "Solution");
-        parameters.add ("write_components", "-1");
-        parameters.add ("clone_method", "shallow_clone");
-            
-        dolfin::end ();
-        
-        dolfin::log (dolfin::DBG, "GenericProblem object created");
-    }
-
 
 
     /********************** GETTERS ***********************/
@@ -119,7 +62,7 @@ namespace dcp
 
 
 
-    std::shared_ptr<dolfin::FunctionSpace> GenericProblem::functionSpace () const
+    std::shared_ptr<const dolfin::FunctionSpace> GenericProblem::functionSpace () const
     {
         return functionSpace_;
     }
@@ -332,7 +275,7 @@ namespace dcp
     void GenericProblem::applyStashedSolution ()
     {
         solution_.back ().second = stashedSolution_;
-        stashedSolution_ = dolfin::Function (*functionSpace_);
+        stashedSolution_ = dolfin::Function (functionSpace_);
     }
 
 

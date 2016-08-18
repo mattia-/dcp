@@ -1,2 +1,0 @@
-ADD_SUBDIRECTORY (cavity)
-ADD_SUBDIRECTORY (external_flow)

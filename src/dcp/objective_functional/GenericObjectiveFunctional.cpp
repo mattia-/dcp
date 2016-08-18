@@ -28,13 +28,7 @@ namespace dcp
         dolfin::log (dolfin::DBG, "GenericObjectiveFunctional object created");
     }
 
-    GenericObjectiveFunctional::GenericObjectiveFunctional (const dolfin::Mesh& mesh) : 
-        mesh_ (new dolfin::Mesh (mesh))
-    {
-        dolfin::log (dolfin::DBG, "GenericObjectiveFunctional object created");
-    }
-    
-    
+
 
     /******************* GETTERS *******************/
     const dolfin::Mesh& GenericObjectiveFunctional::mesh () const

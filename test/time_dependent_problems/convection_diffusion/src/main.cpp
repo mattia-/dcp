@@ -50,10 +50,9 @@ int main (int argc, char* argv[])
     std::cout << "Create mesh and finite element space..." << std::endl;
     mshr::Rectangle rectangle (dolfin::Point (0.0, 0.0), dolfin::Point (10.0, 7.0));
     mshr::Circle circle (dolfin::Point (3.5, 3.5), 0.5);
-    dolfin::Mesh mesh;
-    mshr::generate (mesh, *(rectangle - circle), 50);
+    auto mesh = mshr::generate_mesh (*(rectangle - circle), 50);
     
-    convectiondiffusion::FunctionSpace V (mesh);
+    auto V = std::make_shared<convectiondiffusion::FunctionSpace> (mesh);
     
     // define problem
     std::cout << "Define the problem..." << std::endl;
@@ -61,10 +60,10 @@ int main (int argc, char* argv[])
     double dt = 0.1;
     double T = 4;
     
-    dcp::LinearProblem <convectiondiffusion::BilinearForm, convectiondiffusion::LinearForm>
-        timeSteppingProblem (dolfin::reference_to_no_delete_pointer (V));
+    auto timeSteppingProblem = 
+        std::make_shared<dcp::LinearProblem <convectiondiffusion::BilinearForm, convectiondiffusion::LinearForm>> (V);
     
-    dcp::TimeDependentProblem convectionDiffusionProblem (dolfin::reference_to_no_delete_pointer (timeSteppingProblem),
+    dcp::TimeDependentProblem convectionDiffusionProblem (timeSteppingProblem,
                                                           t0,
                                                           dt,
                                                           T,

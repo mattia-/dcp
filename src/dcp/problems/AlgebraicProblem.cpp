@@ -22,14 +22,14 @@
 namespace dcp
 {
     /******************* CONSTRUCTORS *******************/
-    AlgebraicProblem::AlgebraicProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+    AlgebraicProblem::AlgebraicProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace,
                                         const std::shared_ptr<dcp::GenericExpression> expression) :
         GenericProblem (functionSpace),
         expression_ (expression)
     { 
         dolfin::begin (dolfin::DBG, "Building AlgebraicProblem...");
 
-        solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
+        solution_.emplace_back (std::make_pair (-1, dolfin::Function (functionSpace_)));
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("problem_type", "algebraic");
@@ -41,14 +41,14 @@ namespace dcp
 
 
 
-    AlgebraicProblem::AlgebraicProblem (const dolfin::FunctionSpace& functionSpace,
+    AlgebraicProblem::AlgebraicProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace,
                                         const dcp::GenericExpression& expression) :
         GenericProblem (functionSpace),
         expression_ (expression.clone ())
     { 
         dolfin::begin (dolfin::DBG, "Building AlgebraicProblem...");
 
-        solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
+        solution_.emplace_back (std::make_pair (-1, dolfin::Function (functionSpace_)));
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("problem_type", "algebraic");
@@ -111,7 +111,7 @@ namespace dcp
                                            std::string bcName)
     {
         // Do nothing
-        return false;
+        return true;
     }
 
 
@@ -122,7 +122,7 @@ namespace dcp
                                            std::string bcName)
     {
         // Do nothing
-        return false;
+        return true;
     }
 
 
@@ -132,7 +132,7 @@ namespace dcp
                                            std::string bcName)
     {
         // Do nothing
-        return false;
+        return true;
     }
 
     
@@ -143,7 +143,7 @@ namespace dcp
                                            std::string bcName)
     {
         // Do nothing
-        return false;
+        return true;
     }
 
 
@@ -152,7 +152,7 @@ namespace dcp
                                            std::string bcName)
     {
         // Do nothing
-        return false;
+        return true;
     }
 
 
@@ -160,7 +160,7 @@ namespace dcp
                                            std::string bcName)
     {
         // Do nothing
-        return false;
+        return true;
     }
 
 
@@ -168,7 +168,7 @@ namespace dcp
     bool AlgebraicProblem::removeDirichletBC (const std::string& bcName)
     {
         // Do nothing
-        return false;
+        return true;
     }
 
 
@@ -220,7 +220,9 @@ namespace dcp
         }
         else if (cloneMethod == "deep_clone")
         {
-            clonedProblem = new dcp::AlgebraicProblem (*(this->functionSpace_), *(this->expression_));
+            std::shared_ptr<dolfin::FunctionSpace> functionSpaceCopy (new dolfin::FunctionSpace (*functionSpace_));
+
+            clonedProblem = new dcp::AlgebraicProblem (functionSpaceCopy, *(this->expression_));
         }
         else
         {

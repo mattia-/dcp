@@ -296,7 +296,7 @@ namespace dcp
             /*! 
              *  \return a const reference to the problem's function space
              */
-            virtual std::shared_ptr<dolfin::FunctionSpace> functionSpace () const override;
+            virtual std::shared_ptr<const dolfin::FunctionSpace> functionSpace () const override;
 
             //! Get const reference to the problem's dirichlet boundary condition with given name.
             //! Note that time dependent Dirichlet BC can be found in this map along with "stationary" BCs. 

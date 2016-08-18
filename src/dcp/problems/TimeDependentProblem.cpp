@@ -178,7 +178,7 @@ namespace dcp
 
 
 
-    std::shared_ptr<dolfin::FunctionSpace> TimeDependentProblem::functionSpace () const
+    std::shared_ptr<const dolfin::FunctionSpace> TimeDependentProblem::functionSpace () const
     {
         return timeSteppingProblem_ -> functionSpace ();
     }
@@ -712,7 +712,7 @@ namespace dcp
 
         purgeSolutionsVector_ ();
         
-        stashedSolution_ = dolfin::Function (*functionSpace_);
+        stashedSolution_ = dolfin::Function (functionSpace_);
     }
             
 

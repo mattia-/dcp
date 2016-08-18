@@ -50,39 +50,14 @@ namespace dcp
             //! Default constructor is deleted. The class is not default constructable.
             GenericNonlinearProblem () = delete;
 
-            //!  Constructor with shared pointers
+            //!  Constructor
             /*!
-             *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
-             *  \c dolfin::FunctionSpace
-             *  The stored function space's ownership will be shared between the object and the input
-             *  argument. The residual and jacobian form will be created too, calling the constructor which takes
-             *  the function space as input.
+             *  \param functionSpace the problem finite element space
              *  The constructors also sets the following parameters:
              *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
              */
-            GenericNonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
+            GenericNonlinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
 
-            //! Constructor with references
-            /*!
-             *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
-             *  The stored function space's ownership will be unique to the object, since the pointer is initialized
-             *  using the \c new operator and functionSpace's copy constructor. The residual and jacobian form will
-             *  be created too, calling the constructor which takes the function space as input.
-             *  The constructors also sets the following parameters:
-             *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
-             */
-            GenericNonlinearProblem (const dolfin::FunctionSpace& functionSpace);
-
-            //! Constructor with rvalue references
-            /*!
-             *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
-             *  The stored function space's ownership will be unique to the object, since the pointer is initialized
-             *  using the \c new operator and mesh's and functionSpace's move constructor. The residual and jacobian
-             *  form will be created too, calling the constructor which takes the function space as input.
-             *  The constructors also sets the following parameters:
-             *      - \c "problem_type" a string describing the problem. Default value: \c "non_linear"
-             */
-            GenericNonlinearProblem (dolfin::FunctionSpace&& functionSpace);
 
             /******************* DESTRUCTOR *******************/
             //! Destructor

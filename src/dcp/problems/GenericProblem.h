@@ -59,11 +59,9 @@ namespace dcp
             //! Default constructor
             GenericProblem () = delete;
 
-            //!  Constructor with shared pointer
+            //!  Constructor
             /*!
-             *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
-             *  \c dolfin::FunctionSpace
-             *  The stored function space's ownership will be shared between the object and the input argument.
+             *  \param functionSpace the problem finite element space
              *  The constructors also sets the following parameters:
              *      - \c "solution_file_name" the name of the file on which the solution will be written when/if required.
              *        Default value: \c "solution.pvd"
@@ -78,49 +76,7 @@ namespace dcp
              *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
              *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
              */
-            GenericProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
-
-
-            //! Constructor with reference
-            /*!
-             *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
-             *  The stored function space's ownership will be unique to the object, since the pointer is 
-             *  initialized using the \c new operator and functionSpace's copy constructor.
-             *  The constructors also sets the following parameters:
-             *      - \c "solution_file_name" the name of the file on which the solution will be written when/if required.
-             *        Default value: \c "solution.pvd"
-             *      - \c "plot_components" the components of the solution to be plotted (if the solution is vectorial),
-             *        as a string of whitespace-separated integers. A negative value stands for all the components.
-             *        Default value: "-1"
-             *      - \c "plot_title" the title of the plot. Default value: "Solution"
-             *      - \c "write_components "the components of the solution to be written to file (if the solution is 
-             *        vectorial), as a string of whitespace-separated integers. A negative value stands for all the 
-             *        components. Default value: "-1"
-             *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-             *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-             *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
-             */
-            GenericProblem (const dolfin::FunctionSpace& functionSpace);
-
-            //! Constructor with rvalue reference
-            /*!
-             *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
-             *  The stored function space's ownership will be unique to the object, since the pointers are 
-             *  initialized using the \c new operator and mesh's and functionSpace's move constructor
-             *  The constructors also sets the following parameters:
-             *      - \c "solution_file_name" the name of the file on which the solution will be written when/if required.
-             *        Default value: \c "solution.pvd"
-             *      - \c "plot_components" the component of the solution to be plotted (if the solution is vectorial).
-             *        A negative value stands for all the components. Default value: "-1"
-             *      - \c "plot_title" the title of the plot. Default value: "Solution"
-             *      - \c "write_components "the components of the solution to be written to file (if the solution is 
-             *        vectorial), as a string of whitespace-separated integers. A negative value stands for all the 
-             *        components. Default value: "-1"
-             *      - \c "clone_method" the type of clone desired. It can be either \c "shallow_clone" or 
-             *        \c "deep_clone". The former stores a pointer to the mesh and function space in the cloned 
-             *        object, the latter copies the actual objects. Default value: \c "shallow_clone"
-             */
-            GenericProblem (dolfin::FunctionSpace&& functionSpace);
+            GenericProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
 
 
             /************************* DESTRUCTOR ********************/
@@ -142,7 +98,7 @@ namespace dcp
             /*! 
              *  \return a const reference to the problem's function space
              */
-            virtual std::shared_ptr<dolfin::FunctionSpace> functionSpace () const;
+            virtual std::shared_ptr<const dolfin::FunctionSpace> functionSpace () const;
 
             //! Get const reference to the problem's dirichlet boundary condition with given name
             /*! 
@@ -394,7 +350,7 @@ namespace dcp
              *  Stored as a \c std::shared_ptr because it may be common to more than 
              *  one problem
              */
-            std::shared_ptr<dolfin::FunctionSpace> functionSpace_;
+            std::shared_ptr<const dolfin::FunctionSpace> functionSpace_;
 
             //! The Dirichlet's boundary conditions. The map associates the bc's name to the bc itself
             std::map<std::string, dolfin::DirichletBC> dirichletBCs_;

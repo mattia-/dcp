@@ -50,12 +50,12 @@ int main (int argc, char* argv[])
 {
     // create mesh and finite element space 
     dolfin::info ("Create mesh and finite element space...");
-    dolfin::UnitSquareMesh mesh (20, 20);
-    poisson::FunctionSpace V (mesh);
+    auto mesh = std::make_shared<dolfin::UnitSquareMesh> (20, 20);
+    auto V = std::make_shared<poisson::FunctionSpace> (mesh);
     
     // define problem
     dolfin::info ("Define the problem...");
-    dcp::LinearProblem <poisson::BilinearForm, poisson::LinearForm> poissonProblem (dolfin::reference_to_no_delete_pointer (V));
+    dcp::LinearProblem <poisson::BilinearForm, poisson::LinearForm> poissonProblem (V);
 
     // define coefficients
     dolfin::info ("Define the problem's coefficients...");

@@ -44,7 +44,9 @@ namespace dcp
         
         problem.removeDirichletBC (dirichletBCName_);
         
-        problem.addDirichletBC (dolfin::DirichletBC (*(functionSpace_), dirichletBCValue, dirichletBoundary_),
+        problem.addDirichletBC (dolfin::DirichletBC (functionSpace_, 
+                                                     dolfin::reference_to_no_delete_pointer (dirichletBCValue), 
+                                                     dolfin::reference_to_no_delete_pointer (dirichletBoundary_)),
                                 dirichletBCName_);
     }
 }

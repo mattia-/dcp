@@ -25,7 +25,6 @@
 #include "dcp/objective_functional/objective_functional.h"
 #include "dcp/optimizers/optimizers.h"
 #include "dcp/problems/problems.h"
-#include "dcp/splitting_methods/splitting_methods.h"
 #include "dcp/subdomains/subdomains.h"
 #include "dcp/time/time.h"
 #include "dcp/utils/utils.h"

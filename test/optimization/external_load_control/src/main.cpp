@@ -77,22 +77,20 @@ int main (int argc, char* argv[])
     // dolfin::set_log_level (dolfin::DBG);
     
     // mesh
-    dolfin::UnitSquareMesh mesh (20, 20);
+    auto mesh = std::make_shared<dolfin::UnitSquareMesh> (20, 20);
     
     // function spaces
-    primal::FunctionSpace V (mesh);
-    adjoint::FunctionSpace W (mesh);
+    auto V = std::make_shared<primal::FunctionSpace> (mesh);
+    auto W = std::make_shared<adjoint::FunctionSpace> (mesh);
 
     
     // =======================
     // PRIMAL+ADJOINT PROBLEMS
     // =======================
     // define problems
-    dcp::LinearProblem <primal::BilinearForm, primal::LinearForm> 
-        primalProblem (dolfin::reference_to_no_delete_pointer (V));
+    dcp::LinearProblem <primal::BilinearForm, primal::LinearForm> primalProblem (V);
 
-    dcp::LinearProblem <adjoint::BilinearForm, adjoint::LinearForm> 
-        adjointProblem (dolfin::reference_to_no_delete_pointer (W));
+    dcp::LinearProblem <adjoint::BilinearForm, adjoint::LinearForm> adjointProblem (W);
 
     // create composite differential problem
     dcp::EquationSystem problems;

@@ -66,18 +66,14 @@ namespace dcp
                 //! Default constructor is deleted. The class is not default constructable.
                 NonlinearProblem () = delete;
 
-                //!  Constructor with shared pointers [1]
+                //!  Constructor [1]
                 /*!
-                 *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
-                 *  \c dolfin::FunctionSpace
+                 *  \param functionSpace the problem finite element space 
                  *  \param residualFormSolutionName a string that identifies the name of the function representing the
                  *  problem solution in the residual form 
                  *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
                  *  problem solution in the jacobian form. Default value is the empty string, in which case 
                  *  \c residualFormSolutionName will be used for \c jacobianFormSolutionName
-                 *  The stored function space's ownership will be shared between the object and the input
-                 *  argument. The residual and jacobian form will be created too, calling the constructor which takes
-                 *  the function space as input.
                  *  The constructors also sets the following parameters:
                  *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
                  *      - \c "residual_form_solution_name" (see input arguments)
@@ -85,59 +81,14 @@ namespace dcp
                  *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
                  *        parameters
                  */
-                NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
-                                  const std::string& residualFormSolutionName,
-                                  const std::string& jacobianFormSolutionName = "" );
-                
-
-                //! Constructor with references [1]
-                /*!
-                 *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
-                 *  \param residualFormSolutionName a string that identifies the name of the function representing the
-                 *  problem solution in the residual form 
-                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
-                 *  problem solution in the jacobian form. Default value is the empty string, in which case \c
-                 *  residualFormSolutionName will be used for \c jacobianFormSolutionName
-                 *  The stored function space's ownership will be unique to the object, since the pointer is initialized
-                 *  using the \c new operator and functionSpace's copy constructor. The residual and jacobian form will
-                 *  be created too, calling the constructor which takes the function space as input.
-                 *  The constructors also sets the following parameters:
-                 *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
-                 *      - \c "residual_form_solution_name" (see input arguments)
-                 *      - \c "jacobian_form_solution_name" (see input arguments)
-                 *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
-                 *        parameters
-                 */
-                NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
-                                  const std::string& residualFormSolutionName,
-                                  const std::string& jacobianFormSolutionName = "" );
-
-                //! Constructor with rvalue references [1]
-                /*!
-                 *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
-                 *  \param residualFormSolutionName a string that identifies the name of the function representing the
-                 *  problem solution in the residual form 
-                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
-                 *  problem solution in the jacobian form. Default value is the empty string, in which case \c
-                 *  residualFormSolutionName will be used for \c jacobianFormSolutionName
-                 *  The stored function space's ownership will be unique to the object, since the pointer is initialized
-                 *  using the \c new operator and mesh's and functionSpace's move constructor. The residual and jacobian
-                 *  form will be created too, calling the constructor which takes the function space as input.
-                 *  The constructors also sets the following parameters:
-                 *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
-                 *      - \c "residual_form_solution_name" (see input arguments)
-                 *      - \c "jacobian_form_solution_name" (see input arguments)
-                 *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
-                 *        parameters
-                 */
-                NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
+                NonlinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace,
                                   const std::string& residualFormSolutionName,
                                   const std::string& jacobianFormSolutionName = "" );
 
                 
-                //!  Constructor with shared pointers [2]
-                /*!
-                 *  \param functionSpace the problem finite element space as a const \c std::shared_ptr to 
+                //!  Constructor [2]
+                /*
+                 *  \param functionSpace the problem finite element space
                  *  \param residualForm a \c const reference to the problem's residual form
                  *  \param jacobianForm a \c const reference to the problem's jacobian form
                  *  \c dolfin::FunctionSpace
@@ -146,9 +97,6 @@ namespace dcp
                  *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
                  *  problem solution in the jacobian form. Default value is the empty string, in which case 
                  *  \c residualFormSolutionName will be used for \c jacobianFormSolutionName
-                 *  The stored function space's ownership will be shared between the object and the input
-                 *  argument. The residual and jacobian form will be created too, calling the constructor which takes
-                 *  the function space as input.
                  *  The constructors also sets the following parameters:
                  *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
                  *      - \c "residual_form_solution_name" (see input arguments)
@@ -156,64 +104,12 @@ namespace dcp
                  *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
                  *        parameters
                  */
-                NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                NonlinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace,
                                   const T_ResidualForm& residualForm,
                                   const T_JacobianForm& jacobianForm,
                                   const std::string& residualFormSolutionName,
                                   const std::string& jacobianFormSolutionName = "" );
 
-                //! Constructor with references [2]
-                /*!
-                 *  \param functionSpace the problem finite element space as a const \c dolfin::FunctionSpace&
-                 *  \param residualForm a \c const reference to the problem's residual form
-                 *  \param jacobianForm a \c const reference to the problem's jacobian form
-                 *  \param residualFormSolutionName a string that identifies the name of the function representing the
-                 *  problem solution in the residual form 
-                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
-                 *  problem solution in the jacobian form. Default value is the empty string, in which case \c
-                 *  residualFormSolutionName will be used for \c jacobianFormSolutionName
-                 *  The stored function space's ownership will be unique to the object, since the pointer is initialized
-                 *  using the \c new operator and functionSpace's copy constructor. The residual and jacobian form will
-                 *  be created too, calling the constructor which takes the function space as input.
-                 *  The constructors also sets the following parameters:
-                 *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
-                 *      - \c "residual_form_solution_name" (see input arguments)
-                 *      - \c "jacobian_form_solution_name" (see input arguments)
-                 *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
-                 *        parameters
-                 */
-                NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
-                                  const T_ResidualForm& residualForm,
-                                  const T_JacobianForm& jacobianForm,
-                                  const std::string& residualFormSolutionName,
-                                  const std::string& jacobianFormSolutionName = "" );
-
-                //! Constructor with rvalue references [2]
-                /*!
-                 *  \param functionSpace the problem finite element space as a dolfin::FunctionSpace&&
-                 *  \param residualForm a \c const reference to the problem's residual form
-                 *  \param jacobianForm a \c const reference to the problem's jacobian form
-                 *  \param residualFormSolutionName a string that identifies the name of the function representing the
-                 *  problem solution in the residual form 
-                 *  \param jacobianFormSolutionName a string that identifies the name of the function representing the
-                 *  problem solution in the jacobian form. Default value is the empty string, in which case \c
-                 *  residualFormSolutionName will be used for \c jacobianFormSolutionName
-                 *  The stored function space's ownership will be unique to the object, since the pointer is initialized
-                 *  using the \c new operator and mesh's and functionSpace's move constructor. The residual and jacobian
-                 *  form will be created too, calling the constructor which takes the function space as input.
-                 *  The constructors also sets the following parameters:
-                 *      - all the <tt>dolfin::NonlinearVariationalSolver</tt> default parameters
-                 *      - \c "residual_form_solution_name" (see input arguments)
-                 *      - \c "jacobian_form_solution_name" (see input arguments)
-                 *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver 
-                 *        parameters
-                 */
-                NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
-                                  T_ResidualForm&& residualForm,
-                                  T_JacobianForm&& jacobianForm,
-                                  const std::string& residualFormSolutionName,
-                                  const std::string& jacobianFormSolutionName = "" );
-                
 
                 /******************* DESTRUCTOR *******************/
                 
@@ -343,16 +239,16 @@ namespace dcp
 
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        NonlinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace,
                           const std::string& residualFormSolutionName,
                           const std::string& jacobianFormSolutionName) : 
             GenericNonlinearProblem (functionSpace),
-            residualForm_ (*functionSpace_),
-            jacobianForm_ (*functionSpace_, *functionSpace_)
+            residualForm_ (functionSpace_),
+            jacobianForm_ (functionSpace_, functionSpace_)
         { 
             dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
+            solution_.emplace_back (std::make_pair (-1, dolfin::Function (functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
@@ -392,105 +288,7 @@ namespace dcp
 
     template <class T_ResidualForm, class T_JacobianForm>
         NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
-                          const std::string& residualFormSolutionName,
-                          const std::string& jacobianFormSolutionName) : 
-            GenericNonlinearProblem (functionSpace),
-            residualForm_ (*functionSpace_),
-            jacobianForm_ (*functionSpace_, *functionSpace_)
-        { 
-            dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
-            
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
-            
-            dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
-            parameters.add ("residual_form_solution_name", residualFormSolutionName);
-            if (jacobianFormSolutionName.empty ())
-            {
-                parameters.add ("jacobian_form_solution_name", residualFormSolutionName);
-            }
-            else
-            {
-                parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
-            }
-            parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
-            
-            dolfin::log (dolfin::DBG, "Setting initial guess...");
-            if (jacobianFormSolutionName.empty ())
-            {
-                residualForm_.set_coefficient (residualFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-                jacobianForm_.set_coefficient (residualFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-            }
-            else
-            {
-                residualForm_.set_coefficient (residualFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-            }
-            
-            dolfin::end ();
-            
-            dolfin::log (dolfin::DBG, "NonlinearProblem object created");
-        }
-            
-
-    
-    template <class T_ResidualForm, class T_JacobianForm>
-        NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
-                          const std::string& residualFormSolutionName,
-                          const std::string& jacobianFormSolutionName) : 
-            GenericNonlinearProblem (functionSpace),
-            residualForm_ (*functionSpace_),
-            jacobianForm_ (*functionSpace_, *functionSpace_)
-        { 
-            dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
-            
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
-            
-            dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
-            parameters.add ("residual_form_solution_name", residualFormSolutionName);
-            if (jacobianFormSolutionName.empty ())
-            {
-                parameters.add ("jacobian_form_solution_name", residualFormSolutionName);
-            }
-            else
-            {
-                parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
-            }
-            parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
-            
-            dolfin::log (dolfin::DBG, "Setting initial guess...");
-            if (jacobianFormSolutionName.empty ())
-            {
-                residualForm_.set_coefficient (residualFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-                jacobianForm_.set_coefficient (residualFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-            }
-            else
-            {
-                residualForm_.set_coefficient (residualFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-            }
-            
-            dolfin::end ();
-            
-            dolfin::log (dolfin::DBG, "NonlinearProblem object created");
-        }
-            
-
-
-    template <class T_ResidualForm, class T_JacobianForm>
-        NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        NonlinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace,
                           const T_ResidualForm& residualForm,
                           const T_JacobianForm& jacobianForm,
                           const std::string& residualFormSolutionName,
@@ -501,7 +299,7 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
             
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
+            solution_.emplace_back (std::make_pair (-1, dolfin::Function (functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
@@ -527,109 +325,6 @@ namespace dcp
             else
             {
                 residualForm_.set_coefficient (residualFormSolutionName,
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-            }
-            
-            dolfin::end ();
-            
-            dolfin::log (dolfin::DBG, "NonlinearProblem object created");
-        }
-
-    
-
-    template <class T_ResidualForm, class T_JacobianForm>
-        NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (const dolfin::FunctionSpace& functionSpace,
-                          const T_ResidualForm& residualForm,
-                          const T_JacobianForm& jacobianForm,
-                          const std::string& residualFormSolutionName,
-                          const std::string& jacobianFormSolutionName) : 
-            GenericNonlinearProblem (functionSpace),
-            residualForm_ (residualForm),
-            jacobianForm_ (jacobianForm)
-        { 
-            dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
-            
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
-            
-            dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
-            parameters.add ("residual_form_solution_name", residualFormSolutionName);
-            if (jacobianFormSolutionName.empty ())
-            {
-                parameters.add ("jacobian_form_solution_name", residualFormSolutionName);
-            }
-            else
-            {
-                parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
-            }
-            parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
-            
-            dolfin::log (dolfin::DBG, "Setting initial guess...");
-            if (jacobianFormSolutionName.empty ())
-            {
-                residualForm_.set_coefficient (residualFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-                jacobianForm_.set_coefficient (residualFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-            }
-            else
-            {
-                residualForm_.set_coefficient (residualFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-                jacobianForm_.set_coefficient (jacobianFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-            }
-            
-            dolfin::end ();
-            
-            dolfin::log (dolfin::DBG, "NonlinearProblem object created");
-        }
-            
-
-
-    template <class T_ResidualForm, class T_JacobianForm>
-        NonlinearProblem<T_ResidualForm, T_JacobianForm>::
-        NonlinearProblem (dolfin::FunctionSpace&& functionSpace,
-                          T_ResidualForm&& residualForm,
-                          T_JacobianForm&& jacobianForm,
-                          const std::string& residualFormSolutionName,
-                          const std::string& jacobianFormSolutionName) : 
-            GenericNonlinearProblem (functionSpace),
-            residualForm_ (residualForm),
-            jacobianForm_ (jacobianForm)
-        { 
-            dolfin::begin (dolfin::DBG, "Building NonlinearProblem...");
-            
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
-            
-            dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add (dolfin::NonlinearVariationalSolver::default_parameters ());
-            parameters.add ("residual_form_solution_name", residualFormSolutionName);
-            if (jacobianFormSolutionName.empty ())
-            {
-                parameters.add ("jacobian_form_solution_name", residualFormSolutionName);
-            }
-            else
-            {
-                parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
-            }
-            parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
-            
-            dolfin::log (dolfin::DBG, "Setting initial guess...");
-            
-            if (jacobianFormSolutionName.empty ())
-            {
-                residualForm_.set_coefficient (residualFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-                jacobianForm_.set_coefficient (residualFormSolutionName, 
-                                               dolfin::reference_to_no_delete_pointer (solution_.back ().second));
-            }
-            else
-            {
-                residualForm_.set_coefficient (residualFormSolutionName, 
                                                dolfin::reference_to_no_delete_pointer (solution_.back ().second));
                 jacobianForm_.set_coefficient (jacobianFormSolutionName, 
                                                dolfin::reference_to_no_delete_pointer (solution_.back ().second));
@@ -899,13 +594,15 @@ namespace dcp
             }
             else if (cloneMethod == "deep_clone")
             {
+                std::shared_ptr<dolfin::FunctionSpace> functionSpaceCopy (new dolfin::FunctionSpace (*functionSpace_));
+
                 clonedProblem = 
                     new dcp::NonlinearProblem <T_ResidualForm, T_JacobianForm> 
-                        (*(this->functionSpace_),
-                           this->residualForm_, 
-                           this->jacobianForm_,
-                          (this->parameters) ["residual_form_solution_name"],
-                          (this->parameters) ["jacobian_form_solution_name"]
+                        (functionSpaceCopy,
+                          this->residualForm_, 
+                          this->jacobianForm_,
+                         (this->parameters) ["residual_form_solution_name"],
+                         (this->parameters) ["jacobian_form_solution_name"]
                         );
             }
             else

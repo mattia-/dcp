@@ -47,12 +47,9 @@ namespace dcp
             //! Default constructor is deleted
             GenericObjectiveFunctional () = delete;
 
-            //! Constructor with \c shared_ptr
+            //! Constructor
             GenericObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh);
             
-            //! Constructor with <tt> const reference </tt>
-            GenericObjectiveFunctional (const dolfin::Mesh& mesh);
-
 
             /******************* DESTRUCTOR *******************/
 

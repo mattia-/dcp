@@ -22,37 +22,7 @@
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    GenericLinearProblem::GenericLinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
-        GenericProblem (functionSpace)
-    {
-        dolfin::begin (dolfin::DBG, "Building GenericLinearProblem...");
-        
-        dolfin::log (dolfin::DBG, "Setting up parameters...");
-        parameters.add ("problem_type", "linear");
-            
-        dolfin::end ();
-
-        dolfin::log (dolfin::DBG, "GenericLinearProblem object created");
-    }
-
-
-
-    GenericLinearProblem::GenericLinearProblem (const dolfin::FunctionSpace& functionSpace) : 
-        GenericProblem (functionSpace)
-    {
-        dolfin::begin (dolfin::DBG, "Building GenericLinearProblem...");
-        
-        dolfin::log (dolfin::DBG, "Setting up parameters...");
-        parameters.add ("problem_type", "linear");
-            
-        dolfin::end ();
-
-        dolfin::log (dolfin::DBG, "GenericLinearProblem object created");
-    }
-
-
-
-    GenericLinearProblem::GenericLinearProblem (dolfin::FunctionSpace&& functionSpace) : 
+    GenericLinearProblem::GenericLinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace) : 
         GenericProblem (functionSpace)
     {
         dolfin::begin (dolfin::DBG, "Building GenericLinearProblem...");

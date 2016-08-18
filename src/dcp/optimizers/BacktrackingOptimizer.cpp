@@ -89,8 +89,8 @@ namespace dcp
         dolfin::Function controlVariableIncrement (controlVariable.function_space ());
         
         // define output file and print header if necessary
-        std::ofstream OUTFILE;
-        bool hasOutputFile = openOutputFile_ (OUTFILE);
+        std::ofstream outfile;
+        bool hasOutputFile = openOutputFile_ (outfile);
         
         
         // all linear problems in the EquationSystem "problem" should be reassembled every time. So we
@@ -185,7 +185,7 @@ namespace dcp
         // print results to file
         if (hasOutputFile)
         {
-            print_ (OUTFILE, minimizationIteration, currentFunctionalValue, 0, 0, gradientNorm, relativeIncrement);
+            print_ (outfile, minimizationIteration, currentFunctionalValue, 0, 0, gradientNorm, relativeIncrement);
         }
         
         while (isConverged () == false && minimizationIteration < maxMinimizationIterations)
@@ -283,7 +283,7 @@ namespace dcp
             if (hasOutputFile)
             {
                 dolfin::log (dolfin::DBG, "Printing results to file...");
-                print_ (OUTFILE, 
+                print_ (outfile, 
                         minimizationIteration, 
                         currentFunctionalValue, 
                         alpha, 
@@ -320,7 +320,7 @@ namespace dcp
         
         if (hasOutputFile)
         {
-            OUTFILE.close ();
+            outfile.close ();
         }
     }
      
@@ -481,15 +481,15 @@ namespace dcp
     
 
 
-    bool BacktrackingOptimizer::openOutputFile_ (std::ofstream& OUTFILE)
+    bool BacktrackingOptimizer::openOutputFile_ (std::ofstream& outfile)
     {
         std::string outputFileName = this->parameters ["output_file_name"];
         std::string convergenceCriterion = this->parameters ["convergence_criterion"];
         
         if (!outputFileName.empty ())
         {
-            OUTFILE.open (outputFileName);
-            if (OUTFILE.fail ())
+            outfile.open (outputFileName);
+            if (outfile.fail ())
             {
                 dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp",
                                       "openOutputFile_",
@@ -499,7 +499,7 @@ namespace dcp
             
             if (convergenceCriterion == "both")
             {
-                OUTFILE << "# Iteration"
+                outfile << "# Iteration"
                         << "     "
                         << "Functional_value" 
                         << "     "
@@ -514,7 +514,7 @@ namespace dcp
             }
             else if (convergenceCriterion == "increment")
             {
-                OUTFILE << "# Iteration"
+                outfile << "# Iteration"
                         << "     "
                         << "Functional_value" 
                         << "     "
@@ -527,7 +527,7 @@ namespace dcp
             }
             else if (convergenceCriterion == "gradient")
             {
-                OUTFILE << "# Iteration"
+                outfile << "# Iteration"
                         << "     "
                         << "Functional_value" 
                         << "Alpha" 

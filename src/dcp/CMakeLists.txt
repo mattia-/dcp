@@ -4,7 +4,6 @@ ADD_SUBDIRECTORY (factories)
 ADD_SUBDIRECTORY (objective_functional)
 ADD_SUBDIRECTORY (optimizers)
 ADD_SUBDIRECTORY (subdomains)
-ADD_SUBDIRECTORY (splitting_methods)
 ADD_SUBDIRECTORY (time)
 ADD_SUBDIRECTORY (utils)
 

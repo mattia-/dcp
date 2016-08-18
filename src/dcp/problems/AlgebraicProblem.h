@@ -47,7 +47,7 @@ namespace dcp
             //! Default constructor is deleted. The class is not default constructable.
             AlgebraicProblem () = delete;
 
-            //!  Constructor with shared pointers [1]
+            //!  Constructor [1]
             /*!
              *  \param functionSpace the finite element space to be used to represent the solution
              *  \param expression the expression defining the problem. Its type must be a class derived from 
@@ -56,21 +56,20 @@ namespace dcp
              *  The constructors also sets the following parameters:
              *      - \c "problem_type" a string describing the problem. Default value: \c "algebraic"
              */
-            AlgebraicProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace, 
+            AlgebraicProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace, 
                               const std::shared_ptr<dcp::GenericExpression> expression);
 
 
-            //! Constructor with references [1]
+            //! Constructor [2]
             /*!
              *  \param functionSpace the finite element space to be used to represent the solution
-             *  The stored function space's ownership will be unique to the object, since the protected member
              *  \param expression the expression defining the problem. Its type must be a class derived from 
              *  \c dcp::GenericExpression
              *  
              *  The constructors also sets the following parameters:
              *      - \c "problem_type" a string describing the problem. Default value: \c "algebraic"
              */
-            AlgebraicProblem (const dolfin::FunctionSpace& functionSpace,
+            AlgebraicProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace, 
                               const dcp::GenericExpression& expression);
 
 

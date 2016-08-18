@@ -26,6 +26,7 @@
 #include <dolfin/function/Function.h>
 #include <functional>
 #include <string>
+#include <fstream>
 
 namespace dcp
 {
@@ -199,11 +200,11 @@ namespace dcp
             
             //! Function to open output file and print the header
             /*!
-             *  \param OUTFILE the file stream to print to
+             *  \param outfile the file stream to print to
              *  
              *  \return \c true if the file was opened, \c false otherwise
              */
-            bool openOutputFile_ (std::ofstream& OUTFILE);
+            bool openOutputFile_ (std::ofstream& outfile);
             
             /********************** MEMBERS ***********************/
             

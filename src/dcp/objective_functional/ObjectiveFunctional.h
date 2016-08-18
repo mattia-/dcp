@@ -79,23 +79,9 @@ namespace dcp
              *  The functional form will be created too, calling the constructor which takes the mesh
              *  as input.
              */
-            ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh,
+            ObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh,
                                  const typename T_Gradient::Evaluator& evaluator);
 
-
-            //! Constructor from reference [1]
-            /*!
-             *  \param mesh the mesh over which the functional is defined
-             *  \param evaluator the evaluator to be used to build \c gradient_
-             *  
-             *  The stored mesh's ownership will be unique to the object, since the protected member \c mesh_ is
-             *  initialized using the \c new operator and mesh's copy constructor.
-             *  The gradient will be created passing \c evaluator to the constructor.
-             *  The functional form will be created too, calling the constructor which takes the mesh
-             *  as input.
-             */
-            ObjectiveFunctional (const dolfin::Mesh& mesh,
-                                 const typename T_Gradient::Evaluator& evaluator);
 
             //!  Constructor from shared pointer [2]
             /*!
@@ -106,22 +92,7 @@ namespace dcp
              *  
              *  The stored mesh's ownership will be shared between the object and the input argument.
              */
-            ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh, 
-                                 const T_Gradient& gradient, 
-                                 const T_FunctionalForm& functional);
-
-
-            //! Constructor from reference [2]
-            /*!
-             *  \param mesh the mesh over which the functional is defined
-             *  \param gradient the gradient of the functional
-             *  \param functional the functional itself, which will be used to initialize the protected member
-             *  of the class
-             *  
-             *  The stored mesh's and ownership will be unique to the object, since the protected member \c mesh_ is
-             *  initialized using the \c new operator and mesh's copy constructor.
-             */
-            ObjectiveFunctional (const dolfin::Mesh& mesh, 
+            ObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh, 
                                  const T_Gradient& gradient, 
                                  const T_FunctionalForm& functional);
 
@@ -234,22 +205,7 @@ namespace dcp
     /******************* CONSTRUCTORS *******************/
     template <class T_FunctionalForm, class T_Gradient>
         ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh,
-                             const typename T_Gradient::Evaluator& evaluator) :
-            GenericObjectiveFunctional (mesh),
-            functional_ (*mesh),
-            gradient_ (new T_Gradient (evaluator))
-    {
-        dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
-        dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
-        dolfin::end ();
-    }
-
-
-
-    template <class T_FunctionalForm, class T_Gradient>
-        ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        ObjectiveFunctional (const dolfin::Mesh& mesh,
+        ObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh,
                              const typename T_Gradient::Evaluator& evaluator) :
             GenericObjectiveFunctional (mesh),
             functional_ (mesh),
@@ -264,23 +220,7 @@ namespace dcp
 
     template <class T_FunctionalForm, class T_Gradient>
         ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        ObjectiveFunctional (const std::shared_ptr <dolfin::Mesh> mesh, 
-                             const T_Gradient& gradient, 
-                             const T_FunctionalForm& functional) : 
-            GenericObjectiveFunctional (mesh),
-            functional_ (functional),
-            gradient_ (new T_Gradient (gradient)) // TODO remember it is a shallow copy
-    {
-        dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
-        dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
-        dolfin::end ();
-    }
-
-
-
-    template <class T_FunctionalForm, class T_Gradient>
-        ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        ObjectiveFunctional (const dolfin::Mesh& mesh, 
+        ObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh, 
                              const T_Gradient& gradient, 
                              const T_FunctionalForm& functional) : 
             GenericObjectiveFunctional (mesh),

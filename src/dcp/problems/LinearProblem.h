@@ -70,13 +70,9 @@ namespace dcp
                 //! Default constructor is deleted. The class is not default constructable.
                 LinearProblem () = delete;
 
-                //!  Constructor with shared pointers [1]
+                //!  Constructor [1]
                 /*!
-                 *  \param functionSpace the problem finite element space as a <tt> const std::shared_ptr </tt> to 
-                 *  \c dolfin::FunctionSpace
-                 *  The stored function space's ownership will be shared between the object and the input argument. The
-                 *  bilinear and linear form will be created too, calling the constructor which takes the function space
-                 *  as input.
+                 *  \param functionSpace the problem finite element space 
                  *  The constructors also sets the following parameters:
                  *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
                  *        Default value: false
@@ -89,52 +85,9 @@ namespace dcp
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
                  *        reassembled every time the \c solve method is called. Default value: \c false
                  */
-                LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace);
+                LinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
 
-
-                //! Constructor with references [1]
-                /*!
-                 *  \param functionSpace the problem finite element space as a <tt> const dolfin::FunctionSpace& </tt>
-                 *  The stored function space's ownership will be unique to the object, since the protected member
-                 *  variable is initialized using the \c new operator and functionSpace's copy constructor. The
-                 *  bilinear and linear form will be created too, calling the constructor which takes the function space
-                 *  as input.
-                 *  The constructors also sets the following parameters:
-                 *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
-                 *        Default value: false
-                 *      - \c "solver_type" the type of the solver to be used. Default value: \c "lu_solver"
-                 *      - \c "solver_method" the method to be used by the solver. Default value: \c "default"
-                 *      - \c "solver_preconditioner" the preconditioner to be used by the solver. 
-                 *        Default value: \c "default"
-                 *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
-                 *        the linear system when the \ solve method is called. Default value: \c false
-                 *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
-                 *        reassembled every time the \c solve method is called. Default value: \c false
-                 */
-                LinearProblem (const dolfin::FunctionSpace& functionSpace);
-
-                //! Constructor with rvalue references [1]
-                /*!
-                 *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
-                 *  The stored function space's ownership will be unique to the object, since the protected member
-                 *  variable is initialized using the \c new operator and functionSpace's move constructor. The bilinear
-                 *  and linear form will be created too, calling the constructor which takes the function space as
-                 *  input.
-                 *  The constructors also sets the following parameters:
-                 *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
-                 *        Default value: false
-                 *      - \c "solver_type" the type of the solver to be used. Default value: \c "lu_solver"
-                 *      - \c "solver_method" the method to be used by the solver. Default value: \c "default"
-                 *      - \c "solver_preconditioner" the preconditioner to be used by the solver. 
-                 *        Default value: \c "default"
-                 *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
-                 *        the linear system when the \ solve method is called. Default value: \c false
-                 *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
-                 *        reassembled every time the \c solve method is called. Default value: \c false
-                 */
-                LinearProblem (dolfin::FunctionSpace&& functionSpace);
-
-                //!  Constructor with shared pointers [2]
+                //!  Constructor [2]
                 /*!
                  *  \param functionSpace the problem finite element space as a <tt>const std::shared_ptr </tt> to 
                  *  \c dolfin::FunctionSpace
@@ -155,59 +108,10 @@ namespace dcp
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
                  *        reassembled every time the \c solve method is called. Default value: \c false
                  */
-                LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+                LinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace,
                                const T_BilinearForm& bilinearForm,
                                const T_LinearForm& linearForm);
 
-                //! Constructor with references [2]
-                /*!
-                 *  \param functionSpace the problem finite element space as a <tt>const dolfin::FunctionSpace& </tt>
-                 *  \param bilinearForm a \c const reference to the problem's bilinear form
-                 *  \param linearForm a \c const reference to the problem's linear form
-                 *  The stored function space's ownership will be unique to the object, since the protected member
-                 *  variable is initialized using the \c new operator and functionSpace's copy constructor. The bilinear
-                 *  and linear form will be created too, calling the constructor which takes the function space as
-                 *  input.
-                 *  The constructors also sets the following parameters:
-                 *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
-                 *        Default value: false
-                 *      - \c "solver_type" the type of the solver to be used. Default value: \c "lu_solver"
-                 *      - \c "solver_method" the method to be used by the solver. Default value: \c "default"
-                 *      - \c "solver_preconditioner" the preconditioner to be used by the solver. 
-                 *        Default value: \c "default"
-                 *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
-                 *        the linear system when the \ solve method is called. Default value: \c false
-                 *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
-                 *        reassembled every time the \c solve method is called. Default value: \c false
-                 */
-                LinearProblem (const dolfin::FunctionSpace& functionSpace,
-                               const T_BilinearForm& bilinearForm,
-                               const T_LinearForm& linearForm);
-
-                //! Constructor with rvalue references [2]
-                /*!
-                 *  \param functionSpace the problem finite element space as a \c dolfin::FunctionSpace&&
-                 *  \param bilinearForm a rvalue reference to the problem's bilinear form
-                 *  \param linearForm a rvalue reference to the problem's linear form
-                 *  The stored function space's ownership will be unique to the object, since the protected member
-                 *  variable is initialized using the \c new operator and functionSpace's move constructor The bilinear
-                 *  and linear form will be created too, calling the constructor which takes the function space as
-                 *  input.
-                 *  The constructors also sets the following parameters:
-                 *      - \c "lump_matrix" boolean value that controls whether the system matrix is lumped or not.
-                 *        Default value: false
-                 *      - \c "solver_type" the type of the solver to be used. Default value: \c "lu_solver"
-                 *      - \c "solver_method" the method to be used by the solver. Default value: \c "default"
-                 *      - \c "solver_preconditioner" the preconditioner to be used by the solver. 
-                 *        Default value: \c "default"
-                 *      - \c "system_is_assembled" a flag that can be set to false if one wants to force a reassembly of
-                 *        the linear system when the \ solve method is called. Default value: \c false
-                 *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be 
-                 *        reassembled every time the \c solve method is called. Default value: \c false
-                 */
-                LinearProblem (dolfin::FunctionSpace&& functionSpace,
-                               T_BilinearForm&& bilinearForm,
-                               T_LinearForm&& linearForm);
 
                 /******************* DESTRUCTOR *******************/
 
@@ -492,10 +396,10 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace) :
+        LinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace) :
             GenericLinearProblem (functionSpace),
-            bilinearForm_ (*functionSpace_, *functionSpace_),
-            linearForm_ (*functionSpace_),
+            bilinearForm_ (functionSpace_, functionSpace_),
+            linearForm_ (functionSpace_),
             solver_ (nullptr),
             problemMatrix_ (),
             rhsVector_ (),
@@ -505,7 +409,7 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
 
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
+            solution_.emplace_back (std::make_pair (-1, dolfin::Function (functionSpace_)));
 
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("lump_matrix", false);
@@ -528,79 +432,7 @@ namespace dcp
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (const dolfin::FunctionSpace& functionSpace) :
-            GenericLinearProblem (functionSpace),
-            bilinearForm_ (*functionSpace_, *functionSpace_),
-            linearForm_ (*functionSpace_),
-            solver_ (nullptr),
-            problemMatrix_ (),
-            rhsVector_ (),
-            solverType_ ("lu_solver"),
-            solverMethod_ ("default"),
-            solverPreconditioner_ ("default")
-        { 
-            dolfin::begin (dolfin::DBG, "Building LinearProblem...");
-            
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
-            
-            dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("lump_matrix", false);
-            parameters.add ("solver_type", solverType_);
-            parameters.add ("solver_method", solverMethod_);
-            parameters.add ("solver_preconditioner", solverPreconditioner_);
-            parameters.add ("system_is_assembled", false);
-            parameters.add ("force_reassemble_system", false);  
-            
-            dolfin::begin (dolfin::DBG, "Creating solver...");
-            solver_ = createSolver_ ();
-            dolfin::end ();
-            
-            dolfin::end ();
-            
-            dolfin::log (dolfin::DBG, "LinearProblem object created");
-        }
-
-
-
-    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (dolfin::FunctionSpace&& functionSpace) :
-            GenericLinearProblem (functionSpace),
-            bilinearForm_ (*functionSpace_, *functionSpace_),
-            linearForm_ (*functionSpace_),
-            solver_ (nullptr),
-            problemMatrix_ (),
-            rhsVector_ (),
-            solverType_ ("lu_solver"),
-            solverMethod_ ("default"),
-            solverPreconditioner_ ("default")
-        { 
-            dolfin::begin (dolfin::DBG, "Building LinearProblem...");
-            
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
-            
-            dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("lump_matrix", false);
-            parameters.add ("solver_type", solverType_);
-            parameters.add ("solver_method", solverMethod_);
-            parameters.add ("solver_preconditioner", solverPreconditioner_);
-            parameters.add ("system_is_assembled", false);
-            parameters.add ("force_reassemble_system", false);
-        
-            dolfin::begin (dolfin::DBG, "Creating solver...");
-            solver_ = createSolver_ ();
-            dolfin::end ();
-            
-            dolfin::end ();
-            
-            dolfin::log (dolfin::DBG, "LinearProblem object created");
-        }
-
-
-
-    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace,
+        LinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace,
                        const T_BilinearForm& bilinearForm,
                        const T_LinearForm& linearForm) :
             GenericLinearProblem (functionSpace),
@@ -615,7 +447,7 @@ namespace dcp
         { 
             dolfin::begin (dolfin::DBG, "Building LinearProblem...");
             
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
+            solution_.emplace_back (std::make_pair (-1, dolfin::Function (functionSpace_)));
             
             dolfin::log (dolfin::DBG, "Setting up parameters...");
             parameters.add ("lump_matrix", false);
@@ -624,82 +456,6 @@ namespace dcp
             parameters.add ("solver_preconditioner", solverPreconditioner_);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);
-            
-            dolfin::begin (dolfin::DBG, "Creating solver...");
-            solver_ = createSolver_ ();
-            dolfin::end ();
-            
-            dolfin::end ();
-            
-            dolfin::log (dolfin::DBG, "LinearProblem object created");
-        }
-
-
-
-    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (const dolfin::FunctionSpace& functionSpace,
-                       const T_BilinearForm& bilinearForm,
-                       const T_LinearForm& linearForm) :
-            GenericLinearProblem (functionSpace),
-            bilinearForm_ (bilinearForm),
-            linearForm_ (linearForm),
-            solver_ (nullptr),
-            problemMatrix_ (),
-            rhsVector_ (),
-            solverType_ ("lu_solver"),
-            solverMethod_ ("default"),
-            solverPreconditioner_ ("default")
-        { 
-            dolfin::begin (dolfin::DBG, "Building LinearProblem...");
-            
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
-            
-            dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("lump_matrix", false);
-            parameters.add ("solver_type", solverType_);
-            parameters.add ("solver_method", solverMethod_);
-            parameters.add ("solver_preconditioner", solverPreconditioner_);
-            parameters.add ("system_is_assembled", false);
-            parameters.add ("force_reassemble_system", false);  
-            
-            dolfin::begin (dolfin::DBG, "Creating solver...");
-            solver_ = createSolver_ ();
-            dolfin::end ();
-            
-            dolfin::end ();
-            
-            dolfin::log (dolfin::DBG, "LinearProblem object created");
-        }
-
-
-
-    template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
-        LinearProblem (dolfin::FunctionSpace&& functionSpace,
-                       T_BilinearForm&& bilinearForm,
-                       T_LinearForm&& linearForm) :
-            GenericLinearProblem (functionSpace),
-            bilinearForm_ (std::move (bilinearForm)),
-            linearForm_ (std::move (linearForm)),
-            solver_ (nullptr),
-            problemMatrix_ (),
-            rhsVector_ (),
-            solverType_ ("lu_solver"),
-            solverMethod_ ("default"),
-            solverPreconditioner_ ("default")
-        {
-            dolfin::begin (dolfin::DBG, "Building LinearProblem...");
-            
-            solution_.emplace_back (std::make_pair (-1, dolfin::Function (*functionSpace_)));
-            
-            dolfin::log (dolfin::DBG, "Setting up parameters...");
-            parameters.add ("lump_matrix", false);
-            parameters.add ("solver_type", solverType_);
-            parameters.add ("solver_method", solverMethod_);
-            parameters.add ("solver_preconditioner", solverPreconditioner_);
-            parameters.add ("system_is_assembled", false);
-            parameters.add ("force_reassemble_system", false);  
             
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver_ ();
@@ -1197,11 +953,13 @@ namespace dcp
             }
             else if (cloneMethod == "deep_clone")
             {
+                std::shared_ptr<dolfin::FunctionSpace> functionSpaceCopy (new dolfin::FunctionSpace (*functionSpace_));
+
                 clonedProblem =
                     new dcp::LinearProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory> 
-                    (*(this->functionSpace_),
-                       this->bilinearForm_, 
-                       this->linearForm_);
+                    (functionSpaceCopy,
+                     this->bilinearForm_, 
+                     this->linearForm_);
             }
             else
             {

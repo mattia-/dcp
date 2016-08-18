@@ -22,37 +22,7 @@
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    GenericNonlinearProblem::GenericNonlinearProblem (const std::shared_ptr<dolfin::FunctionSpace> functionSpace) : 
-        GenericProblem (functionSpace)
-    {
-        dolfin::begin (dolfin::DBG, "Building GenericNonlinearProblem...");
-        
-        dolfin::log (dolfin::DBG, "Setting up parameters...");
-        parameters.add ("problem_type", "non_linear");
-            
-        dolfin::end ();
-
-        dolfin::log (dolfin::DBG, "GenericNonlinearProblem object created");
-    }
-
-
-
-    GenericNonlinearProblem::GenericNonlinearProblem (const dolfin::FunctionSpace& functionSpace) : 
-        GenericProblem (functionSpace)
-    {
-        dolfin::begin (dolfin::DBG, "Building GenericNonlinearProblem...");
-        
-        dolfin::log (dolfin::DBG, "Setting up parameters...");
-        parameters.add ("problem_type", "non_linear");
-            
-        dolfin::end ();
-
-        dolfin::log (dolfin::DBG, "GenericNonlinearProblem object created");
-    }
-
-
-
-    GenericNonlinearProblem::GenericNonlinearProblem (dolfin::FunctionSpace&& functionSpace) : 
+    GenericNonlinearProblem::GenericNonlinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace) : 
         GenericProblem (functionSpace)
     {
         dolfin::begin (dolfin::DBG, "Building GenericNonlinearProblem...");

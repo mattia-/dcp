@@ -109,7 +109,8 @@ namespace dcp
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 1D form to compute dot products and norms");
                     std::shared_ptr <dolfin::Form> tmp = nullptr;
-                    tmp.reset (new dotproductforms::Form_scalar1D_dotProduct (mesh));
+                    tmp.reset 
+                        (new dotproductforms::Form_scalar1D_dotProduct (dolfin::reference_to_no_delete_pointer (mesh)));
                     return tmp;
                 }
                 else
@@ -128,14 +129,16 @@ namespace dcp
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 2D form to compute dot products and norms");
                     std::shared_ptr <dolfin::Form> tmp = nullptr;
-                    tmp.reset (new dotproductforms::Form_scalar2D_dotProduct (mesh));
+                    tmp.reset 
+                        (new dotproductforms::Form_scalar2D_dotProduct (dolfin::reference_to_no_delete_pointer (mesh)));
                     return tmp;
                 }
                 else if (rank == 1)
                 {
                     dolfin::log (dolfin::DBG, "Selected vector 2D form to compute dot products and norms");
                     std::shared_ptr <dolfin::Form> tmp = nullptr;
-                    tmp.reset (new dotproductforms::Form_vector2D_dotProduct (mesh));
+                    tmp.reset 
+                        (new dotproductforms::Form_vector2D_dotProduct (dolfin::reference_to_no_delete_pointer (mesh)));
                     return tmp;
                 }
                 else
@@ -154,14 +157,16 @@ namespace dcp
                 {
                     dolfin::log (dolfin::DBG, "Selected scalar 3D form to compute dot products and norms");
                     std::shared_ptr <dolfin::Form> tmp = nullptr;
-                    tmp.reset (new dotproductforms::Form_scalar3D_dotProduct (mesh));
+                    tmp.reset 
+                        (new dotproductforms::Form_scalar3D_dotProduct (dolfin::reference_to_no_delete_pointer (mesh)));
                     return tmp;
                 }
                 else if (rank == 1)
                 {
                     dolfin::log (dolfin::DBG, "Selected vector 3D form to compute dot products and norms");
                     std::shared_ptr <dolfin::Form> tmp = nullptr;
-                    tmp.reset (new dotproductforms::Form_vector3D_dotProduct (mesh));
+                    tmp.reset 
+                        (new dotproductforms::Form_vector3D_dotProduct (dolfin::reference_to_no_delete_pointer (mesh)));
                     return tmp;
                 }
                 else

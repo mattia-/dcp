@@ -42,10 +42,9 @@ namespace dcp
      *  
      *  Template arguments are:
      *  \arg T_FunctionalForm_ the functional form type
-     *  \arg T_Gradient_ the gradient type, which must be a class derived from \c dcp::GenericExpression
      */
 
-    template <class T_FunctionalForm_, class T_Gradient_>
+    template <class T_FunctionalForm_>
         class ObjectiveFunctional : public dcp::GenericObjectiveFunctional
     {
         // ---------------------------------------------------------------------------------------------//  
@@ -53,37 +52,22 @@ namespace dcp
         public:
             /******************* TYPEDEFS *******************/
             typedef T_FunctionalForm_ T_FunctionalForm;
-            typedef T_Gradient_       T_Gradient;
-
-            /*  
-             *  TODO I need another set of constructors that take also a pointer to dcp::Time in input so that we
-             *  can build time dependent expressions, which have a different constuctor signature
-             *  
-             *  Even though for the time being the constructor using the T_Gradient& object can be enough
-             *  
-             *  Also because then I would need to add a set of constructors for every constructor argument in
-             *  dcp::GenericExpression hierarchy...and they are a lot! So maybe I'll be fine with just what I have.
-             */
 
             /******************* CONSTRUCTORS *******************/
             //! Default constructor is deleted. The class is not default constructable.
             ObjectiveFunctional () = delete;
 
-            //!  Constructor from shared pointer [1]
+            //!  Constructor [1]
             /*!
              *  \param mesh the mesh over which the functional is defined
-             *  \param evaluator the evaluator to be used to build \c gradient_
+             *  \param gradient the gradient of the functional
              *  
              *  The stored mesh's ownership will be shared between the object and the input argument.
-             *  The gradient will be created passing \c evaluator to the constructor.
-             *  The functional form will be created too, calling the constructor which takes the mesh
-             *  as input.
              */
-            ObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh,
-                                 const typename T_Gradient::Evaluator& evaluator);
+            ObjectiveFunctional (const std::shared_ptr<const dolfin::Mesh> mesh, 
+                                 const std::shared_ptr<dcp::GenericExpression>& gradient);
 
-
-            //!  Constructor from shared pointer [2]
+            //!  Constructor [2]
             /*!
              *  \param mesh the mesh over which the functional is defined
              *  \param gradient the gradient of the functional
@@ -92,23 +76,12 @@ namespace dcp
              *  
              *  The stored mesh's ownership will be shared between the object and the input argument.
              */
-            ObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh, 
-                                 const T_Gradient& gradient, 
+            ObjectiveFunctional (const std::shared_ptr<const dolfin::Mesh> mesh, 
+                                 const std::shared_ptr<dcp::GenericExpression>& gradient, 
                                  const T_FunctionalForm& functional);
 
-            //! Copy constructor
-            /*!
-             *  Construct from object of type ObjectiveFunctional<T_FunctionalForm, T_Gradient>.
-             *  Input arguments are:
-             *  \param rhs the object to copy
-             *  \param copyMode the type of copy to be performed. 
-             *  It can be either \c deep_copy or \c shallow_copy. If the former is selected, the new
-             *  object will be created calling the constructor that takes a refenrence to \c dolfin::Mesh, so that the
-             *  mesh itself is created. If the latter is selected, the pointer will be copied, adding the new 
-             *  ObjectiveFunctional object to the ownership pool of the mesh object. Default value: \c shallow_copy
-             */
-            ObjectiveFunctional (const ObjectiveFunctional<T_FunctionalForm, T_Gradient>& rhs,
-                                 const std::string& copyMode = "shallow_copy");
+            //! Copy constructor (default shallow copy constructro)
+            ObjectiveFunctional (const ObjectiveFunctional<T_FunctionalForm>& rhs) = default;
 
             
             /******************* DESTRUCTOR *******************/
@@ -131,7 +104,7 @@ namespace dcp
             /*! 
              *  \return a const reference to the functional gradient
              */
-            virtual const T_Gradient& gradient () const override;
+            virtual const dcp::GenericExpression& gradient () const override;
 
 
             /******************* SETTERS *******************/
@@ -186,7 +159,7 @@ namespace dcp
             //! The functional itself
             T_FunctionalForm functional_;
 
-            //! The gradient of the functional. Stored as a shared_ptr to the base class so that polymorphism applies
+            //! The gradient of the functional
             std::shared_ptr<dcp::GenericExpression> gradient_;
 
             // ---------------------------------------------------------------------------------------------//
@@ -203,13 +176,13 @@ namespace dcp
 
 
     /******************* CONSTRUCTORS *******************/
-    template <class T_FunctionalForm, class T_Gradient>
-        ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        ObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh,
-                             const typename T_Gradient::Evaluator& evaluator) :
+    template <class T_FunctionalForm>
+        ObjectiveFunctional<T_FunctionalForm>::
+        ObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh, 
+                             const std::shared_ptr<dcp::GenericExpression>& gradient) :
             GenericObjectiveFunctional (mesh),
             functional_ (mesh),
-            gradient_ (new T_Gradient (evaluator))
+            gradient_ (gradient) 
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
         dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
@@ -218,42 +191,25 @@ namespace dcp
 
 
 
-    template <class T_FunctionalForm, class T_Gradient>
-        ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
+    template <class T_FunctionalForm>
+        ObjectiveFunctional<T_FunctionalForm>::
         ObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh, 
-                             const T_Gradient& gradient, 
-                             const T_FunctionalForm& functional) : 
+                             const std::shared_ptr<dcp::GenericExpression>& gradient,
+                             const T_FunctionalForm& functional) :
             GenericObjectiveFunctional (mesh),
             functional_ (functional),
-            gradient_ (new T_Gradient (gradient)) // TODO remember it is a shallow copy
+            gradient_ (gradient) 
     {
         dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
         dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
-        dolfin::end ();
-    }
-
-
-
-    template <class T_FunctionalForm, class T_Gradient>
-        ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
-        ObjectiveFunctional (const ObjectiveFunctional<T_FunctionalForm, T_Gradient>& rhs, 
-                             const std::string& copyMode) :
-            GenericObjectiveFunctional (copyMode == "shallow_copy" ? 
-                                         rhs.mesh_ : 
-                                         std::shared_ptr<const dolfin::Mesh> (new dolfin::Mesh (*(rhs.mesh_)))),
-            functional_ (rhs.functional_),
-            gradient_ (new T_Gradient (gradient)) // TODO remember it is a shallow copy
-    {
-        dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional ...");
-        dolfin::log (dolfin::DBG, "Copy of ObjectiveFunctional created");
         dolfin::end ();
     }
 
 
 
     /******************* GETTERS *******************/
-    template <class T_FunctionalForm, class T_Gradient>
-        const T_FunctionalForm& ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
+    template <class T_FunctionalForm>
+        const T_FunctionalForm& ObjectiveFunctional<T_FunctionalForm>::
         functional () const
         {
             return functional_;
@@ -261,18 +217,18 @@ namespace dcp
 
 
 
-    template <class T_FunctionalForm, class T_Gradient>
-        const T_Gradient& ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
+    template <class T_FunctionalForm>
+        const dcp::GenericExpression& ObjectiveFunctional<T_FunctionalForm>::
         gradient () const
         {
-            return *(std::dynamic_pointer_cast<T_Gradient> (gradient_));
+            return *gradient_;
         }
 
 
 
     /******************* SETTERS *******************/
-    template <class T_FunctionalForm, class T_Gradient>
-        void ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
+    template <class T_FunctionalForm>
+        void ObjectiveFunctional<T_FunctionalForm>::
         setCoefficient (const std::string& coefficientType, 
                         const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                         const std::string& coefficientName)
@@ -298,8 +254,8 @@ namespace dcp
 
 
 
-    template <class T_FunctionalForm, class T_Gradient>
-        void ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
+    template <class T_FunctionalForm>
+        void ObjectiveFunctional<T_FunctionalForm>::
         setIntegrationSubdomain (std::shared_ptr<const dolfin::MeshFunction<std::size_t>> meshFunction,
                                   const dcp::SubdomainType& subdomainType)
         {
@@ -327,8 +283,8 @@ namespace dcp
 
 
     /******************* METHODS *******************/
-    template <class T_FunctionalForm, class T_Gradient>
-        double ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
+    template <class T_FunctionalForm>
+        double ObjectiveFunctional<T_FunctionalForm>::
         evaluateFunctional () const
         {
             return dolfin::assemble (functional_);
@@ -336,8 +292,8 @@ namespace dcp
 
 
 
-    template <class T_FunctionalForm, class T_Gradient>
-        void ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
+    template <class T_FunctionalForm>
+        void ObjectiveFunctional<T_FunctionalForm>::
         evaluateGradient (dolfin::Array<double>& values, 
                           const dolfin::Array<double>& x, 
                           const ufc::cell& cell) const
@@ -347,13 +303,14 @@ namespace dcp
 
 
 
-    template <class T_FunctionalForm, class T_Gradient>
-        void ObjectiveFunctional<T_FunctionalForm, T_Gradient>::
+    template <class T_FunctionalForm>
+        void ObjectiveFunctional<T_FunctionalForm>::
         evaluateGradient (dolfin::Array<double>& values, 
                           const dolfin::Array<double>& x) const
         {
             gradient_ -> eval (values, x);
         }
 }
+
 #endif
 

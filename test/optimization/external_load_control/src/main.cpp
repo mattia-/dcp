@@ -129,8 +129,8 @@ int main (int argc, char* argv[])
     // OBJECTIVE FUNCTIONAL 
     // ====================
     // define functional
-    dcp::ObjectiveFunctional <objective_functional::Form_J, dcp::VariableExpression>
-        objectiveFunctional (mesh, GradientEvaluator ());
+    dcp::ObjectiveFunctional <objective_functional::Form_J>
+        objectiveFunctional (mesh, std::make_shared<dcp::VariableExpression> (GradientEvaluator ()));
     
     // control variable 
     dolfin::Function g (V);

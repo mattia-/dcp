@@ -77,6 +77,7 @@ namespace dcp
                                 std::shared_ptr <const dcp::Subdomain>, 
                                 int>
                     TimeDependentDirichletBCValue;
+            typedef std::pair<double, std::vector<dolfin::Function> >       TimeDependentProblemState;
 
 
             /******************* CONSTRUCTORS *******************/
@@ -182,6 +183,7 @@ namespace dcp
                                   std::initializer_list<std::string> dtCoefficientTypes,
                                   std::initializer_list<std::string> previousSolutionCoefficientTypes,
                                   const unsigned int& nTimeSchemeSteps = 1);
+
 
 
             //!  Constructor [2]
@@ -682,12 +684,48 @@ namespace dcp
             
             //! Clear solutions vector
             /*!
-             *  This methos clears the protected member \c solution_ and creates a zero function as its first element,
+             *  This method clears the protected member \c solution_ and creates zero functions as its first elements,
              *  as if the class had just been created. Protected member \c time_ will be reset to \c startTime_.
              *  Finally, the time value in time dependent Dirichlet BCs will be reset to \c startTime_ as well.
              */  
             virtual void clear ();
              
+            //! Save problem's state
+            /*!
+             *  Save current state of the problem (aka the last \c nTimeSchemeSteps_ solutions and the current time) in
+             *  the states map (aka \c states_ ) with the given name. Solutions are saved in the state's vector in
+             *  the same order, i.e. the last solution computed (which is the solution computed at the last timestep) 
+             *  is the last element of the state's vector, the last but one solution is the last but one element and so 
+             *  on.
+             *
+             *  \param stateName the name to be used to store the state
+             *
+             *  \return \c true if the state was saved, \c false otherwise
+             */
+            virtual bool saveState (const std::string& stateName);
+
+            //! Restore problem's state
+            /*!
+             *  Restore the problem's state to the one in \c state_ with the given name. This means that \c time value
+             *  will be reset to that of the state and that the state's vector will be added at the end of
+             *  <tt>solution_</tt>, so that the solve process can be restarted. 
+             *  Note that \c clear() will not be called, which means that old elements in \c solution_ will not be 
+             *  erased. The state will not be erased from \c states_ either.
+             *
+             *  \param stateName the name of the state to be restored
+             *
+             *  \return \c true if the state was restored, \c false otherwise
+             */
+            virtual bool restoreState (const std::string& stateName);
+
+            //! Remove state with given name from saved states
+            /*!
+             *  \param stateName name of the state to be deleted
+             *  
+             *  \return \c true if state was deleted, \c false otherwise
+             */
+            virtual bool deleteState (const std::string& stateName);
+
             //! Reserve memory for solutions vector [1]
             /*! 
              *  This method calls \c reserve() on \c solution_ so that enough space is allocated to contain a given
@@ -914,6 +952,16 @@ namespace dcp
             //! unique name for insertion of dirichlet bcs if the input argument \c bcName to
             //! \c addTimeDependentDirichletBC() is left empty
             int timeDependentDirichletBCsCounter_;
+
+            //! States of the problem
+            /*! 
+             *  A map that contains all the saved states of the problem. Each state is identified by a name and contains
+             *  a \c double representing the time and a vector of <tt>dolfin::Function</tt>s representing the solutions
+             *  at that time. More than one solution may be needed in case the time advancement uses a multistep scheme.
+             *  This should in theory allow the solve process to be restarted from the saved states. 
+             *  States are saved by calling \c saveState() and restored by calling \c restoreState().
+             */
+            std::map<std::string, TimeDependentProblemState> states_;
 
             // ---------------------------------------------------------------------------------------------//
 

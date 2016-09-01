@@ -121,7 +121,10 @@ namespace dcp
         }
         else if (convergenceCriterion == "both")
         {
-            isConverged = [&] () {return (relativeIncrement < relativeIncrementTolerance) || (gradientNorm < gradientNormTolerance);};
+            isConverged = [&] () 
+            {
+                return (relativeIncrement < relativeIncrementTolerance) || (gradientNorm < gradientNormTolerance);
+            };
         }
         else
         {

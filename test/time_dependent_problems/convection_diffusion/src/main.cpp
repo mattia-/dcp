@@ -90,13 +90,43 @@ int main (int argc, char* argv[])
     // solve problem
     convectionDiffusionProblem.setInitialSolution (convectiondiffusion::InitialSolution ());
     convectionDiffusionProblem.parameters ["plot_interval"] = 1;
+    convectionDiffusionProblem.saveState ("my_state");
+
     std::cout << "Solve the problem..." << std::endl;
     convectionDiffusionProblem.solve ();
   
-    // plots
-    dolfin::plot (mesh);
-    
-    // dolfin::interactive ();
+    dolfin::Function oldFinalSolution = convectionDiffusionProblem.solution();
+
+    // -------------------- //
+    // test state restoring //
+    // -------------------- //
+    convectionDiffusionProblem.clear ();
+
+    convectionDiffusionProblem.restoreState ("my_state");
+    convectionDiffusionProblem.solve ();
   
-    return 0;
+    dolfin::Function newFinalSolution = convectionDiffusionProblem.solution();
+
+    dolfin::Function difference (V);
+    difference = newFinalSolution - oldFinalSolution;
+
+    double maxDifference = std::max (fabs (difference.vector()->max ()), 
+                                     fabs (difference.vector()->min ()));
+
+    std::cout << "MAX DIFFERENCE IS: " << maxDifference << std::endl;
+
+
+    dolfin::plot (oldFinalSolution, "old final solution");
+    dolfin::plot (newFinalSolution, "new final solution");
+
+    // dolfin::interactive ();
+
+    if (dolfin::near (maxDifference, 0))
+    {
+        return EXIT_SUCCESS;
+    }
+    else
+    {
+        return EXIT_FAILURE;
+    }
 }

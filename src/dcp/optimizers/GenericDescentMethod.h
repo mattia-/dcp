@@ -69,7 +69,7 @@ namespace dcp
             //! Perform optimization on the input problem
             /*! 
              *  Input arguments are:
-             *  \param problem the system that represents the primal/adjoint system
+             *  \param system the system that represents the primal/adjoint system
              *  \param objectiveFunctional the objective functional to be minimized
              *  \param initialGuess the starting point for the minimization algorithm. At the end of the function, it
              *  will containt the final value of the control variable
@@ -82,7 +82,7 @@ namespace dcp
              *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
              *  
              */
-            virtual void apply (dcp::GenericEquationSystem& problem,
+            virtual void apply (dcp::GenericEquationSystem& system,
                                 const dcp::GenericObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const dcp::GenericDescentMethod::Updater& updater) = 0;
@@ -106,6 +106,15 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//
 
         protected:
+            /********************** METHODS ***********************/
+            //! Solve the equation system representing the primal and the adjoint problem. 
+            /*!
+             *  This function allows derived classes to modify the way they solve the system, so that it can be adapted
+             *  to the type of system the class is dealing with.
+             */
+            virtual void solveSytem_ (dcp::GenericEquationSystem& system) = 0;
+
+            /********************** VARIABLES ***********************/
             //! The form that will be used to compute the dot product between the gradient and the search direction. 
             /*! 
              *  The default value is on object of type \c dcp::DotProduct default-constructed, which will try to

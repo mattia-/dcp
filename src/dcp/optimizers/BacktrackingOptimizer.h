@@ -133,7 +133,7 @@ namespace dcp
              *  Functors for the most common types of update are provided: see \c dcp::DirichletControlUpdater,
              *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
              */
-            virtual void apply (dcp::GenericEquationSystem& problem,
+            virtual void apply (dcp::GenericEquationSystem& system,
                                 const dcp::GenericObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const dcp::GenericDescentMethod::Updater& updater) override;
@@ -142,8 +142,8 @@ namespace dcp
 
         protected:
             /********************** METHODS ***********************/
-            // The methods listed here are for internal use only, to keep the apply method as short and easy to
-            // understand as possible
+            //! Solve the equation system representing the primal and the adjoint problem
+            virtual void solveSytem_ (dcp::GenericEquationSystem& system) override;
             
             //! Function to perform the backtracking loop iterations
             /*
@@ -175,7 +175,7 @@ namespace dcp
                                     dolfin::Function& controlVariable,
                                     const dolfin::Function& previousControlVariable,
                                     const dolfin::Function& searchDirection,
-                                    dcp::GenericEquationSystem& problem,
+                                    dcp::GenericEquationSystem& system,
                                     const dcp::GenericObjectiveFunctional& objectiveFunctional, 
                                     const dcp::GenericDescentMethod::Updater& updater);
 
@@ -206,7 +206,8 @@ namespace dcp
              */
             bool openOutputFile_ (std::ofstream& outfile);
             
-            /********************** MEMBERS ***********************/
+            /********************** VARIABLES ***********************/
+
             
             // ---------------------------------------------------------------------------------------------//
 

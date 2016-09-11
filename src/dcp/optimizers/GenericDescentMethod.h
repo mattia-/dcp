@@ -69,7 +69,9 @@ namespace dcp
             //! Perform optimization on the input problem
             /*! 
              *  Input arguments are:
-             *  \param system the system that represents the primal/adjoint system
+             *  \param systems the systems (possibly more than one) that represent the primal/adjoint system.
+             *  This allows derived class to reuse the same apply method by changing just the \c solve_ and the
+             *  \c update_ functions, since the number of input systems is arbitrary.
              *  \param objectiveFunctional the objective functional to be minimized
              *  \param initialGuess the starting point for the minimization algorithm. At the end of the function, it
              *  will containt the final value of the control variable
@@ -82,7 +84,7 @@ namespace dcp
              *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
              *  
              */
-            virtual void apply (dcp::GenericEquationSystem& system,
+            virtual void apply (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
                                 const dcp::GenericObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const dcp::GenericDescentMethod::Updater& updater) = 0;
@@ -107,12 +109,29 @@ namespace dcp
 
         protected:
             /********************** METHODS ***********************/
-            //! Solve the equation system representing the primal and the adjoint problem. 
+            //! Solve the equation systems representing the primal and the adjoint problem. 
             /*!
-             *  This function allows derived classes to modify the way they solve the system, so that it can be adapted
+             *  This function allows derived classes to modify the way they solve the systems, so that it can be adapted
              *  to the type of system the class is dealing with.
+             *
+             *  \param systems the set of systems to be solved
              */
-            virtual void solveSytem_ (dcp::GenericEquationSystem& system) = 0;
+            virtual void solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems) = 0;
+
+            //! Update the equations systems represeting the primal and the adjoint problem by using the \c updater
+            //! passed to the \c apply method and the current control value
+            /*!
+             *  This function allows derived classes to modify the way they solve the systems, so that it can be adapted
+             *  to the type of system the class is dealing with.
+             *
+             *  \param systems the set of systems to be solved
+             *  \param updater the functional to be used to update the system (see \c apply() method documentation)
+             *  \param control the current value of the control function
+             */
+            virtual void update_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                                  const dcp::GenericDescentMethod::Updater& updater,
+                                  const dolfin::GenericFunction& control) = 0;
+
 
             /********************** VARIABLES ***********************/
             //! The form that will be used to compute the dot product between the gradient and the search direction. 

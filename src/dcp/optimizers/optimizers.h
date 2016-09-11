@@ -21,6 +21,7 @@
 #define SRC_OPTIMIZERS_OPTIMIZER_H_INCLUDE_GUARD
 
 #include "BacktrackingOptimizer.h"
+#include "TimeDependentBacktrackingOptimizer.h"
 #include "DirichletControlUpdater.h"
 #include "DistributedControlUpdater.h"
 #include "NeumannControlUpdater.h"

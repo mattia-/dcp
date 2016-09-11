@@ -55,8 +55,20 @@ namespace dcp
     }
     
 
-
     void BacktrackingOptimizer::apply (dcp::GenericEquationSystem& system,
+                                       const dcp::GenericObjectiveFunctional& objectiveFunctional, 
+                                       dolfin::Function& initialGuess,
+                                       const dcp::GenericDescentMethod::Updater& updater)
+    {
+        std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systemAsVector;
+        systemAsVector.push_back (dolfin::reference_to_no_delete_pointer (system));
+
+        apply (systemAsVector, objectiveFunctional, initialGuess, updater);
+    }
+
+
+
+    void BacktrackingOptimizer::apply (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
                                        const dcp::GenericObjectiveFunctional& objectiveFunctional, 
                                        dolfin::Function& initialGuess,
                                        const dcp::GenericDescentMethod::Updater& updater)
@@ -92,16 +104,15 @@ namespace dcp
         std::ofstream outfile;
         bool hasOutputFile = openOutputFile_ (outfile);
         
-        
-        // all linear problems in the EquationSystem "system" should be reassembled every time. So we
-        // set the parameter "force_reassemble_system" to true for every one of them
-        dolfin::begin (dolfin::DBG, "Scanning system...");
-        for (std::size_t i = 0; i < system.size (); ++i)
+        // TODO is this really necessary?
+        // all linear problems in system[0] should be reassembled every time. So we set the parameter 
+        // "force_reassemble_system" to true for every one of them
+        dolfin::begin (dolfin::DBG, "Setting parameter \"force_reassemble_system\" to true for all problems...");
+        for (std::size_t i = 0; i < systems[0]->size (); ++i)
         {
-            if (static_cast<std::string> (system[i].parameters["problem_type"]) == "linear")
+            if (static_cast<std::string> ((*(systems[0]))[i].parameters["problem_type"]) == "linear")
             {
-                dolfin::log (dolfin::DBG, "Set parameter \"force_reassemble_system\" to true for problem number %d", i);
-                system[i].parameters["force_reassemble_system"] = true;
+                (*(systems[0]))[i].parameters["force_reassemble_system"] = true;
             }
         }
         dolfin::end ();
@@ -141,25 +152,26 @@ namespace dcp
         // update and solve the system for the first time
         dolfin::begin (dolfin::PROGRESS, "Minimization loop initialization...");
         
-        dolfin::begin (dolfin::DBG, "Updating differential problem using control initial guess...");
-        updater (system, controlVariable);
-        dolfin::end ();
+        dolfin::begin (dolfin::PROGRESS, "Updating systems using control initial guess...");
+        update_ (systems, updater, controlVariable);
+        dolfin::end (); // Updating systems using control initial guess
 
         // solve problems
-        solveSytem_ (system);
-        
+        dolfin::begin (dolfin::PROGRESS, "Solving systems...");
+        solve_ (systems);
+        dolfin::end (); // Solving systems
         
         // initialize loop variables
-        dolfin::begin (dolfin::DBG, "Computing norm of functional gradient...");
+        dolfin::begin (dolfin::PROGRESS, "Computing norm of functional gradient...");
         gradientNorm = dotProduct_.norm (objectiveFunctional.gradient (), 
                                          *(controlVariable.function_space ()->mesh ()));
-        dolfin::end ();
+        dolfin::end (); // Computing norm of functional gradient
         
         relativeIncrement = relativeIncrementTolerance + 1; // just an initialization to be sure that the first iteration 
                                                             // of the minimization loop is performed
-        dolfin::begin (dolfin::DBG, "Evaluating functional...");
+        dolfin::begin (dolfin::PROGRESS, "Evaluating functional...");
         currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
-        dolfin::end ();
+        dolfin::end (); // Evaluating functional
 
         dolfin::end (); // "Minimization loop initialization"
 
@@ -216,28 +228,30 @@ namespace dcp
             dolfin::end ();
             
             // solution of system with alpha_0
-            dolfin::log (dolfin::DBG, "Alpha = %f", alpha);
+            dolfin::log (dolfin::PROGRESS, "Alpha = %f", alpha);
 
             // update control variable value
-            dolfin::begin (dolfin::DBG, "Updating control variable...");
+            dolfin::begin (dolfin::PROGRESS, "Updating control variable...");
             dolfin::Function previousControlVariable (controlVariable);
             controlVariable = previousControlVariable + (searchDirection * alpha);
             dolfin::end ();
 
             // update system 
-            dolfin::begin (dolfin::DBG, "Updating differential problem...");
-            updater (system, controlVariable);
-            dolfin::end ();
+            dolfin::begin (dolfin::PROGRESS, "Updating systems using control initial guess...");
+            update_ (systems, updater, controlVariable);
+            dolfin::end (); // Updating systems using control initial guess
 
             // solve system
-            solveSytem_ (system);
+            dolfin::begin (dolfin::PROGRESS, "Solving systems...");
+            solve_ (systems);
+            dolfin::end (); // Solving systems
 
             // update value of the functional
-            dolfin::begin (dolfin::DBG, "Evaluating functional...");
+            dolfin::begin (dolfin::PROGRESS, "Evaluating functional...");
             currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
             dolfin::end ();
             
-            dolfin::log (dolfin::DBG, "Functional value = %f\n", currentFunctionalValue);
+            dolfin::log (dolfin::PROGRESS, "Functional value = %f\n", currentFunctionalValue);
             
             
             // backtracking loop
@@ -249,7 +263,7 @@ namespace dcp
                                controlVariable,
                                previousControlVariable,
                                searchDirection,
-                               system,
+                               systems,
                                objectiveFunctional,
                                updater);
 
@@ -332,24 +346,34 @@ namespace dcp
     // ***************************************** //
     // ********** PRIVATE MEMBERS ************** //
     // ***************************************** //
-    void BacktrackingOptimizer::solveSytem_ (dcp::GenericEquationSystem& system)
+    void BacktrackingOptimizer::solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems)
     {
-        system.solve ();
+        systems[0]->solve ();
     }
 
 
 
-    bool BacktrackingOptimizer::backtrackingLoop_ (const double& previousFunctionalValue,
-                                                   double& currentFunctionalValue, 
-                                                   const double& gradientDotSearchDirection,
-                                                   double& alpha,
-                                                   int& backtrackingIteration,
-                                                   dolfin::Function& controlVariable,
-                                                   const dolfin::Function& previousControlVariable,
-                                                   const dolfin::Function& searchDirection,
-                                                   dcp::GenericEquationSystem& system,
-                                                   const dcp::GenericObjectiveFunctional& objectiveFunctional, 
-                                                   const dcp::GenericDescentMethod::Updater& updater)
+    void BacktrackingOptimizer::update_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                                         const dcp::GenericDescentMethod::Updater& updater,
+                                         const dolfin::GenericFunction& control)
+    {
+        updater (*(systems[0]), control);
+    }
+
+
+
+    bool BacktrackingOptimizer::backtrackingLoop_ 
+        (const double& previousFunctionalValue,
+         double& currentFunctionalValue, 
+         const double& gradientDotSearchDirection,
+         double& alpha,
+         int& backtrackingIteration,
+         dolfin::Function& controlVariable,
+         const dolfin::Function& previousControlVariable,
+         const dolfin::Function& searchDirection,
+         const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+         const dcp::GenericObjectiveFunctional& objectiveFunctional, 
+         const dcp::GenericDescentMethod::Updater& updater)
     {
         // get parameters
         double c_1 = this->parameters ["c_1"];
@@ -375,22 +399,22 @@ namespace dcp
             dolfin::log (dolfin::PROGRESS, "Alpha = %f", alpha);
     
             // update control variable value
-            dolfin::begin (dolfin::DBG, "Updating control variable...");
+            dolfin::begin (dolfin::PROGRESS, "Updating control variable...");
             controlVariable = previousControlVariable + (searchDirection * alpha);
             dolfin::end ();
     
             // update system 
-            dolfin::begin (dolfin::DBG, "Updating differential problem...");
-            updater (system, controlVariable);
+            dolfin::begin (dolfin::PROGRESS, "Updating differential problem...");
+            update_ (systems, updater, controlVariable);
             dolfin::end ();
     
             // solve system
-            dolfin::begin (dolfin::PROGRESS, "Solving differential problem...");
-            solveSytem_ (system);
-            dolfin::end ();
+            dolfin::begin (dolfin::PROGRESS, "Solving systems...");
+            solve_ (systems);
+            dolfin::end (); // Solving systems
     
             // update value of the functional
-            dolfin::begin (dolfin::DBG, "Evaluating functional...");
+            dolfin::begin (dolfin::PROGRESS, "Evaluating functional...");
             currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
             dolfin::end ();
     

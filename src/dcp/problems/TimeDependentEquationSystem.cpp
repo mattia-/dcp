@@ -740,7 +740,7 @@ namespace dcp
 
         // Solutions loop
         dolfin::begin (dolfin::DBG, "Solution loop...");
-        int timeStep = 0;
+        unsigned int timeStep = 0;
         while (isFinished () == 0)
         {
             timeStep++;

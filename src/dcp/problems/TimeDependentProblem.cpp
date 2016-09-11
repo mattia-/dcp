@@ -599,9 +599,10 @@ namespace dcp
 
         if (stateIterator == states_.end())
         {
-            dolfin::warning ("State \"%s\" not restored. No state with given name found in states map",
+            dolfin::warning ("State \"%s\" not restored. No state with given name found in stored states map",
                              stateName.c_str ());
 
+            dolfin::end (); // Restoring state with name %s
             return false;
         }
 
@@ -633,9 +634,10 @@ namespace dcp
 
         if (stateIterator == states_.end())
         {
-            dolfin::warning ("State \"%s\" not deleted. No state with given name found in states map",
+            dolfin::warning ("State \"%s\" not deleted. No state with given name found in stored states map",
                              stateName.c_str ());
 
+            dolfin::end (); // Deleting state with name %s
             return false;
         }
 
@@ -1243,7 +1245,7 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Start time dependent problem solution...");
         
         // start time loop
-        int timeStep = 0;
+        unsigned int timeStep = 0;
         while (!isFinished ())
         {
             timeStep++;

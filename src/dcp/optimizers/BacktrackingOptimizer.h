@@ -120,8 +120,11 @@ namespace dcp
             /********************** METHODS ***********************/
             //! Perform optimization on the input problem using the gradient method with backtracking
             /*! 
+             *  Just a wrapper to allow easier calls to the real \c apply() method, which is the one that takes a vector
+             *  of systems as input.
+             *
              *  Input arguments are:
-             *  \param problem the system that represents the primal/adjoint system
+             *  \param system the system that represent the primal/adjoint system
              *  \param objectiveFunctional the objective functional to be minimized
              *  \param initialGuess the starting point for the minimization algorithm. At the end of the function, it
              *  will containt the final value of the control variable
@@ -133,7 +136,29 @@ namespace dcp
              *  Functors for the most common types of update are provided: see \c dcp::DirichletControlUpdater,
              *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
              */
-            virtual void apply (dcp::GenericEquationSystem& system,
+            void apply (dcp::GenericEquationSystem& system,
+                        const dcp::GenericObjectiveFunctional& objectiveFunctional, 
+                        dolfin::Function& initialGuess,
+                        const dcp::GenericDescentMethod::Updater& updater);
+
+            //! Perform optimization on the input problem using the gradient method with backtracking
+            /*! 
+             *  Input arguments are:
+             *  \param systems the systems (possibly more than one) that represent the primal/adjoint system. In this
+             *  case, only the first element of the vector will be considered (the vector may have more than one
+             *  element, but only the first one will be used).
+             *  \param objectiveFunctional the objective functional to be minimized
+             *  \param initialGuess the starting point for the minimization algorithm. At the end of the function, it
+             *  will containt the final value of the control variable
+             *  \param updater callable object to update the control parameter value. It can be either be a function 
+             *  pointer, a function object or a lambda expression. Its input argument are:
+             *  \li the system to update
+             *  \li the new value of the control function
+             * 
+             *  Functors for the most common types of update are provided: see \c dcp::DirichletControlUpdater,
+             *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
+             */
+            virtual void apply (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
                                 const dcp::GenericObjectiveFunctional& objectiveFunctional, 
                                 dolfin::Function& initialGuess,
                                 const dcp::GenericDescentMethod::Updater& updater) override;
@@ -142,8 +167,21 @@ namespace dcp
 
         protected:
             /********************** METHODS ***********************/
-            //! Solve the equation system representing the primal and the adjoint problem
-            virtual void solveSytem_ (dcp::GenericEquationSystem& system) override;
+            //! Solve the equation systems representing the primal and the adjoint problem. 
+            /*!
+             *  \param systems the set of systems to be solved
+             */
+            virtual void solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems) override;
+
+            //! Update the equations systems represeting the primal and the adjoint problem by using the \c updater
+            /*!
+             *  \param systems the set of systems to be solved
+             *  \param updater the functional to be used to update the system (see \c apply() method documentation)
+             *  \param control the current value of the control function
+             */
+            virtual void update_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                                  const dcp::GenericDescentMethod::Updater& updater,
+                                  const dolfin::GenericFunction& control) override;
             
             //! Function to perform the backtracking loop iterations
             /*
@@ -160,7 +198,7 @@ namespace dcp
              *  control variable at the last iteration.
              *  \param previousFunctionalValue the control variable at the beginning of the backtracking loop.
              *  \param searchDirection the search direction
-             *  \param problem the differential problem that represents the constraint in the minimization problem
+             *  \param systems the systems that represent the primal/adjoint system
              *  \param objectiveFunctional the objective functional
              *  \param updater the updater (see the documentation for the method \c apply)
              *  
@@ -175,7 +213,7 @@ namespace dcp
                                     dolfin::Function& controlVariable,
                                     const dolfin::Function& previousControlVariable,
                                     const dolfin::Function& searchDirection,
-                                    dcp::GenericEquationSystem& system,
+                                    const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
                                     const dcp::GenericObjectiveFunctional& objectiveFunctional, 
                                     const dcp::GenericDescentMethod::Updater& updater);
 

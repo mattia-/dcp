@@ -885,7 +885,8 @@ namespace dcp
              *  \param bcIterator the iterator pointing to the bc that should be replaced
              */
             virtual void resetTimeDependentDirichletBC_ 
-                (std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue>::iterator bcIterator);
+                (std::map <dcp::TimeDependentProblem::TimeDependentDirichletBCKey, 
+                           dcp::TimeDependentProblem::TimeDependentDirichletBCValue>::iterator bcIterator);
             
             //! Set the time dependent coefficients at every step of the solve loop
             /*!
@@ -937,12 +938,16 @@ namespace dcp
              *  to a pointer to \c dcp::TimeDependentExpression (the use of the pointer is necessary to call the
              *  \c eval() function defined in the user-defined class derived from \c dcp::TimeDependentExpression )
              */
-            std::map <TimeDependentCoefficientKey, TimeDependentCoefficientValue> timeDependentCoefficients_;
+            std::map <dcp::TimeDependentProblem::TimeDependentCoefficientKey, 
+                      dcp::TimeDependentProblem::TimeDependentCoefficientValue> 
+                timeDependentCoefficients_;
 
             //! The time dependent Dirichlet's boundary conditions. The map associates the bc's name to the tuple
             //! <time dependent expression, boundary, solution component> identifying the condition itself.
             //! If the condition should be enforced on all the function space components, \c -1 is used as a placeholder
-            std::map <TimeDependentDirichletBCKey, TimeDependentDirichletBCValue> timeDependentDirichletBCs_;
+            std::map <dcp::TimeDependentProblem::TimeDependentDirichletBCKey,
+                      dcp::TimeDependentProblem::TimeDependentDirichletBCValue> 
+                timeDependentDirichletBCs_;
 
             //! The number of steps in the time scheme. For example, implicit Euler method is a 1-step scheme, while
             //! BDF2 is a 2-steps scheme.
@@ -961,7 +966,7 @@ namespace dcp
              *  This should in theory allow the solve process to be restarted from the saved states. 
              *  States are saved by calling \c saveState() and restored by calling \c restoreState().
              */
-            std::map<std::string, TimeDependentProblemState> states_;
+            std::map<std::string, dcp::TimeDependentProblem::TimeDependentProblemState> states_;
 
             // ---------------------------------------------------------------------------------------------//
 

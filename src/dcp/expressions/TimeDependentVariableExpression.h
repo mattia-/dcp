@@ -67,7 +67,7 @@ namespace dcp
              *  \param time the time object to be used. If provided, it will be shared among all the objects that were
              *  built using \c time. If none is provided, a new time object is created with initial time set to 0.
              */
-            TimeDependentVariableExpression (const Evaluator& evaluator,
+            TimeDependentVariableExpression (const dcp::TimeDependentVariableExpression::Evaluator& evaluator,
                                              std::shared_ptr <dcp::Time> time = nullptr);
 
             //! Create vector-valued expression with given dimension. This will call the appropriate 
@@ -80,7 +80,7 @@ namespace dcp
              *  built using \c time. If none is provided, a new time object is created with initial time set to 0.
              */         
             explicit TimeDependentVariableExpression (std::size_t dim,
-                                                      const Evaluator& evaluator,
+                                                      const dcp::TimeDependentVariableExpression::Evaluator& evaluator,
                                                       std::shared_ptr <dcp::Time> time = nullptr);
 
             //! Create matrix-valued expression with given dimensions. This will call the appropriate 
@@ -95,7 +95,7 @@ namespace dcp
              */
             TimeDependentVariableExpression (std::size_t dim0,
                                              std::size_t dim1,
-                                             const Evaluator& evaluator,
+                                             const dcp::TimeDependentVariableExpression::Evaluator& evaluator,
                                              std::shared_ptr <dcp::Time> time = nullptr);
 
             //! Create tensor-valued expression with given shape. This will call the appropriate \c dolfin::Expression
@@ -108,7 +108,7 @@ namespace dcp
              *  built using \c time. If none is provided, a new time object is created with initial time set to 0.
              */          
             explicit TimeDependentVariableExpression (std::vector<std::size_t> value_shape, 
-                                                      const Evaluator& evaluator,
+                                                      const dcp::TimeDependentVariableExpression::Evaluator& evaluator,
                                                       std::shared_ptr <dcp::Time> time = nullptr);
 
             //! Constructor from \c std::map
@@ -122,7 +122,7 @@ namespace dcp
              */
             TimeDependentVariableExpression 
                 (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                 const Evaluator& evaluator,
+                 const dcp::TimeDependentVariableExpression::Evaluator& evaluator,
                  std::shared_ptr <dcp::Time> time = nullptr);
 
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
@@ -138,7 +138,7 @@ namespace dcp
             explicit TimeDependentVariableExpression 
                 (std::size_t dim,
                  const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                 const Evaluator& evaluator,
+                 const dcp::TimeDependentVariableExpression::Evaluator& evaluator,
                  std::shared_ptr <dcp::Time> time = nullptr);
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
@@ -156,7 +156,7 @@ namespace dcp
                 (std::size_t dim0, 
                  std::size_t dim1,
                  const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                 const Evaluator& evaluator,
+                 const dcp::TimeDependentVariableExpression::Evaluator& evaluator,
                  std::shared_ptr <dcp::Time> time = nullptr);
 
 
@@ -173,7 +173,7 @@ namespace dcp
             explicit TimeDependentVariableExpression 
                 (std::vector<std::size_t> value_shape,
                  const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                 const Evaluator& evaluator,
+                 const dcp::TimeDependentVariableExpression::Evaluator& evaluator,
                  std::shared_ptr <dcp::Time> time = nullptr);
             
             //! Default copy constructor TODO fix shallow copy
@@ -223,7 +223,7 @@ namespace dcp
         private:
             //! The evaluator to use when the \c eval() method is called. Made private so that it cannot be used in
             //! derived classes, since it would make no sense. Derived classes should define their own evaluator
-            Evaluator evaluator_;
+            dcp::TimeDependentVariableExpression::Evaluator evaluator_;
     };
 }
 

@@ -46,7 +46,9 @@ namespace dcp
         public:
             /******************* TYPEDEFS **********************/
             typedef std::tuple <std::string, int, int> PreviousSolutionLinkValue;
-            typedef std::pair <LinkKey, PreviousSolutionLinkValue> PreviousSolutionLink;
+            typedef std::pair <dcp::GenericEquationSystem::LinkKey, 
+                               dcp::TimeDependentEquationSystem::PreviousSolutionLinkValue> 
+                PreviousSolutionLink;
             
 
             /******************* CONSTRUCTORS ******************/
@@ -306,7 +308,8 @@ namespace dcp
              *  Being a protected member, this method is just called from library functions. 
              *  \param link a \c std::pair of the type contained by the protected member \c linksToPreviousSolutions_
              */
-            virtual void linkProblemToPreviousSolution_ (const PreviousSolutionLink& link);
+            virtual void linkProblemToPreviousSolution_ 
+                (const dcp::TimeDependentEquationSystem::PreviousSolutionLink& link);
             
             //! Performs the complete solve loop until endTime_ is reached
             /*! 
@@ -349,7 +352,9 @@ namespace dcp
              *  timestep is used, if -1 the solution at the previous timestep, if -2 the soltion two timesteps ago and
              *  so on) 
              */
-            std::map <LinkKey, PreviousSolutionLinkValue> linksToPreviousSolutions_;
+            std::map <dcp::GenericEquationSystem::LinkKey, 
+                      dcp::TimeDependentEquationSystem::PreviousSolutionLinkValue> 
+                linksToPreviousSolutions_;
             
             //! The time of the system
             std::shared_ptr<dcp::Time> time_;

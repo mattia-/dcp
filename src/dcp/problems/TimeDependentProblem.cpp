@@ -560,7 +560,7 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Saving state with name \"%s\"...", stateName.c_str ());
 
         // create state
-        TimeDependentProblem::TimeDependentProblemState newState;
+        dcp::TimeDependentProblem::TimeDependentProblemState newState;
 
         // save time value in state
         newState.first = time_->value();
@@ -606,7 +606,7 @@ namespace dcp
             return false;
         }
 
-        const TimeDependentProblem::TimeDependentProblemState& state = stateIterator->second;
+        const dcp::TimeDependentProblem::TimeDependentProblemState& state = stateIterator->second;
 
         // reset time
         time_->setTo (state.first);
@@ -1301,8 +1301,8 @@ namespace dcp
     
     
     void TimeDependentProblem::resetTimeDependentDirichletBC_ 
-        (std::map <TimeDependentProblem::TimeDependentDirichletBCKey, 
-                   TimeDependentProblem::TimeDependentDirichletBCValue>
+        (std::map <dcp::TimeDependentProblem::TimeDependentDirichletBCKey, 
+                   dcp::TimeDependentProblem::TimeDependentDirichletBCValue>
                    ::iterator bcIterator)
     {
         // get bc name

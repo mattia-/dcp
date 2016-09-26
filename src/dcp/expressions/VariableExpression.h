@@ -67,7 +67,7 @@ namespace dcp
              *  Input arguments
              *  \param evaluator the evaluator to be used when calling the \c eval() method.
              */
-            VariableExpression (const Evaluator& evaluator);
+            VariableExpression (const dcp::VariableExpression::Evaluator& evaluator);
 
             //! Create vector-valued expression with given dimension. This will call the appropriate 
             //! \c dolfin::Expression constructor
@@ -76,7 +76,7 @@ namespace dcp
              *  \param dim dimension of the vector-valued expression
              *  \param evaluator the evaluator to be used when calling the \c eval() method.
              */         
-            explicit VariableExpression (std::size_t dim, const Evaluator& evaluator);
+            explicit VariableExpression (std::size_t dim, const dcp::VariableExpression::Evaluator& evaluator);
 
             //! Create matrix-valued expression with given dimensions. This will call the appropriate 
             //! \c dolfin::Expression constructor
@@ -86,7 +86,7 @@ namespace dcp
              *  \param dim1 dimension (columns)
              *  \param evaluator the evaluator to be used when calling the \c eval() method.
              */          
-            VariableExpression (std::size_t dim0, std::size_t dim1, const Evaluator& evaluator);
+            VariableExpression (std::size_t dim0, std::size_t dim1, const dcp::VariableExpression::Evaluator& evaluator);
 
             //! Create tensor-valued expression with given shape. This will call the appropriate \c dolfin::Expression
             //! constructor
@@ -96,7 +96,7 @@ namespace dcp
              *  \param evaluator the evaluator to be used when calling the \c eval() method.
              */          
             explicit VariableExpression (std::vector<std::size_t> value_shape, 
-                                         const Evaluator& evaluator);
+                                         const dcp::VariableExpression::Evaluator& evaluator);
 
             //! Constructor from \c std::map
             /*!
@@ -106,7 +106,7 @@ namespace dcp
              *  \param evaluator the evaluator to be used when calling the \c eval() method.
              */
             VariableExpression (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                                const Evaluator& evaluator);
+                                const dcp::VariableExpression::Evaluator& evaluator);
 
             //! Create vector-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -119,7 +119,7 @@ namespace dcp
             explicit VariableExpression 
                 (std::size_t dim,
                  const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                 const Evaluator& evaluator);
+                 const dcp::VariableExpression::Evaluator& evaluator);
 
             //! Create matrix-valued expression with given dimension and given map. This will call the appropriate 
             //! \c dolfin::Expression constructor and set the protected member \c variables_ using the input \c map
@@ -134,7 +134,7 @@ namespace dcp
                 (std::size_t dim0, 
                  std::size_t dim1,
                  const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                 const Evaluator& evaluator);
+                 const dcp::VariableExpression::Evaluator& evaluator);
 
 
             //! Create tensor-valued expression with given dimension and given map. This will call the appropriate 
@@ -148,7 +148,7 @@ namespace dcp
             explicit VariableExpression 
                 (std::vector<std::size_t> value_shape,
                  const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables,
-                 const Evaluator& evaluator);
+                 const dcp::VariableExpression::Evaluator& evaluator);
 
             //! Default copy constructor
             /*!
@@ -198,7 +198,7 @@ namespace dcp
         private:
             //! The evaluator to use when the \c eval() method is called. Made private so that it cannot be used in
             //! derived classes, since it would make no sense. Derived classes should define their own evaluator
-            Evaluator evaluator_;
+            dcp::VariableExpression::Evaluator evaluator_;
     };
 }
 

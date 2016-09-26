@@ -149,7 +149,7 @@ namespace dcp
             //! Add problem to the map of problems to be used to set the initial guesses in the subiteration loop [1]
             /*!
              *  The parameters are:
-             *  \param problemName the name of the problem in \c storedProblems_ whose initial guess will be set using
+             *  \param name the name of the problem in \c storedProblems_ whose initial guess will be set using
              *  the problem passed as second parameter (no check is performed to determine whether there is a problem
              *  with this name in \c storedProblems_)
              *  \param problem the problem to be used to set the initial guess
@@ -164,6 +164,7 @@ namespace dcp
             //! Add problem to the map of problems to be used to set the initial guesses in the subiteration loop [2]
             /*!
              *  The parameters are:
+             *  \param name the name of the problem in \c storedProblems_ whose initial guess will be set using
              *  the problem passed as second parameter (no check is performed to determine whether there is a problem
              *  with this name in \c storedProblems_)
              *  \param problem the problem to be used to set the initial guess
@@ -185,7 +186,7 @@ namespace dcp
             //! Remove problem with the given name from the map where initial guess setters are stored
             /*! 
              *  Parameters:
-             *  \param problemName the name of the problem to be removed
+             *  \param name the name of the problem whose initial setter should be removed
              *
              *  \return \c true if the problem was removed, \c false otherwise
              */
@@ -430,7 +431,7 @@ namespace dcp
             /*!
              *  Parameters:
              *  \param map the map from which the problem should be removed
-             *  \param the name of the problem to be removed
+             *  \param problemName the name of the problem to be removed
              *
              *  \return \c true if the problem was removed, \c false otherwise
              */
@@ -446,7 +447,10 @@ namespace dcp
              *
              *  \return \c true if the link was added, \c false otherwise
              */
-            virtual bool addLinkToMap_ (std::map<LinkKey, LinkValue>& map, const Link& link, const bool& forceRelinking);
+            virtual bool addLinkToMap_ (std::map<dcp::GenericEquationSystem::LinkKey, 
+                                                 dcp::GenericEquationSystem::LinkValue>& map,
+                                        const Link& link, 
+                                        const bool& forceRelinking);
 
             //! Remove link between problems' coefficient and solution
             /*!
@@ -456,7 +460,9 @@ namespace dcp
              *  
              *  \return \c true if the link was removed, \c false otherwise
              */
-            virtual bool removeLinkFromMap_ (std::map<LinkKey, LinkValue>& map, const LinkKey& linkKey);
+            virtual bool removeLinkFromMap_ (std::map<dcp::GenericEquationSystem::LinkKey, 
+                                                      dcp::GenericEquationSystem::LinkValue>& map,
+                                             const LinkKey& linkKey);
             
             //! Performs the actual linking between problems 
             /*!
@@ -464,7 +470,7 @@ namespace dcp
              *  \param link a \c std::pair of the type contained by the protected member links maps
              *  \param problemsMap the map in which the problem whose coefficient we want to link is stored
              */
-            virtual void linkProblems_ (const Link& link,
+            virtual void linkProblems_ (const dcp::GenericEquationSystem::Link& link,
                                         std::map<std::string, std::shared_ptr <dcp::GenericProblem>>& problemsMap);
             
             //! Subiterate on given problems
@@ -498,11 +504,12 @@ namespace dcp
             /*! 
              *  \param subiterationsBegin iterator to the initial problem on which to subiterate
              *  \param subiterationsEnd iterator to the problem after the last problem on which to subiterate
+             *  \param iteration the iteration number in the subiterations loop
              *  \param plotSubiterationSolutions boolean flag
              *  \param writeSubiterationSolutions boolean flag
              *  \param incrementsNorms vector of the norms of the increments
              *  \param sortedConvergenceCheckProblemNames names of the problems to be used for the convergence check
-             *  \oaram oldSolutions vector of the old solutions
+             *  \param oldSolutions vector of the old solutions
              *  \param inLoop boolean flag indicating whether we are in the subiterations loop or before it
              */
             virtual void solveSubiterationProblems_ 
@@ -552,7 +559,7 @@ namespace dcp
              *  A map guarantees that no tuple (problem, coefficient type, coefficient name) 
              *  is linked twice against possibly different problems
              */
-            std::map<LinkKey, LinkValue> problemsLinks_;
+            std::map<dcp::GenericEquationSystem::LinkKey, dcp::GenericEquationSystem::LinkValue> problemsLinks_;
             
             //! The strings specifying the name of the first and last problem on which we must subiterate
             std::pair<std::string, std::string> subiterationsRange_;
@@ -582,7 +589,8 @@ namespace dcp
              *  difference is that while \c problemsLinks_ is used for the problems stored in \c storedProblems_ , 
              *  initialGuessesSettersLinks_ is used for the problems in \c initialGuessesSetters_
              */
-            std::map<LinkKey, LinkValue> initialGuessesSettersLinks_;
+            std::map<dcp::GenericEquationSystem::LinkKey, dcp::GenericEquationSystem::LinkValue> 
+                initialGuessesSettersLinks_;
 
             //! Solve type to be used in the \c solve() method when solving stored problems
             /*! 

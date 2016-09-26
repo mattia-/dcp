@@ -41,7 +41,7 @@ namespace dcp
         class Proxy 
         {
             public:
-                typedef typename T_Factory_::T_GenericProduct T_Factory_GenericProduct;
+                typedef typename T_Factory_::T_GenericProduct  T_Factory_GenericProduct;
                 typedef typename T_Factory_::T_Identifier      T_Factory_Identifier;
                 typedef typename T_Factory_::T_Builder         T_Factory_Builder;
                 typedef          T_Factory_                    T_Factory;

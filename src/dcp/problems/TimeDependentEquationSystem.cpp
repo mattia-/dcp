@@ -580,7 +580,8 @@ namespace dcp
 
 
 
-    void TimeDependentEquationSystem::linkProblemToPreviousSolution_ (const PreviousSolutionLink& link)
+    void TimeDependentEquationSystem::linkProblemToPreviousSolution_ 
+        (const dcp::TimeDependentEquationSystem::PreviousSolutionLink& link)
     {
         if (std::get<1> (link.second) == -1)
         {

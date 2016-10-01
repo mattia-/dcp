@@ -115,8 +115,11 @@ namespace dcp
              *  to the type of system the class is dealing with.
              *
              *  \param systems the set of systems to be solved
+             *  \param solveType the type of solve requested; used in derived classes to differentiate among different
+             *  behaviours
              */
-            virtual void solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems) = 0;
+            virtual void solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                                 const std::string& solveType) = 0;
 
             //! Update the equations systems represeting the primal and the adjoint problem by using the \c updater
             //! passed to the \c apply method and the current control value

@@ -106,6 +106,12 @@ namespace dcp
              *        Default value: 20
              *      - \c "output_file_name" the name of the output file to write results to. 
              *        Default value: empty (which means that output will be written to terminal only).
+             *      - \c "primal_problem_name" the name of the object representing the primal problem in the system
+             *        passed to \c apply().
+             *        Default value: "primal"
+             *      - \c "adjoint_problem_name" the name of the object representing the adjoint problem in the system
+             *        passed to \c apply().
+             *        Default value: "adjoint"
              */
             BacktrackingOptimizer ();
             
@@ -170,8 +176,14 @@ namespace dcp
             //! Solve the equation systems representing the primal and the adjoint problem. 
             /*!
              *  \param systems the set of systems to be solved
+             *  \param solveType the type of solve requested; possible values in this class: 
+             *  \li \c all
+             *  \li \c primal
+             *  \li \c adjoint
+             *  with obvious meaning
              */
-            virtual void solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems) override;
+            virtual void solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                                 const std::string& solveType) override;
 
             //! Update the equations systems represeting the primal and the adjoint problem by using the \c updater
             /*!

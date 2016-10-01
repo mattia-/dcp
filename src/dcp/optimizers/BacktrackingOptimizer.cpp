@@ -48,6 +48,8 @@ namespace dcp
         parameters.add ("max_minimization_iterations", 100);
         parameters.add ("max_backtracking_iterations", 20);
         parameters.add ("output_file_name", "");
+        parameters.add ("primal_problem_name", "primal");
+        parameters.add ("adjoint_problem_name", "adjoint");
         
         dolfin::log (dolfin::DBG, "BacktrackingOptimizer object created");
         
@@ -157,9 +159,9 @@ namespace dcp
         dolfin::end (); // Updating systems using control initial guess
 
         // solve problems
-        dolfin::begin (dolfin::PROGRESS, "Solving systems...");
-        solve_ (systems);
-        dolfin::end (); // Solving systems
+        dolfin::begin (dolfin::PROGRESS, "Solving...");
+        solve_ (systems, "all");
+        dolfin::end (); // Solving 
         
         // initialize loop variables
         dolfin::begin (dolfin::PROGRESS, "Computing norm of functional gradient...");
@@ -215,6 +217,10 @@ namespace dcp
             alpha = alpha_0;
             int backtrackingIteration = 0;
             previousFunctionalValue = currentFunctionalValue;
+
+            // get current functional gradient;
+            // note both primal and adjoint problem have been solver before the loop on the first iteration and then 
+            // at the end of the previous iteration, so the functional gradient is coherent
             functionalGradient = objectiveFunctional.gradient ();
             dolfin::begin (dolfin::PROGRESS, "Computing search direction...");
             searchDirectionComputer_ (searchDirection, functionalGradient);
@@ -227,7 +233,7 @@ namespace dcp
                                                               *(controlVariable.function_space ()->mesh ()));
             dolfin::end ();
             
-            // solution of system with alpha_0
+            // ------------------------ solution of system with alpha_0 ------------------------ //
             dolfin::log (dolfin::PROGRESS, "Alpha = %f", alpha);
 
             // update control variable value
@@ -241,10 +247,10 @@ namespace dcp
             update_ (systems, updater, controlVariable);
             dolfin::end (); // Updating systems using control initial guess
 
-            // solve system
-            dolfin::begin (dolfin::PROGRESS, "Solving systems...");
-            solve_ (systems);
-            dolfin::end (); // Solving systems
+            // solve system (only primal problem)
+            dolfin::begin (dolfin::PROGRESS, "Solving...");
+            solve_ (systems, "primal");
+            dolfin::end (); // Solving 
 
             // update value of the functional
             dolfin::begin (dolfin::PROGRESS, "Evaluating functional...");
@@ -252,7 +258,7 @@ namespace dcp
             dolfin::end ();
             
             dolfin::log (dolfin::PROGRESS, "Functional value = %f\n", currentFunctionalValue);
-            
+            // ------------------------ end of solution of system with alpha_0 ------------------------ //
             
             // backtracking loop
             backtrackingLoop_ (previousFunctionalValue, 
@@ -266,6 +272,11 @@ namespace dcp
                                systems,
                                objectiveFunctional,
                                updater);
+
+            // solve adjoint problem after backtracking, so we get the updated functional gradient
+            dolfin::begin (dolfin::PROGRESS, "Solving...");
+            solve_ (systems, "adjoint");
+            dolfin::end (); // Solving 
 
             // update gradient norm if necessary for convergence check
             if (convergenceCriterion == "gradient" || convergenceCriterion == "both")
@@ -346,9 +357,30 @@ namespace dcp
     // ***************************************** //
     // ********** PRIVATE MEMBERS ************** //
     // ***************************************** //
-    void BacktrackingOptimizer::solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems)
+    void BacktrackingOptimizer::solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                                        const std::string& solveType)
     {
-        systems[0]->solve ();
+        if (solveType == "all")
+        {
+            systems[0]->solve ();
+        }
+        else if (solveType == "primal")
+        {
+            std::string name = parameters["primal_problem_name"];
+            (*(systems[0]))[name].solve ();
+        }
+        else if (solveType == "adjoint")
+        {
+            std::string name = parameters["adjoint_problem_name"];
+            (*(systems[0]))[name].solve ();
+        }
+        else
+        {
+            dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp",
+                                  "solve",
+                                  "Unknown solve type \"%s\"", 
+                                  solveType.c_str ());
+        }
     }
 
 
@@ -408,10 +440,10 @@ namespace dcp
             update_ (systems, updater, controlVariable);
             dolfin::end ();
     
-            // solve system
-            dolfin::begin (dolfin::PROGRESS, "Solving systems...");
-            solve_ (systems);
-            dolfin::end (); // Solving systems
+            // solve system (only primal problem)
+            dolfin::begin (dolfin::PROGRESS, "Solving...");
+            solve_ (systems, "primal");
+            dolfin::end (); // Solving
     
             // update value of the functional
             dolfin::begin (dolfin::PROGRESS, "Evaluating functional...");
@@ -436,7 +468,7 @@ namespace dcp
         {
             dolfin::log (dolfin::PROGRESS, "");
             dolfin::log (dolfin::PROGRESS, "Backtracking loop ended. Iterations performed: %d\n", backtrackingIteration);
-            dolfin::log (dolfin::PROGRESS, "Alpha (determined with backtracking) = %f", alpha);
+            dolfin::log (dolfin::PROGRESS, "Alpha (determined with backtracking) = %f\n", alpha);
             return true;
         }
     }

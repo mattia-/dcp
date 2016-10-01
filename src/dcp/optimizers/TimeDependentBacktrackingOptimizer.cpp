@@ -119,7 +119,8 @@ namespace dcp
     // ********** PRIVATE MEMBERS ********** //
     // ************************************* //
     void TimeDependentBacktrackingOptimizer::solve_ 
-        (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems)
+        (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+         const std::string& solveType)
     {
         // get primal and adjoint problems
         // use of static_cast is justified by the fact that apply method already checks if systems are of the right type
@@ -128,23 +129,37 @@ namespace dcp
         dcp::TimeDependentEquationSystem& adjointSystem = 
             static_cast<dcp::TimeDependentEquationSystem&> (*(systems[1]));
 
-        // 1) solve primal problem
-        dolfin::begin (dolfin::PROGRESS, "Initializing primal system...");
-        initializePrimalSystem_ (primalSystem);
-        dolfin::end (); // Initializing primal system
+        if (solveType != "all" && solveType != "primal" && solveType != "adjoint")
+        {
+            dolfin::dolfin_error ("dcp: TimeDependentBacktrackingOptimizer.cpp",
+                                  "solve",
+                                  "Unknown solve type \"%s\"", 
+                                  solveType.c_str ());
+        }
 
-        dolfin::begin (dolfin::PROGRESS, "Solving primal system...");
-        solvePrimalSystem_ (primalSystem);
-        dolfin::end (); // Solving primal system
+        // 1) solve primal problem
+        if (solveType == "all" || solveType == "primal")
+        {
+            dolfin::begin (dolfin::PROGRESS, "Initializing primal system...");
+            initializePrimalSystem_ (primalSystem);
+            dolfin::end (); // Initializing primal system
+
+            dolfin::begin (dolfin::PROGRESS, "Solving primal system...");
+            solvePrimalSystem_ (primalSystem);
+            dolfin::end (); // Solving primal system
+        }
 
         // 2) solve adjoint problem
-        dolfin::begin (dolfin::PROGRESS, "Initializing adjoint system...");
-        initializeAdjointSystem_ (adjointSystem, primalSystem);
-        dolfin::end (); // Initializing adjoint system
+        if (solveType == "all" || solveType == "adjoint")
+        {
+            dolfin::begin (dolfin::PROGRESS, "Initializing adjoint system...");
+            initializeAdjointSystem_ (adjointSystem, primalSystem);
+            dolfin::end (); // Initializing adjoint system
 
-        dolfin::begin (dolfin::PROGRESS, "Solving adjoint system...");
-        solveAdjointSystem_ (adjointSystem, primalSystem);
-        dolfin::end (); // Solving adjoint system
+            dolfin::begin (dolfin::PROGRESS, "Solving adjoint system...");
+            solveAdjointSystem_ (adjointSystem, primalSystem);
+            dolfin::end (); // Solving adjoint system
+        }
     }
 
 

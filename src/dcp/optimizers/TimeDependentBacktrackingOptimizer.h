@@ -58,7 +58,7 @@ namespace dcp
              *  \param systems the systems (possibly more than one) that represent the primal/adjoint system. In this
              *  case, the first two elements of the input vector of systems are supposed to represent the primal 
              *  (forward-in-time) system and the adjoint (backward-in-time) system respectively (the vector may have 
-             *  more than one element, but only the first one will be used). The function will set the parameter
+             *  more than two elements, but only the first two will be used). The function will set the parameter
              *  \c "purge_interval" to 0 in order to ensure that all the solutions are kept when solving the problems,
              *  since we need all the primal solutions to solve the adjoint system and we may need all the adjoint
              *  solutions to compute the value of the objective functional. 
@@ -93,8 +93,14 @@ namespace dcp
              *  called by this method.
              *
              *  \param systems the set of systems to be solved
+             *  \param solveType the type of solve requested; possible values in this class: 
+             *  \li \c all
+             *  \li \c primal
+             *  \li \c adjoint
+             *  with obvious meaning
              */
-            virtual void solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems) override;
+            virtual void solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                                 const std::string& solveType) override;
 
             //! Initialize primal problem for solving
             /*!

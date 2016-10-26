@@ -379,7 +379,7 @@ namespace dcp
         if (problemIterator == storedProblems_.end ())
         {
             dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
-                                  "operator[]", 
+                                  "use operator[]", 
                                   "Problem \"%s\" not found in stored problems map", 
                                   problemName.c_str ());
         }
@@ -394,7 +394,7 @@ namespace dcp
         if (problemIterator == storedProblems_.end ())
         {
             dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
-                                  "operator[]", 
+                                  "use operator[]", 
                                   "Problem \"%s\" not found in stored problems map", 
                                   problemName.c_str ());
         }
@@ -408,7 +408,7 @@ namespace dcp
         if (position >= solveOrder_.size ())
         {
             dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
-                                  "operator[]",
+                                  "use operator[]",
                                   "Input value \"%d\" is greater than problems vector size",
                                   position);
         }
@@ -422,7 +422,7 @@ namespace dcp
         if (position >= solveOrder_.size ())
         {
             dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
-                                  "operator[]",
+                                  "use operator[]",
                                   "Input value \"%d\" is greater than problems vector size",
                                   position);
         }
@@ -504,9 +504,7 @@ namespace dcp
                                                           const unsigned int& stepNumber)
     {
         dolfin::begin (dolfin::DBG, "Setting initial solution...");
-        auto problemIterator = storedProblems_.find (problemName);
-        (std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second))->
-            setInitialSolution (initialSolution, stepNumber);
+        (this->operator[](problemName)).setInitialSolution (initialSolution, stepNumber);
         dolfin::end (); // "Setting initial solution"
     }
     
@@ -517,9 +515,7 @@ namespace dcp
                                                           const unsigned int& stepNumber)
     {
         dolfin::begin (dolfin::DBG, "Setting initial solution...");
-        auto problemIterator = storedProblems_.find (problemName);
-        (std::static_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second))->
-            setInitialSolution (initialSolution, stepNumber);
+        (this->operator[](problemName)).setInitialSolution (initialSolution, stepNumber);
         dolfin::end (); // "Setting initial solution"
     }
 

@@ -263,7 +263,7 @@ namespace dcp
             //! Set initial solution of the problem with given name [1]
             /*!
              *  It is just a wrapper for the call to \c setInitialSolution on the underlying problem
-             *  \param problemName the problem of which too set the initial solution
+             *  \param problemName the problem of which to set the initial solution
              *  \param initialSolution the function to be used as initial solution
              *  \param stepNumber the number of steps to go back to set the initial solution
              *
@@ -276,7 +276,7 @@ namespace dcp
             //! Set initial solution of the problem with given name [2]
             /*!
              *  It is just a wrapper for the call to \c setInitialSolution on the underlying problem
-             *  \param problemName the problem of which too set the initial solution
+             *  \param problemName the problem of which to set the initial solution
              *  \param initialSolution the function to be used as initial solution
              *  \param stepNumber the number of steps to go back to set the initial solution
              *

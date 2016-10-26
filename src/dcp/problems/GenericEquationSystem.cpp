@@ -458,7 +458,7 @@ namespace dcp
         if (problemIterator == storedProblems_.end ())
         {
             dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
-                                  "operator[]", 
+                                  "use operator[]", 
                                   "Problem \"%s\" not found in stored problems map", 
                                   name.c_str ());
         }
@@ -473,7 +473,7 @@ namespace dcp
         if (problemIterator == storedProblems_.end ())
         {
             dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
-                                  "operator[]", 
+                                  "use operator[]", 
                                   "Problem \"%s\" not found in stored problems map", 
                                   name.c_str ());
         }
@@ -487,7 +487,7 @@ namespace dcp
         if (position >= solveOrder_.size ())
         {
             dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
-                                  "operator[]",
+                                  "use operator[]",
                                   "Input value \"%d\" is greater than problems vector size",
                                   position);
         }
@@ -501,7 +501,7 @@ namespace dcp
         if (position >= solveOrder_.size ())
         {
             dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
-                                  "operator[]",
+                                  "use operator[]",
                                   "Input value \"%d\" is greater than problems vector size",
                                   position);
         }
@@ -551,15 +551,7 @@ namespace dcp
     const dolfin::Function& GenericEquationSystem::solution (const std::string& problemName,
                                                              const std::string& solutionType) const
     {
-        auto problemIterator = storedProblems_.find (problemName);
-        if (problemIterator == storedProblems_.end ())
-        {
-            dolfin::dolfin_error ("dcp: GenericEquationSystem.cpp",
-                                  "solution",
-                                  "Problem \"%s\" not found in stored problems map", 
-                                  problemName.c_str ());
-        }
-        return (problemIterator->second)->solution (solutionType);
+        return (this->operator[](problemName)).solution (solutionType);
     }
     
 

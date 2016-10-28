@@ -100,7 +100,7 @@ namespace dcp
 
         // set purge_inteval equal to 0, because we need all the solutions when we solve the backward-in-time adjoint
         // system 
-        dolfin::begin (dolfin::DBG, "Setting parameter \"purge_interval\" to true for all problems...");
+        dolfin::begin (dolfin::DBG, "Setting parameter \"purge_interval\" to 0 for all problems...");
         for (std::size_t i = 0; i < systems.size (); ++i)
         {
             for (std::size_t j = 0; j < systems[i]->size (); ++j)

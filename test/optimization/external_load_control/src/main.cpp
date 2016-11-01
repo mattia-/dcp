@@ -20,10 +20,7 @@
 #include <iostream>
 #include <string>
 #include <dolfin.h>
-#include <dcp/problems/problems.h>
-#include <dcp/objective_functional/objective_functional.h>
-#include <dcp/expressions/expressions.h>
-#include <dcp/optimizers/optimizers.h>
+#include <dcp.h>
 #include "primal.h"
 #include "adjoint.h"
 #include "objective_functional.h"

@@ -21,7 +21,7 @@
 #define SRC_OPTIMIZERS_BACKTRACKINGOPTIMIZER_H_INCLUDE_GUARD
 
 #include <dcp/optimizers/GenericDescentMethod.h>
-#include <dcp/objective_functional/GenericObjectiveFunctional.h>
+#include <dcp/objective_functionals/GenericObjectiveFunctional.h>
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Function.h>
 #include <functional>

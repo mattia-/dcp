@@ -22,7 +22,7 @@
 
 #include "dcp/expressions/expressions.h"
 #include "dcp/factories/factories.h"
-#include "dcp/objective_functional/objective_functional.h"
+#include "dcp/objective_functionals/objective_functionals.h"
 #include "dcp/optimizers/optimizers.h"
 #include "dcp/problems/problems.h"
 #include "dcp/subdomains/subdomains.h"

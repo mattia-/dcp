@@ -1,7 +1,7 @@
 # collect header files
 SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericObjectiveFunctional.h
              ${CMAKE_CURRENT_SOURCE_DIR}/ObjectiveFunctional.h
-             ${CMAKE_CURRENT_SOURCE_DIR}/objective_functional.h)
+             ${CMAKE_CURRENT_SOURCE_DIR}/objective_functionals.h)
 
 # collect source files
 SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/GenericObjectiveFunctional.cpp)

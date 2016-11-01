@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OBJECTIVE_FUNCTIONAL_OBJECTIVEFUNCTIONAL_H_INCLUDE_GUARD
-#define SRC_OBJECTIVE_FUNCTIONAL_OBJECTIVEFUNCTIONAL_H_INCLUDE_GUARD
+#ifndef SRC_OBJECTIVE_FUNCTIONALS_OBJECTIVEFUNCTIONAL_H_INCLUDE_GUARD
+#define SRC_OBJECTIVE_FUNCTIONALS_OBJECTIVEFUNCTIONAL_H_INCLUDE_GUARD
 
 #include <dolfin/mesh/Mesh.h>
 #include <dolfin/mesh/MeshFunction.h>
@@ -28,7 +28,7 @@
 #include <memory>
 #include <dcp/problems/SubdomainType.h>
 #include <dcp/expressions/VariableExpression.h>
-#include <dcp/objective_functional/GenericObjectiveFunctional.h>
+#include <dcp/objective_functionals/GenericObjectiveFunctional.h>
 
 namespace dcp
 {

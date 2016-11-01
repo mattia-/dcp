@@ -20,7 +20,7 @@
 #include <iostream>
 #include <string>
 #include <dolfin.h>
-#include <dcp/problems/problems.h>
+#include <dcp.h>
 #include "poisson.h"
 
 namespace poisson

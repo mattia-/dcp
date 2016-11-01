@@ -24,7 +24,7 @@
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Function.h>
 #include <dolfin/function/Expression.h>
-#include <dcp/objective_functional/GenericObjectiveFunctional.h>
+#include <dcp/objective_functionals/GenericObjectiveFunctional.h>
 #include <dcp/problems/GenericEquationSystem.h>
 #include <dcp/optimizers/GradientSearchDirection.h>
 #include <dcp/utils/DotProduct.h>

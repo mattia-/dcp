@@ -17,9 +17,23 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OBJECTIVE_FUNCTIONAL_OBJECTIVE_FUNCTIONAL_H_INCLUDE_GUARD
-#define SRC_OBJECTIVE_FUNCTIONAL_OBJECTIVE_FUNCTIONAL_H_INCLUDE_GUARD
+#include <dcp/objective_functionals/GenericObjectiveFunctional.h>
 
-#include "ObjectiveFunctional.h"
+namespace dcp
+{
+    /************************* CONSTRUCTORS ********************/
+    GenericObjectiveFunctional::GenericObjectiveFunctional (const std::shared_ptr <const dolfin::Mesh> mesh) : 
+        mesh_ (mesh)
+    {
+        dolfin::log (dolfin::DBG, "GenericObjectiveFunctional object created");
+    }
 
-#endif
+
+
+    /******************* GETTERS *******************/
+    const dolfin::Mesh& GenericObjectiveFunctional::mesh () const
+    {
+        return *mesh_;
+    }
+
+}

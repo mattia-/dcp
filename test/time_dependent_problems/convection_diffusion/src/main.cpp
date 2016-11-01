@@ -21,7 +21,7 @@
 #include <string>
 #include <dolfin.h>
 #include <mshr.h>
-#include <dcp/problems/problems.h>
+#include <dcp.h>
 #include "convectiondiffusion.h"
 
 namespace convectiondiffusion

@@ -171,7 +171,7 @@ namespace dcp
         {
             dolfin::begin (dolfin::DBG, "Initializing problem number %d in primal problem...", i);
             primalSystem[i].clear ();
-            primalSystem[i].restoreState ("initial_state");
+            primalSystem[i].restoreState ("initial_state", true);
             dolfin::end (); // Initializing problem number %d in primal problem
         }
     }
@@ -186,7 +186,7 @@ namespace dcp
         {
             dolfin::begin (dolfin::DBG, "Initializing problem number %d in adjoint problem...", i);
             adjointSystem[i].clear ();
-            adjointSystem[i].restoreState ("initial_state");
+            adjointSystem[i].restoreState ("initial_state", true);
             dolfin::end (); // Initializing problem number %d in adjoint problem
         }
     }

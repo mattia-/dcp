@@ -709,14 +709,17 @@ namespace dcp
              *  Restore the problem's state to the one in \c state_ with the given name. This means that \c time value
              *  will be reset to that of the state and that the state's vector will be added at the end of
              *  <tt>solution_</tt>, so that the solve process can be restarted. 
-             *  Note that \c clear() will not be called, which means that old elements in \c solution_ will not be 
-             *  erased. The state will not be erased from \c states_ either.
+             *  Note that the elements alreay stored in \c solution_ will not be erased, unless the input argument
+             *  \c clear is set to \c true. The state will not be erased from \c states_ .
              *
              *  \param stateName the name of the state to be restored
+             *  \param clear boolean switch; if set to \c true , then the entire solutions vector will be cleared before
+             *  restoring the state, so that the restored state is the only thing left in \c solutions_ after the
+             *  function returns. Default value: false
              *
              *  \return \c true if the state was restored, \c false otherwise
              */
-            virtual bool restoreState (const std::string& stateName);
+            virtual bool restoreState (const std::string& stateName, const bool& clear = false);
 
             //! Remove state with given name from saved states
             /*!

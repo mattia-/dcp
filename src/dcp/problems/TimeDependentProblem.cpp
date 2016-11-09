@@ -590,7 +590,7 @@ namespace dcp
 
 
 
-    bool TimeDependentProblem::restoreState (const std::string& stateName)
+    bool TimeDependentProblem::restoreState (const std::string& stateName, const bool& clear)
     {
         dolfin::begin (dolfin::DBG, "Restoring state with name \"%s\"...", stateName.c_str ());
 
@@ -610,6 +610,12 @@ namespace dcp
 
         // reset time
         time_->setTo (state.first);
+
+        // clear solutions vector if requested by the user
+        if (clear)
+        {
+            solution_.clear ();
+        }
 
         // copy solutions from state's vector to solutions_
         for (int stepNumber = nTimeSchemeSteps_ - 1; stepNumber >= 0; --stepNumber)

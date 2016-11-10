@@ -46,6 +46,8 @@ namespace convectiondiffusion
 
 int main (int argc, char* argv[])
 {
+    dolfin::set_log_level (dolfin::DBG);
+
     // create mesh and finite element space 
     std::cout << "Create mesh and finite element space..." << std::endl;
     mshr::Rectangle rectangle (dolfin::Point (0.0, 0.0), dolfin::Point (10.0, 7.0));
@@ -102,7 +104,7 @@ int main (int argc, char* argv[])
     // -------------------- //
     convectionDiffusionProblem.clear ();
 
-    convectionDiffusionProblem.restoreState ("my_state");
+    convectionDiffusionProblem.restoreState ("my_state", true);
     convectionDiffusionProblem.solve ();
   
     dolfin::Function newFinalSolution = convectionDiffusionProblem.solution();

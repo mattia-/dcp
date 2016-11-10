@@ -324,7 +324,7 @@ namespace dcp
             /*!
              *  \return a const reference to the problem's time-solution pairs vector
              */
-            virtual const std::vector <std::pair <double, dolfin::Function> >& solutionsVector () const;  
+            virtual const dcp::TimeDependentFunction& solutionsVector () const;  
             
             //! Get shared pointer to the current simulation time
             /*!

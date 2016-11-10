@@ -70,9 +70,8 @@ class GradientEvaluator
     
 int main (int argc, char* argv[])
 {
-    // log level
-    // dolfin::set_log_level (dolfin::DBG);
-    
+    dolfin::set_log_level (dolfin::DBG);
+
     // mesh
     auto mesh = std::make_shared<dolfin::UnitSquareMesh> (20, 20);
     

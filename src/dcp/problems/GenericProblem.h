@@ -29,6 +29,7 @@
 #include <dolfin/plot/plot.h>
 #include <dolfin/plot/VTKPlotter.h>
 #include <dcp/problems/SubdomainType.h>
+#include <dcp/functions/TimeDependentFunction.h>
 #include <map>
 #include <string>
 #include <utility>
@@ -363,7 +364,7 @@ namespace dcp
              *  have a placeholder value equal to -1
              *  It is returned through the method \c solution() with input argument \c "default"
              */
-            std::vector<std::pair <double, dolfin::Function>> solution_;
+            dcp::TimeDependentFunction solution_;
             
             //! The stashed solution
             /*! 

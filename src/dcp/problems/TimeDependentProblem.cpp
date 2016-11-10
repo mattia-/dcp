@@ -149,7 +149,7 @@ namespace dcp
     
 
 
-    const std::vector <std::pair <double, dolfin::Function> >& TimeDependentProblem::solutionsVector () const
+    const dcp::TimeDependentFunction& TimeDependentProblem::solutionsVector () const
     {
         return solution_;
     }

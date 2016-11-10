@@ -97,6 +97,8 @@ namespace navierstokes
 
 int main (int argc, char* argv[])
 {
+    dolfin::set_log_level (dolfin::DBG);
+
     // create mesh and finite element space
     std::cout << "Create mesh and finite element space..." << std::endl;
     mshr::Rectangle rectangle (dolfin::Point (0.0, 0.0), dolfin::Point (10.0, 7.0));

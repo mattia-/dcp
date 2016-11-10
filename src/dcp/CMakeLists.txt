@@ -1,5 +1,6 @@
 ADD_SUBDIRECTORY (expressions)
 ADD_SUBDIRECTORY (factories)
+ADD_SUBDIRECTORY (functions)
 ADD_SUBDIRECTORY (objective_functionals)
 ADD_SUBDIRECTORY (optimizers)
 ADD_SUBDIRECTORY (problems)

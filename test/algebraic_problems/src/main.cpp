@@ -69,6 +69,8 @@ class Solver
 
 int main (int argc, char* argv[])
 {
+    dolfin::set_log_level (dolfin::DBG);
+
     // create mesh and finite element space 
     dolfin::info ("Create mesh and finite element space...");
     auto mesh = std::make_shared<dolfin::UnitSquareMesh> (20, 20);

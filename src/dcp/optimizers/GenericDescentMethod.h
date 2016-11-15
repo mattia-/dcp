@@ -46,10 +46,6 @@ namespace dcp
         // ---------------------------------------------------------------------------------------------//
         
         public:
-            /************************* TYPEDEFS ************************/
-            typedef std::function<void (dcp::GenericEquationSystem&, const dolfin::GenericFunction&)> Updater;
-            typedef std::function<void (dolfin::Function&, const dolfin::Function&)> SearchDirectionComputer;
-            
             /************************* CONSTRUCTORS ********************/
             //! Default constructor
             GenericDescentMethod ();
@@ -64,43 +60,6 @@ namespace dcp
              */
             virtual ~GenericDescentMethod () {};
             
-            
-            /********************** METHODS ***********************/
-            //! Perform optimization on the input problem
-            /*! 
-             *  Input arguments are:
-             *  \param systems the systems (possibly more than one) that represent the primal/adjoint system.
-             *  This allows derived class to reuse the same apply method by changing just the \c solve_ and the
-             *  \c update_ functions, since the number of input systems is arbitrary.
-             *  \param objectiveFunctional the objective functional to be minimized
-             *  \param initialGuess the starting point for the minimization algorithm. At the end of the function, it
-             *  will containt the final value of the control variable
-             *  \param updater callable object to update the control parameter value. It can be either be a function 
-             *  pointer, a function object or a lambda expression. Its input argument are:
-             *  \li the system to update
-             *  \li the new value of the control function
-             * 
-             *  Functors for the most common types of update are provided: see \c dcp::DirichletControlUpdater,
-             *  \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater.
-             *  
-             */
-            virtual void apply (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
-                                const dcp::GenericObjectiveFunctional& objectiveFunctional, 
-                                dolfin::Function& initialGuess,
-                                const dcp::GenericDescentMethod::Updater& updater) = 0;
-            
-            //! Set the dot product to be used
-            /*!
-             *  \param dotProductForm the form to be used when computing the dot product 
-             */
-            virtual void setDotProduct (const dolfin::Form& dotProductForm);
-            
-            //! Set the way the search direction is computed on every loop iteration during minimization
-            /*!
-             *  \param searchDirectionComputer the object to be used to compute the search direction
-             */
-            virtual void setSearchDirection (const SearchDirectionComputer& searchDirectionComputer);
-
             /********************** VARIABLES ***********************/
             //! the problem parameters
             dolfin::Parameters parameters;
@@ -108,50 +67,6 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//
 
         protected:
-            /********************** METHODS ***********************/
-            //! Solve the equation systems representing the primal and the adjoint problem. 
-            /*!
-             *  This function allows derived classes to modify the way they solve the systems, so that it can be adapted
-             *  to the type of system the class is dealing with.
-             *
-             *  \param systems the set of systems to be solved
-             *  \param solveType the type of solve requested; used in derived classes to differentiate among different
-             *  behaviours
-             */
-            virtual void solve_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
-                                 const std::string& solveType) = 0;
-
-            //! Update the equations systems represeting the primal and the adjoint problem by using the \c updater
-            //! passed to the \c apply method and the current control value
-            /*!
-             *  This function allows derived classes to modify the way they solve the systems, so that it can be adapted
-             *  to the type of system the class is dealing with.
-             *
-             *  \param systems the set of systems to be solved
-             *  \param updater the functional to be used to update the system (see \c apply() method documentation)
-             *  \param control the current value of the control function
-             */
-            virtual void update_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
-                                  const dcp::GenericDescentMethod::Updater& updater,
-                                  const dolfin::GenericFunction& control) = 0;
-
-
-            /********************** VARIABLES ***********************/
-            //! The form that will be used to compute the dot product between the gradient and the search direction. 
-            /*! 
-             *  The default value is on object of type \c dcp::DotProduct default-constructed, which will try to
-             *  determine the right form to use by checking the geometrical dimensions of the input objects. 
-             *  However, sometimes it may be useful to have a user-defined object to compute the dot product.
-             *  To do so, use the function \c setDotProduct
-             */
-            dcp::DotProduct dotProduct_;
-            
-            //! The object used to compute the search direction for every loop iteration.
-            /*!
-             *  By default, it is set equal to an object of type dcp::GradientSearchDirection defaul-constructed,
-             *  but it can be changed using the function \c setSearchDirection
-             */
-             SearchDirectionComputer searchDirectionComputer_;
 
             // ---------------------------------------------------------------------------------------------//
 

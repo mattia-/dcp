@@ -23,24 +23,8 @@
 namespace dcp
 {
     GenericDescentMethod::GenericDescentMethod () : 
-        parameters ("optimizer_parameters"),
-        dotProduct_ (),
-        searchDirectionComputer_ (dcp::GradientSearchDirection ())
+        parameters ("optimizer_parameters")
     {
         dolfin::log (dolfin::DBG, "GenericDescentMethod object created");
-    }
-    
-
-
-    void GenericDescentMethod::setDotProduct (const dolfin::Form& dotProductForm)
-    {
-        dotProduct_.setDotProductComputer (dotProductForm);
-    }
-    
-
-
-    void GenericDescentMethod::setSearchDirection (const SearchDirectionComputer& searchDirectionComputer)
-    {
-        searchDirectionComputer_ = searchDirectionComputer;
     }
 }

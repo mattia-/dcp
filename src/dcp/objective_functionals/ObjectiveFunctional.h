@@ -94,17 +94,30 @@ namespace dcp
 
 
             /******************* GETTERS *******************/
-            //! Get const reference to the functional. Overrides method in \c GenericObjectiveFunctional
+            //! Get reference to the functional [1]. Overrides method in \c GenericObjectiveFunctional
             /*! 
-             *  \return a const reference to the functional form
+             *  \return a reference to the functional form
              */
             virtual const T_FunctionalForm& functional () const override;
 
-            //! Get const reference to the functional gradient. Overrides method in \c GenericObjectiveFunctional
+            //! Get reference to the functional gradient [1]. Overrides method in \c GenericObjectiveFunctional
             /*! 
-             *  \return a const reference to the functional gradient
+             *  \return a reference to the functional gradient
              */
             virtual const dcp::GenericExpression& gradient () const override;
+
+
+            //! Get reference to the functional [2]. Overrides method in \c GenericObjectiveFunctional
+            /*! 
+             *  \return a reference to the functional form
+             */
+            T_FunctionalForm& functional () override;
+
+            //! Get reference to the functional gradient [2]. Overrides method in \c GenericObjectiveFunctional
+            /*! 
+             *  \return a reference to the functional gradient
+             */
+            dcp::GenericExpression& gradient () override;
 
 
             /******************* SETTERS *******************/
@@ -184,9 +197,7 @@ namespace dcp
             functional_ (mesh),
             gradient_ (gradient) 
     {
-        dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
         dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
-        dolfin::end ();
     }
 
 
@@ -200,9 +211,7 @@ namespace dcp
             functional_ (functional),
             gradient_ (gradient) 
     {
-        dolfin::begin (dolfin::DBG, "Creating ObjectiveFunctional...");
         dolfin::log (dolfin::DBG, "ObjectiveFunctional object created");
-        dolfin::end ();
     }
 
 
@@ -220,6 +229,24 @@ namespace dcp
     template <class T_FunctionalForm>
         const dcp::GenericExpression& ObjectiveFunctional<T_FunctionalForm>::
         gradient () const
+        {
+            return *gradient_;
+        }
+
+
+
+    template <class T_FunctionalForm>
+        T_FunctionalForm& ObjectiveFunctional<T_FunctionalForm>::
+        functional ()
+        {
+            return functional_;
+        }
+
+
+
+    template <class T_FunctionalForm>
+        dcp::GenericExpression& ObjectiveFunctional<T_FunctionalForm>::
+        gradient ()
         {
             return *gradient_;
         }

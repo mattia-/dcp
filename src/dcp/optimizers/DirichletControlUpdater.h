@@ -23,8 +23,9 @@
 #include <dcp/problems/EquationSystem.h>
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/FunctionSpace.h>
-#include <dolfin/mesh/SubDomain.h>
 #include <string>
+#include <dcp/functions/TimeDependentFunction.h>
+#include <dcp/subdomains/Subdomain.h>
 
 namespace dcp
 {
@@ -33,8 +34,7 @@ namespace dcp
      *  
      *  This class is a functor which can be passed to the method \c apply() of any class
      *  of the \c GenericDescentMethod hierarchy, which will use it to update the value of
-     *  the control parameter in the \c EquationSystem (also passed to the method \c apply()
-     *  of the same class) as the optimization proceeds.
+     *  the control parameter in the equation system as the optimization proceeds.
      */
     class DirichletControlUpdater
     {
@@ -53,23 +53,37 @@ namespace dcp
              *  \param dirichletBCName the name under which the control Dirichlet boundary condition is stored in the 
              *  protected member \c map in the problem
              *  \param dirichletBoundary the boundary over which the control Dirichlet condition should be enforced
-             *  \param functionSpace the function space (possibly a subspace) on which the dirichlet condition should be enforced.
+             *  \param component the component of function space on which the dirichlet condition should be enforced;
+             *  this allows to enforce boundary conditions on subspaces. A negative value is a placeholder that stands
+             *  for a boundary condition on the whole space. A number greater than or equal to 0 will result in a
+             *  boundary condition on the subspace with that index number. Default value: -1
              */
             DirichletControlUpdater (const std::string& problemName, 
                                      const std::string& dirichletBCName,
-                                     const dolfin::SubDomain& dirichletBoundary,
-                                     std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
+                                     const dcp::Subdomain& dirichletBoundary,
+                                     const int& component);
 
 
             /************************* OPERATORS ********************/
-            //! Call operator. This will actually perform the updating of the control parameter
+            //! Call operator [1]
             /*! 
+             *  This will actually perform the updating of the control parameter
              *  Input parametes are:
              *  \param system the system on which to operate
              *  \param dirichletBCValue the new value for the control Dirichlet boundary condition 
              */
             void operator() (dcp::GenericEquationSystem& system, 
                              const dolfin::GenericFunction& dirichletBCValue) const;
+
+            //! Call operator [2]
+            /*! 
+             *  This will actually perform the updating of the control parameter
+             *  Input parametes are:
+             *  \param system the system on which to operate
+             *  \param dirichletBCValue the new value for the control Dirichlet boundary condition 
+             */
+            void operator() (dcp::GenericEquationSystem& system, 
+                             const dcp::TimeDependentFunction& dirichletBCValue) const;
 
             // ---------------------------------------------------------------------------------------------//
 
@@ -83,13 +97,11 @@ namespace dcp
             std::string dirichletBCName_;
 
             //! The boundary over which the control Dirichlet condition should be enforced
-            const dolfin::SubDomain& dirichletBoundary_;
+            const dcp::Subdomain& dirichletBoundary_;
 
-            //! The function space (possibly a subspace) on which the dirichlet condition should be enforced.
-            std::shared_ptr<const dolfin::FunctionSpace> functionSpace_;
+            //! The component of the function space on which the dirichlet condition should be enforced.
+            int component_;
     };
 }
 
 #endif
-
-

@@ -171,7 +171,7 @@ namespace dcp
                  const dcp::TimeDependentExpression::Evaluator& evaluator,
                  std::shared_ptr <dcp::Time> time = nullptr);
             
-            //! Default copy constructor TODO fix shallow copy
+            //! Default copy constructor 
             /*!
              *  Input arguments:
              *  \param expression object to be copied
@@ -197,10 +197,13 @@ namespace dcp
 
             /******************* GETTERS *******************/
             //! Get a the current time stored in the class
-            virtual std::shared_ptr <dcp::Time> time () const;
+            virtual std::shared_ptr <dcp::Time> time ();
 
 
             /******************* METHODS *******************/
+            //! Set time to a given value
+            virtual void setTime (const double& time);
+
             //! Evaluate at given point in given cell. Overrides method in \c dcp::VariableExpression
             /*!
              *  Input arguments are:
@@ -209,9 +212,10 @@ namespace dcp
              */
             virtual void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const override;
 
-            //! Clone method. It will perform a shallow clone, so \c time_ will be shared between current and cloned 
-            //! object. TODO fix this
+            //! Clone method
             /*!
+             *  Performs a shallow clone
+             *
              *  \return a pointer to the cloned object
              */
             virtual dcp::TimeDependentExpression* clone () const override;

@@ -133,7 +133,7 @@ namespace dcp
 
 
     /******************* GETTERS *******************/
-    std::shared_ptr<dcp::Time> TimeDependentExpression::time () const
+    std::shared_ptr<dcp::Time> TimeDependentExpression::time ()
     {
         return time_;
     }
@@ -141,6 +141,13 @@ namespace dcp
 
 
     /******************* METHODS *******************/
+    void TimeDependentExpression::setTime (const double& time)
+    {
+        time_ -> setTo (time);
+    }
+
+
+
     void TimeDependentExpression::eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
     {
         evaluator_ (values, x, time_ -> value ());

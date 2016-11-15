@@ -1,5 +1,7 @@
 #include <dcp/utils/DotProduct.h>
 #include <dcp/utils/dotproductforms.h>
+#include <dolfin/math/basic.h>
+#include <dolfin/log/dolfin_log.h>
 
 namespace dcp
 {
@@ -29,7 +31,7 @@ namespace dcp
 
     double DotProduct::compute (const dolfin::GenericFunction& first, 
                                 const dolfin::GenericFunction& second,
-                                const dolfin::Mesh& mesh)
+                                const dolfin::Mesh& mesh) const
     {
         std::shared_ptr<dolfin::Form> dotProductComputer = getDotProductComputer_ (first, second, mesh);
         
@@ -42,26 +44,84 @@ namespace dcp
 
 
     double DotProduct::compute (const dolfin::Function& first, 
-                                const dolfin::Function& second)
+                                const dolfin::Function& second) const
     {
         return compute (first, second, *(first.function_space () -> mesh ()));
     }
                                 
 
 
+    double DotProduct::compute (const dcp::TimeDependentFunction& left, 
+                                const dcp::TimeDependentFunction& right) const
+    {
+        if (left.size () != right.size ())
+        {
+            dolfin::dolfin_error ("dcp: DotProduct.cpp",
+                                  "perform dot product between objects of type dcp::TimeDependentFunction",
+                                  "Size mismatch");
+        }
+
+        // loop through time steps and compute dot products
+        dolfin::begin (dolfin::DBG, "Computing dot product of time dependent functions...");
+        double result = 0;
+        double previousDotProduct = 0;
+        double currentDotProduct = 0;
+        double dt = 0;
+        bool isFirstIteration = true;
+        for (auto i = 0; i < left.size (); ++i)
+        {
+            if (dolfin::near (left[i].first, right[i].first) == false)
+            {
+                dolfin::dolfin_error ("dcp: DotProduct.cpp",
+                                      "perform dot product between objects of type dcp::TimeDependentFunction",
+                                      "Mismatch in time value at position %d; the two values are %f and %f",
+                                      i,
+                                      left[i].first,
+                                      right[i].first);
+            }
+
+            if (isFirstIteration)
+            {
+                isFirstIteration = false;
+                previousDotProduct = compute (left[i].second, right[i].second);
+            }
+            else
+            {
+                dt = fabs (left[i].first - left[i-1].first);
+                currentDotProduct = compute (left[i].second, right[i].second);
+                result += 0.5 * (previousDotProduct + currentDotProduct) * dt;
+
+                previousDotProduct = currentDotProduct;
+            }
+        }
+        dolfin::end (); // Computing dot product of time dependent functions...
+
+        return result;
+        
+    }
+
+
+
     double DotProduct::norm (const dolfin::GenericFunction& function, 
-                             const dolfin::Mesh& mesh)
+                             const dolfin::Mesh& mesh) const
     {
         return sqrt (compute (function, function, mesh));
     }
     
 
 
-    double DotProduct::norm (const dolfin::Function& function)
+    double DotProduct::norm (const dolfin::Function& function) const
     {
         return norm (function, *(function.function_space () -> mesh ()));
     }
     
+
+
+    double DotProduct::norm (const dcp::TimeDependentFunction& function) const
+    {
+        return sqrt (compute (function, function));
+    }
+
 
 
     // ---------------------------------------------------------------------------------------------//
@@ -71,7 +131,7 @@ namespace dcp
     /********************** PROTECTED METHODS ***********************/
     std::shared_ptr<dolfin::Form> DotProduct::getDotProductComputer_ (const dolfin::GenericFunction& first,
                                                                       const dolfin::GenericFunction& second,
-                                                                      const dolfin::Mesh& mesh)
+                                                                      const dolfin::Mesh& mesh) const
     {
         if (dotProductComputer_ != nullptr)
         {

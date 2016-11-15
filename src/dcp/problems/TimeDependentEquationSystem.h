@@ -246,10 +246,14 @@ namespace dcp
             //! Return the end time of the simulation
             const double& endTime () const;
              
-            //! Advance time value \c time_. It just calls the increment function <tt>time_ -> add ()</tt> 
-            //! with <tt>parameters ["dt"]</tt> as input argument.
-            //! This allows us to automatically have a backwards time dependent problem if \c dt_ is negative.
+            //! Advance time value \c time_ . 
+            /*!
+             *  It calls the function \c advanceTime() on all the problems within the system
+             */
             virtual void advanceTime ();
+            
+            //! Prints information on the problems: names list (in solution order) and links information.
+            virtual void print () override;
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_. 
             /*! 

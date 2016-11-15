@@ -23,6 +23,7 @@
 #include <dcp/problems/EquationSystem.h>
 #include <dolfin/function/GenericFunction.h>
 #include <string>
+#include <dcp/functions/TimeDependentFunction.h>
 
 namespace dcp
 {
@@ -31,8 +32,7 @@ namespace dcp
      *  
      *  This class is a functor which can be passed to the method \c apply() of any class
      *  of the \c GenericDescentMethod hierarchy, which will use it to update the value of
-     *  the control parameter in the \c GenericEquationSystem (also passed to the method \c apply()
-     *  of the same class) as the optimization proceeds.
+     *  the control parameter in the equation system as the optimization proceeds.
      */
     class NeumannControlUpdater
     {
@@ -59,14 +59,25 @@ namespace dcp
             
             
             /************************* OPERATORS ********************/
-            //! Call operator. This will actually perform the updating of the control parameter
+            //! Call operator [1]
             /*! 
+             *  This will actually perform the updating of the control parameter
              *  Input parametes are:
              *  \param system the system on which to operate
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
             void operator() (dcp::GenericEquationSystem& system, 
                              const dolfin::GenericFunction& coefficientValue) const;
+ 
+            //! Call operator [2]
+            /*! 
+             *  This will actually perform the updating of the control parameter
+             *  Input parametes are:
+             *  \param system the system on which to operate
+             *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
+             */
+            void operator() (dcp::GenericEquationSystem& system, 
+                             const dcp::TimeDependentFunction& coefficientValue) const;
  
         // ---------------------------------------------------------------------------------------------//
         

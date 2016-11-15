@@ -120,11 +120,29 @@ namespace dcp
 
 
 
+    void GenericExpression::setCoefficient (const std::string& variableName, 
+                                            const std::shared_ptr <const dcp::TimeDependentFunction> value)
+    {
+        dolfin::log (dolfin::DBG, "Inserting time-dependent function in map...");
+
+        timeDependentVariables_ [variableName] = value;
+    }
+
+
+
     /******************* GETTERS *******************/
     const dolfin::Function& GenericExpression::function (const std::string& variableName) const
     {
         auto variable = variables_.find (variableName);
         return *(std::dynamic_pointer_cast<const dolfin::Function> (variable -> second));
+    }
+
+
+
+    const dcp::TimeDependentFunction& GenericExpression::timeDependentFunction (const std::string& variableName) const
+    {
+        auto variable = timeDependentVariables_.find (variableName);
+        return *(variable -> second);
     }
 
 
@@ -139,14 +157,19 @@ namespace dcp
 
     std::vector<std::string> GenericExpression::variablesNames () const
     {
-        std::vector<std::string> names (variables_.size ());
+        std::vector<std::string> names;
+        names.reserve (variables_.size () + timeDependentVariables_.size ());
         
-        std::size_t i = 0;
         for (auto& nameFunctionPair : variables_)
         {
-            names [i] = nameFunctionPair.first;
+            names.emplace_back (nameFunctionPair.first);
         }
         
+        for (auto& nameFunctionPair : timeDependentVariables_)
+        {
+            names.emplace_back (nameFunctionPair.first);
+        }
+
         return names;
     }
     

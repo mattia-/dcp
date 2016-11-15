@@ -26,6 +26,7 @@
 #include <dolfin/fem/Form.h>
 #include <functional>
 #include <string>
+#include <dcp/functions/TimeDependentFunction.h>
 
 namespace dcp
 {
@@ -65,7 +66,7 @@ namespace dcp
             //! Reset the value of the protected membet \c dotProductComputer_ so that the default form will be used
             virtual void resetDotProductComputer ();
                 
-            //! Function to compute the dot product between two \c dolfin::GenericFunction objects. 
+            //! Compute the dot product between two \c dolfin::GenericFunction objects. 
             /*! 
              *  The \c dolfin::Form to be used is the one stored in dotProductComputer_ , if such variable is not empty. 
              *  Otherwise, it will be determined based on the mesh (third input argument). If no mesh is provided, the
@@ -78,9 +79,9 @@ namespace dcp
              */
             virtual double compute (const dolfin::GenericFunction& first, 
                                     const dolfin::GenericFunction& second,
-                                    const dolfin::Mesh& mesh);
+                                    const dolfin::Mesh& mesh) const;
             
-            //! Function to compute the dot product between two \c dolfin::Function objects. 
+            //! Compute the dot product between two \c dolfin::Function objects. 
             /*! 
              *  The \c dolfin::Form to be used is the one stored in dotProductComputer_ , if such variable is not empty. 
              *  Otherwise, it will be determined based on the mesh (third input argument). If no mesh is provided, the
@@ -93,23 +94,46 @@ namespace dcp
              *  \return the value of the dot product
              */
             virtual double compute (const dolfin::Function& first, 
-                                    const dolfin::Function& second);
-            
-            //! Function to compute the norm of a \c dolfin::GenericFunction object.
+                                    const dolfin::Function& second) const;
+
+            //! Compute dot product of time dependent functions
+            /*!
+             *  The dot product computed is that of L^2([t0,tf];L^2(\Omega)), aka the time integral of the L^2 dot
+             *  product of the functions at each time step. The dot product is only performed if the time values in the 
+             *  two functions match. The time integration is performed using a trapezoidal rule.
+             *  NOTE: the times in the two time dependent functions are supposed to be sorted (either in ascending or
+             *  descending order).
+             *
+             *  \param left the first function of the dot product
+             *  \param right the second function of the dot product
+             */
+            virtual double compute (const dcp::TimeDependentFunction& left, 
+                                    const dcp::TimeDependentFunction& right) const;
+
+            //! Compute the norm of a \c dolfin::GenericFunction object.
             /*! 
              *  This function simply wraps a call to \c compute().
              *  \param function the function or expression of which to compute the norm
              *  \param mesh the mesh to be used
              */
             virtual double norm (const dolfin::GenericFunction& function, 
-                                 const dolfin::Mesh& mesh);
+                                 const dolfin::Mesh& mesh) const;
             
-            //! Function to compute the norm of a \c dolfin::Function object.
+            //! Compute the norm of a \c dolfin::Function object.
             /*! 
              *  This function simply wraps a call to \c compute().
              *  \param function the function or expression of which to compute the norm
              */
-            virtual double norm (const dolfin::Function& function);
+            virtual double norm (const dolfin::Function& function) const;
+            
+            //! Compute norm of time dependent functions
+            /*!
+             *  This just wraps a call to \c compute() .
+             *
+             *  \param function the function whose norm should be computed
+             */
+            virtual double norm (const dcp::TimeDependentFunction& function) const;
+
             
             // ---------------------------------------------------------------------------------------------//
 
@@ -125,7 +149,7 @@ namespace dcp
              */
             std::shared_ptr<dolfin::Form> getDotProductComputer_ (const dolfin::GenericFunction& first,
                                                                   const dolfin::GenericFunction& second,
-                                                                  const dolfin::Mesh& mesh);
+                                                                  const dolfin::Mesh& mesh) const;
             
             /********************** MEMBERS ***********************/
             //! The form that will be used to compute the dot product

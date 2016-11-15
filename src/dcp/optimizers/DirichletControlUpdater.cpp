@@ -17,21 +17,21 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/optimizers/DirichletControlUpdater.h>
-#include <dcp/problems/GenericProblem.h>
 #include <dolfin/fem/DirichletBC.h>
+#include <dcp/optimizers/DirichletControlUpdater.h>
+#include <dcp/problems/TimeDependentProblem.h>
 
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
     DirichletControlUpdater::DirichletControlUpdater (const std::string& problemName, 
                                                       const std::string& dirichletBCName,
-                                                      const dolfin::SubDomain& dirichletBoundary,
-                                                      std::shared_ptr<const dolfin::FunctionSpace> functionSpace) : 
+                                                      const dcp::Subdomain& dirichletBoundary,
+                                                      const int& component) : 
         problemName_ (problemName),
         dirichletBCName_ (dirichletBCName),
         dirichletBoundary_ (dirichletBoundary),
-        functionSpace_ (functionSpace)
+        component_ (component)
     {  }
 
 
@@ -44,9 +44,50 @@ namespace dcp
         
         problem.removeDirichletBC (dirichletBCName_);
         
-        problem.addDirichletBC (dolfin::DirichletBC (functionSpace_, 
-                                                     dolfin::reference_to_no_delete_pointer (dirichletBCValue), 
-                                                     dolfin::reference_to_no_delete_pointer (dirichletBoundary_)),
-                                dirichletBCName_);
+        if (component_ < 0)
+        {
+            problem.addDirichletBC (dolfin::reference_to_no_delete_pointer (dirichletBCValue), 
+                                    dolfin::reference_to_no_delete_pointer (dirichletBoundary_),
+                                    dirichletBCName_);
+        }
+        else
+        {
+            problem.addDirichletBC (dolfin::reference_to_no_delete_pointer (dirichletBCValue), 
+                                    dolfin::reference_to_no_delete_pointer (dirichletBoundary_),
+                                    component_,
+                                    dirichletBCName_);
+        }
+    }
+
+
+
+    void DirichletControlUpdater::operator() (dcp::GenericEquationSystem& system, 
+                                              const dcp::TimeDependentFunction& dirichletBCValue) const
+    {
+        dcp::GenericProblem& problem = system [problemName_];
+        auto pointerToProblem = dynamic_cast<dcp::TimeDependentProblem*> (&problem);
+        if (pointerToProblem == nullptr)
+        {
+            dolfin::dolfin_error ("dcp: DirichletControlUpdater.cpp",
+                                  "update system",
+                                  "Problem \"%s\" in input system is not an object of type dcp::TimeDependentProblem",
+                                  problemName_.c_str ());
+        }
+        
+        pointerToProblem->removeTimeDependentDirichletBC (dirichletBCName_);
+        
+        if (component_ < 0)
+        {
+            pointerToProblem->addTimeDependentDirichletBC (dirichletBCValue, 
+                                                           dirichletBoundary_,
+                                                           dirichletBCName_);
+        }
+        else
+        {
+            pointerToProblem->addTimeDependentDirichletBC (dolfin::reference_to_no_delete_pointer (dirichletBCValue), 
+                                                           dolfin::reference_to_no_delete_pointer (dirichletBoundary_),
+                                                           component_,
+                                                           dirichletBCName_);
+        }
     }
 }

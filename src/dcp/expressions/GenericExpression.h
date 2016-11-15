@@ -28,6 +28,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <dcp/functions/TimeDependentFunction.h>
 
 namespace dcp
 {
@@ -145,7 +146,7 @@ namespace dcp
 
 
             /******************* SETTERS *******************/
-            //! Sets value for the variable with given name
+            //! Sets value for the variable with given name (time-independent variables)
             /*! 
              *  Input arguments are:
              *  \param variableName string identifying the variable we want to set
@@ -156,6 +157,18 @@ namespace dcp
              */
             virtual void setCoefficient (const std::string& variableName, 
                                          const std::shared_ptr <const dolfin::GenericFunction> value);
+
+            //! Sets value for the variable with given name (time-dependent variables)
+            /*! 
+             *  Input arguments are:
+             *  \param variableName string identifying the variable we want to set
+             *  \param value the value of such variable, given as a shared pointer to a \c dcp::TimeDependentFunction
+             *  
+             *  If the string key already exists in \c timeDependentVariables_ , its value will be updated. If it does
+             *  not, a new entry will be created using \c variableName as key
+             */
+            virtual void setCoefficient (const std::string& variableName, 
+                                         const std::shared_ptr <const dcp::TimeDependentFunction> value);
 
 
             /******************* GETTERS *******************/
@@ -169,6 +182,16 @@ namespace dcp
              */
             virtual const dolfin::Function& function (const std::string& variableName) const;
 
+            //! Get variable with given name and return it as a <tt> const dcp::TimeDependentFunction& </tt>
+            /*! 
+             *  Input arguments are:
+             *  \param variableName the name of the variable to be returned. The method will look for an object with key
+             *  matching \c name in the map \c timeDependentVariables_
+             *
+             *  \return the function, if found, as a <tt> const dolfin::Function& </tt>
+             */
+            virtual const dcp::TimeDependentFunction& timeDependentFunction (const std::string& variableName) const;
+
             //! Get variable with given name and return it as a <tt> const dolfin::Expression& </tt>
             /*! 
              *  Input arguments are:
@@ -180,7 +203,7 @@ namespace dcp
             virtual const dolfin::Expression& expression (const std::string& variableName) const;
 
 
-            //! Get all the names of the variables stored in \c variables_
+            //! Get all the names of the variables stored in \c variables_ and \c timeDependentVariables_
             virtual std::vector<std::string> variablesNames () const;
             
 
@@ -217,14 +240,19 @@ namespace dcp
 
             //! Clone method
             /*!
+             *  Performs a shallow clone
+             *
              *  \return a pointer to the cloned object
              */
             virtual dcp::GenericExpression* clone () const = 0;
 
             // ---------------------------------------------------------------------------------------------//  
         protected:
-            //! The map that associates variables' names and values
+            //! The map that associates variables' names and values (time-independent variables)
             std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> > variables_;
+
+            //! The map that associates variables' names and values (time-dependent variables)
+            std::map <std::string, std::shared_ptr<const dcp::TimeDependentFunction> > timeDependentVariables_;
     };
 }
 

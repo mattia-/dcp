@@ -158,8 +158,11 @@ int main (int argc, char* argv[])
     dcp::BacktrackingOptimizer backtrackingOptimizer;
     backtrackingOptimizer.parameters ["output_file_name"] = "results.txt";
     backtrackingOptimizer.parameters ["max_minimization_iterations"] = 1000;
+
+    dcp::BacktrackingImplementer<dolfin::Function> implementer 
+        (dcp::DistributedControlUpdater ("primal", "linear_form", "g"));
     
-    backtrackingOptimizer.apply (problems, objectiveFunctional, g, dcp::DistributedControlUpdater ("primal", "linear_form", "g"));
+    backtrackingOptimizer.apply (problems, objectiveFunctional, g, implementer);
             
 
     // compute difference between target and reconstructed solution

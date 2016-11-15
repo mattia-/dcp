@@ -64,17 +64,29 @@ namespace dcp
              */
             virtual const dolfin::Mesh& mesh () const;
 
-            //! Get const reference to the functional
+            //! Get reference to the functional [1]
             /*! 
-             *  \return a const reference to the functional form
+             *  \return a reference to the functional form
              */
             virtual const dolfin::Form& functional () const = 0;
 
-            //! Get const reference to the functional gradient
+            //! Get reference to the functional gradient [1]
             /*! 
-             *  \return a const reference to the functional gradient
+             *  \return a reference to the functional gradient
              */
             virtual const dolfin::Expression& gradient () const = 0;
+
+            //! Get reference to the functional [2]
+            /*! 
+             *  \return a reference to the functional form
+             */
+            virtual dolfin::Form& functional () = 0;
+
+            //! Get reference to the functional gradient [2]
+            /*! 
+             *  \return a reference to the functional gradient
+             */
+            virtual dolfin::Expression& gradient () = 0;
 
 
             /******************* SETTERS *******************/

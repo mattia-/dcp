@@ -173,6 +173,8 @@ namespace dcp
 
             //! Clone method
             /*!
+             *  Performs a shallow clone
+             *
              *  \return a pointer to the cloned object
              */
             virtual dcp::Expression* clone () const override;

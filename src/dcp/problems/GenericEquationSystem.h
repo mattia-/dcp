@@ -363,7 +363,6 @@ namespace dcp
             virtual void setSubiterationRange (const std::string& first, const std::string& last = "");
             
             //! Prints information on the problems: names list (in solution order) and links information.
-            //! It uses \c dolfin::cout stream TODO fix stream and what gets printed
             virtual void print ();
             
             //! Solve all the problems in the order specified by the private member \c solveOrder_

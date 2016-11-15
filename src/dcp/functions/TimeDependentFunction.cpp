@@ -18,6 +18,7 @@
  */
 
 #include <dolfin/math/basic.h>
+#include <dolfin/plot/plot.h>
 #include <dcp/functions/TimeDependentFunction.h>
 #include <dcp/expressions/TimeDependentExpression.h>
 
@@ -25,17 +26,48 @@ namespace dcp
 {
     TimeDependentFunction::TimeDependentFunction () :
         std::vector<TimeDependentFunction::value_type> (),
-        parameters ("time_dependent_solution_parameters")
+        parameters ("time_dependent_solution_parameters"),
+        plotter_ ()
     {}
 
 
 
     TimeDependentFunction::TimeDependentFunction (const int &n,
-                                                  const double& time,
+                                                  const double& t0,
+                                                  const double& dt,
                                                   const std::shared_ptr<const dolfin::FunctionSpace> functionSpace) :
-        std::vector<TimeDependentFunction::value_type> (n, std::make_pair (time, dolfin::Function (functionSpace))),
-        parameters ("time_dependent_solution_parameters")
-    {}
+        std::vector<TimeDependentFunction::value_type> (),
+        parameters ("time_dependent_solution_parameters"),
+        plotter_ ()
+    {
+        this->reserve (n);
+
+        for (auto i = 0; i < n; ++i)
+        {
+            this->emplace_back (std::make_pair (t0 + i * dt, dolfin::Function (functionSpace)));
+        }
+    }
+
+
+
+    TimeDependentFunction::TimeDependentFunction (const double& t0,
+                                                  const double& dt,
+                                                  const double& tf,
+                                                  const std::shared_ptr<const dolfin::FunctionSpace> functionSpace) :
+        std::vector<TimeDependentFunction::value_type> (),
+        parameters ("time_dependent_solution_parameters"),
+        plotter_ ()
+    {
+        double currentTime = t0;
+        std::size_t counter = 0;
+        while (currentTime <= tf)
+        {
+            this->emplace_back (std::make_pair (currentTime, dolfin::Function (functionSpace)));
+
+            counter++;
+            currentTime = t0 + counter * dt;
+        }
+    }
 
 
 
@@ -44,6 +76,50 @@ namespace dcp
         std::vector<TimeDependentFunction::value_type> (n, value),
         parameters ("time_dependent_solution_parameters")
     {}
+
+
+
+    void TimeDependentFunction::plot (std::string title, const bool& pause)
+    {
+        if (title.empty ())
+        {
+            title = "Time = ";
+        }
+        else
+        {
+            title += ", time = ";
+        }
+
+        dolfin::begin (dolfin::DBG, "Plotting time-dependent function...");
+        std::string titleWithTime;
+        for (const auto& element : (*this))
+        {
+            titleWithTime = title + std::to_string (element.first);
+            if (plotter_ == nullptr)
+            {
+                dolfin::log (dolfin::DBG, "Plotting in new dolfin::VTKPlotter object...");
+                plotter_ = dolfin::plot (dolfin::reference_to_no_delete_pointer (element.second), titleWithTime);
+            }
+            else if (plotter_ -> is_compatible (dolfin::reference_to_no_delete_pointer (element.second)) == false)
+            {
+                dolfin::log (dolfin::DBG, "Existing plotter is not compatible with object to be plotted.");
+                dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
+                plotter_ = dolfin::plot (dolfin::reference_to_no_delete_pointer (element.second), titleWithTime);
+            }
+            else 
+            {
+                plotter_ -> parameters ["title"] = titleWithTime;
+                plotter_ -> plot (dolfin::reference_to_no_delete_pointer (element.second));
+            }
+            
+            if (pause)
+            {
+                dolfin::interactive ();
+            }
+        }
+        dolfin::end (); // Plotting time-dependent function...
+    }
+
 
 
     TimeDependentFunction& TimeDependentFunction::operator= (dolfin::Expression& expression)
@@ -56,19 +132,35 @@ namespace dcp
             isTimeDependentExpression = true;
         }
 
+        double initialTime = 0;
+        if (isTimeDependentExpression)
+        {
+            initialTime = pointerToExpression->time ()->value ();
+        }
+
+        dolfin::begin (dolfin::DBG, "Setting time-dependent function values from expression...");
         for (auto& element : (*this))
         {
+            dolfin::begin (dolfin::DBG, "Setting function values for time %f...", element.first);
             if (isTimeDependentExpression)
             {
-                pointerToExpression->time ()->setTo (element.first);
+                pointerToExpression->setTime (element.first);
             }
 
+            // use expression here (not pointerToExpression), so that every kind of expression can be assigned to
+            // elemen.second
             element.second = expression;
+            dolfin::end (); // Setting function values for time %f...
+        }
+        dolfin::end (); // Setting time-dependent function values from expression
+
+        if (isTimeDependentExpression)
+        {
+            pointerToExpression->setTime (initialTime);
         }
 
         return *this;
     }
-
 
 
 
@@ -116,6 +208,14 @@ namespace dcp
 
 
 
+    TimeDependentFunction operator- (const TimeDependentFunction& left,
+                                     const TimeDependentFunction& right)
+    {
+        return left + (-right);
+    }
+
+
+
     TimeDependentFunction operator* (const TimeDependentFunction& function,
                                      const double& scalar)
     {
@@ -131,7 +231,7 @@ namespace dcp
             product = function[i].second * scalar;
             result.emplace_back (std::make_pair (function[i].first, product));
         }
-        dolfin::end (); // Summing time dependent functions
+        dolfin::end (); // Multipling time dependent functions
 
         return result;
     }
@@ -163,9 +263,28 @@ namespace dcp
 
 
 
-
-    TimeDependentFunction operator- (const TimeDependentFunction& function)
+    TimeDependentFunction operator- (const dcp::TimeDependentFunction& function)
     {
-        return (-1) * function;
+        return function * (-1);
+    }
+
+
+
+    void operator<< (dolfin::File& file, const dcp::TimeDependentFunction& function)
+    {
+        try
+        {
+            for (const auto& element : function)
+            {
+                file << std::make_pair (&element.second, element.first);
+            }
+        }
+        catch (std::runtime_error& e)
+        {
+            for (const auto& element : function)
+            {
+                file << element.second;
+            }
+        }
     }
 }

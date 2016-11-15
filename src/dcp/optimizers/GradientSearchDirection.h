@@ -22,6 +22,7 @@
 
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Function.h>
+#include <dcp/functions/TimeDependentFunction.h>
 
 namespace dcp
 {
@@ -52,13 +53,22 @@ namespace dcp
             
             
             /********************** METHODS ***********************/
-            //! Call operator that computes the search direction
+            //! Call operator that computes the search direction [1]
             /*!
-             *  \param searchDirection will contain the search direction at the end of the function
-             *  \param gradient the current value of the gradient of the functional
+             *  \param gradient the current functional gradient
+             *
+             *  \return the search direction 
              */
-            void operator() (dolfin::Function& searchDirection, const dolfin::Function gradient);
+            dolfin::Function operator() (const dolfin::Function& gradient);
             
+            //! Call operator that computes the search direction [2]
+            /*!
+             *  \param gradient the current functional gradient
+             *
+             *  \return the search direction 
+             */
+            dcp::TimeDependentFunction operator() (const dcp::TimeDependentFunction& gradient);
+
             // ---------------------------------------------------------------------------------------------//
 
         protected:

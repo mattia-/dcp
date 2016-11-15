@@ -18,7 +18,7 @@
  */ 
 
 #include <dcp/optimizers/NeumannControlUpdater.h>
-#include <dcp/problems/GenericProblem.h>
+#include <dcp/problems/TimeDependentProblem.h>
 
 namespace dcp
 {
@@ -42,5 +42,25 @@ namespace dcp
         problem.setCoefficient (coefficientType_, 
                                 dolfin::reference_to_no_delete_pointer (coefficientValue), 
                                 coefficientName_);
+    }
+
+
+
+    void NeumannControlUpdater::operator() (dcp::GenericEquationSystem& system, 
+                                            const dcp::TimeDependentFunction& coefficientValue) const
+    {
+        dcp::GenericProblem& problem = system [problemName_];
+        auto pointerToProblem = dynamic_cast<dcp::TimeDependentProblem*> (&problem);
+        if (pointerToProblem == nullptr)
+        {
+            dolfin::dolfin_error ("dcp: DirichletControlUpdater.cpp",
+                                  "update system",
+                                  "Problem \"%s\" in input system is not an object of type dcp::TimeDependentProblem",
+                                  problemName_.c_str ());
+        }
+
+        pointerToProblem->addTimeDependentCoefficient (coefficientType_, 
+                                                       dolfin::reference_to_no_delete_pointer (coefficientValue), 
+                                                       coefficientName_);
     }
 }

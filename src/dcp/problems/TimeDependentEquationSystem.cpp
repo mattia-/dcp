@@ -461,9 +461,45 @@ namespace dcp
 
     void TimeDependentEquationSystem::advanceTime ()
     {
-        time_ -> add (dt_);
+        // set new time value
+        for (auto& element : storedProblems_)
+        {
+            // use static_pointer_cast because if the problem was added to the sytem, it is a dcp::TimeDependentProblem
+            // for sure (see add() method)
+            const std::shared_ptr<dcp::TimeDependentProblem> problem =
+                std::static_pointer_cast<dcp::TimeDependentProblem> (element.second);
+
+            problem->advanceTime ();
+
+        }
     }
     
+
+
+    void TimeDependentEquationSystem::print ()
+    {
+        dcp::GenericEquationSystem::print ();
+
+        dolfin::cout << "Problems links to previous solutions:" << dolfin::endl;
+        for (auto &i : linksToPreviousSolutions_)
+        {
+            dolfin::cout << "("
+                << std::get<0> (i.first)
+                << ", " 
+                << std::get<1> (i.first)
+                << ", " 
+                << std::get<2> (i.first)
+                << ") -> (" 
+                << std::get<0> (i.second)
+                << ", "
+                << std::string (std::get<1> (i.second) == -1 ? 
+                                "all solution components, " : 
+                                "component " + std::to_string (std::get<1> (i.second)) + ", ")
+                << "time step: current "  << std::get<2> (i.second)
+                << dolfin::endl;
+        }
+    }
+
 
 
     void TimeDependentEquationSystem::solve (const std::string& solveType)
@@ -737,11 +773,11 @@ namespace dcp
 
         // Solutions loop
         dolfin::begin (dolfin::DBG, "Solution loop...");
-        unsigned int timeStep = 0;
+        std::size_t timestep = 0;
         while (isFinished () == 0)
         {
-            timeStep++;
-            dolfin::begin (dolfin::PROGRESS, "===== Timestep %d =====", timeStep);
+            timestep++;
+            dolfin::begin (dolfin::PROGRESS, "===== Timestep %d =====", timestep);
             
             step_ (subiterationsBegin, subiterationsEnd);
 
@@ -752,14 +788,14 @@ namespace dcp
                 dcp::TimeDependentProblem& problem = this -> operator[] (problemName);
                 int plotInterval = problem.parameters["plot_interval"];
 
-                if (plotInterval > 0 && timeStep % plotInterval == 0)
+                if (plotInterval > 0 && timestep % plotInterval == 0)
                 {
                     problem.plotSolution ("last");
                 }
 
                 // write solution to file 
                 int writeInterval = problem.parameters ["write_interval"];
-                if (writeInterval > 0 && timeStep % writeInterval == 0)
+                if (writeInterval > 0 && timestep % writeInterval == 0)
                 {
                     problem.writeSolutionToFile ("last");
                 }
@@ -802,6 +838,5 @@ namespace dcp
                 problemName = subiterationsEnd;
             }
         }
-
     }
 }

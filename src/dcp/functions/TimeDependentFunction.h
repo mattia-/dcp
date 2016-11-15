@@ -22,9 +22,10 @@
 
 #include <dolfin/function/FunctionSpace.h>
 #include <dolfin/function/Function.h>
+#include <dolfin/io/File.h>
+#include <dolfin/plot/VTKPlotter.h>
 #include <vector>
 #include <utility>
-
 
 namespace dcp
 {
@@ -33,6 +34,9 @@ namespace dcp
      *
      *  This class contains the interface for the solution of problems in the \c dcp hierarchy. It derives from
      *  \c std::vector<std::pair<double,dolfin::Function>> and extends its functionalities to some needed special cases.
+     *
+     *  IMPORTANT: even though no control is in place, times in dcp::TimeDependentFunction objects are always supposed
+     *  to be sorted in ascending order within the container
      */
     class TimeDependentFunction : public std::vector<std::pair<double, dolfin::Function>>
     {
@@ -45,18 +49,35 @@ namespace dcp
 
             //! Fill constructor [1]
             /*!
-             *  Creates object with given size containing pairs made from the input time and functions build on the
-             *  input function space.
+             *  Creates object with given size containing pairs made from the input initial time \c t0 (incremented by 
+             *  \c dt for each element) and functions build on the input function space.
              *
              *  \param n the size
-             *  \param time the time
+             *  \param t0 the initial time
+             *  \param dt the time step
              *  \param functionSpace the function space
              */
             TimeDependentFunction (const int &n,
-                                   const double& time,
+                                   const double& t0,
+                                   const double& dt,
                                    const std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
 
             //! Fill constructor [2]
+            /*!
+             *  Creates object containing pairs made from the input initial time \c t0 incremented by \c dt for each 
+             *  element until final time is reached and functions build on the input function space.
+             *
+             *  \param t0 the initial time
+             *  \param dt the time step
+             *  \param tf the final time
+             *  \param functionSpace the function space
+             */
+            TimeDependentFunction (const double& t0,
+                                   const double& dt,
+                                   const double& tf,
+                                   const std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
+
+            //! Fill constructor [3]
             /*!
              *  Creates object with given size containing copies of the input pair
              *  input function space.
@@ -79,15 +100,24 @@ namespace dcp
             virtual ~TimeDependentFunction () {};
 
 
+            /********************** METHODS ***********************/
+            //! Plot time dependent function
+            /*!
+             *  \param title the title of the plot; time value will be appended to it
+             *  \param pause switch to enable (\c true) or disable (\c false) pausing after each plot
+             */
+            void plot (std::string title, const bool& pause);
+
             /********************** OPERATORS ***********************/
             //! Assignement operator
             /*!
              *  This allows to assign values to a time-dependent function from an expression, by assigning the
              *  evaluated expression at each timestep to each element in the time-dependent function.
              *  If the expression is constant with respect to time, the time-dependent function will simply contain
-             *  the same values at each timestep.
+             *  the same values at each timestep. If the expression is indeed time-dependent, at the end of the function 
+             *  the value of time contained in the expression at the function call will be restored.
              *
-             *  \param expression the expression; // TODO NOT CONST BECAUSE TODO CHANGE function TO somethingelse
+             *  \param expression the expression; 
              */
             dcp::TimeDependentFunction& operator= (dolfin::Expression& expression);
 
@@ -103,6 +133,20 @@ namespace dcp
              *  when returning an object from a function, so there is no need to explicitly use the move semantic
              */
             friend dcp::TimeDependentFunction operator+ (const dcp::TimeDependentFunction& left,
+                                                         const dcp::TimeDependentFunction& right);
+
+            //! Difference operator
+            /*!
+             *  Performs the difference <tt>a - b</tt>.
+             *  The sum is only performed if the time values in the two functions match. In this case, the normal
+             *  difference between \c dolfin::Function is performed at each timestep. An error is issued otherwise.
+             *  \param left the first function of the difference
+             *  \param right the second function of the difference
+             *
+             *  Reminder to developers: C++11 already implements move semantic or return-value optimization if possible
+             *  when returning an object from a function, so there is no need to explicitly use the move semantic
+             */
+            friend dcp::TimeDependentFunction operator- (const dcp::TimeDependentFunction& left,
                                                          const dcp::TimeDependentFunction& right);
 
             //! Multiplication by scalar operator [1]
@@ -172,6 +216,15 @@ namespace dcp
              */
             friend dcp::TimeDependentFunction operator- (const dcp::TimeDependentFunction& function);
 
+            //! Write to file operator
+            /*!
+             *  Writes to the given \c dolfin::file the given time dependent function
+             *
+             *  \param file the file
+             *  \param function the function
+             */
+            friend void operator<< (dolfin::File& file, const dcp::TimeDependentFunction& function);
+
             /********************** VARIABLES ***********************/
             //! the function parameters; may be useful in derived classes
             dolfin::Parameters parameters;
@@ -179,6 +232,9 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//
 
         protected:
+            //! The plotter for the function
+            std::shared_ptr<dolfin::VTKPlotter> plotter_;
+            
 
             // ---------------------------------------------------------------------------------------------//
 

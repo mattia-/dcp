@@ -28,7 +28,9 @@ namespace dcp
         std::vector<TimeDependentFunction::value_type> (),
         parameters ("time_dependent_solution_parameters"),
         plotter_ ()
-    {}
+    {
+        dolfin::log (dolfin::DBG, "TimeDependentFunction object created");
+    }
 
 
 
@@ -42,10 +44,14 @@ namespace dcp
     {
         this->reserve (n);
 
+        dolfin::begin (dolfin::DBG, "Creating TimeDependentFunction object...");
         for (auto i = 0; i < n; ++i)
         {
             this->emplace_back (std::make_pair (t0 + i * dt, dolfin::Function (functionSpace)));
         }
+        dolfin::end ();
+
+        dolfin::log (dolfin::DBG, "TimeDependentFunction object created");
     }
 
 
@@ -58,6 +64,7 @@ namespace dcp
         parameters ("time_dependent_solution_parameters"),
         plotter_ ()
     {
+        dolfin::begin (dolfin::DBG, "Creating TimeDependentFunction object...");
         double currentTime = t0;
         std::size_t counter = 0;
         while (currentTime <= tf)
@@ -67,6 +74,56 @@ namespace dcp
             counter++;
             currentTime = t0 + counter * dt;
         }
+        dolfin::end ();
+
+        dolfin::log (dolfin::DBG, "TimeDependentFunction object created");
+    }
+
+
+
+    TimeDependentFunction::TimeDependentFunction (const int &n,
+                                                  const double& t0,
+                                                  const double& dt,
+                                                  const dolfin::Function& function) :
+        std::vector<TimeDependentFunction::value_type> (),
+        parameters ("time_dependent_solution_parameters"),
+        plotter_ ()
+    {
+        dolfin::begin (dolfin::DBG, "Creating TimeDependentFunction object...");
+        this->reserve (n);
+
+        for (auto i = 0; i < n; ++i)
+        {
+            this->emplace_back (std::make_pair (t0 + i * dt, dolfin::Function (function)));
+        }
+        dolfin::end ();
+
+        dolfin::log (dolfin::DBG, "TimeDependentFunction object created");
+    }
+
+
+
+    TimeDependentFunction::TimeDependentFunction (const double& t0,
+                                                  const double& dt,
+                                                  const double& tf,
+                                                  const dolfin::Function& function) :
+        std::vector<TimeDependentFunction::value_type> (),
+        parameters ("time_dependent_solution_parameters"),
+        plotter_ ()
+    {
+        dolfin::begin (dolfin::DBG, "Creating TimeDependentFunction object...");
+        double currentTime = t0;
+        std::size_t counter = 0;
+        while (currentTime <= tf)
+        {
+            this->emplace_back (std::make_pair (currentTime, dolfin::Function (function)));
+
+            counter++;
+            currentTime = t0 + counter * dt;
+        }
+        dolfin::end ();
+
+        dolfin::log (dolfin::DBG, "TimeDependentFunction object created");
     }
 
 
@@ -75,7 +132,9 @@ namespace dcp
                                                   const TimeDependentFunction::value_type& value) :
         std::vector<TimeDependentFunction::value_type> (n, value),
         parameters ("time_dependent_solution_parameters")
-    {}
+    {
+        dolfin::log (dolfin::DBG, "TimeDependentFunction object created");
+    }
 
 
 

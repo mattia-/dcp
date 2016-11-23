@@ -77,7 +77,38 @@ namespace dcp
                                    const double& tf,
                                    const std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
 
+
             //! Fill constructor [3]
+            /*!
+             *  Creates object with given size containing pairs made from the input initial time \c t0 (incremented by 
+             *  \c dt for each element) and copies of the input funciton
+             *
+             *  \param n the size
+             *  \param t0 the initial time
+             *  \param dt the time step
+             *  \param function the function to be copied in the container
+             */
+            TimeDependentFunction (const int &n,
+                                   const double& t0,
+                                   const double& dt,
+                                   const dolfin::Function& function);
+
+            //! Fill constructor [2]
+            /*!
+             *  Creates object containing pairs made from the input initial time \c t0 incremented by \c dt for each 
+             *  element until final time is reached and copies of the input function
+             *
+             *  \param t0 the initial time
+             *  \param dt the time step
+             *  \param tf the final time
+             *  \param function the function to be copied in the container
+             */
+            TimeDependentFunction (const double& t0,
+                                   const double& dt,
+                                   const double& tf,
+                                   const dolfin::Function& function);
+
+            //! Fill constructor [5]
             /*!
              *  Creates object with given size containing copies of the input pair
              *  input function space.

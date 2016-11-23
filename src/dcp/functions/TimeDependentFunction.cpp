@@ -184,7 +184,7 @@ namespace dcp
 
         // loop through time steps and sum functions
         dolfin::begin (dolfin::DBG, "Summing time dependent functions...");
-        for (auto i = 0; i < left.size (); ++i)
+        for (std::size_t i = 0; i < left.size (); ++i)
         {
             if (dolfin::near (left[i].first, right[i].first) == false)
             {
@@ -224,7 +224,7 @@ namespace dcp
 
         // loop through time steps and multiply functions by scalar
         dolfin::begin (dolfin::DBG, "Multipling time dependent function by scalar...");
-        for (auto i = 0; i < function.size (); ++i)
+        for (std::size_t i = 0; i < function.size (); ++i)
         {
             // create function to hold the product and store it into result
             dolfin::Function product (function[i].second.function_space ());

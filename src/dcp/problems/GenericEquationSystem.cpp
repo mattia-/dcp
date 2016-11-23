@@ -897,7 +897,7 @@ namespace dcp
             dolfin::log (dolfin::INFO, "Max norm of relative increment: %f", maxIncrementNorm);
 
             dolfin::begin (dolfin::DBG, "Relative increments norms are:");
-            for (auto i = 0; i < sortedConvergenceCheckProblemNames.size (); ++i)
+            for (std::size_t i = 0; i < sortedConvergenceCheckProblemNames.size (); ++i)
             {
                 dolfin::log (dolfin::DBG, 
                              "Problem \"%s\": norm of relative increment = %f", 
@@ -1028,7 +1028,7 @@ namespace dcp
          const bool inLoop)
     {
         // counter to loop through the convergence check problems. Only used if inLoop is true
-        int problemCounter = 0;
+        std::size_t problemCounter = 0;
 
         // remember that subiterationsBegin and subiterationsEnd are iterators on solveOrder_
         for (auto problemName = subiterationsBegin; problemName != subiterationsEnd; problemName++)
@@ -1145,7 +1145,7 @@ namespace dcp
             dolfin::end (); // Problems considered for convergence check are
         
             // get solutions at the initial timestep to be used for the convergence check
-            for (auto i = 0; i < sortedConvergenceCheckProblemNames.size(); ++i)
+            for (std::size_t i = 0; i < sortedConvergenceCheckProblemNames.size(); ++i)
             {
                 oldSolutions.push_back (solution (sortedConvergenceCheckProblemNames[i], storedProblemsSolutionType_));
             }

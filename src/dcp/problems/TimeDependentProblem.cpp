@@ -987,7 +987,7 @@ namespace dcp
             {
                 double time = timeSolutionPair.first;
 
-                for (auto i = 0; i < plotComponents.size (); ++i)
+                for (std::size_t i = 0; i < plotComponents.size (); ++i)
                 {
                     int component = plotComponents[i];
 
@@ -1036,7 +1036,7 @@ namespace dcp
             // get time
             double time = timeSolutionPair.first;
 
-            for (auto i = 0; i < plotComponents.size (); ++i)
+            for (std::size_t i = 0; i < plotComponents.size (); ++i)
             {
                 int component = plotComponents[i];
 
@@ -1079,7 +1079,7 @@ namespace dcp
         }
         else // aka plotType == "stashed", otherwise we would have exited on the first check
         {
-            for (auto i = 0; i < plotComponents.size (); ++i)
+            for (std::size_t i = 0; i < plotComponents.size (); ++i)
             {
                 int component = plotComponents[i];
 
@@ -1173,7 +1173,7 @@ namespace dcp
             {
                 double time = timeSolutionPair.first;
 
-                for (auto i = 0; i < writeComponents.size (); ++i)
+                for (std::size_t i = 0; i < writeComponents.size (); ++i)
                 {
                     int component = writeComponents[i];
 
@@ -1213,7 +1213,7 @@ namespace dcp
             // get time
             double time = timeSolutionPair.first;
 
-            for (auto i = 0; i < writeComponents.size (); ++i)
+            for (std::size_t i = 0; i < writeComponents.size (); ++i)
             {
                 int component = writeComponents[i];
 
@@ -1247,7 +1247,7 @@ namespace dcp
         else // aka writeType == "stashed", otherwise we would have exited on the first check
         {
             double time = time_->value();
-            for (auto i = 0; i < writeComponents.size (); ++i)
+            for (std::size_t i = 0; i < writeComponents.size (); ++i)
             {
                 int component = writeComponents[i];
 

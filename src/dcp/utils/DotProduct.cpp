@@ -68,7 +68,7 @@ namespace dcp
         double currentDotProduct = 0;
         double dt = 0;
         bool isFirstIteration = true;
-        for (auto i = 0; i < left.size (); ++i)
+        for (std::size_t i = 0; i < left.size (); ++i)
         {
             if (dolfin::near (left[i].first, right[i].first) == false)
             {

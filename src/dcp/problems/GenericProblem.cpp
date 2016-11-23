@@ -312,7 +312,7 @@ namespace dcp
         // auxiliary variable, to enhance readability
         std::shared_ptr<dolfin::Function> functionToPlot;
         
-        for (auto i = 0; i < plotComponents.size (); ++i)
+        for (std::size_t i = 0; i < plotComponents.size (); ++i)
         {
             int component = plotComponents[i];
  
@@ -405,7 +405,7 @@ namespace dcp
         // auxiliary variable
         std::shared_ptr<dolfin::Function> functionToWrite;
 
-        for (auto i = 0; i < writeComponents.size (); ++i)
+        for (std::size_t i = 0; i < writeComponents.size (); ++i)
         {
             int component = writeComponents[i];
 

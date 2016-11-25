@@ -37,10 +37,10 @@ namespace dcp
 
 
     /************************* OPERATORS ********************/
-    void DirichletControlUpdater::operator() (dcp::GenericEquationSystem& system, 
+    void DirichletControlUpdater::operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>> systems,
                                               const dolfin::GenericFunction& dirichletBCValue) const
     {
-        dcp::GenericProblem& problem = system [problemName_];
+        dcp::GenericProblem& problem = (*(systems[0])) [problemName_];
         
         problem.removeDirichletBC (dirichletBCName_);
         
@@ -61,10 +61,10 @@ namespace dcp
 
 
 
-    void DirichletControlUpdater::operator() (dcp::GenericEquationSystem& system, 
+    void DirichletControlUpdater::operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>> systems,
                                               const dcp::TimeDependentFunction& dirichletBCValue) const
     {
-        dcp::GenericProblem& problem = system [problemName_];
+        dcp::GenericProblem& problem = (*(systems[0])) [problemName_];
         auto pointerToProblem = dynamic_cast<dcp::TimeDependentProblem*> (&problem);
         if (pointerToProblem == nullptr)
         {

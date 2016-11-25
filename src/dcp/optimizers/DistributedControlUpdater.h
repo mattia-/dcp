@@ -30,9 +30,10 @@ namespace dcp
     /*! \class DistributedControlUpdater DistributedControlUpdater.h
      *  \brief Class to update the value of the control variable in distributed control problems.
      *  
-     *  This class is a functor which can be passed to the method \c apply() of any class
-     *  of the \c GenericDescentMethod hierarchy, which will use it to update the value of
-     *  the control parameter in the equation system as the optimization proceeds.
+     *  This class is a functor which can be passed to the constructor of any class of the \c GenericImplementer
+     *  hierarchy, which will use it to update the primal problem using the new value of the control parameter as the
+     *  optimization proceeds.  Note that only the primal system is updated. If the adjoint system needs to be updated
+     *  too a new class should be defined (maybe deriving from this one)
      */
     class DistributedControlUpdater
     {
@@ -61,22 +62,24 @@ namespace dcp
             /************************* OPERATORS ********************/
             //! Call operator [1]
             /*! 
-             *  This will actually perform the updating of the control parameter
+             *  This will actually perform the updating of the primal problem (which is supposed to be the first element
+             *  in \c systems )
              *  Input parametes are:
              *  \param system the system on which to operate
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
-            void operator() (dcp::GenericEquationSystem& system, 
+            void operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>> systems,
                              const dolfin::GenericFunction& coefficientValue) const;
 
             //! Call operator [2]
             /*! 
-             *  This will actually perform the updating of the control parameter
+             *  This will actually perform the updating of the primal problem (which is supposed to be the first element
+             *  in \c systems )
              *  Input parametes are:
              *  \param system the system on which to operate
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
-            void operator() (dcp::GenericEquationSystem& system, 
+            void operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>> systems,
                              const dcp::TimeDependentFunction& coefficientValue) const;
             
         // ---------------------------------------------------------------------------------------------//

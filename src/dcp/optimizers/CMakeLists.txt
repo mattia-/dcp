@@ -7,6 +7,7 @@ SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericDescentMethod.h
              ${CMAKE_CURRENT_SOURCE_DIR}/DirichletControlUpdater.h
              ${CMAKE_CURRENT_SOURCE_DIR}/DistributedControlUpdater.h
              ${CMAKE_CURRENT_SOURCE_DIR}/NeumannControlUpdater.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/EmptyUpdater.h
              ${CMAKE_CURRENT_SOURCE_DIR}/GradientSearchDirection.h
              ${CMAKE_CURRENT_SOURCE_DIR}/optimizers.h)
 
@@ -16,6 +17,7 @@ SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/GenericDescentMethod.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/DirichletControlUpdater.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/DistributedControlUpdater.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/NeumannControlUpdater.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/EmptyUpdater.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/GradientSearchDirection.cpp)
 
 # add files to shared library dependancies

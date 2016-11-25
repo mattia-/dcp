@@ -161,8 +161,9 @@ namespace dcp
              *  the \c apply() function may be an instance of either these classes or a class derived from them or even
              *  a completely new class. The class of which this object is an instance must implement the following 
              *  methods:
-             *  \li <tt>void update (dcp::GenericEquationSystem&, const T_ControlVariable&)</tt>
-             *  method that updates the system (passed as first argument) using the new value of the control function
+             *  \li <tt>void update (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>, 
+             *                       const T_ControlVariable&)</tt>
+             *  method that updates the systems (passed as first argument) using the new value of the control function
              *  passed as second argument; it is called after each time the control variable changes value. Some
              *  standard functors that can be used within the implementer are provided (see 
              *  \c dcp::DirichletControlUpdater , \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater )

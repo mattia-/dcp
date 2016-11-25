@@ -38,7 +38,8 @@ namespace dcp
             public:
                 /************************* TYPEDEFS ************************/
                 typedef T_ControlVariable_        T_ControlVariable;
-                typedef std::function<void (dcp::GenericEquationSystem&, const T_ControlVariable&)> Updater;
+                typedef std::function<void (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>>, 
+                                            const T_ControlVariable&)> Updater;
                 typedef std::function<T_ControlVariable (const T_ControlVariable&)> SearchDirectionComputer;
 
 
@@ -213,7 +214,7 @@ namespace dcp
             (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
              const T_ControlVariable& control)
         {
-            updater_ (*(systems[0]), control);
+            updater_ (systems, control);
         }
 
 

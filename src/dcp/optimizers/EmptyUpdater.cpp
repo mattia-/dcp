@@ -17,16 +17,21 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef SRC_OPTIMIZERS_OPTIMIZER_H_INCLUDE_GUARD
-#define SRC_OPTIMIZERS_OPTIMIZER_H_INCLUDE_GUARD
+#include <dcp/optimizers/EmptyUpdater.h>
 
-#include "BacktrackingOptimizer.h"
-#include "BacktrackingImplementer.h"
-#include "TimeDependentBacktrackingImplementer.h"
-#include "DirichletControlUpdater.h"
-#include "DistributedControlUpdater.h"
-#include "NeumannControlUpdater.h"
-#include "EmptyUpdater.h"
-#include "GradientSearchDirection.h"
+namespace dcp
+{
+    /************************* OPERATORS ********************/
+    void EmptyUpdater::operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>> systems,
+                                   const dolfin::GenericFunction& dirichletBCValue) const
+    {
+    }
 
-#endif
+
+
+    void EmptyUpdater::operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>> systems,
+                                              const dcp::TimeDependentFunction& dirichletBCValue) const
+    {
+    }
+}
+

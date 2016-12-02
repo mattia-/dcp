@@ -62,7 +62,7 @@ namespace dcp
             DirichletControlUpdater (const std::string& problemName, 
                                      const std::string& dirichletBCName,
                                      const dcp::Subdomain& dirichletBoundary,
-                                     const int& component);
+                                     const int& component = -1);
 
 
             /************************* OPERATORS ********************/

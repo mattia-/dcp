@@ -772,7 +772,7 @@ namespace dcp
         }
 
         // Solutions loop
-        dolfin::begin (dolfin::DBG, "Solution loop...");
+        dolfin::begin (dolfin::PROGRESS, "Start solution loop...");
         std::size_t timestep = 0;
         while (isFinished () == 0)
         {
@@ -804,7 +804,7 @@ namespace dcp
             dolfin::end (); // Timestep %d
         }
 
-        dolfin::end (); // Solution loop
+        dolfin::end (); // Start solution loop...
     }
         
 

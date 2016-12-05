@@ -52,8 +52,6 @@ namespace dcp
         dolfin::end (); // Creating BacktrackingOptimizer object
         
         dolfin::log (dolfin::DBG, "BacktrackingOptimizer object created");
-        
-        dolfin::end ();
     }
     
 

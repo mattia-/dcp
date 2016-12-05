@@ -326,9 +326,57 @@ namespace dcp
                                                             const dcp::Subdomain& boundary,
                                                             std::string bcName)
     {
-        return addTimeDependentDirichletBC (condition, boundary, -1, bcName);
-    }
+        if (bcName.empty ())
+        {
+            bcName = "time_dependent_dirichlet_condition_" + std::to_string (timeDependentDirichletBCsCounter_);
+            timeDependentDirichletBCsCounter_++;
+        }
 
+        // check if bc with the same name is present in the map of time-dependent functions and stop here in this
+        // case
+        if (timeDependentFunctionDirichletBCs_.find (bcName) != timeDependentFunctionDirichletBCs_.end ())
+        {
+            dolfin::warning
+                ("DirichletBC object not inserted because key \"%s\" already in map of time-dependent functions",
+                 bcName.c_str ());
+            return false;
+        }
+
+        dolfin::begin
+            (dolfin::DBG,
+             "Adding dirichlet boundary condition to time dependent boundary condition expressions map with name \"%s\"...",
+             bcName.c_str ());
+
+        auto result = timeDependentExpressionDirichletBCs_.emplace
+            (bcName,
+             std::make_tuple (std::shared_ptr<dcp::TimeDependentExpression> (condition.clone ()),
+                              std::shared_ptr<dcp::Subdomain> (boundary.clone ()),
+                              -1)
+             );
+
+        bool bcWasAdded = result.second;
+
+        if (bcWasAdded == false)
+        {
+            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+                             bcName.c_str ());
+        }
+        else
+        {
+            dolfin::begin
+                (dolfin::DBG,
+                 "Adding dirichlet boundary condition to time stepping problem boundary conditions map with name \"%s\"...",
+                 bcName.c_str ());
+            bcWasAdded = bcWasAdded && addDirichletBC (std::get<0> ((result.first)->second),
+                                                       std::get<1> ((result.first)->second),
+                                                       bcName);
+            dolfin::end (); // Adding dirichlet boundary condition to time stepping problem boundary conditions map
+        }
+
+        dolfin::end (); // Adding dirichlet boundary condition to time dependent boundary condition expressions map
+
+        return result.second;
+    }
 
 
     bool TimeDependentProblem::addTimeDependentDirichletBC (const dcp::TimeDependentExpression& condition,
@@ -416,9 +464,71 @@ namespace dcp
                                                             const dcp::Subdomain& boundary,
                                                             std::string bcName)
     {
-        return addTimeDependentDirichletBC (condition, boundary, -1, bcName);
-    }
+        if (bcName.empty ())
+        {
+            bcName = "time_dependent_dirichlet_condition_" + std::to_string (timeDependentDirichletBCsCounter_);
+            timeDependentDirichletBCsCounter_++;
+        }
 
+        // check if bc with the same name is present in the map of time-dependent expressions and stop here in this
+        // case
+        if (timeDependentExpressionDirichletBCs_.find (bcName) != timeDependentExpressionDirichletBCs_.end ())
+        {
+            dolfin::warning
+                ("DirichletBC object not inserted because key \"%s\" already in map of time-dependent expression",
+                 bcName.c_str ());
+            return false;
+        }
+
+        dolfin::begin
+            (dolfin::DBG,
+             "Adding dirichlet boundary condition to time dependent boundary condition functions map with name \"%s\"...",
+             bcName.c_str ());
+
+        auto result = timeDependentFunctionDirichletBCs_.emplace
+            (bcName,
+             std::make_tuple (dolfin::reference_to_no_delete_pointer (condition),
+                              std::shared_ptr<dcp::Subdomain> (boundary.clone ()),
+                              -1)
+             );
+
+        bool bcWasAdded = result.second;
+
+        if (bcWasAdded == false)
+        {
+            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+                             bcName.c_str ());
+        }
+        else
+        {
+            dolfin::begin
+                (dolfin::DBG,
+                 "Adding dirichlet boundary condition to time stepping problem boundary conditions map with name \"%s\"...",
+                 bcName.c_str ());
+
+            // get one element in condition, does not matter which one. The boundary condition will be reset when the
+            // solve functions are called. This is just to add a condition with the given name to the underlying
+            // time stepping problem
+            std::size_t position = 0;
+            const dcp::TimeDependentFunction::value_type& conditionElement =
+                (*(std::get<0> ((result.first)->second)))[position];
+
+            dolfin::log (dolfin::DBG,
+                         "Time in time-dependent BC at position %d is %f",
+                         position,
+                         conditionElement.first);
+
+            bcWasAdded =
+                bcWasAdded && addDirichletBC (dolfin::reference_to_no_delete_pointer (conditionElement.second),
+                                              std::get<1> ((result.first)->second),
+                                              bcName);
+            dolfin::end (); // Adding dirichlet boundary condition to time stepping problem boundary conditions map with name \"%s\"
+        }
+
+        dolfin::end (); // Adding dirichlet boundary condition to time dependent boundary condition functions map
+
+        return result.second;
+    }
 
 
     bool TimeDependentProblem::addTimeDependentDirichletBC (const dcp::TimeDependentFunction& condition,
@@ -449,10 +559,9 @@ namespace dcp
 
         auto result = timeDependentFunctionDirichletBCs_.emplace
             (bcName,
-             std::make_tuple
-                 (dolfin::reference_to_no_delete_pointer (condition),
-                  std::shared_ptr<dcp::Subdomain> (boundary.clone ()),
-                  component)
+             std::make_tuple (dolfin::reference_to_no_delete_pointer (condition),
+                              std::shared_ptr<dcp::Subdomain> (boundary.clone ()),
+                              component)
              );
 
         bool bcWasAdded = result.second;
@@ -1426,7 +1535,7 @@ namespace dcp
         int plotInterval = parameters ["plot_interval"];
 
         // ---- Problem solution ---- //
-        dolfin::begin (dolfin::DBG, "Start time dependent problem solution...");
+        dolfin::begin (dolfin::PROGRESS, "Start solution loop...");
 
         // start time loop
         while (!isFinished ())
@@ -1459,7 +1568,7 @@ namespace dcp
             writeSolutionToFile ("last");
         }
 
-        dolfin::end (); // Start time dependent problem solution...
+        dolfin::end (); // Start solution loop...
     }
 
 
@@ -1539,7 +1648,7 @@ namespace dcp
 
         // get right element in dcp::TimeDependentFunction object
         std::size_t position = dt_ > 0 ? timestep_ : (std::get<0> (bcIterator->second))->size () - timestep_;
-        auto condition = (*(std::get<0> (bcIterator->second)))[position];
+        const dcp::TimeDependentFunction::value_type& condition = (*(std::get<0> (bcIterator->second)))[position];
 
         dolfin::log (dolfin::DBG,
                      "Time in time-dependent BC at position %d is %f",
@@ -1566,9 +1675,6 @@ namespace dcp
             addDirichletBC (dolfin::reference_to_no_delete_pointer (condition.second),
                             boundary,
                             bcName);
-
-            dolfin::end (); // Adding dirichlet boundary condition to time stepping problem boundary conditions map with name \"%s\"
-
         }
         else
         {
@@ -1576,7 +1682,6 @@ namespace dcp
                             boundary,
                             component,
                             bcName);
-
         }
 
         dolfin::end (); // Resetting time dependent Dirichlet's boundary condition %s

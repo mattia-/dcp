@@ -394,7 +394,8 @@ namespace dcp
             }
             else
             {
-                dolfin::warning ("Cannot set coefficient in non linear differential problem. Coefficient type \"%s\" unknown",
+                dolfin::warning ("Cannot set coefficient \"%s\" in non linear differential problem. Coefficient type \"%s\" unknown",
+                                 coefficientName.c_str (),
                                  coefficientType.c_str ());
             }
         }
@@ -419,7 +420,8 @@ namespace dcp
             }
             else
             {
-                dolfin::warning ("Cannot set coefficient in non linear differential problem. Coefficient type \"%s\" unknown",
+                dolfin::warning ("Cannot set coefficient number %d in non linear differential problem. Coefficient type \"%s\" unknown",
+                                 coefficientNumber,
                                  coefficientType.c_str ());
             }
         }

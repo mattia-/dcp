@@ -597,7 +597,7 @@ namespace dcp
         // if problem was not inserted in map, issue a warning
         if (result.second == false)
         {
-            dolfin::warning ("Problem \"%s\" already exist in equation system", 
+            dolfin::warning ("Problem \"%s\" not inserted because it already exist in equation system", 
                              problemName.c_str ());
         }
 
@@ -674,7 +674,9 @@ namespace dcp
                 << std::get<2> (link.first)
                 << ") -> (" 
                 << std::get<0> (link.second)
-                << ", all solution components)" 
+                << std::string (std::get<1> (link.second) == -1 ? 
+                                "all solution components)" : 
+                                "component " + std::to_string (std::get<1> (linkPosition->second)) + ")")
                 << dolfin::endl;
 
             auto result = map.insert (link);
@@ -684,7 +686,22 @@ namespace dcp
         }
         else
         {
-            dolfin::warning ("Link not added. Key is already present in map");
+            // temporary variables to be used to call dolfin::warning
+            std::string linkKey1 = std::get<0> (link.first);
+            std::string linkKey2 = std::get<1> (link.first);
+            std::string linkKey3 = std::get<2> (link.first);
+            std::string linkValue1 = std::get<0> (link.second);
+            std::string linkValue2 = std::get<1> (link.second) == -1 ?
+                                     "all solution components" :
+                                     "component " + std::to_string (std::get<1> (link.second));
+            dolfin::warning
+                ("Link (\"%s\", \"%s\", \"%s\") -> (\"%s\", \"%s\") not added. Key is already present in map",
+                 linkKey1.c_str (),
+                 linkKey2.c_str (),
+                 linkKey3.c_str (),
+                 linkValue1.c_str (),
+                 linkValue2.c_str ());
+
             return false;
         }
 
@@ -746,7 +763,7 @@ namespace dcp
         auto targetProblemIterator = storedProblems_.find (std::get<0> (link.second));
         if (targetProblemIterator == storedProblems_.end ())
         {
-            dolfin::warning ("Cannot link problem \"%s\" to problem \"%s\". No such problem found in problems map",
+            dolfin::warning ("Cannot link problem \"%s\" to problem \"%s\". Target problem not found in problems' map",
                              (std::get<0> (link.first)).c_str (),
                              (std::get<0> (link.second)).c_str ());
             dolfin::end ();

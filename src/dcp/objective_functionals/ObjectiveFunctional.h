@@ -274,8 +274,10 @@ namespace dcp
             }
             else
             {
-                dolfin::warning ("Cannot set coefficient in linear differential problem. Form type \"%s\" unknown",
-                                 coefficientType.c_str ());
+                dolfin::warning 
+                    ("Cannot set coefficient \"%s\" in linear differential problem. Form type \"%s\" unknown",
+                     coefficientName.c_str (),
+                     coefficientType.c_str ());
             }
         }
 

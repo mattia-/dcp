@@ -200,7 +200,8 @@ namespace dcp
     {
         if (stepNumber > nTimeSchemeSteps_)
         {
-            dolfin::warning ("initial solution not set. Requested time step number is greater than problem's scheme's number of time steps");
+            dolfin::warning ("initial solution not set. Requested time step number %d is greater than problem's scheme's number of time steps",
+                             stepNumber);
             return;
         }
 
@@ -219,7 +220,8 @@ namespace dcp
     {
         if (stepNumber > nTimeSchemeSteps_)
         {
-            dolfin::warning ("initial solution not set. Requested time step number is greater than problem's scheme's number of time steps");
+            dolfin::warning ("initial solution not set. Requested time step number %d is greater than problem's scheme's number of time steps",
+                             stepNumber);
             return;
         }
 
@@ -358,7 +360,7 @@ namespace dcp
 
         if (bcWasAdded == false)
         {
-            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+            dolfin::warning ("DirichletBC object \"%s\" not inserted in map",
                              bcName.c_str ());
         }
         else
@@ -416,7 +418,7 @@ namespace dcp
 
         if (bcWasAdded == false)
         {
-            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+            dolfin::warning ("DirichletBC object \"%s\" not inserted in map",
                              bcName.c_str ());
         }
         else
@@ -496,7 +498,7 @@ namespace dcp
 
         if (bcWasAdded == false)
         {
-            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+            dolfin::warning ("DirichletBC object \"%s\" not inserted in map",
                              bcName.c_str ());
         }
         else
@@ -568,7 +570,7 @@ namespace dcp
 
         if (bcWasAdded == false)
         {
-            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
+            dolfin::warning ("DirichletBC object \"%s\" not inserted in map",
                              bcName.c_str ());
         }
         else
@@ -636,7 +638,7 @@ namespace dcp
 
         if (nErasedElements == 0)
         {
-            dolfin::warning ("Dirichlet boundary condition \"%s\" not found in any time-dependent BCs map",
+            dolfin::warning ("Cannot remove dirichlet boundary condition \"%s\" because it was not found in any time-dependent BCs map",
                              bcName.c_str ());
         }
 
@@ -668,7 +670,9 @@ namespace dcp
         if (timeDependentFunctionCoefficients_.find (coefficientID) != timeDependentFunctionCoefficients_.end ())
         {
             dolfin::warning
-                ("Time dependent coefficient expression not inserted because key already in map of time-dependent functions");
+                ("Time dependent coefficient expression not inserted because key (\"%s\", \"%s\") is already present in map of time-dependent functions",
+                 coefficientName.c_str (),
+                 coefficientType.c_str ());
             return false;
         }
 
@@ -681,7 +685,9 @@ namespace dcp
 
         if (result.second == false)
         {
-            dolfin::warning ("Time dependent coefficient not inserted because key is already present in map");
+            dolfin::warning ("Time dependent coefficient with key (\"%s\", \"%s\") not inserted in map",
+                             coefficientName.c_str (),
+                             coefficientType.c_str ());
         }
 
         dolfin::end ();
@@ -703,7 +709,9 @@ namespace dcp
         if (timeDependentExpressionCoefficients_.find (coefficientID) != timeDependentExpressionCoefficients_.end ())
         {
             dolfin::warning
-                ("Time dependent coefficient function not inserted because key already in map of time-dependent expressions");
+                ("Time dependent coefficient expression not inserted because key (\"%s\", \"%s\") is already present in map of time-dependent functions",
+                 coefficientName.c_str (),
+                 coefficientType.c_str ());
             return false;
         }
 
@@ -716,7 +724,9 @@ namespace dcp
 
         if (result.second == false)
         {
-            dolfin::warning ("Time dependent coefficient not inserted because key is already present in map");
+            dolfin::warning ("Time dependent coefficient with key (\"%s\", \"%s\") not inserted in map",
+                             coefficientName.c_str (),
+                             coefficientType.c_str ());
         }
 
         dolfin::end ();
@@ -741,7 +751,9 @@ namespace dcp
 
         if (nErasedElements == 0)
         {
-            dolfin::warning ("Time dependent coefficient not removed: key was not found in any time-dependent coefficients map");
+            dolfin::warning ("Time dependent coefficient with key (\"%s\", \"%s\") not removed: key was not found in any time-dependent coefficients map",
+                             coefficientName.c_str (),
+                             coefficientType.c_str ());
         }
 
         dolfin::end ();
@@ -992,7 +1004,8 @@ namespace dcp
         // check only when solveType is not "steady" or "stash", since these solve type do not increment time
         if (isFinished () && solveType != "steady" && solveType != "stash")
         {
-            dolfin::warning ("No time iteration performed in solve() function. End time already reached.");
+            dolfin::warning ("No time iteration performed in solve() function. End time already reached. Time is %d",
+                             time_->value ());
             return;
         }
 

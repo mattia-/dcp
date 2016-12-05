@@ -80,7 +80,8 @@ namespace dcp
         }
         else
         {
-            dolfin::warning ("Cannot set coefficient in algebraic problem. Coefficient type \"%s\" unknown",
+            dolfin::warning ("Cannot set coefficient \"%s\" in algebraic problem. Coefficient type \"%s\" unknown",
+                             coefficientName.c_str (),
                              coefficientType.c_str ());
         }
 

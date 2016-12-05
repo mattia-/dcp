@@ -658,8 +658,9 @@ namespace dcp
         auto targetProblemIterator = storedProblems_.find (std::get<0> (link.second));
         if (targetProblemIterator == storedProblems_.end ())
         {
-            dolfin::warning ("Cannot link problem \"%s\". No such problem found in stored problems map",
-                             (std::get<0> (link.first)).c_str ());
+            dolfin::warning ("Cannot link problem \"%s\" to previous solution of problem \"%s\". Target problem not found in problems' map",
+                             (std::get<0> (link.first)).c_str (),
+                             (std::get<0> (link.second)).c_str ());
             dolfin::end ();
             return;
         }

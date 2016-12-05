@@ -528,8 +528,10 @@ namespace dcp
             }
             else
             {
-                dolfin::warning ("Cannot set coefficient in linear differential problem. Form type \"%s\" unknown",
-                                 coefficientType.c_str ());
+                dolfin::warning
+                    ("Cannot set coefficient \"%s\" in linear differential problem. Form type \"%s\" unknown",
+                     coefficientName.c_str (),
+                     coefficientType.c_str ());
             }
 
         }
@@ -556,8 +558,10 @@ namespace dcp
             }
             else
             {
-                dolfin::warning ("Cannot set coefficient in linear differential problem. Form type \"%s\" unknown",
-                                 coefficientType.c_str ());
+                dolfin::warning
+                    ("Cannot set coefficient number %d in linear differential problem. Form type \"%s\" unknown",
+                     coefficientNumber,
+                     coefficientType.c_str ());
             }
         }
 
@@ -792,7 +796,8 @@ namespace dcp
 
             if (nErasedElements == 0)
             {
-                dolfin::warning ("Dirichlet boundary condition \"%s\" not found in map", bcName.c_str ());
+                dolfin::warning ("Cannot remove dirichlet boundary condition \"%s\" because it was not found in map",
+                                 bcName.c_str ());
             }
             else
             {

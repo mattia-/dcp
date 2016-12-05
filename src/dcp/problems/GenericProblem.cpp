@@ -255,7 +255,7 @@ namespace dcp
         
         if (nErasedElements == 0)
         {
-            dolfin::warning ("Dirichlet boundary condition \"%s\" not found in map", 
+            dolfin::warning ("Cannot remove dirichlet boundary condition \"%s\" because it was not found in map", 
                              bcName.c_str ());
         }
         

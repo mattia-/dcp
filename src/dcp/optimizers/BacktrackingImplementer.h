@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef SRC_OPTIMIZERS_BACKTRACKINGIMPLEMENTER_H_INCLUDE_GUARD
 #define SRC_OPTIMIZERS_BACKTRACKINGIMPLEMENTER_H_INCLUDE_GUARD
@@ -28,7 +28,7 @@ namespace dcp
     /*! \class BacktrackingImplementer BacktrackingImplementer.h
      *  \brief Class that implements the specific methods needed by the backtracking algorithm in the time-independent
      *  case. Derives from \c BacktrackingImplementer .
-     *  
+     *
      */
     template <class T_ControlVariable>
         class BacktrackingImplementer : public dcp::GenericImplementer<T_ControlVariable>
@@ -50,7 +50,7 @@ namespace dcp
                  *        passed to \c apply().
                  *        Default value: "adjoint"
                  */
-                BacktrackingImplementer 
+                BacktrackingImplementer
                     (const typename dcp::GenericImplementer<T_ControlVariable>::Updater& updater);
 
                 //! Constructor [2]
@@ -68,9 +68,9 @@ namespace dcp
                  *        passed to \c apply().
                  *        Default value: "adjoint"
                  */
-                BacktrackingImplementer 
-                    (const typename dcp::GenericImplementer<T_ControlVariable>::Updater& updater, 
-                     const typename dcp::GenericImplementer<T_ControlVariable>::SearchDirectionComputer& 
+                BacktrackingImplementer
+                    (const typename dcp::GenericImplementer<T_ControlVariable>::Updater& updater,
+                     const typename dcp::GenericImplementer<T_ControlVariable>::SearchDirectionComputer&
                             searchDirectionComputer);
 
 
@@ -80,10 +80,10 @@ namespace dcp
 
 
                 /********************** METHODS ***********************/
-                //! Solve the equation systems representing the primal and the adjoint problem. 
+                //! Solve the equation systems representing the primal and the adjoint problem.
                 /*!
                  *  \param systems the set of systems to be solved
-                 *  \param solveType the type of solve requested; possible values in this class: 
+                 *  \param solveType the type of solve requested; possible values in this class:
                  *  \li \c all
                  *  \li \c primal
                  *  \li \c adjoint
@@ -127,9 +127,9 @@ namespace dcp
 
 
     template <class T_ControlVariable>
-        BacktrackingImplementer<T_ControlVariable>::BacktrackingImplementer 
-                (const typename dcp::GenericImplementer<T_ControlVariable>::Updater& updater, 
-                 const typename dcp::GenericImplementer<T_ControlVariable>::SearchDirectionComputer& 
+        BacktrackingImplementer<T_ControlVariable>::BacktrackingImplementer
+                (const typename dcp::GenericImplementer<T_ControlVariable>::Updater& updater,
+                 const typename dcp::GenericImplementer<T_ControlVariable>::SearchDirectionComputer&
                         searchDirectionComputer) :
             GenericImplementer<T_ControlVariable> (updater, searchDirectionComputer)
         {
@@ -147,7 +147,7 @@ namespace dcp
 
     /********************** METHODS ***********************/
     template <class T_ControlVariable>
-        void BacktrackingImplementer<T_ControlVariable>::solve 
+        void BacktrackingImplementer<T_ControlVariable>::solve
             (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
              const std::string& solveType)
         {
@@ -169,7 +169,7 @@ namespace dcp
             {
                 dolfin::dolfin_error ("dcp: BacktrackingImplementer.cpp",
                                       "solve",
-                                      "Unknown solve type \"%s\"", 
+                                      "Unknown solve type \"%s\"",
                                       solveType.c_str ());
             }
         }

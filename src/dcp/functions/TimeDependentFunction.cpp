@@ -165,12 +165,12 @@ namespace dcp
                 dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
                 plotter_ = dolfin::plot (dolfin::reference_to_no_delete_pointer (element.second), titleWithTime);
             }
-            else 
+            else
             {
                 plotter_ -> parameters ["title"] = titleWithTime;
                 plotter_ -> plot (dolfin::reference_to_no_delete_pointer (element.second));
             }
-            
+
             if (pause)
             {
                 dolfin::interactive ();

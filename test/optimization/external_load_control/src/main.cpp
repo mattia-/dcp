@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <iostream>
 #include <string>
@@ -46,13 +46,13 @@ class ObservationDomain
 class GradientEvaluator
 {
     public:
-        GradientEvaluator () : 
+        GradientEvaluator () :
             observationDomain_ ((ObservationDomain ()))
         {
 
         }
 
-        void operator() (dolfin::Array<double>& values, 
+        void operator() (dolfin::Array<double>& values,
                          const dolfin::Array<double>& x,
                          const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables)
         {
@@ -67,19 +67,19 @@ class GradientEvaluator
         dcp::Subdomain observationDomain_;
 };
 
-    
+
 int main (int argc, char* argv[])
 {
     dolfin::set_log_level (dolfin::DBG);
 
     // mesh
     auto mesh = std::make_shared<dolfin::UnitSquareMesh> (20, 20);
-    
+
     // function spaces
     auto V = std::make_shared<primal::FunctionSpace> (mesh);
     auto W = std::make_shared<adjoint::FunctionSpace> (mesh);
 
-    
+
     // =======================
     // PRIMAL+ADJOINT PROBLEMS
     // =======================
@@ -92,86 +92,86 @@ int main (int argc, char* argv[])
     dcp::EquationSystem problems;
     problems.addProblem ("primal", primalProblem);
     problems.addProblem ("adjoint", adjointProblem);
-    
+
     // define constants
     dolfin::Constant u_0 (1.0);
     dolfin::Constant dirichletBC (0.0);
 
     // define boundary conditions subdomains
     dcp::Subdomain dirichletBoundary ((DirichletBoundary ()));
-    
+
     // define observation subdomain
     dcp::Subdomain observationDomain ((ObservationDomain ()));
-    
+
     // define intergration subdomains
     dolfin::CellFunction<std::size_t> meshCells (mesh);
     meshCells.set_all (0);
     observationDomain.mark (meshCells, 1);
-    
+
     // primal problem settings
     problems["primal"].addDirichletBC (dirichletBC, dirichletBoundary);
 
     // adjoint problem settings
     problems["adjoint"].addDirichletBC (dirichletBC, dirichletBoundary);
     problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (u_0), "u_0");
-    problems["adjoint"].setIntegrationSubdomain ("linear_form", 
+    problems["adjoint"].setIntegrationSubdomain ("linear_form",
                                                   dolfin::reference_to_no_delete_pointer (meshCells),
                                                   dcp::SubdomainType::INTERNAL_CELLS);
 
     problems.addLink ("adjoint", "u", "linear_form", "primal");
-    
+
 
     // ====================
-    // OBJECTIVE FUNCTIONAL 
+    // OBJECTIVE FUNCTIONAL
     // ====================
     // define functional
     dcp::ObjectiveFunctional <objective_functional::Form_J>
         objectiveFunctional (mesh, std::make_shared<dcp::VariableExpression> (GradientEvaluator ()));
-    
-    // control variable 
+
+    // control variable
     dolfin::Function g (V);
     g = dolfin::Constant (0.0);
-    
+
     // functional settings
     objectiveFunctional.setCoefficient ("functional", dolfin::reference_to_no_delete_pointer (u_0), "u_0");
-    objectiveFunctional.setCoefficient ("functional", 
-                                        dolfin::reference_to_no_delete_pointer (problems.solution ("primal")), 
+    objectiveFunctional.setCoefficient ("functional",
+                                        dolfin::reference_to_no_delete_pointer (problems.solution ("primal")),
                                         "u");
-    
+
     objectiveFunctional.setIntegrationSubdomain (dolfin::reference_to_no_delete_pointer (meshCells),
                                                   dcp::SubdomainType::INTERNAL_CELLS);
-    
+
     objectiveFunctional.setCoefficient ("gradient",
                                         dolfin::reference_to_no_delete_pointer (problems.solution ("primal")),
                                         "u");
     objectiveFunctional.setCoefficient ("gradient",
                                         dolfin::reference_to_no_delete_pointer (u_0),
                                         "u_0");
-    
-    
+
+
     // ============
     // OPTIMIZATION
     // ============
     problems["primal"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (g), "g");
-    
+
     // define optimizer
     dcp::BacktrackingOptimizer backtrackingOptimizer;
     backtrackingOptimizer.parameters ["output_file_name"] = "results.txt";
     backtrackingOptimizer.parameters ["max_minimization_iterations"] = 1000;
 
-    dcp::BacktrackingImplementer<dolfin::Function> implementer 
+    dcp::BacktrackingImplementer<dolfin::Function> implementer
         (dcp::DistributedControlUpdater ("primal", "linear_form", "g"));
-    
+
     backtrackingOptimizer.apply (problems, objectiveFunctional, g, implementer);
-            
+
 
     // compute difference between target and reconstructed solution
     dolfin::Function difference (V);
     dolfin::Function target (V);
     target = u_0;
-    difference = problems.solution ("primal") - target; 
-    
-    
+    difference = problems.solution ("primal") - target;
+
+
     // ===============
     // POST PROCESSING
     // ===============
@@ -182,6 +182,6 @@ int main (int argc, char* argv[])
     dolfin::plot (meshCells, "Control region");
     dolfin::plot (difference, "Difference between target and recovered");
     // dolfin::interactive ();
-    
+
     return 0;
 }

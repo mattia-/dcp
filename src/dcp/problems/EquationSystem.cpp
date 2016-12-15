@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <dcp/problems/EquationSystem.h>
 #include <utility>
@@ -27,13 +27,13 @@
 namespace dcp
 {
     /******************* CONSTRUCTORS ******************/
-    EquationSystem::EquationSystem () : 
+    EquationSystem::EquationSystem () :
         GenericEquationSystem ()
-    { 
+    {
         dolfin::log (dolfin::DBG, "EquationSystem object created");
     }
 
-    
+
 
     /******************* METHODS *******************/
     void EquationSystem::solve (const std::string& solveType)
@@ -44,7 +44,7 @@ namespace dcp
         // check solveType
         if (solveType != "default")
         {
-            dolfin::dolfin_error ("dcp: EquationSystem.cpp", 
+            dolfin::dolfin_error ("dcp: EquationSystem.cpp",
                                   "solve",
                                   "Unknown solve type \"%s\" requested",
                                   solveType.c_str ());
@@ -52,10 +52,10 @@ namespace dcp
         dolfin::log (dolfin::DBG, "Selected solve type: %s", solveType.c_str ());
 
         dolfin::begin (dolfin::DBG, "Start problem solution...");
-        
+
         auto subiterationsBegin = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.first);
         auto subiterationsEnd = std::find (solveOrder_.begin (), solveOrder_.end (), subiterationsRange_.second);
-        
+
         auto problemName = solveOrder_.begin ();
         while (problemName != solveOrder_.end ())
         {
@@ -73,7 +73,7 @@ namespace dcp
                 problemName = subiterationsEnd;
             }
         }
-        
+
         dolfin::end (); // Solving problems
     }
 
@@ -82,12 +82,12 @@ namespace dcp
     /******************* PROTECTED METHODS *******************/
     void EquationSystem::solve_ (const std::string& problemName)
     {
-        // get problem with given name from map. 
+        // get problem with given name from map.
         dcp::GenericProblem& problem = this -> operator[] (problemName);
 
         // 1)
-        // loop over problemsLinks_ to reset all links to take changes to coefficients 
-        // into account. Remember it is a map: elements in it are order according to 
+        // loop over problemsLinks_ to reset all links to take changes to coefficients
+        // into account. Remember it is a map: elements in it are order according to
         // the default lexicographic ordering
         dolfin::begin (dolfin::DBG, "Scanning problems links...");
 

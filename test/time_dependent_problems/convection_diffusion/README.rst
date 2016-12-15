@@ -1,5 +1,5 @@
 This collection of files sets up the case for a test time dependent
-differential problem. We will use the time dependent convection-diffusion 
+differential problem. We will use the time dependent convection-diffusion
 equation with mixed boundary conditions on the unit square::
 
     \frac{\partial u}{\partial t} -k \Delta u + b \nabla u = 0 \in \Omega

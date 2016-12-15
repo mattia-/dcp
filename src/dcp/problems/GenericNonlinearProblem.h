@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef SRC_PROBLEMS_GENERICNONLINEARPROBLEM_H_INCLUDE_GUARD
 #define SRC_PROBLEMS_GENERICNONLINEARPROBLEM_H_INCLUDE_GUARD
@@ -33,17 +33,17 @@ namespace dcp
      *      \mbox{Find } u \in V : F \left(u, v\right) = 0 \ \forall\,v\,\in\,V
      *  \f]
      *  with \f$ F \left(u, v\right) : V \times V \rightarrow \mathds{R}\f$ non linear in the problem unknown \f$u\f$.
-     *  
+     *
      *  It inherits publicly from \c GenericProblem and it extends its functionalities to a concrete differential
      *  problem.
-     *  A concrete nonlinear problem must be declared of type \c dcp::GenericLinearProblem. This class is useful for 
-     *  polymorphic management of nonlinear problems for which the residual and jacobian forms are not known / accessible 
+     *  A concrete nonlinear problem must be declared of type \c dcp::GenericLinearProblem. This class is useful for
+     *  polymorphic management of nonlinear problems for which the residual and jacobian forms are not known / accessible
      *  in the current scope.
      */
 
     class GenericNonlinearProblem : public dcp::GenericProblem
     {
-        // ---------------------------------------------------------------------------------------------//  
+        // ---------------------------------------------------------------------------------------------//
 
         public:
             /******************* CONSTRUCTORS *******************/
@@ -61,7 +61,7 @@ namespace dcp
 
             /******************* DESTRUCTOR *******************/
             //! Destructor
-            /*! Default destructor, since members of the class are trivially 
+            /*! Default destructor, since members of the class are trivially
              * destructible.
              */
             virtual ~GenericNonlinearProblem () {};
@@ -69,13 +69,13 @@ namespace dcp
 
             /******************* GETTERS *******************/
             //! Get const reference to the problem's residual form
-            /*! 
+            /*!
              *  \return a const reference to the problem's residual form
              */
             virtual const dolfin::Form& residualForm () const = 0;
 
             //! Get const reference to the problem's jacobian form
-            /*! 
+            /*!
              *  \return a const reference to the problem's jacobian form
              */
             virtual const dolfin::Form& jacobianForm () const = 0;

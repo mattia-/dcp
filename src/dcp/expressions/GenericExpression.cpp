@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <dcp/expressions/GenericExpression.h>
 #include <utility>
@@ -36,7 +36,7 @@ namespace dcp
     GenericExpression::GenericExpression (std::size_t dim) :
         dolfin::Expression (dim),
         variables_ ()
-    { 
+    {
         dolfin::log (dolfin::DBG, "GenericExpression object created");
     }
 
@@ -46,7 +46,7 @@ namespace dcp
     GenericExpression::GenericExpression (std::size_t dim0, std::size_t dim1) :
         dolfin::Expression (dim0, dim1),
         variables_ ()
-    { 
+    {
         dolfin::log (dolfin::DBG, "GenericExpression object created");
     }
 
@@ -55,14 +55,14 @@ namespace dcp
     GenericExpression::GenericExpression (std::vector<std::size_t> value_shape) :
         dolfin::Expression (value_shape),
         variables_ ()
-    { 
+    {
         dolfin::log (dolfin::DBG, "GenericExpression object created");
     }
 
 
 
-    GenericExpression::GenericExpression 
-        (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables) 
+    GenericExpression::GenericExpression
+        (const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables)
         :
             dolfin::Expression (),
             variables_ (variables)
@@ -72,11 +72,11 @@ namespace dcp
 
 
 
-    GenericExpression:: GenericExpression 
+    GenericExpression:: GenericExpression
         (std::size_t dim,
          const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables)
         :
-            dolfin::Expression (dim), 
+            dolfin::Expression (dim),
             variables_ (variables)
     {
         dolfin::log (dolfin::DBG, "GenericExpression object created");
@@ -84,11 +84,11 @@ namespace dcp
 
 
 
-    GenericExpression:: GenericExpression 
-        (std::size_t dim0, 
+    GenericExpression:: GenericExpression
+        (std::size_t dim0,
          std::size_t dim1,
          const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables)
-        : 
+        :
             dolfin::Expression (dim0, dim1),
             variables_ (variables)
     {
@@ -97,10 +97,10 @@ namespace dcp
 
 
 
-    GenericExpression:: GenericExpression 
+    GenericExpression:: GenericExpression
         (std::vector<std::size_t> value_shape,
          const std::map <std::string, std::shared_ptr <const dolfin::GenericFunction>>& variables)
-        : 
+        :
             dolfin::Expression (value_shape),
             variables_ (variables)
     {
@@ -110,7 +110,7 @@ namespace dcp
 
 
     /******************* SETTERS *******************/
-    void GenericExpression::setCoefficient (const std::string& variableName, 
+    void GenericExpression::setCoefficient (const std::string& variableName,
                                             const std::shared_ptr <const dolfin::GenericFunction> value)
     {
         dolfin::log (dolfin::DBG, "Inserting variable in map...");
@@ -120,7 +120,7 @@ namespace dcp
 
 
 
-    void GenericExpression::setCoefficient (const std::string& variableName, 
+    void GenericExpression::setCoefficient (const std::string& variableName,
                                             const std::shared_ptr <const dcp::TimeDependentFunction> value)
     {
         dolfin::log (dolfin::DBG, "Inserting time-dependent function in map...");
@@ -159,12 +159,12 @@ namespace dcp
     {
         std::vector<std::string> names;
         names.reserve (variables_.size () + timeDependentVariables_.size ());
-        
+
         for (auto& nameFunctionPair : variables_)
         {
             names.emplace_back (nameFunctionPair.first);
         }
-        
+
         for (auto& nameFunctionPair : timeDependentVariables_)
         {
             names.emplace_back (nameFunctionPair.first);
@@ -172,18 +172,18 @@ namespace dcp
 
         return names;
     }
-    
+
 
 
     /******************* METHODS *******************/
-    void GenericExpression::eval (dolfin::Array<double>& values, 
-                                  const dolfin::Array<double>& x, 
+    void GenericExpression::eval (dolfin::Array<double>& values,
+                                  const dolfin::Array<double>& x,
                                   const ufc::cell& cell) const
     {
         // redirect to simple eval
         this -> eval (values, x);
     }
-    
+
 
 
     void GenericExpression::evaluateVariable (const std::string& variableName,
@@ -195,8 +195,8 @@ namespace dcp
         if (variable == variables_.end ())
         {
             dolfin::dolfin_error ("dcp: GenericExpression.cpp",
-                                  "evaluateVariable", 
-                                  "Cannot find variable \"%s\" in GenericExpression map", 
+                                  "evaluateVariable",
+                                  "Cannot find variable \"%s\" in GenericExpression map",
                                   variableName.c_str ());
         }
 

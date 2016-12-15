@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <dcp/problems/GenericProblem.h>
 #include <dolfin/log/dolfin_log.h>
@@ -27,7 +27,7 @@
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    GenericProblem::GenericProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace) : 
+    GenericProblem::GenericProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace) :
         parameters ("differential_problem_parameters"),
         functionSpace_ (functionSpace),
         dirichletBCs_ (),
@@ -38,18 +38,18 @@ namespace dcp
         solutionFileName_ ("solution.pvd"),
         writeComponents_ (),
         solutionWriters_ ()
-    { 
+    {
         dolfin::begin (dolfin::DBG, "Building GenericProblem...");
-        
+
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("solution_file_name", "solution.pvd");
         parameters.add ("plot_components", "-1");
         parameters.add ("plot_title", "Solution");
         parameters.add ("write_components", "-1");
         parameters.add ("clone_method", "shallow_clone");
-            
+
         dolfin::end ();
-        
+
         dolfin::log (dolfin::DBG, "GenericProblem object created");
     }
 
@@ -57,7 +57,7 @@ namespace dcp
     /********************** GETTERS ***********************/
     std::shared_ptr<const dolfin::Mesh> GenericProblem::mesh () const
     {
-        return functionSpace_ -> mesh ();      
+        return functionSpace_ -> mesh ();
     }
 
 
@@ -76,7 +76,7 @@ namespace dcp
         {
             dolfin::dolfin_error ("dcp: GenericProblem.cpp",
                                   "dirichletBC",
-                                  "Cannot find dirichletBC with name \"%s\" in map", 
+                                  "Cannot find dirichletBC with name \"%s\" in map",
                                   bcName.c_str ());
         }
         return bcIterator -> second;
@@ -114,31 +114,31 @@ namespace dcp
 
 
     /********************** SETTERS ***********************/
-    bool GenericProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
+    bool GenericProblem::addDirichletBC (const dolfin::GenericFunction& condition,
                                          const dolfin::SubDomain& boundary,
                                          std::string bcName)
     {
-        return addDirichletBC (dolfin::reference_to_no_delete_pointer (condition), 
+        return addDirichletBC (dolfin::reference_to_no_delete_pointer (condition),
                                dolfin::reference_to_no_delete_pointer (boundary),
-                               bcName); 
+                               bcName);
     }
-    
 
 
-    bool GenericProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
-                                         const dolfin::SubDomain& boundary, 
+
+    bool GenericProblem::addDirichletBC (const dolfin::GenericFunction& condition,
+                                         const dolfin::SubDomain& boundary,
                                          const std::size_t& component,
                                          std::string bcName)
     {
-        return addDirichletBC (dolfin::reference_to_no_delete_pointer (condition), 
+        return addDirichletBC (dolfin::reference_to_no_delete_pointer (condition),
                                dolfin::reference_to_no_delete_pointer (boundary),
                                component,
-                               bcName); 
+                               bcName);
     }
-    
 
 
-    bool GenericProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+
+    bool GenericProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition,
                                          std::shared_ptr<const dolfin::SubDomain> boundary,
                                          std::string bcName)
     {
@@ -147,25 +147,25 @@ namespace dcp
             bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
             dirichletBCsCounter_++;
         }
-        
-        dolfin::log (dolfin::DBG, 
+
+        dolfin::log (dolfin::DBG,
                      "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
                      bcName.c_str ());
-        
+
         auto result = dirichletBCs_.emplace (bcName, dolfin::DirichletBC (functionSpace_, condition, boundary));
-        
+
         if (result.second == false)
         {
             dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
                              bcName.c_str ());
         }
-        
+
         return result.second;
     }
 
-    
 
-    bool GenericProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+
+    bool GenericProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition,
                                          std::shared_ptr<const dolfin::SubDomain> boundary,
                                          const std::size_t& component,
                                          std::string bcName)
@@ -175,26 +175,26 @@ namespace dcp
             bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
             dirichletBCsCounter_++;
         }
-        
-        dolfin::log (dolfin::DBG, 
+
+        dolfin::log (dolfin::DBG,
                      "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
                      bcName.c_str ());
-        
-        auto result = dirichletBCs_.emplace 
+
+        auto result = dirichletBCs_.emplace
             (bcName, dolfin::DirichletBC ((*functionSpace_) [component], condition, boundary));
-        
+
         if (result.second == false)
         {
             dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
                              bcName.c_str ());
         }
-        
+
         return result.second;
     }
 
-    
 
-    bool GenericProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
+
+    bool GenericProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition,
                                          std::string bcName)
     {
         if (bcName.empty ())
@@ -202,19 +202,19 @@ namespace dcp
             bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
             dirichletBCsCounter_++;
         }
-        
-        dolfin::log (dolfin::DBG, 
+
+        dolfin::log (dolfin::DBG,
                      "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
                      bcName.c_str ());
-        
+
         auto result = dirichletBCs_.insert (std::make_pair (bcName, dirichletCondition));
-        
+
         if (result.second == false)
         {
             dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
                              bcName.c_str ());
         }
-        
+
         return result.second;
     }
 
@@ -228,19 +228,19 @@ namespace dcp
             bcName = "dirichlet_condition_" + std::to_string (dirichletBCsCounter_);
             dirichletBCsCounter_++;
         }
-        
-        dolfin::log (dolfin::DBG, 
+
+        dolfin::log (dolfin::DBG,
                      "Adding dirichlet boundary condition to boundary conditions map with name \"%s\"...",
                      bcName.c_str ());
-        
+
         auto result = dirichletBCs_.insert (std::make_pair (bcName, dirichletCondition));
-        
+
         if (result.second == false)
         {
-            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map", 
+            dolfin::warning ("DirichletBC object not inserted because key \"%s\" already in map",
                              bcName.c_str ());
         }
-        
+
         return result.second;
     }
 
@@ -248,28 +248,28 @@ namespace dcp
 
     bool GenericProblem::removeDirichletBC (const std::string& bcName)
     {
-        dolfin::log (dolfin::DBG, 
-                     "Removing dirichlet boundary condition \"%s\" from boundary conditions map...", 
+        dolfin::log (dolfin::DBG,
+                     "Removing dirichlet boundary condition \"%s\" from boundary conditions map...",
                      bcName.c_str ());
         std::size_t nErasedElements = dirichletBCs_.erase (bcName);
-        
+
         if (nErasedElements == 0)
         {
-            dolfin::warning ("Cannot remove dirichlet boundary condition \"%s\" because it was not found in map", 
+            dolfin::warning ("Cannot remove dirichlet boundary condition \"%s\" because it was not found in map",
                              bcName.c_str ());
         }
-        
+
         return nErasedElements == 1? true : false;
     }
-    
+
 
 
     void GenericProblem::update ()
     {
 
     }
-    
-    
+
+
 
     /********************** METHODS ***********************/
     void GenericProblem::applyStashedSolution ()
@@ -288,7 +288,7 @@ namespace dcp
             dolfin::warning ("Unknown plot type \"%s\". No plot performed", plotType.c_str ());
             return;
         }
-        
+
         dolfin::begin (dolfin::DBG, "Plotting...");
 
         // get vector of plot components
@@ -296,12 +296,12 @@ namespace dcp
         std::stringstream plotComponentsStream ((std::string (parameters ["plot_components"])));
 
         // auxiliary variable to push the stream values into the vector
-        int component; 
+        int component;
         while (plotComponentsStream >> component)
         {
             plotComponents.push_back (component);
         }
-        
+
         // check if solutionPlotters_ has right size. If not, clear it and reinitialize it with null pointers
         if (solutionPlotters_.size() != plotComponents.size())
         {
@@ -311,11 +311,11 @@ namespace dcp
 
         // auxiliary variable, to enhance readability
         std::shared_ptr<dolfin::Function> functionToPlot;
-        
+
         for (std::size_t i = 0; i < plotComponents.size (); ++i)
         {
             int component = plotComponents[i];
- 
+
             // get right function to plot
             if (component == -1)
             {
@@ -358,10 +358,10 @@ namespace dcp
             // actual plotting
             plot_ (solutionPlotters_[i], functionToPlot, plotTitle);
         }
-        
+
         dolfin::end ();
     }
-    
+
 
 
     void GenericProblem::writeSolutionToFile (const std::string& writeType)
@@ -372,7 +372,7 @@ namespace dcp
             dolfin::warning ("Unknown write type \"%s\". No write performed", writeType.c_str ());
             return;
         }
-        
+
         dolfin::begin (dolfin::DBG, "Saving solution to file...");
 
         // get vector of write components
@@ -380,12 +380,12 @@ namespace dcp
         std::stringstream writeComponentsStream ((std::string (parameters ["write_components"])));
 
         // auxiliary variable to push the stream values into the vector
-        int component; 
+        int component;
         while (writeComponentsStream >> component)
         {
             writeComponents.push_back (component);
         }
-        
+
         // check if solutionFileName_ and parameters["solution_file_name"] coincide, if solutionWriters_ has right
         // size and if writeComponents_ contains the same values as writeComponents
         if (solutionFileName_ != std::string (parameters["solution_file_name"])
@@ -400,7 +400,7 @@ namespace dcp
             solutionWriters_.clear ();
             solutionWriters_.resize (writeComponents.size(), nullptr);
         }
-        
+
 
         // auxiliary variable
         std::shared_ptr<dolfin::Function> functionToWrite;
@@ -441,8 +441,8 @@ namespace dcp
                 std::regex extensionRegex ("(\\.[^.]*$)");
 
                 // add the component number before the extension ($n is the n-th backreference of the match)
-                filenameWithComponent = std::regex_replace (filenameWithComponent, 
-                                                            extensionRegex, 
+                filenameWithComponent = std::regex_replace (filenameWithComponent,
+                                                            extensionRegex,
                                                             "_component" + std::to_string (component) + "$1");
             }
 
@@ -459,7 +459,7 @@ namespace dcp
 
 
 
-    void GenericProblem::plot_ (std::shared_ptr<dolfin::VTKPlotter>& plotter, 
+    void GenericProblem::plot_ (std::shared_ptr<dolfin::VTKPlotter>& plotter,
                                 const std::shared_ptr<const dolfin::Function> function,
                                 const std::string& title)
     {
@@ -474,7 +474,7 @@ namespace dcp
             dolfin::log (dolfin::DBG, "Creating new dolfin::VTKPlotter object...");
             plotter = dolfin::plot (function, title);
         }
-        else 
+        else
         {
             plotter -> parameters ["title"] = title;
             plotter -> plot (function);
@@ -483,7 +483,7 @@ namespace dcp
 
 
 
-    void GenericProblem::write_ (std::shared_ptr<dolfin::File>& writer, 
+    void GenericProblem::write_ (std::shared_ptr<dolfin::File>& writer,
                                  const std::shared_ptr<const dolfin::Function> function,
                                  const std::string& filename)
     {

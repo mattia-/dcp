@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <iostream>
 #include <string>
@@ -31,9 +31,9 @@ namespace poisson
             bool operator() (const dolfin::Array<double>& x, bool on_boundary)
             {
                 return dolfin::near (x[1], 0) && on_boundary;
-            } 
+            }
     };
-    
+
     class DirichletBoundary
     {
         public:
@@ -46,7 +46,7 @@ namespace poisson
                        (dolfin::near (x[0], 1) && on_boundary);
             }
     };
-    
+
     class NeumannExpression
     {
         public:
@@ -55,7 +55,7 @@ namespace poisson
                 values[0] = x[0] * x[0];
             }
     };
-    
+
     class DirichletExpression
     {
         public:
@@ -69,11 +69,11 @@ namespace poisson
 int main (int argc, char* argv[])
 {
     dolfin::set_log_level (dolfin::DBG);
-    // create mesh and finite element space 
+    // create mesh and finite element space
     dolfin::info ("Create mesh and finite element space...");
     auto mesh = std::make_shared<dolfin::UnitSquareMesh> (20, 20);
     auto V = std::make_shared<poisson::FunctionSpace> (mesh);
-    
+
     // define problem
     dolfin::info ("Define the problem...");
     dcp::LinearProblem <poisson::BilinearForm, poisson::LinearForm> poissonProblem (V);
@@ -85,18 +85,18 @@ int main (int argc, char* argv[])
     dcp::Expression g ((poisson::NeumannExpression ()));
     dcp::Expression h ((poisson::DirichletExpression ()));
 
-    // define dirichlet boundary conditions 
+    // define dirichlet boundary conditions
     dolfin::info ("Define the problem's Dirichlet boundary conditions...");
     dcp::Subdomain dirichletBoundary ((poisson::DirichletBoundary ()));
     poissonProblem.addDirichletBC (h, dirichletBoundary);
-    
-    // define neumann boundary conditions 
+
+    // define neumann boundary conditions
     dolfin::info ("Define the problem's Neumann boundary conditions...");
     dcp::Subdomain neumannBoundary ((poisson::NeumannBoundary ()));
     dolfin::FacetFunction<std::size_t> meshFacets (mesh);
     meshFacets.set_all (0);
     neumannBoundary.mark (meshFacets, 1);
-    
+
     // set problem coefficients
     dolfin::info ("Set the problem's coefficients...");
     poissonProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (k), "k");
@@ -107,12 +107,12 @@ int main (int argc, char* argv[])
     // solve problem
     dolfin::info ("Solve the problem...");
     poissonProblem.solve ();
-    
+
     // plots
     dolfin::plot (mesh);
     poissonProblem.plotSolution ();
-    
+
     // dolfin::interactive ();
-    
+
     return 0;
 }

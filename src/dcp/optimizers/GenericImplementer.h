@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef SRC_OPTIMIZERS_GENERICIMPLEMENTER_H_INCLUDE_GUARD
 #define SRC_OPTIMIZERS_GENERICIMPLEMENTER_H_INCLUDE_GUARD
@@ -26,9 +26,9 @@
 namespace dcp
 {
     /*! \class GenericImplementer GenericImplementer.h
-     *  \brief Abstract class that defines the generic API of the classes that implement the specific methods needed by 
+     *  \brief Abstract class that defines the generic API of the classes that implement the specific methods needed by
      *  the backtracking algorithm. It is template-ized over the type of the control variable
-     *  
+     *
      */
     template <class T_ControlVariable_>
         class GenericImplementer
@@ -38,7 +38,7 @@ namespace dcp
             public:
                 /************************* TYPEDEFS ************************/
                 typedef T_ControlVariable_        T_ControlVariable;
-                typedef std::function<void (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>>, 
+                typedef std::function<void (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>>,
                                             const T_ControlVariable&)> Updater;
                 typedef std::function<T_ControlVariable (const T_ControlVariable&)> SearchDirectionComputer;
 
@@ -69,7 +69,7 @@ namespace dcp
                 /********************** METHODS ***********************/
                 //! Set the dot product to be used
                 /*!
-                 *  \param dotProductForm the form to be used when computing the dot product 
+                 *  \param dotProductForm the form to be used when computing the dot product
                  */
                 virtual void setDotProduct (const dolfin::Form& dotProductForm);
 
@@ -80,7 +80,7 @@ namespace dcp
                 virtual void setSearchDirectionComputer (const SearchDirectionComputer& searchDirectionComputer);
 
                 //! Updater for the backtracking algorithm
-                /*! 
+                /*!
                  *  This method updates the equations system representing the primal and adjoint problems by using the
                  *  protected member \c updater_
                  *
@@ -90,10 +90,10 @@ namespace dcp
                 virtual void update (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
                                      const T_ControlVariable& control);
 
-                //! Solve the equation systems representing the primal and the adjoint problem. 
+                //! Solve the equation systems representing the primal and the adjoint problem.
                 /*!
                  *  \param systems the set of systems to be solved
-                 *  \param solveType the type of solve requested; possible values in this class: 
+                 *  \param solveType the type of solve requested; possible values in this class:
                  *  \li \c all
                  *  \li \c primal
                  *  \li \c adjoint
@@ -143,10 +143,10 @@ namespace dcp
                  */
                 SearchDirectionComputer searchDirectionComputer_;
 
-                //! The form that will be used to compute the dot product between the gradient and the search direction. 
-                /*! 
+                //! The form that will be used to compute the dot product between the gradient and the search direction.
+                /*!
                  *  The default value is on object of type \c dcp::DotProduct default-constructed, which will try to
-                 *  determine the right form to use by checking the geometrical dimensions of the input objects. 
+                 *  determine the right form to use by checking the geometrical dimensions of the input objects.
                  *  However, sometimes it may be useful to have a user-defined object to compute the dot product.
                  *  To do so, use the function \c setDotProduct
                  */
@@ -178,8 +178,8 @@ namespace dcp
 
 
     template <class T_ControlVariable>
-        GenericImplementer<T_ControlVariable>::GenericImplementer 
-                (const Updater& updater, 
+        GenericImplementer<T_ControlVariable>::GenericImplementer
+                (const Updater& updater,
                  const SearchDirectionComputer& searchDirectionComputer) :
             parameters ("generic_implementer_parameters"),
             updater_ (updater),
@@ -201,7 +201,7 @@ namespace dcp
 
 
     template <class T_ControlVariable>
-        void GenericImplementer<T_ControlVariable>::setSearchDirectionComputer 
+        void GenericImplementer<T_ControlVariable>::setSearchDirectionComputer
             (const SearchDirectionComputer& searchDirectionComputer)
         {
             searchDirectionComputer_ = searchDirectionComputer;
@@ -210,7 +210,7 @@ namespace dcp
 
 
     template <class T_ControlVariable>
-        void GenericImplementer<T_ControlVariable>::update 
+        void GenericImplementer<T_ControlVariable>::update
             (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
              const T_ControlVariable& control)
         {
@@ -237,7 +237,7 @@ namespace dcp
 
 
     template <class T_ControlVariable>
-        T_ControlVariable GenericImplementer<T_ControlVariable>::computeSearchDirection 
+        T_ControlVariable GenericImplementer<T_ControlVariable>::computeSearchDirection
             (const T_ControlVariable& gradient)
     {
         return searchDirectionComputer_ (gradient);

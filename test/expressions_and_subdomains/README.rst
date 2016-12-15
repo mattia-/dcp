@@ -1,7 +1,7 @@
 This collection of files sets up the case for a test of the classes
 dcp::VariableExpression and dcp::Subdomain, and in particular their
 use through callable objects.
-We will solve a linear differential problem, namely the Poisson 
+We will solve a linear differential problem, namely the Poisson
 equation with mixed boundary conditions on the unit square::
 
     -k \Delta u = f \in \Omega

@@ -156,16 +156,16 @@ namespace dcp
              *  will contain the final value of the control variable
              *  \param implementer object that defines all the methods needed by the algorithm. The
              *  \c apply() method is indeed general and delegates the implementations of the particular methods to the
-             *  \c implementer . Some implementers are already given as part of \c dcp ,  namely 
+             *  \c implementer . Some implementers are already given as part of \c dcp ,  namely
              *  \c dcp::BacktrackingImplementer and \c dcp::TimeDependentBacktrackingImplementer . The object passed to
              *  the \c apply() function may be an instance of either these classes or a class derived from them or even
-             *  a completely new class. The class of which this object is an instance must implement the following 
+             *  a completely new class. The class of which this object is an instance must implement the following
              *  methods:
-             *  \li <tt>void update (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>, 
+             *  \li <tt>void update (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>,
              *                       const T_ControlVariable&)</tt>
              *  method that updates the systems (passed as first argument) using the new value of the control function
              *  passed as second argument; it is called after each time the control variable changes value. Some
-             *  standard functors that can be used within the implementer are provided (see 
+             *  standard functors that can be used within the implementer are provided (see
              *  \c dcp::DirichletControlUpdater , \c dcp::DistributedControlUpdater and \c dcp::NeumannControlUpdater )
              *  \li <tt>T_ControlVariable computeSearchDirection (const T_ControlVariable&)</tt>
              *  method that computes the search direction given the functional gradient (passed as first and only
@@ -181,8 +181,8 @@ namespace dcp
              *  the functional gradient (first argument) and the search direction (second argument), and its result will
              *  be used in the sufficient decrease condition.
              *  \li <tt>double computeNorm (const T_ControlVariable&)</tt>
-             *  method to compute the norm of the gradient or of the increment of the control variable (passed as 
-             *  argument to the function); it is used for the convergence check, if needed. Note that this could use 
+             *  method to compute the norm of the gradient or of the increment of the control variable (passed as
+             *  argument to the function); it is used for the convergence check, if needed. Note that this could use
              *  the previous \c computeDotProduct function within the implementer
              */
             template <class T_ControlVariable>
@@ -341,7 +341,7 @@ namespace dcp
         dolfin::end ();
 
         // set purge_inteval equal to 0, because we need all the solutions when we solve the backward-in-time adjoint
-        // system 
+        // system
         dolfin::begin (dolfin::DBG, "Setting parameter \"purge_interval\" to 0 for all problems...");
         for (std::size_t i = 0; i < systems.size (); ++i)
         {

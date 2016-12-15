@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef SRC_OPTIMIZERS_GRADIENTSEARCHDIRECTION_H_INCLUDE_GUARD
 #define SRC_OPTIMIZERS_GRADIENTSEARCHDIRECTION_H_INCLUDE_GUARD
@@ -28,44 +28,44 @@ namespace dcp
 {
     /*! \class GradientSearchDirection GradientSearchDirection.h
      *  \brief Helper class that defines the search direction for descent methods as the opposite of the gradient.
-     * 
+     *
      *  This class defines an object whose call operator computes the search direction for descent methods by
      *  taking the opposite of the gradient.
      *  It is used as default value for \c searchDirectionComputer_ in \c dcp::BacktrackingOptimizer
      */
-    
+
     class GradientSearchDirection
     {
         // ---------------------------------------------------------------------------------------------//
-        
+
         public:
             /************************* CONSTRUCTORS ********************/
             //! Default constructor
             GradientSearchDirection () = default;
-            
+
 
             /************************* DESTRUCTOR ********************/
             //! Destructor
-            /*! Default destructor, since members of the class are trivially 
+            /*! Default destructor, since members of the class are trivially
              * destructible.
              */
             ~GradientSearchDirection () {};
-            
-            
+
+
             /********************** METHODS ***********************/
             //! Call operator that computes the search direction [1]
             /*!
              *  \param gradient the current functional gradient
              *
-             *  \return the search direction 
+             *  \return the search direction
              */
             dolfin::Function operator() (const dolfin::Function& gradient);
-            
+
             //! Call operator that computes the search direction [2]
             /*!
              *  \param gradient the current functional gradient
              *
-             *  \return the search direction 
+             *  \return the search direction
              */
             dcp::TimeDependentFunction operator() (const dcp::TimeDependentFunction& gradient);
 
@@ -76,7 +76,7 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//
 
         private:
-            
+
     };
 }
 

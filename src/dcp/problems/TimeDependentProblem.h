@@ -780,7 +780,7 @@ namespace dcp
              *
              *  \return \c true if the coefficient was inserted in the map, \c false otherwise
              */
-            virtual bool addTimeDependentCoefficient 
+            virtual bool addTimeDependentCoefficient
                 (const std::string& coefficientType,
                  const std::shared_ptr<dcp::TimeDependentExpression> expression,
                  const std::string& coefficientName);
@@ -840,9 +840,9 @@ namespace dcp
             //! Save problem's state
             /*!
              *  Save current state of the problem (aka the last \c nTimeSchemeSteps_ solutions, the current time and the
-             *  current timestep) in the states map (aka \c states_ ) with the given name. 
-             *  Solutions are saved in the state's vector in the same order, i.e. the last solution computed (which is 
-             *  the solution computed at the last timestep) is the last element of the state's vector, the last but one 
+             *  current timestep) in the states map (aka \c states_ ) with the given name.
+             *  Solutions are saved in the state's vector in the same order, i.e. the last solution computed (which is
+             *  the solution computed at the last timestep) is the last element of the state's vector, the last but one
              *  solution is the last but one element and so on.
              *
              *  \param stateName the name to be used to store the state
@@ -854,7 +854,7 @@ namespace dcp
             //! Restore problem's state
             /*!
              *  Restore the problem's state to the one in \c state_ with the given name. This means that the values of
-             *  \c time and \c timestep will be reset to those of the state and that the state's vector will be added 
+             *  \c time and \c timestep will be reset to those of the state and that the state's vector will be added
              *  at the end of <tt>solution_</tt>, so that the solve process can be restarted.
              *  Note that the elements alreay stored in \c solution_ will not be erased, unless the input argument
              *  \c clear is set to \c true. The state will not be erased from \c states_ .
@@ -893,11 +893,11 @@ namespace dcp
              */
             virtual void reserve ();
 
-            //! Advance time value \c time_. 
+            //! Advance time value \c time_.
             /*!
-             *  It calls the setter function <tt>time_ -> setT0 ()</tt> using <tt>startTime_ + timestep_ * dt_</tt> 
+             *  It calls the setter function <tt>time_ -> setT0 ()</tt> using <tt>startTime_ + timestep_ * dt_</tt>
              *  and it increments the protected member \c timestep_
-             *  
+             *
              */
             virtual void advanceTime ();
 
@@ -1054,8 +1054,8 @@ namespace dcp
             //! Set the time dependent coefficients at every step of the solve loop
             /*!
              *  For each \c element in \c timeDependentExpressionCoefficients_ , it will set the coefficient's time
-             *  using \c t_ and call \c setCoefficient() ; then for each \c element in 
-             *  \c timeDependentFunctionCoefficients_ it will call \c setCoefficient() 
+             *  using \c t_ and call \c setCoefficient() ; then for each \c element in
+             *  \c timeDependentFunctionCoefficients_ it will call \c setCoefficient()
              */
             virtual void setTimeDependentCoefficients_ ();
 
@@ -1121,10 +1121,10 @@ namespace dcp
             /*!
              *  The coefficient is identified by a \c pair containing its name and its type and is associated in the map
              *  to a pointer to a \c dcp::TimeDependentFunction (which contains the coefficient itself).
-             *  Unlike \c timeDependentExpressionCoefficients_ , in this case the coefficient (which is of type 
-             *  \c dcp::TimeDependentFunction ) is supposed to have a  different element for each timestep in the 
-             *  problem (initial and final time included), and the time values stored in such elements must match the 
-             *  times which the problem goes through in the solutions loop. The right element is selected by using the 
+             *  Unlike \c timeDependentExpressionCoefficients_ , in this case the coefficient (which is of type
+             *  \c dcp::TimeDependentFunction ) is supposed to have a  different element for each timestep in the
+             *  problem (initial and final time included), and the time values stored in such elements must match the
+             *  times which the problem goes through in the solutions loop. The right element is selected by using the
              *  protected member \c timestep_ .
              *
              */
@@ -1135,13 +1135,13 @@ namespace dcp
             //! The time dependent Dirichlet's boundary conditions expressed as time dependent functions
             /*!
              *  The map associates the bc's name to the tuple <time dependent function, boundary, solution component>
-             *  identifying the condition itself. 
+             *  identifying the condition itself.
              *  If the condition should be enforced on all the function space components, \c -1 is used as a
              *  placeholder.
              *  Unlike \c timeDependentExpressionDirichletBCs_ , in this case the condition (which is of type
              *  \c dcp::TimeDependentFunction ) is supposed to have a different element for each timestep in the
-             *  problem (initial and final time included), and the time values stored in such elements must match the 
-             *  times which the problem goes through in the solutions loop. The right element is selected by using the 
+             *  problem (initial and final time included), and the time values stored in such elements must match the
+             *  times which the problem goes through in the solutions loop. The right element is selected by using the
              *  protected member \c timestep_ .
              */
             std::map <dcp::TimeDependentProblem::TimeDependentDirichletBCKey,
@@ -1160,8 +1160,8 @@ namespace dcp
             //! States of the problem
             /*!
              *  A map that contains all the saved states of the problem. Each state is identified by a name and contains
-             *  a \c double representing the time, a \c std::size_t containig the timestep and a vector of 
-             *  <tt>dolfin::Function</tt>s representing the solutions at that time. More than one solution may be needed 
+             *  a \c double representing the time, a \c std::size_t containig the timestep and a vector of
+             *  <tt>dolfin::Function</tt>s representing the solutions at that time. More than one solution may be needed
              *  in case the time advancement uses a multistep scheme.
              *  This should in theory allow the solve process to be restarted from the saved states.
              *  States are saved by calling \c saveState() and restored by calling \c restoreState().

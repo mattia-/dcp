@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef SRC_OPTIMIZERS_TIMEDEPENDENTBACKTRACKINGIMPLEMENTER_H_INCLUDE_GUARD
 #define SRC_OPTIMIZERS_TIMEDEPENDENTBACKTRACKINGIMPLEMENTER_H_INCLUDE_GUARD
@@ -30,13 +30,13 @@ namespace dcp
     /*! \class TimeDependentBacktrackingImplementer TimeDependentBacktrackingImplementer.h
      *  \brief Class that implements the specific methods needed by the backtracking algorithm in the time-dependent
      *  case. Derives from \c TimeDependentBacktrackingImplementer .
-     *  
+     *
      */
     template <class T_ControlVariable>
     class TimeDependentBacktrackingImplementer : public GenericImplementer<T_ControlVariable>
     {
         // ---------------------------------------------------------------------------------------------//
-        
+
         public:
             /************************* CONSTRUCTORS ********************/
             //! Constructor [1]
@@ -44,7 +44,7 @@ namespace dcp
              *  \param updater the updater to be used to update the primal-adjoint system during the backtracking
              *  algorithm. Must be copy-constructible
              */
-            TimeDependentBacktrackingImplementer 
+            TimeDependentBacktrackingImplementer
                     (const typename dcp::GenericImplementer<T_ControlVariable>::Updater& updater);
 
             //! Constructor [2]
@@ -55,21 +55,21 @@ namespace dcp
              *  copy-constructible
              */
             TimeDependentBacktrackingImplementer
-                    (const typename dcp::GenericImplementer<T_ControlVariable>::Updater& updater, 
-                     const typename dcp::GenericImplementer<T_ControlVariable>::SearchDirectionComputer& 
+                    (const typename dcp::GenericImplementer<T_ControlVariable>::Updater& updater,
+                     const typename dcp::GenericImplementer<T_ControlVariable>::SearchDirectionComputer&
                             searchDirectionComputer);
-            
+
 
             /************************* DESTRUCTOR ********************/
             //! Destructor
             virtual ~TimeDependentBacktrackingImplementer () {};
-            
-            
+
+
             /********************** METHODS ***********************/
-            //! Solve the equation systems representing the primal and the adjoint problem. 
+            //! Solve the equation systems representing the primal and the adjoint problem.
             /*!
-             *  This function calls the subfunctions \c initializePrimalSystem , \c initializeAdjointSystem , 
-             *  \c primalSolveStepPreprocessing , \c adjointSolveStepPreprocessing , \c solvePrimalSystem and 
+             *  This function calls the subfunctions \c initializePrimalSystem , \c initializeAdjointSystem ,
+             *  \c primalSolveStepPreprocessing , \c adjointSolveStepPreprocessing , \c solvePrimalSystem and
              *  \c solveAdjointSystem . They all have a pretty standard and unrefined behaviour, since
              *  automatizing the treatment of all possible cases would be hard and lead to unintuitive API. If one needs
              *  a specific behaviour, they need to fine tune the class by deriving it and overriding the subfunctions
@@ -80,7 +80,7 @@ namespace dcp
              *
              *
              *  \param systems the set of systems to be solved
-             *  \param solveType the type of solve requested; possible values in this class: 
+             *  \param solveType the type of solve requested; possible values in this class:
              *  \li \c all
              *  \li \c primal
              *  \li \c adjoint
@@ -119,7 +119,7 @@ namespace dcp
 
             //! Solve the adjoint problem
             /*!
-             *  It replicates \c dcp::TimeDependentEquationSystem::solve() method but adds the call to 
+             *  It replicates \c dcp::TimeDependentEquationSystem::solve() method but adds the call to
              *  \c linkAdjointToPrimal_() before the system is actually solved at each time step.
              *
              *  \param adjointSystem the adjoint system to be solved
@@ -158,11 +158,11 @@ namespace dcp
             // ---------------------------------------------------------------------------------------------//
 
         protected:
-            
+
             // ---------------------------------------------------------------------------------------------//
 
         private:
-            
+
     };
 
 
@@ -173,7 +173,7 @@ namespace dcp
 
     /******************* CONSTRUCTORS *******************/
     template <class T_ControlVariable>
-        TimeDependentBacktrackingImplementer<T_ControlVariable>::TimeDependentBacktrackingImplementer 
+        TimeDependentBacktrackingImplementer<T_ControlVariable>::TimeDependentBacktrackingImplementer
                 (const typename dcp::GenericImplementer<T_ControlVariable>::Updater& updater) :
             GenericImplementer<T_ControlVariable> (updater)
         {
@@ -183,9 +183,9 @@ namespace dcp
 
 
     template <class T_ControlVariable>
-        TimeDependentBacktrackingImplementer<T_ControlVariable>::TimeDependentBacktrackingImplementer 
-                (const typename dcp::GenericImplementer<T_ControlVariable>::Updater& updater, 
-                 const typename dcp::GenericImplementer<T_ControlVariable>::SearchDirectionComputer& 
+        TimeDependentBacktrackingImplementer<T_ControlVariable>::TimeDependentBacktrackingImplementer
+                (const typename dcp::GenericImplementer<T_ControlVariable>::Updater& updater,
+                 const typename dcp::GenericImplementer<T_ControlVariable>::SearchDirectionComputer&
                         searchDirectionComputer) :
             GenericImplementer<T_ControlVariable> (updater, searchDirectionComputer)
         {
@@ -244,7 +244,7 @@ namespace dcp
 
 
     template <class T_ControlVariable>
-        void TimeDependentBacktrackingImplementer<T_ControlVariable>::initializePrimalSystem 
+        void TimeDependentBacktrackingImplementer<T_ControlVariable>::initializePrimalSystem
             (dcp::TimeDependentEquationSystem& primalSystem)
         {
 
@@ -276,7 +276,7 @@ namespace dcp
 
 
     template <class T_ControlVariable>
-        void TimeDependentBacktrackingImplementer<T_ControlVariable>::solvePrimalSystem 
+        void TimeDependentBacktrackingImplementer<T_ControlVariable>::solvePrimalSystem
             (dcp::TimeDependentEquationSystem& primalSystem)
         {
             primalSystem.solve ();
@@ -285,7 +285,7 @@ namespace dcp
 
 
     template <class T_ControlVariable>
-        void TimeDependentBacktrackingImplementer<T_ControlVariable>::solveAdjointSystem 
+        void TimeDependentBacktrackingImplementer<T_ControlVariable>::solveAdjointSystem
             (dcp::TimeDependentEquationSystem& adjointSystem,
              const dcp::TimeDependentEquationSystem& primalSystem)
         {

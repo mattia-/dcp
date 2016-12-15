@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <dcp/optimizers/NeumannControlUpdater.h>
 #include <dcp/problems/TimeDependentProblem.h>
@@ -23,7 +23,7 @@
 namespace dcp
 {
     /************************* CONSTRUCTORS ********************/
-    NeumannControlUpdater::NeumannControlUpdater (const std::string& problemName, 
+    NeumannControlUpdater::NeumannControlUpdater (const std::string& problemName,
                                                   const std::string& coefficientType,
                                                   const std::string& coefficientName) :
         problemName_ (problemName),
@@ -39,8 +39,8 @@ namespace dcp
     {
         dcp::GenericProblem& problem = (*(systems[0])) [problemName_];
 
-        problem.setCoefficient (coefficientType_, 
-                                dolfin::reference_to_no_delete_pointer (coefficientValue), 
+        problem.setCoefficient (coefficientType_,
+                                dolfin::reference_to_no_delete_pointer (coefficientValue),
                                 coefficientName_);
     }
 
@@ -59,8 +59,8 @@ namespace dcp
                                   problemName_.c_str ());
         }
 
-        pointerToProblem->addTimeDependentCoefficient (coefficientType_, 
-                                                       dolfin::reference_to_no_delete_pointer (coefficientValue), 
+        pointerToProblem->addTimeDependentCoefficient (coefficientType_,
+                                                       dolfin::reference_to_no_delete_pointer (coefficientValue),
                                                        coefficientName_);
     }
 }

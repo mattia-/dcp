@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,15 +14,15 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <dcp/optimizers/GenericDescentMethod.h>
 #include <dolfin/log/dolfin_log.h>
 
 namespace dcp
 {
-    GenericDescentMethod::GenericDescentMethod () : 
+    GenericDescentMethod::GenericDescentMethod () :
         parameters ("optimizer_parameters")
     {
         dolfin::log (dolfin::DBG, "GenericDescentMethod object created");

@@ -49,7 +49,7 @@ namespace dcp
 
             //! Fill constructor [1]
             /*!
-             *  Creates object with given size containing pairs made from the input initial time \c t0 (incremented by 
+             *  Creates object with given size containing pairs made from the input initial time \c t0 (incremented by
              *  \c dt for each element) and functions build on the input function space.
              *
              *  \param n the size
@@ -64,7 +64,7 @@ namespace dcp
 
             //! Fill constructor [2]
             /*!
-             *  Creates object containing pairs made from the input initial time \c t0 incremented by \c dt for each 
+             *  Creates object containing pairs made from the input initial time \c t0 incremented by \c dt for each
              *  element until final time is reached and functions build on the input function space.
              *
              *  \param t0 the initial time
@@ -80,7 +80,7 @@ namespace dcp
 
             //! Fill constructor [3]
             /*!
-             *  Creates object with given size containing pairs made from the input initial time \c t0 (incremented by 
+             *  Creates object with given size containing pairs made from the input initial time \c t0 (incremented by
              *  \c dt for each element) and copies of the input funciton
              *
              *  \param n the size
@@ -95,7 +95,7 @@ namespace dcp
 
             //! Fill constructor [2]
             /*!
-             *  Creates object containing pairs made from the input initial time \c t0 incremented by \c dt for each 
+             *  Creates object containing pairs made from the input initial time \c t0 incremented by \c dt for each
              *  element until final time is reached and copies of the input function
              *
              *  \param t0 the initial time
@@ -145,10 +145,10 @@ namespace dcp
              *  This allows to assign values to a time-dependent function from an expression, by assigning the
              *  evaluated expression at each timestep to each element in the time-dependent function.
              *  If the expression is constant with respect to time, the time-dependent function will simply contain
-             *  the same values at each timestep. If the expression is indeed time-dependent, at the end of the function 
+             *  the same values at each timestep. If the expression is indeed time-dependent, at the end of the function
              *  the value of time contained in the expression at the function call will be restored.
              *
-             *  \param expression the expression; 
+             *  \param expression the expression;
              */
             dcp::TimeDependentFunction& operator= (dolfin::Expression& expression);
 
@@ -265,7 +265,7 @@ namespace dcp
         protected:
             //! The plotter for the function
             std::shared_ptr<dolfin::VTKPlotter> plotter_;
-            
+
 
             // ---------------------------------------------------------------------------------------------//
 

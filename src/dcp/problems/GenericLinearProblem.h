@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef SRC_PROBLEMS_GENERICLINEARPROBLEM_H_INCLUDE_GUARD
 #define SRC_PROBLEMS_GENERICLINEARPROBLEM_H_INCLUDE_GUARD
@@ -36,17 +36,17 @@ namespace dcp
      *  \f]
      *  with \f$ a \left(u, v\right) : V \times V \rightarrow \mathds{R}\f$ bilinear form on \f$V\f$
      *  and \f$ L \left(v\right) : V \rightarrow \mathds{R} \f$ linear form on the same space.
-     *  
-     *  It inherits publicly from \c GenericProblem  and it extends its functionalities to a generic linear differential 
+     *
+     *  It inherits publicly from \c GenericProblem  and it extends its functionalities to a generic linear differential
      *  problem.
-     *  A concrete linear problem must be declared of type \c dcp::GenericLinearProblem. This class is useful for 
-     *  polymorphic management of linear problems for which the bilinear and linear forms are not known / accessible in 
+     *  A concrete linear problem must be declared of type \c dcp::GenericLinearProblem. This class is useful for
+     *  polymorphic management of linear problems for which the bilinear and linear forms are not known / accessible in
      *  the current scope.
      */
 
     class GenericLinearProblem : public dcp::GenericProblem
     {
-        // ---------------------------------------------------------------------------------------------//  
+        // ---------------------------------------------------------------------------------------------//
 
         public:
             /******************* CONSTRUCTORS *******************/
@@ -55,7 +55,7 @@ namespace dcp
 
             //!  Constructor
             /*!
-             *  \param functionSpace the problem finite element space 
+             *  \param functionSpace the problem finite element space
              *  The constructors also sets the following parameters:
              *      - \c "problem_type" a string describing the problem. Default value: \c "linear"
              */
@@ -64,8 +64,8 @@ namespace dcp
 
             /******************* DESTRUCTOR *******************/
             //! Destructor
-            /*! 
-             *  Default destructor, since members of the class are trivially 
+            /*!
+             *  Default destructor, since members of the class are trivially
              *  destructible.
              */
             virtual ~GenericLinearProblem () {};
@@ -73,13 +73,13 @@ namespace dcp
 
             /******************* GETTERS *******************/
             //! Get const reference to the problem's linear form
-            /*! 
+            /*!
              *  \return a const reference to the problem's linear form
              */
             virtual const dolfin::Form& bilinearForm () const = 0;
 
             //! Get const reference to the problem's linear form
-            /*! 
+            /*!
              *  \return a const reference to the problem's linear form
              */
             virtual const dolfin::Form& linearForm () const = 0;
@@ -101,7 +101,7 @@ namespace dcp
 
             /******************* METHODS *******************/
             //! Lump system matrix
-            /*! 
+            /*!
              *  Performs lumping of the system matrix by substituting the diagonal with the sum of each row and
              *  setting the extra-diagonal terms to zero.
              */

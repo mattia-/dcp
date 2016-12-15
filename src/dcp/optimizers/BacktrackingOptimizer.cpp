@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <dcp/optimizers/BacktrackingOptimizer.h>
 #include <dolfin/parameter/Parameters.h>
@@ -36,7 +36,7 @@ namespace dcp
         GenericDescentMethod ()
     {
         dolfin::begin (dolfin::DBG, "Creating BacktrackingOptimizer object...");
-        
+
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("descent_method", "backtracking_gradient_method");
         parameters.add ("gradient_norm_tolerance", 1e-6);
@@ -50,15 +50,15 @@ namespace dcp
         parameters.add ("output_file_name", "");
 
         dolfin::end (); // Creating BacktrackingOptimizer object
-        
+
         dolfin::log (dolfin::DBG, "BacktrackingOptimizer object created");
     }
-    
+
 
     // ***************************************** //
     // ********** PRIVATE MEMBERS ************** //
     // ***************************************** //
-    void BacktrackingOptimizer::print_ (std::ostream& OUTSTREAM, 
+    void BacktrackingOptimizer::print_ (std::ostream& OUTSTREAM,
                                         const int& iteration,
                                         const double& functionalValue,
                                         const double& alpha,
@@ -74,15 +74,15 @@ namespace dcp
             OUTSTREAM << "  "
                 << std::left
                 << std::setw (14)
-                << iteration 
+                << iteration
                 << std::setw (21)
-                << functionalValue 
+                << functionalValue
                 << std::setw (15)
                 << alpha
                 << std::setw (28)
                 << backtrackingIterations
                 << std::setw (18)
-                << gradientNorm 
+                << gradientNorm
                 << std::setw (23)
                 << relativeIncrement
                 << std::endl;
@@ -92,9 +92,9 @@ namespace dcp
             OUTSTREAM << "  "
                 << std::left
                 << std::setw (14)
-                << iteration 
+                << iteration
                 << std::setw (21)
-                << functionalValue 
+                << functionalValue
                 << std::setw (15)
                 << alpha
                 << std::setw (28)
@@ -108,33 +108,33 @@ namespace dcp
             OUTSTREAM << "  "
                 << std::left
                 << std::setw (14)
-                << iteration 
+                << iteration
                 << std::setw (21)
-                << functionalValue 
+                << functionalValue
                 << std::setw (15)
                 << alpha
                 << std::setw (28)
                 << backtrackingIterations
                 << std::setw (18)
-                << gradientNorm 
+                << gradientNorm
                 << std::endl;
         }
         else
         {
             dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp",
                                   "print",
-                                  "Unknown convergence criterion \"%s\"", 
+                                  "Unknown convergence criterion \"%s\"",
                                   convergenceCriterion.c_str ());
         }
     }
-    
+
 
 
     bool BacktrackingOptimizer::openOutputFile_ (std::ofstream& outfile) const
     {
         std::string outputFileName = this->parameters ["output_file_name"];
         std::string convergenceCriterion = this->parameters ["convergence_criterion"];
-        
+
         if (!outputFileName.empty ())
         {
             outfile.open (outputFileName);
@@ -142,61 +142,61 @@ namespace dcp
             {
                 dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp",
                                       "openOutputFile_",
-                                      "Cannot open output file \"%s\"", 
+                                      "Cannot open output file \"%s\"",
                                       outputFileName.c_str ());
             }
-            
+
             if (convergenceCriterion == "both")
             {
                 outfile << "# Iteration"
                         << "     "
-                        << "Functional_value" 
+                        << "Functional_value"
                         << "     "
-                        << "Alpha" 
+                        << "Alpha"
                         << "          "
                         << "Backtracking_iterations"
                         << "     "
-                        << "Gradient_norm" 
+                        << "Gradient_norm"
                         << "     "
-                        << "Relative_increment" 
+                        << "Relative_increment"
                         << std::endl;
             }
             else if (convergenceCriterion == "increment")
             {
                 outfile << "# Iteration"
                         << "     "
-                        << "Functional_value" 
+                        << "Functional_value"
                         << "     "
-                        << "Alpha" 
+                        << "Alpha"
                         << "          "
                         << "Backtracking_iterations"
                         << "     "
-                        << "Relative_increment" 
+                        << "Relative_increment"
                         << std::endl;
             }
             else if (convergenceCriterion == "gradient")
             {
                 outfile << "# Iteration"
                         << "     "
-                        << "Functional_value" 
-                        << "Alpha" 
+                        << "Functional_value"
+                        << "Alpha"
                         << "          "
                         << "Backtracking_iterations"
                         << "     "
-                        << "Gradient_norm" 
+                        << "Gradient_norm"
                         << std::endl;
             }
             else
             {
                 dolfin::dolfin_error ("dcp: BacktrackingOptimizer.cpp",
                                       "openOutputFile_",
-                                      "Unknown convergence criterion \"%s\"", 
+                                      "Unknown convergence criterion \"%s\"",
                                       convergenceCriterion.c_str ());
-                
+
             }
             return true;
         }
-        
+
         return false;
     }
 }

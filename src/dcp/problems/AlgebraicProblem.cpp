@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <dcp/problems/AlgebraicProblem.h>
 
@@ -26,16 +26,16 @@ namespace dcp
                                         const std::shared_ptr<dcp::GenericExpression> expression) :
         GenericProblem (functionSpace),
         expression_ (expression)
-    { 
+    {
         dolfin::begin (dolfin::DBG, "Building AlgebraicProblem...");
 
         solution_.emplace_back (std::make_pair (-1, dolfin::Function (functionSpace_)));
-        
+
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("problem_type", "algebraic");
 
         dolfin::end (); // "Building AlgebraicProblem"
-        
+
         dolfin::log (dolfin::DBG, "AlgebraicProblem object created");
     }
 
@@ -45,14 +45,14 @@ namespace dcp
                                         const dcp::GenericExpression& expression) :
         GenericProblem (functionSpace),
         expression_ (expression.clone ())
-    { 
+    {
         dolfin::begin (dolfin::DBG, "Building AlgebraicProblem...");
 
         solution_.emplace_back (std::make_pair (-1, dolfin::Function (functionSpace_)));
-        
+
         dolfin::log (dolfin::DBG, "Setting up parameters...");
         parameters.add ("problem_type", "algebraic");
-        
+
         dolfin::end (); // "Building AlgebraicProblem"
 
         dolfin::log (dolfin::DBG, "AlgebraicProblem object created");
@@ -66,10 +66,10 @@ namespace dcp
         return *expression_;
     }
 
-    
+
 
     /******************* SETTERS *******************/
-    void AlgebraicProblem::setCoefficient (const std::string& coefficientType, 
+    void AlgebraicProblem::setCoefficient (const std::string& coefficientType,
                                            const std::shared_ptr<const dolfin::GenericFunction> coefficientValue,
                                            const std::string& coefficientName)
     {
@@ -107,7 +107,7 @@ namespace dcp
 
 
 
-    bool AlgebraicProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
+    bool AlgebraicProblem::addDirichletBC (const dolfin::GenericFunction& condition,
                                            const dolfin::SubDomain& boundary,
                                            std::string bcName)
     {
@@ -117,7 +117,7 @@ namespace dcp
 
 
 
-    bool AlgebraicProblem::addDirichletBC (const dolfin::GenericFunction& condition, 
+    bool AlgebraicProblem::addDirichletBC (const dolfin::GenericFunction& condition,
                                            const dolfin::SubDomain& boundary,
                                            const std::size_t& component,
                                            std::string bcName)
@@ -128,7 +128,7 @@ namespace dcp
 
 
 
-    bool AlgebraicProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+    bool AlgebraicProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition,
                                            std::shared_ptr<const dolfin::SubDomain> boundary,
                                            std::string bcName)
     {
@@ -136,9 +136,9 @@ namespace dcp
         return true;
     }
 
-    
 
-    bool AlgebraicProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition, 
+
+    bool AlgebraicProblem::addDirichletBC (std::shared_ptr<const dolfin::GenericFunction> condition,
                                            std::shared_ptr<const dolfin::SubDomain> boundary,
                                            const std::size_t& component,
                                            std::string bcName)
@@ -149,7 +149,7 @@ namespace dcp
 
 
 
-    bool AlgebraicProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition, 
+    bool AlgebraicProblem::addDirichletBC (const dolfin::DirichletBC& dirichletCondition,
                                            std::string bcName)
     {
         // Do nothing
@@ -157,7 +157,7 @@ namespace dcp
     }
 
 
-    bool AlgebraicProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition, 
+    bool AlgebraicProblem::addDirichletBC (dolfin::DirichletBC&& dirichletCondition,
                                            std::string bcName)
     {
         // Do nothing
@@ -179,7 +179,7 @@ namespace dcp
     {
         if (solveType != "default" && solveType != "stash")
         {
-            dolfin::dolfin_error ("dcp: AlgebraicProblem.h", 
+            dolfin::dolfin_error ("dcp: AlgebraicProblem.h",
                                   "solve",
                                   "Unknown solve type \"%s\" requested",
                                   solveType.c_str ());
@@ -217,7 +217,7 @@ namespace dcp
         dcp::AlgebraicProblem* clonedProblem = nullptr;
         if (cloneMethod == "shallow_clone")
         {
-            clonedProblem = new dcp::AlgebraicProblem (this->functionSpace_, this->expression_); 
+            clonedProblem = new dcp::AlgebraicProblem (this->functionSpace_, this->expression_);
         }
         else if (cloneMethod == "deep_clone")
         {

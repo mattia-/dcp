@@ -1,5 +1,5 @@
 # collect header files
-SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericProblem.h 
+SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/GenericLinearProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/GenericNonlinearProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/LinearProblem.h

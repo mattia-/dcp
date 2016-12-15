@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef SRC_FACTORY_PROXY_H_INCLUDE_GUARD
 #define SRC_FACTORY_PROXY_H_INCLUDE_GUARD
@@ -26,11 +26,11 @@ namespace dcp
 {
     /*! \class Proxy
      *  \brief A class that provides registration into a factory.
-     *  
-     *  This class provides an easy and quick way to register 
+     *
+     *  This class provides an easy and quick way to register
      *  objects in a generic factory, independent of the classes
-     *  used to instantiate the factory. 
-     *  To register an object into a factory, one only needs to 
+     *  used to instantiate the factory.
+     *  To register an object into a factory, one only needs to
      *  create a proxy object feeding the constructor with the
      *  builder one wants to use for the creation of such object.
      *  Template arguments are:
@@ -38,7 +38,7 @@ namespace dcp
      *  \arg the type of the concrete product
      */
     template <class T_Factory_, class T_ConcreteProduct_>
-        class Proxy 
+        class Proxy
         {
             public:
                 typedef typename T_Factory_::T_GenericProduct  T_Factory_GenericProduct;
@@ -46,7 +46,7 @@ namespace dcp
                 typedef typename T_Factory_::T_Builder         T_Factory_Builder;
                 typedef          T_Factory_                    T_Factory;
                 typedef          T_ConcreteProduct_            T_ConcreteProduct;
-                
+
                 //! The constructor, which also does the registration
                 /*! Input arguments are:
                  *  \param identifier the identifier that will identify the object in the factory
@@ -72,7 +72,7 @@ namespace dcp
         {
             // get the factory. First time creates it.
             T_Factory_& factory (T_Factory_::Instance ());
-            
+
             // Insert the builder into the factory
             factory.add (identifier, Proxy <T_Factory_, T_ConcreteProduct_>::Build);
         }

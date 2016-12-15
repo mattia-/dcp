@@ -1,6 +1,6 @@
 # create libraries
-SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericFactory.h 
-             ${CMAKE_CURRENT_SOURCE_DIR}/LinearSolverFactory.h 
+SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/GenericFactory.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/LinearSolverFactory.h
              ${CMAKE_CURRENT_SOURCE_DIR}/Proxy.h
              ${CMAKE_CURRENT_SOURCE_DIR}/factories.h)
 

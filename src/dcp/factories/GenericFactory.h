@@ -1,8 +1,8 @@
-/* 
+/*
  *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
- * 
+ *
  *  This file is part of the DCP library
- *   
+ *
  *   The DCP library is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -14,8 +14,8 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
- */ 
+ *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef SRC_FACTORY_GENERICFACTORY_H_INCLUDE_GUARD
 #define SRC_FACTORY_GENERICFACTORY_H_INCLUDE_GUARD
@@ -31,8 +31,8 @@ namespace dcp
 {
     /*! class GenericFactory
      *  \brief class containing a generic factory
-     * 
-     *  A generic template-ized factory class. 
+     *
+     *  A generic template-ized factory class.
      *  Template arguments are
      *  \arg the type of the object to be created
      *  \arg the type of the identifier, that is the object that allows the factory to
@@ -41,11 +41,11 @@ namespace dcp
      *  \arg the type of the builder. By default, this is set to a function that takes no arguments
      *  and returns a unique_ptr to the created object
      */
-    template 
+    template
         <
-            class T_GenericProduct_, 
-            class T_Identifier_, 
-            class T_Builder_ = std::function <std::unique_ptr<T_GenericProduct_> ()> 
+            class T_GenericProduct_,
+            class T_Identifier_,
+            class T_Builder_ = std::function <std::unique_ptr<T_GenericProduct_> ()>
         >
             class GenericFactory
             {
@@ -57,7 +57,7 @@ namespace dcp
                     //! Method to access the only instance of the factory
                     static GenericFactory& Instance();
 
-                    //! Get the object with given identifier 
+                    //! Get the object with given identifier
                     /*!
                       The pointer is null if no match was found for the identifier.
                       */
@@ -108,13 +108,13 @@ namespace dcp
             class T_Identifier,
             class T_Builder
         >
-        GenericFactory<T_GenericProduct, T_Identifier, T_Builder>& 
-        GenericFactory<T_GenericProduct, T_Identifier, T_Builder>::Instance() 
+        GenericFactory<T_GenericProduct, T_Identifier, T_Builder>&
+        GenericFactory<T_GenericProduct, T_Identifier, T_Builder>::Instance()
         {
             static GenericFactory factory;
             return factory;
         }
-    
+
 
 
     template
@@ -123,10 +123,10 @@ namespace dcp
             class T_Identifier,
             class T_Builder
         >
-        std::unique_ptr <T_GenericProduct> 
+        std::unique_ptr <T_GenericProduct>
         GenericFactory<T_GenericProduct, T_Identifier, T_Builder>::create(const T_Identifier& identifier) const
         {
-            auto f = storedData_.find (identifier); 
+            auto f = storedData_.find (identifier);
             if (f == storedData_.end ())
             {
                 dolfin::warning ("identifier %s not found in factory", identifier.c_str ());
@@ -137,7 +137,7 @@ namespace dcp
                 return std::unique_ptr<T_GenericProduct> (f->second());
             }
         }
-    
+
 
 
     template
@@ -146,7 +146,7 @@ namespace dcp
             class T_Identifier,
             class T_Builder
         >
-        void 
+        void
         GenericFactory<T_GenericProduct, T_Identifier, T_Builder>::
         add (const T_Identifier& identifier, const T_Builder& builder)
         {
@@ -158,22 +158,22 @@ namespace dcp
         }
 
 
-    
+
     template
         <
             typename T_GenericProduct,
             typename T_Identifier,
             typename T_Builder
         >
-        std::vector<T_Identifier> 
+        std::vector<T_Identifier>
         GenericFactory<T_GenericProduct, T_Identifier, T_Builder>::registered () const
         {
             std::vector<T_Identifier> tmp;
             tmp.reserve (storedData_.size());
-            
+
             for(auto i = storedData_.begin(); i != storedData_.end(); ++i)
                 tmp.push_back (i->first);
-            
+
             return tmp;
         }
 };

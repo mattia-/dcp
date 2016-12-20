@@ -1077,6 +1077,18 @@ namespace dcp
                                  const std::string& filename,
                                  const double& t);
 
+            //! Write given solution to given binary file. Internal use only
+            /*!
+             *  \param writer the binary writer to be used
+             *  \param function the function to be written to file
+             *  \param filename name of the file, in case \c writer is \c nullptr
+             *  \param t current time value
+             */
+            virtual void write_ (std::shared_ptr<dolfin::HDF5File>& writer,
+                                 const std::shared_ptr<const dolfin::Function> function,
+                                 const std::string& filename,
+                                 const double& t);
+
 
             /******************** VARIABLES *********************/
             //! The problem to be solved on each time step

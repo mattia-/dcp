@@ -210,7 +210,22 @@ namespace dcp
         // the solution we want to set is identified by stepNumber. If it is equal to 1, we must set the last element
         // in solution_, if it is equal to 2 the last but one element and so on. That's why we subtract 1 from
         // stepNumber in the next instruction
-        (solutionsIterator + (stepNumber - 1))->second = initialSolution;
+        dolfin::Function& toSet = (solutionsIterator + (stepNumber - 1))->second;
+
+        // differentiate behaviour depending on whether the function space is mixed or not
+        std::size_t nSubElements = initialSolution.function_space ()->element ()->num_sub_elements ();
+        if (nSubElements == 0)
+        {
+            toSet = initialSolution;
+        }
+        else
+        {
+            for (std::size_t element = 0; element < nSubElements; element++)
+            {
+                dolfin::assign (dolfin::reference_to_no_delete_pointer (toSet[element]),
+                                dolfin::reference_to_no_delete_pointer (initialSolution[element]));
+            }
+        }
     }
 
 

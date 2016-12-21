@@ -1286,20 +1286,37 @@ namespace dcp
             writeComponents.push_back (component);
         }
 
-        // check if solutionFileName_ and parameters["solution_file_name"] coincide, if solutionWriters_ has right
-        // size and if writeComponents_ contains the same values as writeComponents
-        if (solutionFileName_ != std::string (parameters["solution_file_name"])
-            ||
-            solutionWriters_.size() != writeComponents.size()
-            ||
-            writeComponents_ != writeComponents)
-        {
-            solutionFileName_ = std::string (parameters["solution_file_name"]);
-            writeComponents_ = writeComponents;
+        // get parameters values
+        bool parameterBinaryWrite = bool(parameters["binary_write"]);
+        std::string parameterSolutionFileName = std::string (parameters["solution_file_name"]);
 
-            solutionWriters_.clear ();
-            solutionWriters_.resize (writeComponents.size(), nullptr);
+        // check if solutionFileName_ and parameters["solution_file_name"] coincide, if solutionWriters_ has right
+        // size, if writeComponents_ contains the same values as writeComponents and if binary writers should be used
+        bool hasFileNameMismatch = (solutionFileName_ != parameterSolutionFileName);
+        bool hasBinaryMismatch = (binaryWrite_ != parameterBinaryWrite);
+        bool hasWritersSizeMismatch = parameterBinaryWrite == false ?
+                                        solutionWriters_.size() != writeComponents.size() :
+                                        binarySolutionWriters_.size () != writeComponents.size ();
+        bool hasWriteComponentsMismatch = (writeComponents_ != writeComponents);
+        if (hasFileNameMismatch || hasBinaryMismatch || hasWritersSizeMismatch || hasWriteComponentsMismatch)
+        {
+            solutionFileName_ = parameterSolutionFileName;
+            writeComponents_ = writeComponents;
+            binaryWrite_ = parameterBinaryWrite;
+
+            if (binaryWrite_ == false)
+            {
+                solutionWriters_.clear ();
+                solutionWriters_.resize (writeComponents_.size(), nullptr);
+            }
+            else
+            {
+                binarySolutionWriters_.clear ();
+                binarySolutionWriters_.resize (writeComponents_.size(), nullptr);
+            }
         }
+
+        // at this point, the protected variables are fine and the writers just need to be created
 
         // auxiliary variable, to enhance readability
         std::shared_ptr<dolfin::Function> functionToWrite;
@@ -1338,7 +1355,14 @@ namespace dcp
                     }
 
                     // actual writing
-                    write_ (solutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                    if (binaryWrite_ == false)
+                    {
+                        write_ (solutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                    }
+                    else
+                    {
+                        write_ (binarySolutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                    }
                 }
             }
         }
@@ -1378,7 +1402,14 @@ namespace dcp
                 }
 
                 // actual writing
-                write_ (solutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                if (binaryWrite_ == false)
+                {
+                    write_ (solutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                }
+                else
+                {
+                    write_ (binarySolutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                }
             }
         }
         else // aka writeType == "stashed", otherwise we would have exited on the first check
@@ -1412,7 +1443,14 @@ namespace dcp
                 }
 
                 // actual writing
-                write_ (solutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                if (binaryWrite_ == false)
+                {
+                    write_ (solutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                }
+                else
+                {
+                    write_ (binarySolutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                }
             }
         }
 
@@ -1853,5 +1891,20 @@ namespace dcp
         {
             (*writer) << (*function);
         }
+    }
+
+
+
+    void TimeDependentProblem::write_ (std::shared_ptr<dolfin::HDF5File>& writer,
+                                       const std::shared_ptr<const dolfin::Function> function,
+                                       const std::string& filename,
+                                       const double& t)
+    {
+        if (writer == nullptr)
+        {
+            writer.reset (new dolfin::HDF5File (MPI_COMM_WORLD, filename, "w"));
+        }
+
+        writer->write (*function, "solution", t);
     }
 }

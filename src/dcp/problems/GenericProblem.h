@@ -28,6 +28,7 @@
 #include <dolfin/parameter/Parameters.h>
 #include <dolfin/plot/plot.h>
 #include <dolfin/plot/VTKPlotter.h>
+#include <dolfin/io/HDF5File.h>
 #include <dcp/problems/SubdomainType.h>
 #include <dcp/functions/TimeDependentFunction.h>
 #include <map>
@@ -66,6 +67,8 @@ namespace dcp
              *  The constructors also sets the following parameters:
              *      - \c "solution_file_name" the name of the file on which the solution will be written when/if required.
              *        Default value: \c "solution.pvd"
+             *      - \c "binary_write" a boolean switch to differentiate the behaviour in \c writeSolutionToFile() .
+             *        Default value: \c "false"
              *      - \c "plot_components" the components of the solution to be plotted (if the solution is vectorial),
              *        as a string of whitespace-separated integers. A negative value stands for all the components.
              *        Default value: "-1"
@@ -301,13 +304,19 @@ namespace dcp
 
             //! Write the solution to file
             /*!
-             *  All the filetypes supported by FEniCS are supported, with the same suffix-filetype convention.
+             *  All the non-binary filetypes supported by FEniCS are supported, with the same suffix-filetype convention.
              *  It checks if the parameters \c "solution_file_name" and \c "write_components" and the protected members
              *  \c solutionFileName_ and \c writeComponents_ (respectively) coincide.
              *  If not, it resets \c solutionWriters_ creating new \c dolfin::File objects with the correct names.
              *  \param writeType the type of the writing desired. Possible values:
              *  \li \c "default" the real solution, stored in \c solution_
              *  \li \c "stashed" the stashed solution
+             *
+             *  If the parameter \c "binary_write" is set to \c true , then \c dolfin::HDF5File is used to write the
+             *  solution to file, regardless of the extension in \c parameters["solution_file_name"] .
+             *  All of the considerations above about the comparisons between the protected variables values and those
+             *  stored in the parameters still holds, but \c binarySolutionWriters_ is modified instead of
+             *  \c solutionWriters_
              */
             virtual void writeSolutionToFile (const std::string& writeType = "default");
 
@@ -343,6 +352,16 @@ namespace dcp
              *  \param filename name of the file, in case \c writer is \c nullptr
              */
             void write_ (std::shared_ptr<dolfin::File>& writer,
+                         const std::shared_ptr<const dolfin::Function> function,
+                         const std::string& filename);
+
+            //! Write given solution to given binary file. Internal use only
+            /*!
+             *  \param writer the binary writer to be used
+             *  \param function the function to be written to file
+             *  \param filename name of the file, in case \c writer is \c nullptr
+             */
+            void write_ (std::shared_ptr<dolfin::HDF5File>& writer,
                          const std::shared_ptr<const dolfin::Function> function,
                          const std::string& filename);
 
@@ -392,6 +411,12 @@ namespace dcp
 
             //! The output streams for the (possibly more than one) components of the solution solution of the problem
             std::vector <std::shared_ptr<dolfin::File>> solutionWriters_;
+
+            //! The current value for the binary write switch
+            bool binaryWrite_;
+
+            //! The binary writers for the (possibly more than one) components of the solution solution of the problem
+            std::vector <std::shared_ptr<dolfin::HDF5File>> binarySolutionWriters_;
 
             // ---------------------------------------------------------------------------------------------//
 

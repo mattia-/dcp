@@ -86,17 +86,15 @@ namespace dcp
 
             //! Get const reference to the problem's linear operator
             /*!
-             *  \return a const reference to the problem's linear operator, which
-             *  is a \c dolfin::Matrix
+             *  \return a const reference to the problem's linear operator
              */
-            virtual const dolfin::Matrix& linearOperator () const = 0;
+            virtual const dolfin::GenericMatrix& linearOperator () const = 0;
 
             //! Get const reference to the problem's right hand side
             /*!
-             *  \return a const reference to the problem's right hand side, which
-             *  is a \c dolfin::Vector
+             *  \return a const reference to the problem's right hand side
              */
-            virtual const dolfin::Vector& rhs () const = 0;
+            virtual const dolfin::GenericVector& rhs () const = 0;
 
 
             /******************* METHODS *******************/

@@ -138,17 +138,15 @@ namespace dcp
 
                 //! Get const reference to the problem's linear operator
                 /*!
-                 *  \return a const reference to the problem's linear operator, which
-                 *  is a \c dolfin::Matrix
+                 *  \return a const reference to the problem's linear operator
                  */
-                virtual const dolfin::Matrix& linearOperator () const override;
+                virtual const dolfin::GenericMatrix& linearOperator () const override;
 
                 //! Get const reference to the problem's right hand side
                 /*!
-                 *  \return a const reference to the problem's right hand side, which
-                 *  is a \c dolfin::Vector
+                 *  \return a const reference to the problem's right hand side
                  */
-                virtual const dolfin::Vector& rhs () const override;
+                virtual const dolfin::GenericVector& rhs () const override;
 
 
                 /******************* SETTERS *******************/
@@ -368,10 +366,10 @@ namespace dcp
                 std::unique_ptr<dolfin::GenericLinearSolver> solver_;
 
                 //! Matrix to hold the problem's discrete operator
-                dolfin::Matrix problemMatrix_;
+                std::shared_ptr<dolfin::GenericMatrix> problemMatrix_;
 
                 //! Vector to store the right hand side of the discrete problem
-                dolfin::Vector rhsVector_;
+                std::shared_ptr<dolfin::GenericVector> rhsVector_;
 
                 //! String to contain the current solver type being used
                 std::string solverType_;
@@ -401,8 +399,8 @@ namespace dcp
             bilinearForm_ (functionSpace_, functionSpace_),
             linearForm_ (functionSpace_),
             solver_ (nullptr),
-            problemMatrix_ (),
-            rhsVector_ (),
+            problemMatrix_ (new dolfin::Matrix ()),
+            rhsVector_ (new dolfin::Vector ()),
             solverType_ ("lu_solver"),
             solverMethod_ ("default"),
             solverPreconditioner_ ("default")
@@ -439,8 +437,8 @@ namespace dcp
             bilinearForm_ (bilinearForm),
             linearForm_ (linearForm),
             solver_ (nullptr),
-            problemMatrix_ (),
-            rhsVector_ (),
+            problemMatrix_ (new dolfin::Matrix ()),
+            rhsVector_ (new dolfin::Vector ()),
             solverType_ ("lu_solver"),
             solverMethod_ ("default"),
             solverPreconditioner_ ("default")
@@ -489,19 +487,19 @@ namespace dcp
 
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        const dolfin::Matrix& LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        const dolfin::GenericMatrix& LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         linearOperator () const
         {
-            return problemMatrix_;
+            return *problemMatrix_;
         }
 
 
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        const dolfin::Vector& LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
+        const dolfin::GenericVector& LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         rhs () const
         {
-            return rhsVector_;
+            return *rhsVector_;
         }
 
 
@@ -840,16 +838,16 @@ namespace dcp
         lumpMatrix ()
         {
             // create vector of 1s to get the sum of the rows by computing A*ones
-            dolfin::Vector ones (MPI_COMM_WORLD, problemMatrix_.size (0));
+            dolfin::Vector ones (MPI_COMM_WORLD, problemMatrix_->size (0));
             ones = 1;
 
             // vector to contain the result of the multiplication
             dolfin::Vector result;
-            problemMatrix_.mult (ones, result);
+            problemMatrix_->mult (ones, result);
 
             // set problemMatrix_ to diagonal
-            problemMatrix_.zero ();
-            problemMatrix_.set_diagonal (result);
+            problemMatrix_->zero ();
+            problemMatrix_->set_diagonal (result);
         }
 
 
@@ -866,10 +864,10 @@ namespace dcp
             if (needsReassembling)
             {
                 dolfin::log (dolfin::DBG, "Assembling bilinear form...");
-                dolfin::assemble (problemMatrix_, bilinearForm_);
+                dolfin::assemble (*problemMatrix_, bilinearForm_);
 
                 dolfin::log (dolfin::DBG, "Assembling linear form...");
-                dolfin::assemble (rhsVector_, linearForm_);
+                dolfin::assemble (*rhsVector_, linearForm_);
 
                 if (!dirichletBCs_.empty ())
                 {
@@ -877,7 +875,7 @@ namespace dcp
                     for (auto &i : dirichletBCs_)
                     {
                         dolfin::log (dolfin::DBG, "Boundary condition: %s", i.first.c_str ());
-                        i.second.apply (problemMatrix_, rhsVector_);
+                        i.second.apply (*problemMatrix_, *rhsVector_);
                     }
                     dolfin::end ();
                 }
@@ -914,10 +912,10 @@ namespace dcp
             assembleLinearSystem ();
 
             dolfin::begin (dolfin::DBG, "Solving system...");
-            solver_ -> set_operator (dolfin::reference_to_no_delete_pointer (problemMatrix_));
+            solver_ -> set_operator (dolfin::reference_to_no_delete_pointer (*problemMatrix_));
             if (solveType == "default")
             {
-                solver_ -> solve (*(solution_.back ().second.vector ()), rhsVector_);
+                solver_ -> solve (*(solution_.back ().second.vector ()), *rhsVector_);
 
                 // set stashedSolution_ to be equal to the last computed solution, so that when solution() is called
                 // from a subiterations loop it gets the right one. In the case of "default" solveType, indeed, the
@@ -926,7 +924,7 @@ namespace dcp
             }
             else if (solveType == "stash")
             {
-                solver_ -> solve (*(stashedSolution_.vector ()), rhsVector_);
+                solver_ -> solve (*(stashedSolution_.vector ()), *rhsVector_);
             }
 
             dolfin::end ();

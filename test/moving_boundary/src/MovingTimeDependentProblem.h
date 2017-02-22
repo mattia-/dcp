@@ -43,102 +43,78 @@
 #include <dcp/differential_problems/SubdomainType.h>
 #include <dcp/expressions/TimeDependentExpression.h>
 #include <dcp/subdomains/Subdomain.h>
-//#include "geometry.h"
-#include "MeshManager.h"
 #include <math.h>
+
+#include "MeshManager.h"
+#include "utilities.h"
+
+// TODO toglierle: servono solo per il preassemble
+#include "MovingAbstractProblem.h"
+
+//#include "mainEnergyForms.h"
+#include "balanceTerms.h"
 
 #include "GetPot.h"
 extern GetPot inputData;
 
+//TODO: namespace->aegir
 namespace Ivan
 {
-//Ivan:: SubDomains
-/*
-    class LateralInterior : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return on_boundary
-                   && ( dolfin::near (x[0],0.0) || dolfin::near(x[0],0.05) )
-                   && ( x[1] <= 0.1-6e-16);
-        }
 
-        friend class TriplePoints;
-        friend class TriplePointLeft;
-        friend class TriplePointRight;
-    };
+    class MovingTimeDependentProblem;
 
-  	class TriplePoints : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return on_boundary
-                  && ( ( dolfin::near(x[0],0,0.006) && dolfin::near(x[1],0.1,0.006) )
-                    ||
-                   ( dolfin::near(x[0],0.05,0.006) && dolfin::near(x[1],0.1,0.006) ) )
-                  && !( lateralInterior.inside(x, on_boundary) );
-            return  ( dolfin::near(x[0], 0) && (x[1]<0.01-6e-16) && (x[1]>6e-16))
-           		     ||
-                 		( dolfin::near(x[0], 0.05) && (x[1]<0.01-6e-16) && (x[1]>6e-16));
-        }
 
-        LateralInterior lateralInterior;
-        friend class DeltaDirac;
-    };
-    class DeltaDirac : public dolfin::Expression
-    {
-        void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
-        {
-            values[0] = 5 * ( ( ( dolfin::near(x[0],0.0) && dolfin::near(x[1],0.1) ) || ( dolfin::near(x[0],0.05) && dolfin::near(x[1],0.1) ) )
-                ? 1.0 : 0.0);
-        }
-        Ivan::TriplePoints tp;
-    };
-  	class TriplePointLeft : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return on_boundary
-                  && ( dolfin::near(x[0],0,0.006) && dolfin::near(x[1],0.1,0.006) )
-                  && !( lateralInterior.inside(x, on_boundary) );
-        }
+    /*! \class PostProcessor MovingTimeDependentProblem.h
+     *  \brief Class for output during the solution of MovingTimeDependentProblem
+     *
+     *  The problem to be post-processed is stored as a 
+     *  <tt> dcp::MovingTimeDependentProblem </tt>
+     */
 
-        LateralInterior lateralInterior;
-    };
-  	class TriplePointRight : public dolfin::SubDomain
+    class PostProcessor
     {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return on_boundary
-                  && ( dolfin::near(x[0],0.05,0.006) && dolfin::near(x[1],0.1,0.006) )
-                  && !( lateralInterior.inside(x, on_boundary) );
-        }
+        // ---------------------------------------------------------------------------------------------//  
 
-        LateralInterior lateralInterior;
-    };
+        public:
 
-    class TopBoundary : public dolfin::SubDomain
-    {
-        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
-        {
-            return on_boundary
-                   &&
-                  dolfin::between(x[0],{0.0,0.05})
-  	               && !(
-                      dolfin::near(x[0], 0)
-           		     ||
-             		      dolfin::near(x[0], 0.05)
-          		     ||
-             		    dolfin::near(x[1], 0));
-                   &&
-                  (x[1] >= 0.10 - 6.0e-16);
-        }
+          PostProcessor (MovingTimeDependentProblem & pb);
+          PostProcessor (MovingTimeDependentProblem & pb, std::string balanceFileName, std::string intGCLFileName, std::string divGCLFileName, std::string selectedDofsFileName);
+
+          void operator() (int timeStep) { (*this) (timeStep, & (this->pb_)); }
+          void operator() (int timeStep, const MovingTimeDependentProblem * const pb);
+          void onOldDomain (int timeStep) { this->onOldDomain (timeStep, & (this->pb_)); }
+          void onOldDomain (int timeStep, const MovingTimeDependentProblem * const pb);
+
+          virtual ~PostProcessor ();
+
+        private:
+          MovingTimeDependentProblem & pb_;
+          std::map<std::string, std::shared_ptr<dolfin::GenericFunction> > coefficients_;
+          //std::vector<std::pair<std::shared_ptr<dolfin::Form>, double> > formsNvalues_;
+          std::map<std::string, std::pair<std::shared_ptr<dolfin::Form>, double> > formsNvalues_, formsNvaluesOnOld_;
+          std::vector<std::shared_ptr<dolfin::Form> > formsDepOnSol_, formsDepOnOld_, formsDepOnDispl_, formsDepOnDir_;
+          balanceTerms::Form_intGCL1::TestSpace gclSpace1_;
+          balanceTerms::Form_intGCL2::TestSpace gclSpace2_;
+          std::map<std::string, std::shared_ptr<dolfin::Form> > gclForms_;
+          //std::string outputFileName_, intGCLFileName_, divGCLFileName_, selectedDofsFileName_;
+          std::string balanceFileName_, intGCLFileName_, divGCLFileName_, selectedDofsFileName_;
+          dolfin::la_index uxDofsNum_, uyDofsNum_, pDofsNum_, wxDofsNum_, wyDofsNum_;
+          double * uxDofsVals_, * uyDofsVals_, * pDofsVals_, * wxDofsVals_, * wyDofsVals_;
+          const dolfin::la_index * uxDofsIdxs_, * uyDofsIdxs_, * pDofsIdxs_, * wxDofsIdxs_, * wyDofsIdxs_;
+
+//          std::shared_ptr <dcp::AbstractProblem> curvatureProblem_;
+          std::shared_ptr<dolfin::Form> curvatureBilinearForm_, curvatureLinearForm_, curvatureAdditionalForm_;
+//addNotInMovingAbstract//          const std::vector<dolfin::la_index> & additionalFormDofs_;
+//addNotInMovingAbstract//          dolfin::la_index * addIdxs_, * addIdxs_w_;
+//addNotInMovingAbstract//          double * addVals_, * addVals_w_;
+          dolfin::Matrix curvatureMatrix_;
+          dolfin::Vector curvatureTgDiv_, curvatureRhs_;
+          dolfin::Function auxiliary_;
+          dolfin::LinearSolver linearSolver_;
     };
-*/
-//Ivan:: SubDomains
 
     /*! \class MovingTimeDependentProblem MovingTimeDependentProblem.h
-     *  \brief Class for time dependent differential problems.
+     *  \brief Class for time dependent differential problems with moving domain.
      *
      *  This class represents problem of the form
      *  \f[
@@ -149,12 +125,10 @@ namespace Ivan
      *      \ \forall\,v\,\in\,V \ \forall\,t\,\in\,\left[0, T\right]
      *  \f]
      *  with \f$ a \left(u \left(t\right), v\right) : V \times V \rightarrow \mathds{R}\f$ generic form on \f$V\f$
-     *  and \f$ L \left(v\right) : V \rightarrow \mathds{R} \f$ linear form on the same space.
+     *  and \f$ F \left(v\right) : V \rightarrow \mathds{R} \f$ linear form on the same space.
      *  
-     *  It inherits publicly from \c AbstractProblem
-     *  and it extends its functionalities to a concrete differential
-     *  problem. The problem to be solved on each timestep is stored as a 
-     *  <tt> shared_ptr <dcp::AbstractProblem> </tt>
+     *  It inherits publicly from \c TimeDependentProblem and it extends
+     *  its functionalities to a moving-domain differential problem.
      */
 
     class MovingTimeDependentProblem : public dcp::TimeDependentProblem
@@ -172,11 +146,13 @@ namespace Ivan
 
             /******************* CONSTRUCTORS *******************/
             //! Default constructor is deleted. The class is not default constructable.
-//            MovingTimeDependentProblem () = delete;
-//     Already deleted in TimeDependentProblem
+            MovingTimeDependentProblem () = delete;
+                        //TODO: check it compiles: default constructor is already deleted in TimeDependentProblem
+                        // if it does not compile, remove this constructor from this file
 
             //!  Constructor
             /*!
+             *  \param meshManager the mesh manager, owning and moving the (sole) mesh
              *  \param timeSteppingProblem the problem to be solved on each time step
              *  \param startTime the initial time for the simulation
              *  \param dt the length of the time step to be used
@@ -204,6 +180,23 @@ namespace Ivan
              *  parameter's default value is -1 (which is a placeholder that stands for "use all the solution's
              *  components", but any negative integer will work), but it can be changed to any non-negative integer to
              *  indicate the specific component the time loop should use.
+             *  \param wCoefficientTypes an \c initializer_list of strings containing the types of the forms in which 
+             *  the parameter whose name is stored in the member variable \c wName should be set. 
+             *      //TODO introduce member wName
+             *  These strings will be used to call the function \c setCoefficient
+             *  on the member variable \c timeSteppingProblem_, so they need to be suitable for that kind of problem.
+             *  See the documentation of the function \c setCoefficient in the class \c LinearProblem a
+             *  and \c NonlinearProblem for suitable values for this variable.
+             *  The values contained in \c wCoefficientTypes will be saved in the member variable \c parameters.
+             *  Note that, during the time stepping process, the \c dolfin::Function stored (maybe temporarily) 
+             *  in the protected member \c w_ will be used to set the coefficient in the equation whose name is
+             *  stored in the parameter \c wName.  If such \c dolfin::Function has more than one
+             *  component (i.e. it is a vector function) all of its components will be used by default. To change this
+             *  behaviour, one needs to change the value of the parameter \c time_stepping_solution_component.  This
+             *  parameter's default value is -1 (which is a placeholder that stands for "use all the solution's
+             *  components", but any negative integer will work), but it can be changed to any non-negative integer to
+             *  indicate the specific component the time loop should use.
+             *      //TODO adapt actual behaviour to documentation, if needed
              *  \param nTimeSchemeSteps the number of time steps involved in the time stepping problem solution. 
              *  For example, implicit Euler is a one-step scheme, so \c nTimeSchemeSteps should be set to 1. BDF2, 
              *  on the other *  hand, is a two-steps time scheme, so \c nTimeSchemeSteps should be set to 2. 
@@ -223,6 +216,8 @@ namespace Ivan
              *        used must be called \c <"previous_solution_name">, \c <"previous_solution_name">_2, 
              *        \c <"previous_solution_name">_3 and so on.
              *        Default value for \c "previous_solution_name": "u_old"
+             *      - \c "mesh_displacement_name" the name of the variable representing the mesh displacement 
+             *        time step in the ufl file describing the problem. Default value: "w"
              *      - \c "store_interval" the interval of time steps to store the solution. Basically, the solution will
              *        be stored in \c solution_ every \c store_interval time steps. A value less than or equal to 0
              *        means that the solution should never be stored. Default value: 1
@@ -241,20 +236,20 @@ namespace Ivan
              *        set the coefficient whose name is stored in the parameter \c "previous_solution_name" at every
              *        time step but will assume that it has already been set externally, for example with a link in
              *        a \c dcp::TimeDependentEquationSystem. Default value: \c false
+             *      - \c "mesh_displacement_coefficient_types" (see input arguments documentation)
              *  Furthermore, the constructor modifies the \c AbstractProblem parameter \c plot_title and sets its 
              *  default value to the empty string, so that by default the plot title contains only the value of the 
              *  current time when the plot method is called.
              */
-//            MovingTimeDependentProblem (const std::shared_ptr<geometry::MeshManager<dolfin::ALE,dolfin::FunctionSpace> > meshManager,
             MovingTimeDependentProblem (const std::shared_ptr<MeshManager<> > meshManager,
-																			 const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
-																			 const double& startTime,
-                    	 								 const double& dt,
-                               				 const double& endTime,
-                                  		 std::initializer_list<std::string> dtCoefficientTypes,
-                                  		 std::initializer_list<std::string> previousSolutionCoefficientTypes,
-                                  		 std::initializer_list<std::string> wCoefficientTypes,
-                                  		 const unsigned int& nTimeSchemeSteps = 1);
+                                                                             const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
+                                                                             const double& startTime,
+                                                         const double& dt,
+                                             const double& endTime,
+                                         std::initializer_list<std::string> dtCoefficientTypes,
+                                         std::initializer_list<std::string> previousSolutionCoefficientTypes,
+                                         std::initializer_list<std::string> wCoefficientTypes,
+                                         const unsigned int& nTimeSchemeSteps = 1);
 
 
             /******************* DESTRUCTOR *******************/
@@ -263,7 +258,7 @@ namespace Ivan
              *  Default destructor, since members of the class are trivially 
              *  destructible.
              */
-            virtual ~MovingTimeDependentProblem () {};
+            virtual ~MovingTimeDependentProblem ();
 
             
             /******************* GETTERS *******************/
@@ -279,6 +274,19 @@ namespace Ivan
              */
             virtual std::shared_ptr<dolfin::FunctionSpace> functionSpace () const override;
 
+            //! Get problem's mesh manager
+            /*!
+             *  \return a const reference to the problem's mesh manager
+             */
+            virtual MeshManager<> & meshManager () const;
+
+
+            /******************* SETTERS *******************/
+            //! Method to set an initial displacement preserving all the mesh marking performed before
+            /*!
+             *  \param displacement the displacement to set
+             */
+            virtual void initializeMesh (dolfin::Expression & displacement);
 
             
             /******************* METHODS *******************/
@@ -321,12 +329,6 @@ namespace Ivan
              */
             virtual MovingTimeDependentProblem* clone () const override;
 
-            //! Method to set an initial displacement preserving all the mesh marking performed before
-            /*!
-             *  \param displacement the displacement to set
-             */
-            virtual void initializeMesh (dolfin::Expression & displacement);
-
             // ---------------------------------------------------------------------------------------------//
 
         protected:
@@ -336,9 +338,32 @@ namespace Ivan
             std::shared_ptr<MeshManager<> > meshManager_;
             // TODO preferirei std::shared_ptr<const MeshManager<> >, ma poi dovrei mettere const tutti i metodi di MeshManager e usare mutable...
 
+            PostProcessor postProcessor_;
+            
+			//! Save solution, displacement and other output data, used inside the time loop and thus kept protected.
+			//! TODO : introduce this kind of method in dcp::AbstractProblem ?
+			/*!
+			 *	\param tmpSolution the current solution
+			 *	\param w the mesh displacement
+			 *	\param timStep the current time step
+			 */
+            virtual void saveDataInFile (const dolfin::Function& tmpSolution,
+                                         const dolfin::Function& w,
+                                         const int& timeStep) const;
+    
+            //! Update the problem after mesh changing
+            /*! After the mesh has changed, the forms, function spaces and functions defined on it have to be updated.
+             *  This update is performed via dolfin::adapt
+             */
+            virtual void adapt ();
+
             // ---------------------------------------------------------------------------------------------//
 
         private:
+
+
+        friend class PostProcessor;
+
     };
 }
 #endif

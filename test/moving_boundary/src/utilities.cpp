@@ -91,6 +91,32 @@ std::size_t getFirstDofs (const std::tuple<std::size_t,double,double,std::size_t
 {
     return std::get<0>(t);
 }
+std::pair<double,double> getDofsCoords (const std::tuple<std::size_t,double,double,std::size_t> t)
+{
+    return std::make_pair(std::get<1>(t), std::get<2>(t));
+}
+
+void print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords)
+{
+    const dolfin::GenericVector & vec (* fun.vector());
+    std::ofstream file (filename.c_str(), std::ofstream::out);
+    file.precision (15);
+    file << "x coord, y coord, z coord, scalar" << std::endl;
+    for (std::vector<std::size_t>::const_iterator it (dofsBegin); it!=dofsEnd; ++it)
+      file << dofsCoords[2*(*it)] << ", " << dofsCoords[2*(*it)+1] << ", 0, " << vec[*it] << std::endl;
+    file.close();
+}
+void print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin1, const std::vector<std::size_t>::const_iterator dofsBegin2, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords)
+{
+    const dolfin::GenericVector & vec (* fun.vector());
+    std::ofstream file (filename.c_str(), std::ofstream::out);
+    file.precision (15);
+    file << "x coord, y coord, z coord, uX, uY" << std::endl;
+    std::vector<std::size_t>::const_iterator it2 (dofsBegin2);
+    for (std::vector<std::size_t>::const_iterator it1 (dofsBegin1); it1!=dofsEnd; ++it1, ++it2)
+      file << dofsCoords[2*(*it1)] << ", " << dofsCoords[2*(*it1)+1] << ", 0, " << vec[*it1] << ", " << vec[*it2] << std::endl;
+    file.close();
+}
 
 /*class NormalAtVertices : public dolfin::Expression
 {

@@ -25,8 +25,8 @@
 //   restrict_keyword:               ''
 //   split:                          False
 
-#ifndef __COMPUTEFREESURFACESTRESS_ONLYTP_H
-#define __COMPUTEFREESURFACESTRESS_ONLYTP_H
+#ifndef __MYNAVIERSTOKESTIMECURVLINEARPREVIOUSDOMAIN_H
+#define __MYNAVIERSTOKESTIMECURVLINEARPREVIOUSDOMAIN_H
 
 #include <cmath>
 #include <stdexcept>
@@ -35,18 +35,18 @@
 
 /// This class defines the interface for a finite element.
 
-class computefreesurfacestress_onlytp_finite_element_0: public ufc::finite_element
+class mynavierstokestimecurvlinearpreviousdomain_finite_element_0: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_finite_element_0() : ufc::finite_element()
+  mynavierstokestimecurvlinearpreviousdomain_finite_element_0() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_finite_element_0()
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_finite_element_0()
   {
     // Do nothing
   }
@@ -323,25 +323,443 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new computefreesurfacestress_onlytp_finite_element_0();
+    return new mynavierstokestimecurvlinearpreviousdomain_finite_element_0();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class computefreesurfacestress_onlytp_finite_element_1: public ufc::finite_element
+class mynavierstokestimecurvlinearpreviousdomain_finite_element_1: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_finite_element_1() : ufc::finite_element()
+  mynavierstokestimecurvlinearpreviousdomain_finite_element_1() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_finite_element_1()
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_finite_element_1()
+  {
+    // Do nothing
+  }
+
+  /// Return a string identifying the finite element
+  virtual const char* signature() const
+  {
+    return "VectorElement('Real', Domain(Cell('triangle', 2)), 0, 2, None)";
+  }
+
+  /// Return the cell shape
+  virtual ufc::shape cell_shape() const
+  {
+    return ufc::triangle;
+  }
+
+  /// Return the topological dimension of the cell shape
+  virtual std::size_t topological_dimension() const
+  {
+    return 2;
+  }
+
+  /// Return the geometric dimension of the cell shape
+  virtual std::size_t geometric_dimension() const
+  {
+    return 2;
+  }
+
+  /// Return the dimension of the finite element function space
+  virtual std::size_t space_dimension() const
+  {
+    return 2;
+  }
+
+  /// Return the rank of the value space
+  virtual std::size_t value_rank() const
+  {
+    return 1;
+  }
+
+  /// Return the dimension of the value space for axis i
+  virtual std::size_t value_dimension(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      {
+        return 2;
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Evaluate basis function i at given point x in cell (actual implementation)
+  static void _evaluate_basis(std::size_t i,
+                              double* values,
+                              const double* x,
+                              const double* vertex_coordinates,
+                              int cell_orientation)
+  {
+    // Compute Jacobian
+    double J[4];
+    compute_jacobian_triangle_2d(J, vertex_coordinates);
+    
+    // Compute Jacobian inverse and determinant
+    double K[4];
+    double detJ;
+    compute_jacobian_inverse_triangle_2d(K, detJ, J);
+    
+    
+    // Compute constants
+    
+    // Get coordinates and map to the reference (FIAT) element
+    
+    // Reset values
+    values[0] = 0.0;
+    values[1] = 0.0;
+    switch (i)
+    {
+    case 0:
+      {
+        
+      // Array of basisvalues
+      double basisvalues[1] = {0.0};
+      
+      // Declare helper variables
+      
+      // Compute basisvalues
+      basisvalues[0] = 1.0;
+      
+      // Table(s) of coefficients
+      static const double coefficients0[1] = \
+      {1.0};
+      
+      // Compute value(s)
+      for (unsigned int r = 0; r < 1; r++)
+      {
+        values[0] += coefficients0[r]*basisvalues[r];
+      } // end loop over 'r'
+        break;
+      }
+    case 1:
+      {
+        
+      // Array of basisvalues
+      double basisvalues[1] = {0.0};
+      
+      // Declare helper variables
+      
+      // Compute basisvalues
+      basisvalues[0] = 1.0;
+      
+      // Table(s) of coefficients
+      static const double coefficients0[1] = \
+      {1.0};
+      
+      // Compute value(s)
+      for (unsigned int r = 0; r < 1; r++)
+      {
+        values[1] += coefficients0[r]*basisvalues[r];
+      } // end loop over 'r'
+        break;
+      }
+    }
+    
+  }
+
+  /// Evaluate basis function i at given point x in cell (non-static member function)
+  virtual void evaluate_basis(std::size_t i,
+                              double* values,
+                              const double* x,
+                              const double* vertex_coordinates,
+                              int cell_orientation) const
+  {
+    _evaluate_basis(i, values, x, vertex_coordinates, cell_orientation);
+  }
+
+  /// Evaluate all basis functions at given point x in cell (actual implementation)
+  static void _evaluate_basis_all(double* values,
+                                  const double* x,
+                                  const double* vertex_coordinates,
+                                  int cell_orientation)
+  {
+    // Helper variable to hold values of a single dof.
+    double dof_values[2] = {0.0, 0.0};
+    
+    // Loop dofs and call evaluate_basis
+    for (unsigned int r = 0; r < 2; r++)
+    {
+      _evaluate_basis(r, dof_values, x, vertex_coordinates, cell_orientation);
+      for (unsigned int s = 0; s < 2; s++)
+      {
+        values[r*2 + s] = dof_values[s];
+      } // end loop over 's'
+    } // end loop over 'r'
+  }
+
+  /// Evaluate all basis functions at given point x in cell (non-static member function)
+  virtual void evaluate_basis_all(double* values,
+                                  const double* x,
+                                  const double* vertex_coordinates,
+                                  int cell_orientation) const
+  {
+    _evaluate_basis_all(values, x, vertex_coordinates, cell_orientation);
+  }
+
+  /// Evaluate order n derivatives of basis function i at given point x in cell (actual implementation)
+  static void _evaluate_basis_derivatives(std::size_t i,
+                                          std::size_t n,
+                                          double* values,
+                                          const double* x,
+                                          const double* vertex_coordinates,
+                                          int cell_orientation)
+  {
+    
+    // Compute number of derivatives.
+    unsigned int num_derivatives = 1;
+    for (unsigned int r = 0; r < n; r++)
+    {
+      num_derivatives *= 2;
+    } // end loop over 'r'
+    
+    // Reset values. Assuming that values is always an array.
+    for (unsigned int r = 0; r < 2*num_derivatives; r++)
+    {
+      values[r] = 0.0;
+    } // end loop over 'r'
+    
+    // Call evaluate_basis if order of derivatives is equal to zero.
+    if (n == 0)
+    {
+      _evaluate_basis(i, values, x, vertex_coordinates, cell_orientation);
+      return ;
+    }
+    
+    // If order of derivatives is greater than the maximum polynomial degree, return zeros.
+    if (n > 0)
+    {
+    return ;
+    }
+    
+  }
+
+  /// Evaluate order n derivatives of basis function i at given point x in cell (non-static member function)
+  virtual void evaluate_basis_derivatives(std::size_t i,
+                                          std::size_t n,
+                                          double* values,
+                                          const double* x,
+                                          const double* vertex_coordinates,
+                                          int cell_orientation) const
+  {
+    _evaluate_basis_derivatives(i, n, values, x, vertex_coordinates, cell_orientation);
+  }
+
+  /// Evaluate order n derivatives of all basis functions at given point x in cell (actual implementation)
+  static void _evaluate_basis_derivatives_all(std::size_t n,
+                                              double* values,
+                                              const double* x,
+                                              const double* vertex_coordinates,
+                                              int cell_orientation)
+  {
+    // Call evaluate_basis_all if order of derivatives is equal to zero.
+    if (n == 0)
+    {
+      _evaluate_basis_all(values, x, vertex_coordinates, cell_orientation);
+      return ;
+    }
+    
+    // Compute number of derivatives.
+    unsigned int num_derivatives = 1;
+    for (unsigned int r = 0; r < n; r++)
+    {
+      num_derivatives *= 2;
+    } // end loop over 'r'
+    
+    // Set values equal to zero.
+    for (unsigned int r = 0; r < 2; r++)
+    {
+      for (unsigned int s = 0; s < 2*num_derivatives; s++)
+      {
+        values[r*2*num_derivatives + s] = 0.0;
+      } // end loop over 's'
+    } // end loop over 'r'
+    
+    // If order of derivatives is greater than the maximum polynomial degree, return zeros.
+    if (n > 0)
+    {
+      return ;
+    }
+    
+    // Helper variable to hold values of a single dof.
+    double dof_values[2];
+    for (unsigned int r = 0; r < 2; r++)
+    {
+      dof_values[r] = 0.0;
+    } // end loop over 'r'
+    
+    // Loop dofs and call evaluate_basis_derivatives.
+    for (unsigned int r = 0; r < 2; r++)
+    {
+      _evaluate_basis_derivatives(r, n, dof_values, x, vertex_coordinates, cell_orientation);
+      for (unsigned int s = 0; s < 2*num_derivatives; s++)
+      {
+        values[r*2*num_derivatives + s] = dof_values[s];
+      } // end loop over 's'
+    } // end loop over 'r'
+  }
+
+  /// Evaluate order n derivatives of all basis functions at given point x in cell (non-static member function)
+  virtual void evaluate_basis_derivatives_all(std::size_t n,
+                                              double* values,
+                                              const double* x,
+                                              const double* vertex_coordinates,
+                                              int cell_orientation) const
+  {
+    _evaluate_basis_derivatives_all(n, values, x, vertex_coordinates, cell_orientation);
+  }
+
+  /// Evaluate linear functional for dof i on the function f
+  virtual double evaluate_dof(std::size_t i,
+                              const ufc::function& f,
+                              const double* vertex_coordinates,
+                              int cell_orientation,
+                              const ufc::cell& c) const
+  {
+    // Declare variables for result of evaluation
+    double vals[2];
+    
+    // Declare variable for physical coordinates
+    double y[2];
+    switch (i)
+    {
+    case 0:
+      {
+        y[0] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
+      y[1] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
+      f.evaluate(vals, y, c);
+      return vals[0];
+        break;
+      }
+    case 1:
+      {
+        y[0] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
+      y[1] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
+      f.evaluate(vals, y, c);
+      return vals[1];
+        break;
+      }
+    }
+    
+    return 0.0;
+  }
+
+  /// Evaluate linear functionals for all dofs on the function f
+  virtual void evaluate_dofs(double* values,
+                             const ufc::function& f,
+                             const double* vertex_coordinates,
+                             int cell_orientation,
+                             const ufc::cell& c) const
+  {
+    // Declare variables for result of evaluation
+    double vals[2];
+    
+    // Declare variable for physical coordinates
+    double y[2];
+    y[0] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
+    y[1] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
+    f.evaluate(vals, y, c);
+    values[0] = vals[0];
+    y[0] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
+    y[1] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
+    f.evaluate(vals, y, c);
+    values[1] = vals[1];
+  }
+
+  /// Interpolate vertex values from dof values
+  virtual void interpolate_vertex_values(double* vertex_values,
+                                         const double* dof_values,
+                                         const double* vertex_coordinates,
+                                         int cell_orientation,
+                                         const ufc::cell& c) const
+  {
+    // Evaluate function and change variables
+    vertex_values[0] = dof_values[0];
+    vertex_values[2] = dof_values[0];
+    vertex_values[4] = dof_values[0];
+    // Evaluate function and change variables
+    vertex_values[1] = dof_values[1];
+    vertex_values[3] = dof_values[1];
+    vertex_values[5] = dof_values[1];
+  }
+
+  /// Map coordinate xhat from reference cell to coordinate x in cell
+  virtual void map_from_reference_cell(double* x,
+                                       const double* xhat,
+                                       const ufc::cell& c) const
+  {
+    throw std::runtime_error("map_from_reference_cell not yet implemented.");
+  }
+
+  /// Map from coordinate x in cell to coordinate xhat in reference cell
+  virtual void map_to_reference_cell(double* xhat,
+                                     const double* x,
+                                     const ufc::cell& c) const
+  {
+    throw std::runtime_error("map_to_reference_cell not yet implemented.");
+  }
+
+  /// Return the number of sub elements (for a mixed element)
+  virtual std::size_t num_sub_elements() const
+  {
+    return 2;
+  }
+
+  /// Create a new finite element for sub element i (for a mixed element)
+  virtual ufc::finite_element* create_sub_element(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      {
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_0();
+        break;
+      }
+    case 1:
+      {
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_0();
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Create a new class instance
+  virtual ufc::finite_element* create() const
+  {
+    return new mynavierstokestimecurvlinearpreviousdomain_finite_element_1();
+  }
+
+};
+
+/// This class defines the interface for a finite element.
+
+class mynavierstokestimecurvlinearpreviousdomain_finite_element_2: public ufc::finite_element
+{
+public:
+
+  /// Constructor
+  mynavierstokestimecurvlinearpreviousdomain_finite_element_2() : ufc::finite_element()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_finite_element_2()
   {
     // Do nothing
   }
@@ -1228,25 +1646,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new computefreesurfacestress_onlytp_finite_element_1();
+    return new mynavierstokestimecurvlinearpreviousdomain_finite_element_2();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class computefreesurfacestress_onlytp_finite_element_2: public ufc::finite_element
+class mynavierstokestimecurvlinearpreviousdomain_finite_element_3: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_finite_element_2() : ufc::finite_element()
+  mynavierstokestimecurvlinearpreviousdomain_finite_element_3() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_finite_element_2()
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_finite_element_3()
   {
     // Do nothing
   }
@@ -2661,12 +3079,12 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_finite_element_1();
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_2();
         break;
       }
     case 1:
       {
-        return new computefreesurfacestress_onlytp_finite_element_1();
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_2();
         break;
       }
     }
@@ -2677,25 +3095,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new computefreesurfacestress_onlytp_finite_element_2();
+    return new mynavierstokestimecurvlinearpreviousdomain_finite_element_3();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class computefreesurfacestress_onlytp_finite_element_3: public ufc::finite_element
+class mynavierstokestimecurvlinearpreviousdomain_finite_element_4: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_finite_element_3() : ufc::finite_element()
+  mynavierstokestimecurvlinearpreviousdomain_finite_element_4() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_finite_element_3()
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_finite_element_4()
   {
     // Do nothing
   }
@@ -4628,12 +5046,12 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_finite_element_2();
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_3();
         break;
       }
     case 1:
       {
-        return new computefreesurfacestress_onlytp_finite_element_1();
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_2();
         break;
       }
     }
@@ -4644,7 +5062,7 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new computefreesurfacestress_onlytp_finite_element_3();
+    return new mynavierstokestimecurvlinearpreviousdomain_finite_element_4();
   }
 
 };
@@ -4652,18 +5070,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class computefreesurfacestress_onlytp_dofmap_0: public ufc::dofmap
+class mynavierstokestimecurvlinearpreviousdomain_dofmap_0: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_dofmap_0() : ufc::dofmap()
+  mynavierstokestimecurvlinearpreviousdomain_dofmap_0() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_dofmap_0()
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_dofmap_0()
   {
     // Do nothing
   }
@@ -4846,7 +5264,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new computefreesurfacestress_onlytp_dofmap_0();
+    return new mynavierstokestimecurvlinearpreviousdomain_dofmap_0();
   }
 
 };
@@ -4854,18 +5272,241 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class computefreesurfacestress_onlytp_dofmap_1: public ufc::dofmap
+class mynavierstokestimecurvlinearpreviousdomain_dofmap_1: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_dofmap_1() : ufc::dofmap()
+  mynavierstokestimecurvlinearpreviousdomain_dofmap_1() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_dofmap_1()
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_dofmap_1()
+  {
+    // Do nothing
+  }
+
+  /// Return a string identifying the dofmap
+  virtual const char* signature() const
+  {
+    return "FFC dofmap for VectorElement('Real', Domain(Cell('triangle', 2)), 0, 2, None)";
+  }
+
+  /// Return true iff mesh entities of topological dimension d are needed
+  virtual bool needs_mesh_entities(std::size_t d) const
+  {
+    switch (d)
+    {
+    case 0:
+      {
+        return false;
+        break;
+      }
+    case 1:
+      {
+        return false;
+        break;
+      }
+    case 2:
+      {
+        return true;
+        break;
+      }
+    }
+    
+    return false;
+  }
+
+  /// Return the topological dimension of the associated cell shape
+  virtual std::size_t topological_dimension() const
+  {
+    return 2;
+  }
+
+  /// Return the geometric dimension of the associated cell shape
+  virtual std::size_t geometric_dimension() const
+  {
+    return 2;
+  }
+
+  /// Return the dimension of the global finite element function space
+  virtual std::size_t global_dimension(const std::vector<std::size_t>&
+                                       num_global_entities) const
+  {
+    return 2;
+  }
+
+  /// Return the dimension of the local finite element function space for a cell
+  virtual std::size_t local_dimension() const
+  {
+    return 2;
+  }
+
+  /// Return the number of dofs on each cell facet
+  virtual std::size_t num_facet_dofs() const
+  {
+    return 0;
+  }
+
+  /// Return the number of dofs associated with each cell entity of dimension d
+  virtual std::size_t num_entity_dofs(std::size_t d) const
+  {
+    switch (d)
+    {
+    case 0:
+      {
+        return 0;
+        break;
+      }
+    case 1:
+      {
+        return 0;
+        break;
+      }
+    case 2:
+      {
+        return 2;
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Tabulate the local-to-global mapping of dofs on a cell
+  virtual void tabulate_dofs(std::size_t* dofs,
+                             const std::vector<std::size_t>& num_global_entities,
+                             const ufc::cell& c) const
+  {
+    unsigned int offset = 0;
+    dofs[0] = offset;
+    offset += 1;
+    dofs[1] = offset;
+    offset += 1;
+  }
+
+  /// Tabulate the local-to-local mapping from facet dofs to cell dofs
+  virtual void tabulate_facet_dofs(std::size_t* dofs,
+                                   std::size_t facet) const
+  {
+    switch (facet)
+    {
+    case 0:
+      {
+        
+        break;
+      }
+    case 1:
+      {
+        
+        break;
+      }
+    case 2:
+      {
+        
+        break;
+      }
+    }
+    
+  }
+
+  /// Tabulate the local-to-local mapping of dofs on entity (d, i)
+  virtual void tabulate_entity_dofs(std::size_t* dofs,
+                                    std::size_t d, std::size_t i) const
+  {
+    if (d > 2)
+    {
+    throw std::runtime_error("d is larger than dimension (2)");
+    }
+    
+    switch (d)
+    {
+    case 0:
+      {
+        
+        break;
+      }
+    case 1:
+      {
+        
+        break;
+      }
+    case 2:
+      {
+        if (i > 0)
+      {
+      throw std::runtime_error("i is larger than number of entities (0)");
+      }
+      
+      dofs[0] = 0;
+      dofs[1] = 1;
+        break;
+      }
+    }
+    
+  }
+
+  /// Tabulate the coordinates of all dofs on a cell
+  virtual void tabulate_coordinates(double* dof_coordinates,
+                                    const double* vertex_coordinates) const
+  {
+    dof_coordinates[0] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
+    dof_coordinates[1] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
+    dof_coordinates[2] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
+    dof_coordinates[3] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
+  }
+
+  /// Return the number of sub dofmaps (for a mixed element)
+  virtual std::size_t num_sub_dofmaps() const
+  {
+    return 2;
+  }
+
+  /// Create a new dofmap for sub dofmap i (for a mixed element)
+  virtual ufc::dofmap* create_sub_dofmap(std::size_t i) const
+  {
+    switch (i)
+    {
+    case 0:
+      {
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_0();
+        break;
+      }
+    case 1:
+      {
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_0();
+        break;
+      }
+    }
+    
+    return 0;
+  }
+
+  /// Create a new class instance
+  virtual ufc::dofmap* create() const
+  {
+    return new mynavierstokestimecurvlinearpreviousdomain_dofmap_1();
+  }
+
+};
+
+/// This class defines the interface for a local-to-global mapping of
+/// degrees of freedom (dofs).
+
+class mynavierstokestimecurvlinearpreviousdomain_dofmap_2: public ufc::dofmap
+{
+public:
+
+  /// Constructor
+  mynavierstokestimecurvlinearpreviousdomain_dofmap_2() : ufc::dofmap()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_dofmap_2()
   {
     // Do nothing
   }
@@ -5075,7 +5716,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new computefreesurfacestress_onlytp_dofmap_1();
+    return new mynavierstokestimecurvlinearpreviousdomain_dofmap_2();
   }
 
 };
@@ -5083,18 +5724,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class computefreesurfacestress_onlytp_dofmap_2: public ufc::dofmap
+class mynavierstokestimecurvlinearpreviousdomain_dofmap_3: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_dofmap_2() : ufc::dofmap()
+  mynavierstokestimecurvlinearpreviousdomain_dofmap_3() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_dofmap_2()
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_dofmap_3()
   {
     // Do nothing
   }
@@ -5323,12 +5964,12 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_dofmap_1();
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_2();
         break;
       }
     case 1:
       {
-        return new computefreesurfacestress_onlytp_dofmap_1();
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_2();
         break;
       }
     }
@@ -5339,7 +5980,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new computefreesurfacestress_onlytp_dofmap_2();
+    return new mynavierstokestimecurvlinearpreviousdomain_dofmap_3();
   }
 
 };
@@ -5347,18 +5988,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class computefreesurfacestress_onlytp_dofmap_3: public ufc::dofmap
+class mynavierstokestimecurvlinearpreviousdomain_dofmap_4: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_dofmap_3() : ufc::dofmap()
+  mynavierstokestimecurvlinearpreviousdomain_dofmap_4() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_dofmap_3()
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_dofmap_4()
   {
     // Do nothing
   }
@@ -5606,12 +6247,12 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_dofmap_2();
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_3();
         break;
       }
     case 1:
       {
-        return new computefreesurfacestress_onlytp_dofmap_1();
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_2();
         break;
       }
     }
@@ -5622,7 +6263,153 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new computefreesurfacestress_onlytp_dofmap_3();
+    return new mynavierstokestimecurvlinearpreviousdomain_dofmap_4();
+  }
+
+};
+
+/// This class defines the interface for the tabulation of the cell
+/// tensor corresponding to the local contribution to a form from
+/// the integral over a cell.
+
+class mynavierstokestimecurvlinearpreviousdomain_cell_integral_0_otherwise: public ufc::cell_integral
+{
+public:
+
+  /// Constructor
+  mynavierstokestimecurvlinearpreviousdomain_cell_integral_0_otherwise() : ufc::cell_integral()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_cell_integral_0_otherwise()
+  {
+    // Do nothing
+  }
+
+  /// Tabulate which form coefficients are used by this integral
+  virtual const std::vector<bool> & enabled_coefficients() const
+  {
+    static const std::vector<bool> enabled({true, true, true, true, true, false, false});
+    return enabled;
+  }
+
+  /// Tabulate the tensor for the contribution from a local cell
+  virtual void tabulate_tensor(double*  A,
+                               const double * const *  w,
+                               const double*  vertex_coordinates,
+                               int cell_orientation) const
+  {
+    // Compute Jacobian
+    double J[4];
+    compute_jacobian_triangle_2d(J, vertex_coordinates);
+    
+    // Compute Jacobian inverse and determinant
+    double K[4];
+    double detJ;
+    compute_jacobian_inverse_triangle_2d(K, detJ, J);
+    
+    // Set scale factor
+    const double det = std::abs(detJ);
+    
+    // Compute cell volume
+    
+    
+    // Compute circumradius of triangle in 2D
+    
+    
+    // Array of quadrature weights.
+    static const double W6[6] = {0.0833333333333333, 0.0833333333333333, 0.0833333333333333, 0.0833333333333333, 0.0833333333333333, 0.0833333333333333};
+    // Quadrature points on the UFC reference element: (0.659027622374092, 0.231933368553031), (0.659027622374092, 0.109039009072877), (0.231933368553031, 0.659027622374092), (0.231933368553031, 0.109039009072877), (0.109039009072877, 0.659027622374092), (0.109039009072877, 0.231933368553031)
+    
+    // Values of basis functions at quadrature points.
+    static const double FE0_C0[6][3] = \
+    {{0.109039009072877, 0.659027622374092, 0.231933368553031},
+    {0.231933368553031, 0.659027622374092, 0.109039009072877},
+    {0.109039009072877, 0.231933368553031, 0.659027622374092},
+    {0.659027622374092, 0.231933368553031, 0.109039009072877},
+    {0.231933368553031, 0.109039009072877, 0.659027622374092},
+    {0.659027622374092, 0.109039009072877, 0.231933368553031}};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc0[3] = {0, 1, 2};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc3[3] = {3, 4, 5};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc6[3] = {0, 1, 2};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc7[3] = {3, 4, 5};
+    
+    static const double FEA6_f0[6][3] = \
+    {{0.109039009072877, 0.659027622374092, 0.231933368553031},
+    {0.231933368553031, 0.659027622374092, 0.109039009072877},
+    {0.109039009072877, 0.231933368553031, 0.659027622374092},
+    {0.659027622374092, 0.231933368553031, 0.109039009072877},
+    {0.231933368553031, 0.109039009072877, 0.659027622374092},
+    {0.659027622374092, 0.109039009072877, 0.231933368553031}};
+    
+    // Reset values in the element tensor.
+    for (unsigned int r = 0; r < 9; r++)
+    {
+      A[r] = 0.0;
+    } // end loop over 'r'
+    // Number of operations to compute geometry constants: 8.
+    double G[2];
+    G[0] = det*w[3][0]*w[4][0]*(1.0 - w[2][0]);
+    G[1] = det*w[3][0]*w[4][1]*(1.0 - w[2][0]);
+    
+    // Compute element tensor using UFL quadrature representation
+    // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
+    
+    // Loop quadrature points for integral.
+    
+    // Declare array to hold physical coordinate of quadrature point.
+    double X6[2];
+    // Number of operations to compute element tensor for following IP loop = 336
+    for (unsigned int ip = 0; ip < 6; ip++)
+    {
+      
+      // Compute physical coordinate of quadrature point, operations: 10.
+      X6[0] = FEA6_f0[ip][0]*vertex_coordinates[0] +                  FEA6_f0[ip][1]*vertex_coordinates[2] + FEA6_f0[ip][2]*vertex_coordinates[4];
+      X6[1] = FEA6_f0[ip][0]*vertex_coordinates[1] +                  FEA6_f0[ip][1]*vertex_coordinates[3] + FEA6_f0[ip][2]*vertex_coordinates[5];
+      
+      // Coefficient declarations.
+      double F0 = 0.0;
+      double F1 = 0.0;
+      double F2 = 0.0;
+      double F3 = 0.0;
+      
+      // Total number of operations to compute function values = 24
+      for (unsigned int r = 0; r < 3; r++)
+      {
+        F0 += FE0_C0[ip][r]*w[0][nzc0[r]];
+        F1 += FE0_C0[ip][r]*w[1][nzc0[r]];
+        F2 += FE0_C0[ip][r]*w[0][nzc3[r]];
+        F3 += FE0_C0[ip][r]*w[1][nzc3[r]];
+      } // end loop over 'r'
+      
+      // Number of operations to compute ip constants: 10
+      double I[2];
+      // Number of operations: 5
+      I[0] = W6[ip]*X6[0]*(G[0] + det*(F0 + F1));
+      
+      // Number of operations: 5
+      I[1] = W6[ip]*X6[0]*(G[1] + det*(F2 + F3));
+      
+      
+      // Number of operations for primary indices: 12
+      for (unsigned int j = 0; j < 3; j++)
+      {
+        // Number of operations to compute entry: 2
+        A[nzc6[j]] += FE0_C0[ip][j]*I[0];
+        // Number of operations to compute entry: 2
+        A[nzc7[j]] += FE0_C0[ip][j]*I[1];
+      } // end loop over 'j'
+    } // end loop over 'ip'
   }
 
 };
@@ -5631,18 +6418,18 @@ public:
 /// exterior facet tensor corresponding to the local contribution to
 /// a form from the integral over an exterior facet.
 
-class computefreesurfacestress_onlytp_exterior_facet_integral_0_6: public ufc::exterior_facet_integral
+class mynavierstokestimecurvlinearpreviousdomain_exterior_facet_integral_0_1: public ufc::exterior_facet_integral
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_exterior_facet_integral_0_6() : ufc::exterior_facet_integral()
+  mynavierstokestimecurvlinearpreviousdomain_exterior_facet_integral_0_1() : ufc::exterior_facet_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_exterior_facet_integral_0_6()
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_exterior_facet_integral_0_1()
   {
     // Do nothing
   }
@@ -5650,7 +6437,279 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({true, true, true, true});
+    static const std::vector<bool> enabled({false, false, true, true, false, true, false});
+    return enabled;
+  }
+
+  /// Tabulate the tensor for the contribution from a local exterior facet
+  virtual void tabulate_tensor(double*  A,
+                               const double * const *  w,
+                               const double*  vertex_coordinates,
+                               std::size_t facet,
+                               int cell_orientation) const
+  {
+    // Compute Jacobian
+    double J[4];
+    compute_jacobian_triangle_2d(J, vertex_coordinates);
+    
+    // Compute Jacobian inverse and determinant
+    double K[4];
+    double detJ;
+    compute_jacobian_inverse_triangle_2d(K, detJ, J);
+    
+    
+    
+    // Get vertices on edge
+    static unsigned int edge_vertices[3][2] = {{1, 2}, {0, 2}, {0, 1}};
+    const unsigned int v0 = edge_vertices[facet][0];
+    const unsigned int v1 = edge_vertices[facet][1];
+    
+    // Compute scale factor (length of edge scaled by length of reference interval)
+    const double dx0 = vertex_coordinates[2*v1 + 0] - vertex_coordinates[2*v0 + 0];
+    const double dx1 = vertex_coordinates[2*v1 + 1] - vertex_coordinates[2*v0 + 1];
+    const double det = std::sqrt(dx0*dx0 + dx1*dx1);
+    
+    
+    const bool direction = dx1*(vertex_coordinates[2*facet] - vertex_coordinates[2*v0]) - dx0*(vertex_coordinates[2*facet + 1] - vertex_coordinates[2*v0 + 1]) < 0;
+    // Compute facet normals from the facet scale factor constants
+    const double n0 = direction ? dx1 / det : -dx1 / det;
+    const double n1 = direction ? -dx0 / det : dx0 / det;
+    
+    // Facet area
+    
+    // Compute cell volume
+    
+    
+    // Compute circumradius of triangle in 2D
+    
+    
+    // Array of quadrature weights.
+    static const double W2[2] = {0.5, 0.5};
+    // Quadrature points on the UFC reference element: (0.211324865405187), (0.788675134594813)
+    
+    // Values of basis functions at quadrature points.
+    static const double FE0_f0_C0[2][2] = \
+    {{0.788675134594813, 0.211324865405187},
+    {0.211324865405187, 0.788675134594813}};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc3[2] = {4, 5};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc7[2] = {3, 5};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc9[2] = {3, 4};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc10[2] = {1, 2};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc11[2] = {4, 5};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc13[2] = {0, 2};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc14[2] = {3, 5};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc16[2] = {0, 1};
+    
+    // Array of non-zero columns
+    static const unsigned int nzc17[2] = {3, 4};
+    
+    static const double FEA2_f0[2][3] = \
+    {{0.0, 0.788675134594813, 0.211324865405187},
+    {0.0, 0.211324865405187, 0.788675134594813}};
+    
+    static const double FEA2_f1[2][3] = \
+    {{0.788675134594813, 0.0, 0.211324865405187},
+    {0.211324865405187, 0.0, 0.788675134594813}};
+    
+    static const double FEA2_f2[2][3] = \
+    {{0.788675134594813, 0.211324865405187, 0.0},
+    {0.211324865405187, 0.788675134594813, 0.0}};
+    
+    // Reset values in the element tensor.
+    for (unsigned int r = 0; r < 9; r++)
+    {
+      A[r] = 0.0;
+    } // end loop over 'r'
+    // Number of operations to compute geometry constants: 8.
+    double G[2];
+    G[0] = det*n0*w[3][0]*(1.0 - w[2][0]);
+    G[1] = det*n1*w[3][0]*(1.0 - w[2][0]);
+    
+    // Compute element tensor using UFL quadrature representation
+    // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
+    switch (facet)
+    {
+    case 0:
+      {
+        // Total number of operations to compute element tensor (from this point): 56
+      
+      // Loop quadrature points for integral.
+      
+      // Declare array to hold physical coordinate of quadrature point.
+      double X2[2];
+      // Number of operations to compute element tensor for following IP loop = 56
+      for (unsigned int ip = 0; ip < 2; ip++)
+      {
+        
+        // Compute physical coordinate of quadrature point, operations: 10.
+        X2[0] = FEA2_f0[ip][0]*vertex_coordinates[0] +                  FEA2_f0[ip][1]*vertex_coordinates[2] + FEA2_f0[ip][2]*vertex_coordinates[4];
+        X2[1] = FEA2_f0[ip][0]*vertex_coordinates[1] +                  FEA2_f0[ip][1]*vertex_coordinates[3] + FEA2_f0[ip][2]*vertex_coordinates[5];
+        
+        // Coefficient declarations.
+        double F0 = 0.0;
+        
+        // Total number of operations to compute function values = 4
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0_C0[ip][r]*w[5][nzc3[r]];
+        } // end loop over 'r'
+        
+        // Number of operations to compute ip constants: 6
+        double I[2];
+        // Number of operations: 3
+        I[0] = F0*G[0]*W2[ip]*X2[0];
+        
+        // Number of operations: 3
+        I[1] = F0*G[1]*W2[ip]*X2[0];
+        
+        
+        // Number of operations for primary indices: 8
+        for (unsigned int j = 0; j < 2; j++)
+        {
+          // Number of operations to compute entry: 2
+          A[nzc10[j]] += FE0_f0_C0[ip][j]*I[0];
+          // Number of operations to compute entry: 2
+          A[nzc11[j]] += FE0_f0_C0[ip][j]*I[1];
+        } // end loop over 'j'
+      } // end loop over 'ip'
+        break;
+      }
+    case 1:
+      {
+        // Total number of operations to compute element tensor (from this point): 56
+      
+      // Loop quadrature points for integral.
+      
+      // Declare array to hold physical coordinate of quadrature point.
+      double X2[2];
+      // Number of operations to compute element tensor for following IP loop = 56
+      for (unsigned int ip = 0; ip < 2; ip++)
+      {
+        
+        // Compute physical coordinate of quadrature point, operations: 10.
+        X2[0] = FEA2_f1[ip][0]*vertex_coordinates[0] +                  FEA2_f1[ip][1]*vertex_coordinates[2] + FEA2_f1[ip][2]*vertex_coordinates[4];
+        X2[1] = FEA2_f1[ip][0]*vertex_coordinates[1] +                  FEA2_f1[ip][1]*vertex_coordinates[3] + FEA2_f1[ip][2]*vertex_coordinates[5];
+        
+        // Coefficient declarations.
+        double F0 = 0.0;
+        
+        // Total number of operations to compute function values = 4
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0_C0[ip][r]*w[5][nzc7[r]];
+        } // end loop over 'r'
+        
+        // Number of operations to compute ip constants: 6
+        double I[2];
+        // Number of operations: 3
+        I[0] = F0*G[0]*W2[ip]*X2[0];
+        
+        // Number of operations: 3
+        I[1] = F0*G[1]*W2[ip]*X2[0];
+        
+        
+        // Number of operations for primary indices: 8
+        for (unsigned int j = 0; j < 2; j++)
+        {
+          // Number of operations to compute entry: 2
+          A[nzc13[j]] += FE0_f0_C0[ip][j]*I[0];
+          // Number of operations to compute entry: 2
+          A[nzc14[j]] += FE0_f0_C0[ip][j]*I[1];
+        } // end loop over 'j'
+      } // end loop over 'ip'
+        break;
+      }
+    case 2:
+      {
+        // Total number of operations to compute element tensor (from this point): 56
+      
+      // Loop quadrature points for integral.
+      
+      // Declare array to hold physical coordinate of quadrature point.
+      double X2[2];
+      // Number of operations to compute element tensor for following IP loop = 56
+      for (unsigned int ip = 0; ip < 2; ip++)
+      {
+        
+        // Compute physical coordinate of quadrature point, operations: 10.
+        X2[0] = FEA2_f2[ip][0]*vertex_coordinates[0] +                  FEA2_f2[ip][1]*vertex_coordinates[2] + FEA2_f2[ip][2]*vertex_coordinates[4];
+        X2[1] = FEA2_f2[ip][0]*vertex_coordinates[1] +                  FEA2_f2[ip][1]*vertex_coordinates[3] + FEA2_f2[ip][2]*vertex_coordinates[5];
+        
+        // Coefficient declarations.
+        double F0 = 0.0;
+        
+        // Total number of operations to compute function values = 4
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0_C0[ip][r]*w[5][nzc9[r]];
+        } // end loop over 'r'
+        
+        // Number of operations to compute ip constants: 6
+        double I[2];
+        // Number of operations: 3
+        I[0] = F0*G[0]*W2[ip]*X2[0];
+        
+        // Number of operations: 3
+        I[1] = F0*G[1]*W2[ip]*X2[0];
+        
+        
+        // Number of operations for primary indices: 8
+        for (unsigned int j = 0; j < 2; j++)
+        {
+          // Number of operations to compute entry: 2
+          A[nzc16[j]] += FE0_f0_C0[ip][j]*I[0];
+          // Number of operations to compute entry: 2
+          A[nzc17[j]] += FE0_f0_C0[ip][j]*I[1];
+        } // end loop over 'j'
+      } // end loop over 'ip'
+        break;
+      }
+    }
+    
+  }
+
+};
+
+/// This class defines the interface for the tabulation of the
+/// exterior facet tensor corresponding to the local contribution to
+/// a form from the integral over an exterior facet.
+
+class mynavierstokestimecurvlinearpreviousdomain_exterior_facet_integral_0_2: public ufc::exterior_facet_integral
+{
+public:
+
+  /// Constructor
+  mynavierstokestimecurvlinearpreviousdomain_exterior_facet_integral_0_2() : ufc::exterior_facet_integral()
+  {
+    // Do nothing
+  }
+
+  /// Destructor
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_exterior_facet_integral_0_2()
+  {
+    // Do nothing
+  }
+
+  /// Tabulate which form coefficients are used by this integral
+  virtual const std::vector<bool> & enabled_coefficients() const
+  {
+    static const std::vector<bool> enabled({false, false, true, true, false, false, true});
     return enabled;
   }
 
@@ -5686,7 +6745,6 @@ public:
     // Compute facet normals from the facet scale factor constants
     
     // Facet area
-    const double facet_area = det;
     
     // Compute cell volume
     
@@ -5739,14 +6797,26 @@ public:
     // Array of non-zero columns
     static const unsigned int nzc17[2] = {3, 4};
     
+    static const double FEA2_f0[2][3] = \
+    {{0.0, 0.788675134594813, 0.211324865405187},
+    {0.0, 0.211324865405187, 0.788675134594813}};
+    
+    static const double FEA2_f1[2][3] = \
+    {{0.788675134594813, 0.0, 0.211324865405187},
+    {0.211324865405187, 0.0, 0.788675134594813}};
+    
+    static const double FEA2_f2[2][3] = \
+    {{0.788675134594813, 0.211324865405187, 0.0},
+    {0.211324865405187, 0.788675134594813, 0.0}};
+    
     // Reset values in the element tensor.
     for (unsigned int r = 0; r < 9; r++)
     {
       A[r] = 0.0;
     } // end loop over 'r'
-    // Number of operations to compute geometry constants: 5.
+    // Number of operations to compute geometry constants: 3.
     double G[1];
-    G[0] = 2.0*det*w[0][0]*w[1][0]*w[2][0]/facet_area;
+    G[0] = det*w[3][0]*(1.0 - w[2][0]);
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
@@ -5754,12 +6824,19 @@ public:
     {
     case 0:
       {
-        // Total number of operations to compute element tensor (from this point): 40
+        // Total number of operations to compute element tensor (from this point): 64
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 40
+      
+      // Declare array to hold physical coordinate of quadrature point.
+      double X2[2];
+      // Number of operations to compute element tensor for following IP loop = 64
       for (unsigned int ip = 0; ip < 2; ip++)
       {
+        
+        // Compute physical coordinate of quadrature point, operations: 10.
+        X2[0] = FEA2_f0[ip][0]*vertex_coordinates[0] +                  FEA2_f0[ip][1]*vertex_coordinates[2] + FEA2_f0[ip][2]*vertex_coordinates[4];
+        X2[1] = FEA2_f0[ip][0]*vertex_coordinates[1] +                  FEA2_f0[ip][1]*vertex_coordinates[3] + FEA2_f0[ip][2]*vertex_coordinates[5];
         
         // Coefficient declarations.
         double F0 = 0.0;
@@ -5768,17 +6845,17 @@ public:
         // Total number of operations to compute function values = 8
         for (unsigned int r = 0; r < 2; r++)
         {
-          F0 += FE0_f0_C0[ip][r]*w[3][nzc0[r]];
-          F1 += FE0_f0_C0[ip][r]*w[3][nzc3[r]];
+          F0 += FE0_f0_C0[ip][r]*w[6][nzc0[r]];
+          F1 += FE0_f0_C0[ip][r]*w[6][nzc3[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 4
+        // Number of operations to compute ip constants: 6
         double I[2];
-        // Number of operations: 2
-        I[0] = F0*G[0]*W2[ip];
+        // Number of operations: 3
+        I[0] = F0*G[0]*W2[ip]*X2[0];
         
-        // Number of operations: 2
-        I[1] = F1*G[0]*W2[ip];
+        // Number of operations: 3
+        I[1] = F1*G[0]*W2[ip]*X2[0];
         
         
         // Number of operations for primary indices: 8
@@ -5794,12 +6871,19 @@ public:
       }
     case 1:
       {
-        // Total number of operations to compute element tensor (from this point): 40
+        // Total number of operations to compute element tensor (from this point): 64
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 40
+      
+      // Declare array to hold physical coordinate of quadrature point.
+      double X2[2];
+      // Number of operations to compute element tensor for following IP loop = 64
       for (unsigned int ip = 0; ip < 2; ip++)
       {
+        
+        // Compute physical coordinate of quadrature point, operations: 10.
+        X2[0] = FEA2_f1[ip][0]*vertex_coordinates[0] +                  FEA2_f1[ip][1]*vertex_coordinates[2] + FEA2_f1[ip][2]*vertex_coordinates[4];
+        X2[1] = FEA2_f1[ip][0]*vertex_coordinates[1] +                  FEA2_f1[ip][1]*vertex_coordinates[3] + FEA2_f1[ip][2]*vertex_coordinates[5];
         
         // Coefficient declarations.
         double F0 = 0.0;
@@ -5808,17 +6892,17 @@ public:
         // Total number of operations to compute function values = 8
         for (unsigned int r = 0; r < 2; r++)
         {
-          F0 += FE0_f0_C0[ip][r]*w[3][nzc6[r]];
-          F1 += FE0_f0_C0[ip][r]*w[3][nzc7[r]];
+          F0 += FE0_f0_C0[ip][r]*w[6][nzc6[r]];
+          F1 += FE0_f0_C0[ip][r]*w[6][nzc7[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 4
+        // Number of operations to compute ip constants: 6
         double I[2];
-        // Number of operations: 2
-        I[0] = F0*G[0]*W2[ip];
+        // Number of operations: 3
+        I[0] = F0*G[0]*W2[ip]*X2[0];
         
-        // Number of operations: 2
-        I[1] = F1*G[0]*W2[ip];
+        // Number of operations: 3
+        I[1] = F1*G[0]*W2[ip]*X2[0];
         
         
         // Number of operations for primary indices: 8
@@ -5834,12 +6918,19 @@ public:
       }
     case 2:
       {
-        // Total number of operations to compute element tensor (from this point): 40
+        // Total number of operations to compute element tensor (from this point): 64
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 40
+      
+      // Declare array to hold physical coordinate of quadrature point.
+      double X2[2];
+      // Number of operations to compute element tensor for following IP loop = 64
       for (unsigned int ip = 0; ip < 2; ip++)
       {
+        
+        // Compute physical coordinate of quadrature point, operations: 10.
+        X2[0] = FEA2_f2[ip][0]*vertex_coordinates[0] +                  FEA2_f2[ip][1]*vertex_coordinates[2] + FEA2_f2[ip][2]*vertex_coordinates[4];
+        X2[1] = FEA2_f2[ip][0]*vertex_coordinates[1] +                  FEA2_f2[ip][1]*vertex_coordinates[3] + FEA2_f2[ip][2]*vertex_coordinates[5];
         
         // Coefficient declarations.
         double F0 = 0.0;
@@ -5848,17 +6939,17 @@ public:
         // Total number of operations to compute function values = 8
         for (unsigned int r = 0; r < 2; r++)
         {
-          F0 += FE0_f0_C0[ip][r]*w[3][nzc8[r]];
-          F1 += FE0_f0_C0[ip][r]*w[3][nzc9[r]];
+          F0 += FE0_f0_C0[ip][r]*w[6][nzc8[r]];
+          F1 += FE0_f0_C0[ip][r]*w[6][nzc9[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 4
+        // Number of operations to compute ip constants: 6
         double I[2];
-        // Number of operations: 2
-        I[0] = F0*G[0]*W2[ip];
+        // Number of operations: 3
+        I[0] = F0*G[0]*W2[ip]*X2[0];
         
-        // Number of operations: 2
-        I[1] = F1*G[0]*W2[ip];
+        // Number of operations: 3
+        I[1] = F1*G[0]*W2[ip]*X2[0];
         
         
         // Number of operations for primary indices: 8
@@ -5893,18 +6984,18 @@ public:
 /// sequence of basis functions of Vj and w1, w2, ..., wn are given
 /// fixed functions (coefficients).
 
-class computefreesurfacestress_onlytp_form_0: public ufc::form
+class mynavierstokestimecurvlinearpreviousdomain_form_0: public ufc::form
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_form_0() : ufc::form()
+  mynavierstokestimecurvlinearpreviousdomain_form_0() : ufc::form()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_form_0()
+  virtual ~mynavierstokestimecurvlinearpreviousdomain_form_0()
   {
     // Do nothing
   }
@@ -5912,13 +7003,13 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "a137c2972fca7e33df840a860256242764870854582550c7d94470ed56fbed04d448af5d95d7c5b54c3cb64607912d912c0c7e4bf7a1eae7616a4e961d36368b";
+    return "cfe22c3fb4618da3938650b80a7711870eb0946ec6dc68ab6be45a2120f0206794a98df4161adbf36276cf13ac9c84ceee7f3c0bba631033b02929ff772774ed";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
   virtual std::size_t original_coefficient_position(std::size_t i) const
   {
-    static const std::vector<std::size_t> position({0, 1, 2, 3});
+    static const std::vector<std::size_t> position({0, 1, 2, 3, 4, 5, 6});
     return position[i];
   }
 
@@ -5931,7 +7022,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 4;
+    return 7;
   }
 
   /// Return the number of cell domains
@@ -5943,7 +7034,7 @@ public:
   /// Return the number of exterior facet domains
   virtual std::size_t num_exterior_facet_domains() const
   {
-    return 7;
+    return 3;
   }
 
   /// Return the number of interior facet domains
@@ -5967,7 +7058,7 @@ public:
   /// Return whether the form has any cell integrals
   virtual bool has_cell_integrals() const
   {
-    return false;
+    return true;
   }
 
   /// Return whether the form has any exterior facet integrals
@@ -6001,27 +7092,42 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_finite_element_3();
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_4();
         break;
       }
     case 1:
       {
-        return new computefreesurfacestress_onlytp_finite_element_0();
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_3();
         break;
       }
     case 2:
       {
-        return new computefreesurfacestress_onlytp_finite_element_0();
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_3();
         break;
       }
     case 3:
       {
-        return new computefreesurfacestress_onlytp_finite_element_0();
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_0();
         break;
       }
     case 4:
       {
-        return new computefreesurfacestress_onlytp_finite_element_2();
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_0();
+        break;
+      }
+    case 5:
+      {
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_1();
+        break;
+      }
+    case 6:
+      {
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_3();
+        break;
+      }
+    case 7:
+      {
+        return new mynavierstokestimecurvlinearpreviousdomain_finite_element_3();
         break;
       }
     }
@@ -6036,27 +7142,42 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_dofmap_3();
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_4();
         break;
       }
     case 1:
       {
-        return new computefreesurfacestress_onlytp_dofmap_0();
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_3();
         break;
       }
     case 2:
       {
-        return new computefreesurfacestress_onlytp_dofmap_0();
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_3();
         break;
       }
     case 3:
       {
-        return new computefreesurfacestress_onlytp_dofmap_0();
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_0();
         break;
       }
     case 4:
       {
-        return new computefreesurfacestress_onlytp_dofmap_2();
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_0();
+        break;
+      }
+    case 5:
+      {
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_1();
+        break;
+      }
+    case 6:
+      {
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_3();
+        break;
+      }
+    case 7:
+      {
+        return new mynavierstokestimecurvlinearpreviousdomain_dofmap_3();
         break;
       }
     }
@@ -6075,9 +7196,14 @@ public:
   {
     switch (i)
     {
-    case 6:
+    case 1:
       {
-        return new computefreesurfacestress_onlytp_exterior_facet_integral_0_6();
+        return new mynavierstokestimecurvlinearpreviousdomain_exterior_facet_integral_0_1();
+        break;
+      }
+    case 2:
+      {
+        return new mynavierstokestimecurvlinearpreviousdomain_exterior_facet_integral_0_2();
         break;
       }
     }
@@ -6106,7 +7232,7 @@ public:
   /// Create a new cell integral on everywhere else
   virtual ufc::cell_integral* create_default_cell_integral() const
   {
-    return 0;
+    return new mynavierstokestimecurvlinearpreviousdomain_cell_integral_0_otherwise();
   }
 
   /// Create a new exterior facet integral on everywhere else
@@ -6151,55 +7277,8 @@ public:
 #include <dolfin/adaptivity/ErrorControl.h>
 #include <dolfin/adaptivity/GoalFunctional.h>
 
-namespace computeFreeSurfaceStress_onlyTP
+namespace myNavierstokesTimeCurvLinearPreviousDomain
 {
-
-class CoefficientSpace_cosThetaS: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_cosThetaS(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_cosThetaS(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_cosThetaS(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_cosThetaS(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
 
 class CoefficientSpace_dt: public dolfin::FunctionSpace
 {
@@ -6210,8 +7289,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_dt(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_0()), mesh)))
   {
     // Do nothing
   }
@@ -6219,8 +7298,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_0()), *mesh)))
   {
     // Do nothing
   }
@@ -6230,8 +7309,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_dt(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_0()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -6240,34 +7319,34 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_0()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
 
 };
 
-class CoefficientSpace_gamma: public dolfin::FunctionSpace
+class CoefficientSpace_gravityVector: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_gamma(const dolfin::Mesh& mesh):
+  CoefficientSpace_gravityVector(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_1()), mesh)))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_gamma(std::shared_ptr<const dolfin::Mesh> mesh):
+  CoefficientSpace_gravityVector(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_1()), *mesh)))
   {
     // Do nothing
   }
@@ -6275,46 +7354,46 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_gamma(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  CoefficientSpace_gravityVector(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_1()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_gamma(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  CoefficientSpace_gravityVector(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_1()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_1()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
 
 };
 
-class CoefficientSpace_t_partialOmega: public dolfin::FunctionSpace
+class CoefficientSpace_lambdastar: public dolfin::FunctionSpace
 {
 public:
 
   //--- Constructors for standard function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_t_partialOmega(const dolfin::Mesh& mesh):
+  CoefficientSpace_lambdastar(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_2()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_0()), mesh)))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_t_partialOmega(std::shared_ptr<const dolfin::Mesh> mesh):
+  CoefficientSpace_lambdastar(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_2()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_0()), *mesh)))
   {
     // Do nothing
   }
@@ -6322,20 +7401,208 @@ public:
   //--- Constructors for constrained function space, 2 different versions ---
 
   // Create standard function space (reference version)
-  CoefficientSpace_t_partialOmega(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+  CoefficientSpace_lambdastar(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_2()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_0()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
   }
 
   // Create standard function space (shared pointer version)
-  CoefficientSpace_t_partialOmega(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+  CoefficientSpace_lambdastar(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_2()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_0()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_0()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+};
+
+class CoefficientSpace_stressAbove: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_stressAbove(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_stressAbove(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_stressAbove(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_stressAbove(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+};
+
+class CoefficientSpace_stressBelow: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_stressBelow(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_stressBelow(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_stressBelow(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_stressBelow(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+};
+
+class CoefficientSpace_uDir: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_uDir(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_uDir(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_uDir(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_uDir(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), *mesh, constrained_domain)))
+  {
+    // Do nothing
+  }
+
+};
+
+class CoefficientSpace_u_old: public dolfin::FunctionSpace
+{
+public:
+
+  //--- Constructors for standard function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_u_old(const dolfin::Mesh& mesh):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), mesh)))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_u_old(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), *mesh)))
+  {
+    // Do nothing
+  }
+
+  //--- Constructors for constrained function space, 2 different versions ---
+
+  // Create standard function space (reference version)
+  CoefficientSpace_u_old(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
+    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), mesh,
+                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
+  {
+    // Do nothing
+  }
+
+  // Create standard function space (shared pointer version)
+  CoefficientSpace_u_old(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_3()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_3()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
@@ -6351,8 +7618,8 @@ public:
   // Create standard function space (reference version)
   Form_L_FunctionSpace_0(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_4()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_4()), mesh)))
   {
     // Do nothing
   }
@@ -6360,8 +7627,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_4()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_4()), *mesh)))
   {
     // Do nothing
   }
@@ -6371,8 +7638,8 @@ public:
   // Create standard function space (reference version)
   Form_L_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_4()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_4()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -6381,21 +7648,27 @@ public:
   // Create standard function space (shared pointer version)
   Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinearpreviousdomain_finite_element_4()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinearpreviousdomain_dofmap_4()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
 
 };
 
-typedef CoefficientSpace_dt Form_L_FunctionSpace_1;
+typedef CoefficientSpace_u_old Form_L_FunctionSpace_1;
 
-typedef CoefficientSpace_gamma Form_L_FunctionSpace_2;
+typedef CoefficientSpace_uDir Form_L_FunctionSpace_2;
 
-typedef CoefficientSpace_cosThetaS Form_L_FunctionSpace_3;
+typedef CoefficientSpace_lambdastar Form_L_FunctionSpace_3;
 
-typedef CoefficientSpace_t_partialOmega Form_L_FunctionSpace_4;
+typedef CoefficientSpace_dt Form_L_FunctionSpace_4;
+
+typedef CoefficientSpace_gravityVector Form_L_FunctionSpace_5;
+
+typedef CoefficientSpace_stressAbove Form_L_FunctionSpace_6;
+
+typedef CoefficientSpace_stressBelow Form_L_FunctionSpace_7;
 
 class Form_L: public dolfin::Form
 {
@@ -6403,76 +7676,88 @@ public:
 
   // Constructor
   Form_L(const dolfin::FunctionSpace& V0):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
+    dolfin::Form(1, 7), u_old(*this, 0), uDir(*this, 1), lambdastar(*this, 2), dt(*this, 3), gravityVector(*this, 4), stressAbove(*this, 5), stressBelow(*this, 6)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurvlinearpreviousdomain_form_0());
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& cosThetaS, const dolfin::GenericFunction& t_partialOmega):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
+  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& uDir, const dolfin::GenericFunction& lambdastar, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gravityVector, const dolfin::GenericFunction& stressAbove, const dolfin::GenericFunction& stressBelow):
+    dolfin::Form(1, 7), u_old(*this, 0), uDir(*this, 1), lambdastar(*this, 2), dt(*this, 3), gravityVector(*this, 4), stressAbove(*this, 5), stressBelow(*this, 6)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
+    this->u_old = u_old;
+    this->uDir = uDir;
+    this->lambdastar = lambdastar;
     this->dt = dt;
-    this->gamma = gamma;
-    this->cosThetaS = cosThetaS;
-    this->t_partialOmega = t_partialOmega;
+    this->gravityVector = gravityVector;
+    this->stressAbove = stressAbove;
+    this->stressBelow = stressBelow;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurvlinearpreviousdomain_form_0());
   }
 
   // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> cosThetaS, std::shared_ptr<const dolfin::GenericFunction> t_partialOmega):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
+  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> uDir, std::shared_ptr<const dolfin::GenericFunction> lambdastar, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gravityVector, std::shared_ptr<const dolfin::GenericFunction> stressAbove, std::shared_ptr<const dolfin::GenericFunction> stressBelow):
+    dolfin::Form(1, 7), u_old(*this, 0), uDir(*this, 1), lambdastar(*this, 2), dt(*this, 3), gravityVector(*this, 4), stressAbove(*this, 5), stressBelow(*this, 6)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
+    this->u_old = *u_old;
+    this->uDir = *uDir;
+    this->lambdastar = *lambdastar;
     this->dt = *dt;
-    this->gamma = *gamma;
-    this->cosThetaS = *cosThetaS;
-    this->t_partialOmega = *t_partialOmega;
+    this->gravityVector = *gravityVector;
+    this->stressAbove = *stressAbove;
+    this->stressBelow = *stressBelow;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurvlinearpreviousdomain_form_0());
   }
 
   // Constructor
   Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
+    dolfin::Form(1, 7), u_old(*this, 0), uDir(*this, 1), lambdastar(*this, 2), dt(*this, 3), gravityVector(*this, 4), stressAbove(*this, 5), stressBelow(*this, 6)
   {
     _function_spaces[0] = V0;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurvlinearpreviousdomain_form_0());
   }
 
   // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& cosThetaS, const dolfin::GenericFunction& t_partialOmega):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& u_old, const dolfin::GenericFunction& uDir, const dolfin::GenericFunction& lambdastar, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gravityVector, const dolfin::GenericFunction& stressAbove, const dolfin::GenericFunction& stressBelow):
+    dolfin::Form(1, 7), u_old(*this, 0), uDir(*this, 1), lambdastar(*this, 2), dt(*this, 3), gravityVector(*this, 4), stressAbove(*this, 5), stressBelow(*this, 6)
   {
     _function_spaces[0] = V0;
 
+    this->u_old = u_old;
+    this->uDir = uDir;
+    this->lambdastar = lambdastar;
     this->dt = dt;
-    this->gamma = gamma;
-    this->cosThetaS = cosThetaS;
-    this->t_partialOmega = t_partialOmega;
+    this->gravityVector = gravityVector;
+    this->stressAbove = stressAbove;
+    this->stressBelow = stressBelow;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurvlinearpreviousdomain_form_0());
   }
 
   // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> cosThetaS, std::shared_ptr<const dolfin::GenericFunction> t_partialOmega):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
+  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u_old, std::shared_ptr<const dolfin::GenericFunction> uDir, std::shared_ptr<const dolfin::GenericFunction> lambdastar, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gravityVector, std::shared_ptr<const dolfin::GenericFunction> stressAbove, std::shared_ptr<const dolfin::GenericFunction> stressBelow):
+    dolfin::Form(1, 7), u_old(*this, 0), uDir(*this, 1), lambdastar(*this, 2), dt(*this, 3), gravityVector(*this, 4), stressAbove(*this, 5), stressBelow(*this, 6)
   {
     _function_spaces[0] = V0;
 
+    this->u_old = *u_old;
+    this->uDir = *uDir;
+    this->lambdastar = *lambdastar;
     this->dt = *dt;
-    this->gamma = *gamma;
-    this->cosThetaS = *cosThetaS;
-    this->t_partialOmega = *t_partialOmega;
+    this->gravityVector = *gravityVector;
+    this->stressAbove = *stressAbove;
+    this->stressBelow = *stressBelow;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new mynavierstokestimecurvlinearpreviousdomain_form_0());
   }
 
   // Destructor
@@ -6482,14 +7767,20 @@ public:
   /// Return the number of the coefficient with this name
   virtual std::size_t coefficient_number(const std::string& name) const
   {
-    if (name == "dt")
+    if (name == "u_old")
       return 0;
-    else if (name == "gamma")
+    else if (name == "uDir")
       return 1;
-    else if (name == "cosThetaS")
+    else if (name == "lambdastar")
       return 2;
-    else if (name == "t_partialOmega")
+    else if (name == "dt")
       return 3;
+    else if (name == "gravityVector")
+      return 4;
+    else if (name == "stressAbove")
+      return 5;
+    else if (name == "stressBelow")
+      return 6;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -6503,13 +7794,19 @@ public:
     switch (i)
     {
     case 0:
-      return "dt";
+      return "u_old";
     case 1:
-      return "gamma";
+      return "uDir";
     case 2:
-      return "cosThetaS";
+      return "lambdastar";
     case 3:
-      return "t_partialOmega";
+      return "dt";
+    case 4:
+      return "gravityVector";
+    case 5:
+      return "stressAbove";
+    case 6:
+      return "stressBelow";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -6520,16 +7817,22 @@ public:
 
   // Typedefs
   typedef Form_L_FunctionSpace_0 TestSpace;
-  typedef Form_L_FunctionSpace_1 CoefficientSpace_dt;
-  typedef Form_L_FunctionSpace_2 CoefficientSpace_gamma;
-  typedef Form_L_FunctionSpace_3 CoefficientSpace_cosThetaS;
-  typedef Form_L_FunctionSpace_4 CoefficientSpace_t_partialOmega;
+  typedef Form_L_FunctionSpace_1 CoefficientSpace_u_old;
+  typedef Form_L_FunctionSpace_2 CoefficientSpace_uDir;
+  typedef Form_L_FunctionSpace_3 CoefficientSpace_lambdastar;
+  typedef Form_L_FunctionSpace_4 CoefficientSpace_dt;
+  typedef Form_L_FunctionSpace_5 CoefficientSpace_gravityVector;
+  typedef Form_L_FunctionSpace_6 CoefficientSpace_stressAbove;
+  typedef Form_L_FunctionSpace_7 CoefficientSpace_stressBelow;
 
   // Coefficients
+  dolfin::CoefficientAssigner u_old;
+  dolfin::CoefficientAssigner uDir;
+  dolfin::CoefficientAssigner lambdastar;
   dolfin::CoefficientAssigner dt;
-  dolfin::CoefficientAssigner gamma;
-  dolfin::CoefficientAssigner cosThetaS;
-  dolfin::CoefficientAssigner t_partialOmega;
+  dolfin::CoefficientAssigner gravityVector;
+  dolfin::CoefficientAssigner stressAbove;
+  dolfin::CoefficientAssigner stressBelow;
 };
 
 // Class typedefs

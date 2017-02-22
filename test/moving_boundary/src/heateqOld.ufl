@@ -1,0 +1,24 @@
+# UFL file for heat equaiton simulation
+#
+# define mesh dimension
+cell = triangle
+
+# define function spaces
+V = FiniteElement ("Lagrange", cell, 2)
+#V = VectorElement ("Lagrange", cell, 2)
+S = FiniteElement ("Lagrange", cell, 2)
+
+# define test and trial functions
+u = TrialFunction (V)
+v = TestFunction (V)
+
+# define coefficients
+nu = Constant (cell)
+f = Coefficient (V)
+g = Coefficient (S)
+datum = Coefficient (V)
+u_old = Coefficient (V)
+dt = Constant (cell)
+
+# define linear form 
+L = inner (u_old, v) * dx

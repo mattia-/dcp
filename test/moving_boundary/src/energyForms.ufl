@@ -1,0 +1,104 @@
+# define mesh dimension
+cell = triangle
+
+# define function spaces
+V = VectorElement ("Lagrange", cell, 1)
+Q = FiniteElement ("Lagrange", cell, 1)
+T = V * Q
+W = VectorElement ("Lagrange", cell, 1)
+Qp2 = FiniteElement ("Lagrange", cell, 5)
+Qvecp2 = VectorElement ("Lagrange", cell, 2)
+
+# define test and trial functions
+vq = TestFunction (T)
+v, q = split (vq)
+
+qp1 = TestFunction(Q)
+qp2 = TestFunction(Qp2)
+qvecp2 = TestFunction(Qvecp2)
+qxp2,qyp2 = split (qvecp2)
+
+x = SpatialCoordinate (cell)
+
+nu = Constant (cell)
+dt = Constant (cell)
+n = FacetNormal(cell)
+w = Coefficient(W)
+gravityVector = VectorConstant (cell)
+coeff = Coefficient (T)
+coeffu, coeffp = split (coeff)
+coeffbis = Coefficient (Qvecp2)
+
+sol = Coefficient (T)
+u,p = split (sol)
+
+sol_old = Coefficient (T)
+u_old,p_old = split (sol_old)
+
+uDir = Coefficient (V)
+#wDir = Coefficient (V)
+
+# per bilancio energetico, caso Dirichlet omogeneo o comunque uniforme e costante
+
+kinEn = 0.5 / dt * inner (u, u) * x[0] * dx(None, degree=5)
+
+#viscPow = nu/2.0 * inner (grad (u)+nabla_grad(u), grad (u)+nabla_grad(u)) * x[0] * dx(None, degree=5)
+viscPow = 2.0 * nu * inner (sym (grad (u)), sym (grad (u))) * x[0] * dx(None, degree=5)
+#viscPow = nu/2.0 * inner (grad (u)+transpose(grad(u)), grad (u)+transpose(grad(u))) * x[0] * dx
+
+discr = 0.5 / dt * inner (u - u_old, u - u_old) * x[0] * dx(None, degree=5)
+
+discrDiv = 0.5 / dt * (Dx(x[0]*w[0],0) + x[0]*Dx(w[1],1)) * inner (u - u_old, u - u_old) * dx(None, degree=5)
+  # c'e' comunque /dt perche' in questo codice w e' il displacement
+
+grav = inner (gravityVector, u) * x[0] * dx(None, degree=5)
+
+enPot = 1.0 / dt * inner (x, gravityVector) * x[0] * dx(None, degree=5)
+
+infl = 0.5 * inner (u_old - w/dt, n) * inner (u, u) * x[0] * ds(2, degree=5)
+
+sigma = 0.5 * inner (u_old, n) * inner (u, u) * x[0] * ds(1, degree=5) \
+        - 0.5 * inner (w/dt, n) * inner (u, u) * x[0] * ds(1, degree=5)
+
+# per GCL
+
+intGCL = qp1 * x[0] * dx(None, degree=5)
+
+#intGCLp2 = qp2 * x[0] * dx
+intGCLp2 = inner (coeffbis, qvecp2) * x[0] * dx(None, degree=5)
+
+intGCLvec = inner (coeffu, v) * x[0] * dx(None, degree=5)
+
+#diverGCL = div(w) *  q * dx
+diverGCL = inner (qp1, Dx(x[0]*w[0],0) + x[0]*Dx(w[1],1)) * dx(None, degree=5)
+  # non c'e' *dt perche' in questo codice w e' il displacement
+
+#diverGCLp2 = inner (qp2, Dx(x[0]*w[0],0) + x[0]*Dx(w[1],1)) * dx
+diverGCLp2 = inner (qxp2+qyp2, Dx(x[0]*w[0],0) + x[0]*Dx(w[1],1)) * dx(None, degree=5)
+  # non c'e' *dt perche' in questo codice w e' il displacement
+
+diverGCLvec = (Dx(x[0]*w[0],0) + x[0]*Dx(w[1],1)) * inner (coeffu, v) * dx(None, degree=5)
+  # non c'e' *dt perche' in questo codice w e' il displacement
+
+# per bilancio energetico, caso Dirichlet non omogeneo generico
+
+# discrDir = 1 / dt * inner (uDir - uDir_old, v) * x[0] * dx
+    # e' nullo se uDir non dipende da x[1] e w e' non nulla solo in direzione x[1]
+
+inflDir = 0.5 * inner (uDir - w/dt, n) * inner (u, u) * x[0] * ds(2, degree=5)
+
+viscDir = 2.0 * nu * inner (sym (grad (uDir)), sym (grad (u))) * x[0] * dx(None, degree=5)
+
+traspDir = inner (grad(uDir) * (u_old - w/dt + uDir), u) * x[0] * dx(None, degree=5)
+#traspDir = inner (dot (grad(uDir), u_old - w/dt + uDir - wDir), v) * x[0] * dx
+  # c'e' /dt perche' in questo codice w e' il displacement
+  # in wDir non c'e' /dt per comodita' implementativa (di solito wDir=uDir)
+
+diverDir = inner (p, Dx(x[0]*uDir[0],0) + x[0]*Dx(uDir[1],1)) * dx(None, degree=5)
+
+# termini che si cancellano con la stabilizzazione a' la Gerbeau
+stabBulk = 0.5 * (Dx(x[0]*(u_old[0]+uDir[0]),0) + x[0]*Dx(u_old[1]+uDir[1],1)) * inner (u, u) * dx(None, degree=5)
+
+stabSigma = - 0.5 * dot (u_old + uDir - w/dt, n) * inner (u, u) * x[0] * ds(1, degree=5)
+
+forms = [kinEn, viscPow, discr, discrDiv, grav, enPot, infl, sigma, intGCL, intGCLp2, intGCLvec, diverGCL, diverGCLp2, diverGCLvec, inflDir, viscDir, traspDir, diverDir, stabBulk, stabSigma]

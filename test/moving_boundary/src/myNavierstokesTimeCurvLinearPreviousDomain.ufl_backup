@@ -1,0 +1,57 @@
+#/* 
+# *  Copyright (C) 2015, Ivan Fumagalli, ivan.fumagalli@polimi.it
+# * 
+# *  This file is part of the DCP library
+# *   
+# *   The DCP library is free software: you can redistribute it and/or modify
+# *   it under the terms of the GNU General Public License as published by
+# *   the Free Software Foundation, either version 3 of the License, or
+# *   (at your option) any later version.
+# *
+# *   The DCP library is distributed in the hope that it will be useful,
+# *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+# *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# *   GNU General Public License for more details.
+# *
+# *   You should have received a copy of the GNU General Public License
+# *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
+# */ 
+
+# UFL file for time dependent, moving domain (ALE) Navier-Stokes simulation
+# Terms to be integrated on the previous-than-current domain
+# lambdastar is the weight: lambdastar*int_curr+(1-lambdastar)*int_prev
+#
+# define mesh dimension
+cell = triangle
+
+# define function spaces
+V = VectorElement ("Lagrange", cell, 2)
+Q = FiniteElement ("Lagrange", cell, 1)
+T = V * Q
+
+# define test function
+test = TestFunction (T)
+
+v, q = split (test)
+
+x = SpatialCoordinate (cell)
+
+# define coefficients
+u_old = Coefficient (V)
+uDir = Coefficient (V)
+lambdastar = Constant (cell)
+dt = Constant (cell)
+gravityVector = VectorConstant (cell)
+#gamma = Constant (cell)
+n = FacetNormal(cell)
+#beta = Constant (cell)
+#wallVelocity = Coefficient (V)
+stressAbove = Coefficient (V)
+dummy, normalStressAbove = split (stressAbove)
+stressBelow = Coefficient (V)
+
+# define linear form
+L = inner (u_old+uDir, v) * x[0] * dx \
+    + (1-lambdastar) * dt * inner(gravityVector, v) * x[0] * dx \
+    + (1-lambdastar) * dt * inner (normalStressAbove*n, v) * x[0] * ds(1) \
+    + (1-lambdastar) * dt * inner (stressBelow, v) * x[0] * ds(2)

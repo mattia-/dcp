@@ -49,7 +49,7 @@ stabBulk = Constant (cell)
 stabSigma = Constant (cell)
 stabSGCL = Constant (cell)
 n = FacetNormal(cell)
-h = MinFacetEdgeLength(cell)
+h = MaxFacetEdgeLength(cell)
 h_dx = Circumradius(cell)
 u_old = Coefficient (V)
 uDir = Coefficient (V)
@@ -83,7 +83,7 @@ a = inner (u, v) * x[0] * dx \
     - (Dx(x[0]*w[0],0) + x[0]*Dx(w[1],1)) * inner (u, v) * dx \
     - dt * inner (p, Dx(x[0]*v[0],0) + x[0]*Dx(v[1],1)) * dx \
     + dt * inner (Dx(x[0]*u[0],0) + x[0]*Dx(u[1],1), q) * dx \
-    + dt * beta/h * inner (u, v) * x[0] * ds(3) \
+    + dt * beta * inner (u, v) * x[0] * ds(3) \
     + stabBulk * dt * 0.5 * (Dx(x[0]*u_old[0],0) + x[0]*Dx(u_old[1],1)) * inner (u, v) * dx \
     + stabBulk * dt * 0.5 * (Dx(x[0]*uDir[0],0) + x[0]*Dx(uDir[1],1)) * inner (u, v) * dx \
     - stabSigma * 0.5 * dot (dt*u_old+dt*uDir-w, n) * inner (u, v) * x[0] * ds(1) \
@@ -101,7 +101,7 @@ a = inner (u, v) * x[0] * dx \
 L = lambdastar * dt * inner(gravityVector, v) * x[0] * dx \
     - rescale * dt * gamma * (Dx(x[0]*v[0],0) + x[0]*Dx(v[1],1)) * ds(1) \
     + dt * gamma * inner (grad(v), outer (n,n)) * x[0] * ds(1) \
-    + dt * beta/h * inner (wallVelocity, v) * x[0] * ds(3) \
+    + dt * beta * inner (wallVelocity, v) * x[0] * ds(3) \
     + lambdastar * dt * inner (normalStressAbove*n, v) * x[0] * ds(1) \
     + lambdastar * dt * inner (stressBelow, v) * x[0] * ds(2) \
     - inner (uDir, v) * x[0] * dx \

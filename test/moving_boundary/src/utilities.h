@@ -42,9 +42,119 @@ struct ProblemData
   double TP_EPS;
   std::string savepath;
   double gamma, beta, thetaS;
+  double nu;
+  double lambdastar, noStokes, stabBulk, stabSigma, stabSGCL;
+  unsigned int fileFrequency;
+  bool saveDataInFile;
+  bool savePvd;
+  bool startFromFlat;
+  bool inflowDirichlet;
 };
 
 extern struct ProblemData problemData;
+
+class InflowProfile : public dolfin::Expression
+{
+  public:
+
+    void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+    {
+        values[0] = 0.0;
+        values[1] = inflowVelocity_ * 1/(problemData.lx*problemData.lx)*(problemData.lx+x[0])*(problemData.lx-x[0]);
+        //values[1] = inflowVelocity_*(1-x[1]/problemData.ly);// * 1/(problemData.lx*problemData.lx)*(problemData.lx+x[0])*(problemData.lx-x[0]);
+        //values[1] = inflowVelocity_ * cos(1.57/problemData.lx * x[0]);
+    }
+    
+    std::size_t value_rank() const
+    {
+      return 1;
+    }
+
+    std::size_t value_dimension(std::size_t i) const
+    {
+      return 2;
+    }
+
+    void setInflow (double inflowVelocity)
+    {
+      inflowVelocity_ = inflowVelocity;
+    }
+
+  private:
+    double inflowVelocity_;
+};
+
+class AntiGravityVector : public dolfin::Expression
+{
+public:
+
+  void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+  {
+      values[0] = 0;
+      values[1] = 1;
+      values[2] = 0;
+  }
+
+  std::size_t value_rank() const
+  {
+    return 1;
+  }
+
+  std::size_t value_dimension(std::size_t i) const
+  {
+    return 3;
+  }
+};
+class CoeffGCLvec : public dolfin::Expression
+{
+public:
+
+  void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+  {
+      values[0] = 1;
+      values[1] = 1;
+      values[2] = 0;
+  }
+
+  std::size_t value_rank() const
+  {
+    return 1;
+  }
+
+  std::size_t value_dimension(std::size_t i) const
+  {
+    return 3;
+  }
+};
+class CoeffGCLbis : public dolfin::Expression
+{
+public:
+
+  void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+  {
+      values[0] = 1;
+      values[1] = 1;
+  }
+
+  std::size_t value_rank() const
+  {
+    return 1;
+  }
+
+  std::size_t value_dimension(std::size_t i) const
+  {
+    return 2;
+  }
+};
+
+class AlwaysInside : public dolfin::SubDomain
+{
+  public :
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return true;
+    }
+};
 
 class TopBd : public dolfin::SubDomain
 {
@@ -74,6 +184,26 @@ class LateralBd : public dolfin::SubDomain
         return on_boundary
                &&
                ( dolfin::near (x[0],0) || dolfin::near (x[0],problemData.lx) );
+    }
+};
+class LeftBd : public dolfin::SubDomain
+{
+  public :
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return on_boundary
+               &&
+               ( dolfin::near (x[0],0) );
+    }
+};
+class RightBd : public dolfin::SubDomain
+{
+  public :
+    bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+    {
+        return on_boundary
+               &&
+               ( dolfin::near (x[0],problemData.lx) );
     }
 };
 
@@ -141,7 +271,8 @@ class BoundaryStressEvaluator
         void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
         {
             values[0] = 0;
-            values[1] = 9.81 * (problemData.ly-x[1]) * nominalStress.second;
+            //values[1] = 9.81 * (problemData.ly-x[1]) * nominalStress.second;
+            values[1] = nominalStress.second * (1-t/0.5) * (t<0.5);//exp(-100*t);
         }
 
     private:
@@ -371,7 +502,7 @@ class XY : public dolfin::Expression
       return 2;
     }
 };
-class XYZ : public dolfin::Expression
+*/class XYZ : public dolfin::Expression
 {
     void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
     {
@@ -390,6 +521,14 @@ class XYZ : public dolfin::Expression
       return 3;
     }
 };
+class XpY : public dolfin::Expression
+{
+    void eval (dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+    {
+      values[0] = x[1] + 1e-5*x[0];
+    }
+};
+/*
 
 class BottomBoundaryEvaluator
 { 
@@ -750,7 +889,9 @@ public:
   void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
   {
       values[0] = 0;
-      values[1] = 0.05;
+      //values[1] = 0.01 * problemData.ly/problemData.ny / problemData.dt * (1 + 4.0*x[0]/problemData.lx*(x[0]/problemData.lx-1));
+      //values[1] = 0.1 * problemData.ly/problemData.ny / problemData.dt * sin (x[0]*3.14159*problemData.nx/problemData.lx) * ((problemData.ly+problemData.ly/problemData.ny > x[1]) - (problemData.ly+problemData.ly/problemData.ny < x[1]));
+      values[1] = 0.1;
       values[2] = 0;
   }
 
@@ -769,11 +910,115 @@ public:
 
 };
 
+//Ivan:: SubDomains
+/*
+    class LateralInterior : public dolfin::SubDomain
+    {
+        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+        {
+            return on_boundary
+                   && ( dolfin::near (x[0],0.0) || dolfin::near(x[0],0.05) )
+                   && ( x[1] <= 0.1-6e-16);
+        }
+
+        friend class TriplePoints;
+        friend class TriplePointLeft;
+        friend class TriplePointRight;
+    };
+
+  	class TriplePoints : public dolfin::SubDomain
+    {
+        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+        {
+            return on_boundary
+                  && ( ( dolfin::near(x[0],0,0.006) && dolfin::near(x[1],0.1,0.006) )
+                    ||
+                   ( dolfin::near(x[0],0.05,0.006) && dolfin::near(x[1],0.1,0.006) ) )
+                  && !( lateralInterior.inside(x, on_boundary) );
+            return  ( dolfin::near(x[0], 0) && (x[1]<0.01-6e-16) && (x[1]>6e-16))
+           		     ||
+                 		( dolfin::near(x[0], 0.05) && (x[1]<0.01-6e-16) && (x[1]>6e-16));
+        }
+
+        LateralInterior lateralInterior;
+        friend class DeltaDirac;
+    };
+    class DeltaDirac : public dolfin::Expression
+    {
+        void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
+        {
+            values[0] = 5 * ( ( ( dolfin::near(x[0],0.0) && dolfin::near(x[1],0.1) ) || ( dolfin::near(x[0],0.05) && dolfin::near(x[1],0.1) ) )
+                ? 1.0 : 0.0);
+        }
+        Ivan::TriplePoints tp;
+    };
+  	class TriplePointLeft : public dolfin::SubDomain
+    {
+        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+        {
+            return on_boundary
+                  && ( dolfin::near(x[0],0,0.006) && dolfin::near(x[1],0.1,0.006) )
+                  && !( lateralInterior.inside(x, on_boundary) );
+        }
+
+        LateralInterior lateralInterior;
+    };
+  	class TriplePointRight : public dolfin::SubDomain
+    {
+        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+        {
+            return on_boundary
+                  && ( dolfin::near(x[0],0.05,0.006) && dolfin::near(x[1],0.1,0.006) )
+                  && !( lateralInterior.inside(x, on_boundary) );
+        }
+
+        LateralInterior lateralInterior;
+    };
+
+    class TopBoundary : public dolfin::SubDomain
+    {
+        bool inside (const dolfin::Array<double>& x, bool on_boundary) const
+        {
+            return on_boundary
+                   &&
+                  dolfin::between(x[0],{0.0,0.05})
+  	               && !(
+                      dolfin::near(x[0], 0)
+           		     ||
+             		      dolfin::near(x[0], 0.05)
+          		     ||
+             		    dolfin::near(x[1], 0));
+                   &&
+                  (x[1] >= 0.10 - 6.0e-16);
+        }
+    };
+*/
+//Ivan:: SubDomains
+
 bool compare (std::tuple<std::size_t,double,double> p1, std::tuple<std::size_t,double,double> p2);
 bool compareDofs (std::tuple<std::size_t,double,double,std::size_t> p1, std::tuple<std::size_t,double,double,std::size_t> p2);
 bool compareFirst (std::tuple<std::size_t,double,double> p1, std::tuple<std::size_t,double,double> p2);
 std::size_t getFirst (const std::tuple<std::size_t,double,double> t);
 std::size_t getFirstDofs (const std::tuple<std::size_t,double,double,std::size_t> t);
+std::pair<double,double> getDofsCoords (const std::tuple<std::size_t,double,double,std::size_t> t);
+
+void print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords);
+void print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin1, const std::vector<std::size_t>::const_iterator dofsBegin2, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords);
+
+template <class T_val, class T_size>
+void print2csv (const std::vector<const T_val *> vals, const std::vector<const T_size *> sizes, std::string filename)
+{
+  std::ofstream file (filename.c_str(), std::ofstream::out);
+  file.precision (15);
+  file.setf (std::ios::scientific);
+  file << "ux, uy, p, wx, wy" << std::endl;
+  for (std::size_t var (0); var<vals.size(); ++var)
+  {
+    for (T_size i (0); i<*sizes[var]; ++i)
+      file << vals[var][i] << ", ";
+    file << std::endl;
+  }
+}
 
 class NormalAtVertex;
 

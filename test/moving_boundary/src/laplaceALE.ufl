@@ -1,0 +1,54 @@
+#/* 
+# *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
+# * 
+# *  This file is part of the DCP library
+# *   
+# *   The DCP library is free software: you can redistribute it and/or modify
+# *   it under the terms of the GNU General Public License as published by
+# *   the Free Software Foundation, either version 3 of the License, or
+# *   (at your option) any later version.
+# *
+# *   The DCP library is distributed in the hope that it will be useful,
+# *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+# *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# *   GNU General Public License for more details.
+# *
+# *   You should have received a copy of the GNU General Public License
+# *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
+# */ 
+
+# UFL file for poisson problem simulation
+#
+# define mesh dimension
+cell = triangle
+
+# define function spaces
+W = FiniteElement ("Lagrange", cell, 1)
+V = VectorElement ("Lagrange", cell, 1)
+
+# define test and trial functions
+w = TrialFunction (W)
+v = TestFunction (W)
+
+# define coefficients
+k = Constant (cell)
+f = Coefficient (W)
+g = Coefficient (W)
+penalty = Constant (cell)
+u = Coefficient (V)
+n = FacetNormal (cell)
+
+# define bilinear form
+a = inner (k * grad (w), grad (v)) * dx \
+    + penalty * inner (w, v) * ds (1)
+    #+ penalty * inner (w, v) * dx
+
+# define linear form 
+#L = inner (f, v) * dx \
+#    + inner (k * g, v) * ds(1) \
+#    + penalty * inner (ux * n[0] / n[1] + uy, v) * ds(1)
+L = inner (f, v) * dx \
+    + inner (k * g, v) * ds(1) \
+    + penalty * inner (u[0] * n[0] / n[1] + u[1], v) * ds(1)
+    #+ penalty * inner (dot(u, n), v) * ds(1)
+    #+ penalty * inner (u[1], v) * dx

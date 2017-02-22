@@ -1,0 +1,40 @@
+# UFL file for heat equaiton simulation
+#
+# define mesh dimension
+cell = triangle
+
+# define function spaces
+V = FiniteElement ("Lagrange", cell, 2)
+#V = VectorElement ("Lagrange", cell, 2)
+Vf = VectorElement ("Lagrange", cell, 2)
+S = FiniteElement ("Lagrange", cell, 2)
+W = VectorElement ("Lagrange", cell, 1)
+
+# define test and trial functions
+u = TrialFunction (V)
+v = TestFunction (V)
+
+# define coefficients
+nu = Constant (cell)
+f = Coefficient (Vf)
+g = Coefficient (S)
+datum = Coefficient (V)
+u_old = Coefficient (V)
+dt = Constant (cell)
+w = Coefficient(W)
+
+# define bilinear form
+a = inner (u, v) * dx \
+    - inner (grad (u),  w) * v * dx \
+    - div(w) * inner (u, v) * dx \
+    + dt * inner (nu * grad (u), grad (v)) * dx
+#a = inner (u, v) * dx \
+#    - inner (grad (u) * w, v) * dx \
+#    - div(w) * inner (u, v) * dx \
+#    + dt * inner (nu * grad (u), grad (v)) * dx \
+#    + 1e20 * inner (u, v) * ds(2)
+
+# define linear form 
+L = dt * inner (f[1], v) * dx + inner (g, v) * ds(2)
+#L = dt * inner (f, v) * dx + inner (g, v[0]) * ds(2) \
+#    + 1e20 * inner (datum, v) * ds(2)

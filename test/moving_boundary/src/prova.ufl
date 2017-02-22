@@ -1,0 +1,9 @@
+cell =triangle
+
+x = SpatialCoordinate (cell)
+coeff = Constant(cell)
+
+sigmaLength = coeff * x[1] * ds(3, degree=5)
+sigmaLengthR = coeff * x[0]*x[0] * ds(3, degree=5)
+
+forms = [sigmaLength,sigmaLengthR]

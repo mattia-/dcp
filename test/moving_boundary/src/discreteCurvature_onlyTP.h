@@ -25,8 +25,8 @@
 //   restrict_keyword:               ''
 //   split:                          False
 
-#ifndef __COMPUTEFREESURFACESTRESS_ONLYTP_H
-#define __COMPUTEFREESURFACESTRESS_ONLYTP_H
+#ifndef __DISCRETECURVATURE_ONLYTP_H
+#define __DISCRETECURVATURE_ONLYTP_H
 
 #include <cmath>
 #include <stdexcept>
@@ -35,313 +35,18 @@
 
 /// This class defines the interface for a finite element.
 
-class computefreesurfacestress_onlytp_finite_element_0: public ufc::finite_element
+class discretecurvature_onlytp_finite_element_0: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_finite_element_0() : ufc::finite_element()
+  discretecurvature_onlytp_finite_element_0() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_finite_element_0()
-  {
-    // Do nothing
-  }
-
-  /// Return a string identifying the finite element
-  virtual const char* signature() const
-  {
-    return "FiniteElement('Real', Domain(Cell('triangle', 2)), 0, None)";
-  }
-
-  /// Return the cell shape
-  virtual ufc::shape cell_shape() const
-  {
-    return ufc::triangle;
-  }
-
-  /// Return the topological dimension of the cell shape
-  virtual std::size_t topological_dimension() const
-  {
-    return 2;
-  }
-
-  /// Return the geometric dimension of the cell shape
-  virtual std::size_t geometric_dimension() const
-  {
-    return 2;
-  }
-
-  /// Return the dimension of the finite element function space
-  virtual std::size_t space_dimension() const
-  {
-    return 1;
-  }
-
-  /// Return the rank of the value space
-  virtual std::size_t value_rank() const
-  {
-    return 0;
-  }
-
-  /// Return the dimension of the value space for axis i
-  virtual std::size_t value_dimension(std::size_t i) const
-  {
-    return 1;
-  }
-
-  /// Evaluate basis function i at given point x in cell (actual implementation)
-  static void _evaluate_basis(std::size_t i,
-                              double* values,
-                              const double* x,
-                              const double* vertex_coordinates,
-                              int cell_orientation)
-  {
-    // Compute Jacobian
-    double J[4];
-    compute_jacobian_triangle_2d(J, vertex_coordinates);
-    
-    // Compute Jacobian inverse and determinant
-    double K[4];
-    double detJ;
-    compute_jacobian_inverse_triangle_2d(K, detJ, J);
-    
-    
-    // Compute constants
-    
-    // Get coordinates and map to the reference (FIAT) element
-    
-    // Reset values
-    *values = 0.0;
-    
-    // Array of basisvalues
-    double basisvalues[1] = {0.0};
-    
-    // Declare helper variables
-    
-    // Compute basisvalues
-    basisvalues[0] = 1.0;
-    
-    // Table(s) of coefficients
-    static const double coefficients0[1] = \
-    {1.0};
-    
-    // Compute value(s)
-    for (unsigned int r = 0; r < 1; r++)
-    {
-      *values += coefficients0[r]*basisvalues[r];
-    } // end loop over 'r'
-  }
-
-  /// Evaluate basis function i at given point x in cell (non-static member function)
-  virtual void evaluate_basis(std::size_t i,
-                              double* values,
-                              const double* x,
-                              const double* vertex_coordinates,
-                              int cell_orientation) const
-  {
-    _evaluate_basis(i, values, x, vertex_coordinates, cell_orientation);
-  }
-
-  /// Evaluate all basis functions at given point x in cell (actual implementation)
-  static void _evaluate_basis_all(double* values,
-                                  const double* x,
-                                  const double* vertex_coordinates,
-                                  int cell_orientation)
-  {
-    // Element is constant, calling evaluate_basis.
-    _evaluate_basis(0, values, x, vertex_coordinates, cell_orientation);
-  }
-
-  /// Evaluate all basis functions at given point x in cell (non-static member function)
-  virtual void evaluate_basis_all(double* values,
-                                  const double* x,
-                                  const double* vertex_coordinates,
-                                  int cell_orientation) const
-  {
-    _evaluate_basis_all(values, x, vertex_coordinates, cell_orientation);
-  }
-
-  /// Evaluate order n derivatives of basis function i at given point x in cell (actual implementation)
-  static void _evaluate_basis_derivatives(std::size_t i,
-                                          std::size_t n,
-                                          double* values,
-                                          const double* x,
-                                          const double* vertex_coordinates,
-                                          int cell_orientation)
-  {
-    
-    // Compute number of derivatives.
-    unsigned int num_derivatives = 1;
-    for (unsigned int r = 0; r < n; r++)
-    {
-      num_derivatives *= 2;
-    } // end loop over 'r'
-    
-    // Reset values. Assuming that values is always an array.
-    for (unsigned int r = 0; r < num_derivatives; r++)
-    {
-      values[r] = 0.0;
-    } // end loop over 'r'
-    
-    // Call evaluate_basis if order of derivatives is equal to zero.
-    if (n == 0)
-    {
-      _evaluate_basis(i, values, x, vertex_coordinates, cell_orientation);
-      return ;
-    }
-    
-    // If order of derivatives is greater than the maximum polynomial degree, return zeros.
-    if (n > 0)
-    {
-    return ;
-    }
-    
-  }
-
-  /// Evaluate order n derivatives of basis function i at given point x in cell (non-static member function)
-  virtual void evaluate_basis_derivatives(std::size_t i,
-                                          std::size_t n,
-                                          double* values,
-                                          const double* x,
-                                          const double* vertex_coordinates,
-                                          int cell_orientation) const
-  {
-    _evaluate_basis_derivatives(i, n, values, x, vertex_coordinates, cell_orientation);
-  }
-
-  /// Evaluate order n derivatives of all basis functions at given point x in cell (actual implementation)
-  static void _evaluate_basis_derivatives_all(std::size_t n,
-                                              double* values,
-                                              const double* x,
-                                              const double* vertex_coordinates,
-                                              int cell_orientation)
-  {
-    // Element is constant, calling evaluate_basis_derivatives.
-    _evaluate_basis_derivatives(0, n, values, x, vertex_coordinates, cell_orientation);
-  }
-
-  /// Evaluate order n derivatives of all basis functions at given point x in cell (non-static member function)
-  virtual void evaluate_basis_derivatives_all(std::size_t n,
-                                              double* values,
-                                              const double* x,
-                                              const double* vertex_coordinates,
-                                              int cell_orientation) const
-  {
-    _evaluate_basis_derivatives_all(n, values, x, vertex_coordinates, cell_orientation);
-  }
-
-  /// Evaluate linear functional for dof i on the function f
-  virtual double evaluate_dof(std::size_t i,
-                              const ufc::function& f,
-                              const double* vertex_coordinates,
-                              int cell_orientation,
-                              const ufc::cell& c) const
-  {
-    // Declare variables for result of evaluation
-    double vals[1];
-    
-    // Declare variable for physical coordinates
-    double y[2];
-    switch (i)
-    {
-    case 0:
-      {
-        y[0] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
-      y[1] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
-      f.evaluate(vals, y, c);
-      return vals[0];
-        break;
-      }
-    }
-    
-    return 0.0;
-  }
-
-  /// Evaluate linear functionals for all dofs on the function f
-  virtual void evaluate_dofs(double* values,
-                             const ufc::function& f,
-                             const double* vertex_coordinates,
-                             int cell_orientation,
-                             const ufc::cell& c) const
-  {
-    // Declare variables for result of evaluation
-    double vals[1];
-    
-    // Declare variable for physical coordinates
-    double y[2];
-    y[0] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
-    y[1] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
-    f.evaluate(vals, y, c);
-    values[0] = vals[0];
-  }
-
-  /// Interpolate vertex values from dof values
-  virtual void interpolate_vertex_values(double* vertex_values,
-                                         const double* dof_values,
-                                         const double* vertex_coordinates,
-                                         int cell_orientation,
-                                         const ufc::cell& c) const
-  {
-    // Evaluate function and change variables
-    vertex_values[0] = dof_values[0];
-    vertex_values[1] = dof_values[0];
-    vertex_values[2] = dof_values[0];
-  }
-
-  /// Map coordinate xhat from reference cell to coordinate x in cell
-  virtual void map_from_reference_cell(double* x,
-                                       const double* xhat,
-                                       const ufc::cell& c) const
-  {
-    throw std::runtime_error("map_from_reference_cell not yet implemented.");
-  }
-
-  /// Map from coordinate x in cell to coordinate xhat in reference cell
-  virtual void map_to_reference_cell(double* xhat,
-                                     const double* x,
-                                     const ufc::cell& c) const
-  {
-    throw std::runtime_error("map_to_reference_cell not yet implemented.");
-  }
-
-  /// Return the number of sub elements (for a mixed element)
-  virtual std::size_t num_sub_elements() const
-  {
-    return 0;
-  }
-
-  /// Create a new finite element for sub element i (for a mixed element)
-  virtual ufc::finite_element* create_sub_element(std::size_t i) const
-  {
-    return 0;
-  }
-
-  /// Create a new class instance
-  virtual ufc::finite_element* create() const
-  {
-    return new computefreesurfacestress_onlytp_finite_element_0();
-  }
-
-};
-
-/// This class defines the interface for a finite element.
-
-class computefreesurfacestress_onlytp_finite_element_1: public ufc::finite_element
-{
-public:
-
-  /// Constructor
-  computefreesurfacestress_onlytp_finite_element_1() : ufc::finite_element()
-  {
-    // Do nothing
-  }
-
-  /// Destructor
-  virtual ~computefreesurfacestress_onlytp_finite_element_1()
+  virtual ~discretecurvature_onlytp_finite_element_0()
   {
     // Do nothing
   }
@@ -1228,25 +933,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new computefreesurfacestress_onlytp_finite_element_1();
+    return new discretecurvature_onlytp_finite_element_0();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class computefreesurfacestress_onlytp_finite_element_2: public ufc::finite_element
+class discretecurvature_onlytp_finite_element_1: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_finite_element_2() : ufc::finite_element()
+  discretecurvature_onlytp_finite_element_1() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_finite_element_2()
+  virtual ~discretecurvature_onlytp_finite_element_1()
   {
     // Do nothing
   }
@@ -2661,12 +2366,12 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_finite_element_1();
+        return new discretecurvature_onlytp_finite_element_0();
         break;
       }
     case 1:
       {
-        return new computefreesurfacestress_onlytp_finite_element_1();
+        return new discretecurvature_onlytp_finite_element_0();
         break;
       }
     }
@@ -2677,25 +2382,25 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new computefreesurfacestress_onlytp_finite_element_2();
+    return new discretecurvature_onlytp_finite_element_1();
   }
 
 };
 
 /// This class defines the interface for a finite element.
 
-class computefreesurfacestress_onlytp_finite_element_3: public ufc::finite_element
+class discretecurvature_onlytp_finite_element_2: public ufc::finite_element
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_finite_element_3() : ufc::finite_element()
+  discretecurvature_onlytp_finite_element_2() : ufc::finite_element()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_finite_element_3()
+  virtual ~discretecurvature_onlytp_finite_element_2()
   {
     // Do nothing
   }
@@ -4628,12 +4333,12 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_finite_element_2();
+        return new discretecurvature_onlytp_finite_element_1();
         break;
       }
     case 1:
       {
-        return new computefreesurfacestress_onlytp_finite_element_1();
+        return new discretecurvature_onlytp_finite_element_0();
         break;
       }
     }
@@ -4644,7 +4349,7 @@ public:
   /// Create a new class instance
   virtual ufc::finite_element* create() const
   {
-    return new computefreesurfacestress_onlytp_finite_element_3();
+    return new discretecurvature_onlytp_finite_element_2();
   }
 
 };
@@ -4652,220 +4357,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class computefreesurfacestress_onlytp_dofmap_0: public ufc::dofmap
+class discretecurvature_onlytp_dofmap_0: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_dofmap_0() : ufc::dofmap()
+  discretecurvature_onlytp_dofmap_0() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_dofmap_0()
-  {
-    // Do nothing
-  }
-
-  /// Return a string identifying the dofmap
-  virtual const char* signature() const
-  {
-    return "FFC dofmap for FiniteElement('Real', Domain(Cell('triangle', 2)), 0, None)";
-  }
-
-  /// Return true iff mesh entities of topological dimension d are needed
-  virtual bool needs_mesh_entities(std::size_t d) const
-  {
-    switch (d)
-    {
-    case 0:
-      {
-        return false;
-        break;
-      }
-    case 1:
-      {
-        return false;
-        break;
-      }
-    case 2:
-      {
-        return false;
-        break;
-      }
-    }
-    
-    return false;
-  }
-
-  /// Return the topological dimension of the associated cell shape
-  virtual std::size_t topological_dimension() const
-  {
-    return 2;
-  }
-
-  /// Return the geometric dimension of the associated cell shape
-  virtual std::size_t geometric_dimension() const
-  {
-    return 2;
-  }
-
-  /// Return the dimension of the global finite element function space
-  virtual std::size_t global_dimension(const std::vector<std::size_t>&
-                                       num_global_entities) const
-  {
-    return 1;
-  }
-
-  /// Return the dimension of the local finite element function space for a cell
-  virtual std::size_t local_dimension() const
-  {
-    return 1;
-  }
-
-  /// Return the number of dofs on each cell facet
-  virtual std::size_t num_facet_dofs() const
-  {
-    return 0;
-  }
-
-  /// Return the number of dofs associated with each cell entity of dimension d
-  virtual std::size_t num_entity_dofs(std::size_t d) const
-  {
-    switch (d)
-    {
-    case 0:
-      {
-        return 0;
-        break;
-      }
-    case 1:
-      {
-        return 0;
-        break;
-      }
-    case 2:
-      {
-        return 1;
-        break;
-      }
-    }
-    
-    return 0;
-  }
-
-  /// Tabulate the local-to-global mapping of dofs on a cell
-  virtual void tabulate_dofs(std::size_t* dofs,
-                             const std::vector<std::size_t>& num_global_entities,
-                             const ufc::cell& c) const
-  {
-    dofs[0] = 0;
-  }
-
-  /// Tabulate the local-to-local mapping from facet dofs to cell dofs
-  virtual void tabulate_facet_dofs(std::size_t* dofs,
-                                   std::size_t facet) const
-  {
-    switch (facet)
-    {
-    case 0:
-      {
-        
-        break;
-      }
-    case 1:
-      {
-        
-        break;
-      }
-    case 2:
-      {
-        
-        break;
-      }
-    }
-    
-  }
-
-  /// Tabulate the local-to-local mapping of dofs on entity (d, i)
-  virtual void tabulate_entity_dofs(std::size_t* dofs,
-                                    std::size_t d, std::size_t i) const
-  {
-    if (d > 2)
-    {
-    throw std::runtime_error("d is larger than dimension (2)");
-    }
-    
-    switch (d)
-    {
-    case 0:
-      {
-        
-        break;
-      }
-    case 1:
-      {
-        
-        break;
-      }
-    case 2:
-      {
-        if (i > 0)
-      {
-      throw std::runtime_error("i is larger than number of entities (0)");
-      }
-      
-      dofs[0] = 0;
-        break;
-      }
-    }
-    
-  }
-
-  /// Tabulate the coordinates of all dofs on a cell
-  virtual void tabulate_coordinates(double* dof_coordinates,
-                                    const double* vertex_coordinates) const
-  {
-    dof_coordinates[0] = 0.333333333333333*vertex_coordinates[0] + 0.333333333333333*vertex_coordinates[2] + 0.333333333333333*vertex_coordinates[4];
-    dof_coordinates[1] = 0.333333333333333*vertex_coordinates[1] + 0.333333333333333*vertex_coordinates[3] + 0.333333333333333*vertex_coordinates[5];
-  }
-
-  /// Return the number of sub dofmaps (for a mixed element)
-  virtual std::size_t num_sub_dofmaps() const
-  {
-    return 0;
-  }
-
-  /// Create a new dofmap for sub dofmap i (for a mixed element)
-  virtual ufc::dofmap* create_sub_dofmap(std::size_t i) const
-  {
-    return 0;
-  }
-
-  /// Create a new class instance
-  virtual ufc::dofmap* create() const
-  {
-    return new computefreesurfacestress_onlytp_dofmap_0();
-  }
-
-};
-
-/// This class defines the interface for a local-to-global mapping of
-/// degrees of freedom (dofs).
-
-class computefreesurfacestress_onlytp_dofmap_1: public ufc::dofmap
-{
-public:
-
-  /// Constructor
-  computefreesurfacestress_onlytp_dofmap_1() : ufc::dofmap()
-  {
-    // Do nothing
-  }
-
-  /// Destructor
-  virtual ~computefreesurfacestress_onlytp_dofmap_1()
+  virtual ~discretecurvature_onlytp_dofmap_0()
   {
     // Do nothing
   }
@@ -5075,7 +4578,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new computefreesurfacestress_onlytp_dofmap_1();
+    return new discretecurvature_onlytp_dofmap_0();
   }
 
 };
@@ -5083,18 +4586,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class computefreesurfacestress_onlytp_dofmap_2: public ufc::dofmap
+class discretecurvature_onlytp_dofmap_1: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_dofmap_2() : ufc::dofmap()
+  discretecurvature_onlytp_dofmap_1() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_dofmap_2()
+  virtual ~discretecurvature_onlytp_dofmap_1()
   {
     // Do nothing
   }
@@ -5323,12 +4826,12 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_dofmap_1();
+        return new discretecurvature_onlytp_dofmap_0();
         break;
       }
     case 1:
       {
-        return new computefreesurfacestress_onlytp_dofmap_1();
+        return new discretecurvature_onlytp_dofmap_0();
         break;
       }
     }
@@ -5339,7 +4842,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new computefreesurfacestress_onlytp_dofmap_2();
+    return new discretecurvature_onlytp_dofmap_1();
   }
 
 };
@@ -5347,18 +4850,18 @@ public:
 /// This class defines the interface for a local-to-global mapping of
 /// degrees of freedom (dofs).
 
-class computefreesurfacestress_onlytp_dofmap_3: public ufc::dofmap
+class discretecurvature_onlytp_dofmap_2: public ufc::dofmap
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_dofmap_3() : ufc::dofmap()
+  discretecurvature_onlytp_dofmap_2() : ufc::dofmap()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_dofmap_3()
+  virtual ~discretecurvature_onlytp_dofmap_2()
   {
     // Do nothing
   }
@@ -5606,12 +5109,12 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_dofmap_2();
+        return new discretecurvature_onlytp_dofmap_1();
         break;
       }
     case 1:
       {
-        return new computefreesurfacestress_onlytp_dofmap_1();
+        return new discretecurvature_onlytp_dofmap_0();
         break;
       }
     }
@@ -5622,7 +5125,7 @@ public:
   /// Create a new class instance
   virtual ufc::dofmap* create() const
   {
-    return new computefreesurfacestress_onlytp_dofmap_3();
+    return new discretecurvature_onlytp_dofmap_2();
   }
 
 };
@@ -5631,18 +5134,18 @@ public:
 /// exterior facet tensor corresponding to the local contribution to
 /// a form from the integral over an exterior facet.
 
-class computefreesurfacestress_onlytp_exterior_facet_integral_0_6: public ufc::exterior_facet_integral
+class discretecurvature_onlytp_exterior_facet_integral_0_6: public ufc::exterior_facet_integral
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_exterior_facet_integral_0_6() : ufc::exterior_facet_integral()
+  discretecurvature_onlytp_exterior_facet_integral_0_6() : ufc::exterior_facet_integral()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_exterior_facet_integral_0_6()
+  virtual ~discretecurvature_onlytp_exterior_facet_integral_0_6()
   {
     // Do nothing
   }
@@ -5650,7 +5153,7 @@ public:
   /// Tabulate which form coefficients are used by this integral
   virtual const std::vector<bool> & enabled_coefficients() const
   {
-    static const std::vector<bool> enabled({true, true, true, true});
+    static const std::vector<bool> enabled({});
     return enabled;
   }
 
@@ -5683,7 +5186,10 @@ public:
     const double det = std::sqrt(dx0*dx0 + dx1*dx1);
     
     
+    const bool direction = dx1*(vertex_coordinates[2*facet] - vertex_coordinates[2*v0]) - dx0*(vertex_coordinates[2*facet + 1] - vertex_coordinates[2*v0 + 1]) < 0;
     // Compute facet normals from the facet scale factor constants
+    const double n0 = direction ? dx1 / det : -dx1 / det;
+    const double n1 = direction ? -dx0 / det : dx0 / det;
     
     // Facet area
     const double facet_area = det;
@@ -5695,31 +5201,12 @@ public:
     
     
     // Array of quadrature weights.
-    static const double W2[2] = {0.5, 0.5};
-    // Quadrature points on the UFC reference element: (0.211324865405187), (0.788675134594813)
+    static const double W1 = 1.0;
+    // Quadrature points on the UFC reference element: (0.5)
     
     // Values of basis functions at quadrature points.
-    static const double FE0_f0_C0[2][2] = \
-    {{0.788675134594813, 0.211324865405187},
-    {0.211324865405187, 0.788675134594813}};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc0[2] = {1, 2};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc3[2] = {4, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc6[2] = {0, 2};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc7[2] = {3, 5};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc8[2] = {0, 1};
-    
-    // Array of non-zero columns
-    static const unsigned int nzc9[2] = {3, 4};
+    static const double FE0_f0_C0[1][2] = \
+    {{0.5, 0.5}};
     
     // Array of non-zero columns
     static const unsigned int nzc10[2] = {1, 2};
@@ -5744,9 +5231,10 @@ public:
     {
       A[r] = 0.0;
     } // end loop over 'r'
-    // Number of operations to compute geometry constants: 5.
-    double G[1];
-    G[0] = 2.0*det*w[0][0]*w[1][0]*w[2][0]/facet_area;
+    // Number of operations to compute geometry constants: 8.
+    double G[2];
+    G[0] = 2.0*W1*det*n1/facet_area;
+    G[1] = -2.0*W1*det*n0/facet_area;
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
@@ -5754,120 +5242,60 @@ public:
     {
     case 0:
       {
-        // Total number of operations to compute element tensor (from this point): 40
+        // Total number of operations to compute element tensor (from this point): 8
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 40
-      for (unsigned int ip = 0; ip < 2; ip++)
+      // Number of operations to compute element tensor for following IP loop = 8
+      for (unsigned int ip = 0; ip < 1; ip++)
       {
-        
-        // Coefficient declarations.
-        double F0 = 0.0;
-        double F1 = 0.0;
-        
-        // Total number of operations to compute function values = 8
-        for (unsigned int r = 0; r < 2; r++)
-        {
-          F0 += FE0_f0_C0[ip][r]*w[3][nzc0[r]];
-          F1 += FE0_f0_C0[ip][r]*w[3][nzc3[r]];
-        } // end loop over 'r'
-        
-        // Number of operations to compute ip constants: 4
-        double I[2];
-        // Number of operations: 2
-        I[0] = F0*G[0]*W2[ip];
-        
-        // Number of operations: 2
-        I[1] = F1*G[0]*W2[ip];
-        
         
         // Number of operations for primary indices: 8
         for (unsigned int j = 0; j < 2; j++)
         {
           // Number of operations to compute entry: 2
-          A[nzc10[j]] += FE0_f0_C0[ip][j]*I[0];
+          A[nzc10[j]] += FE0_f0_C0[0][j]*G[0];
           // Number of operations to compute entry: 2
-          A[nzc11[j]] += FE0_f0_C0[ip][j]*I[1];
+          A[nzc11[j]] += FE0_f0_C0[0][j]*G[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
       }
     case 1:
       {
-        // Total number of operations to compute element tensor (from this point): 40
+        // Total number of operations to compute element tensor (from this point): 8
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 40
-      for (unsigned int ip = 0; ip < 2; ip++)
+      // Number of operations to compute element tensor for following IP loop = 8
+      for (unsigned int ip = 0; ip < 1; ip++)
       {
-        
-        // Coefficient declarations.
-        double F0 = 0.0;
-        double F1 = 0.0;
-        
-        // Total number of operations to compute function values = 8
-        for (unsigned int r = 0; r < 2; r++)
-        {
-          F0 += FE0_f0_C0[ip][r]*w[3][nzc6[r]];
-          F1 += FE0_f0_C0[ip][r]*w[3][nzc7[r]];
-        } // end loop over 'r'
-        
-        // Number of operations to compute ip constants: 4
-        double I[2];
-        // Number of operations: 2
-        I[0] = F0*G[0]*W2[ip];
-        
-        // Number of operations: 2
-        I[1] = F1*G[0]*W2[ip];
-        
         
         // Number of operations for primary indices: 8
         for (unsigned int j = 0; j < 2; j++)
         {
           // Number of operations to compute entry: 2
-          A[nzc13[j]] += FE0_f0_C0[ip][j]*I[0];
+          A[nzc13[j]] += FE0_f0_C0[0][j]*G[0];
           // Number of operations to compute entry: 2
-          A[nzc14[j]] += FE0_f0_C0[ip][j]*I[1];
+          A[nzc14[j]] += FE0_f0_C0[0][j]*G[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
       }
     case 2:
       {
-        // Total number of operations to compute element tensor (from this point): 40
+        // Total number of operations to compute element tensor (from this point): 8
       
       // Loop quadrature points for integral.
-      // Number of operations to compute element tensor for following IP loop = 40
-      for (unsigned int ip = 0; ip < 2; ip++)
+      // Number of operations to compute element tensor for following IP loop = 8
+      for (unsigned int ip = 0; ip < 1; ip++)
       {
-        
-        // Coefficient declarations.
-        double F0 = 0.0;
-        double F1 = 0.0;
-        
-        // Total number of operations to compute function values = 8
-        for (unsigned int r = 0; r < 2; r++)
-        {
-          F0 += FE0_f0_C0[ip][r]*w[3][nzc8[r]];
-          F1 += FE0_f0_C0[ip][r]*w[3][nzc9[r]];
-        } // end loop over 'r'
-        
-        // Number of operations to compute ip constants: 4
-        double I[2];
-        // Number of operations: 2
-        I[0] = F0*G[0]*W2[ip];
-        
-        // Number of operations: 2
-        I[1] = F1*G[0]*W2[ip];
-        
         
         // Number of operations for primary indices: 8
         for (unsigned int j = 0; j < 2; j++)
         {
           // Number of operations to compute entry: 2
-          A[nzc16[j]] += FE0_f0_C0[ip][j]*I[0];
+          A[nzc16[j]] += FE0_f0_C0[0][j]*G[0];
           // Number of operations to compute entry: 2
-          A[nzc17[j]] += FE0_f0_C0[ip][j]*I[1];
+          A[nzc17[j]] += FE0_f0_C0[0][j]*G[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
@@ -5893,18 +5321,18 @@ public:
 /// sequence of basis functions of Vj and w1, w2, ..., wn are given
 /// fixed functions (coefficients).
 
-class computefreesurfacestress_onlytp_form_0: public ufc::form
+class discretecurvature_onlytp_form_0: public ufc::form
 {
 public:
 
   /// Constructor
-  computefreesurfacestress_onlytp_form_0() : ufc::form()
+  discretecurvature_onlytp_form_0() : ufc::form()
   {
     // Do nothing
   }
 
   /// Destructor
-  virtual ~computefreesurfacestress_onlytp_form_0()
+  virtual ~discretecurvature_onlytp_form_0()
   {
     // Do nothing
   }
@@ -5912,13 +5340,13 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "a137c2972fca7e33df840a860256242764870854582550c7d94470ed56fbed04d448af5d95d7c5b54c3cb64607912d912c0c7e4bf7a1eae7616a4e961d36368b";
+    return "f6b2529ad9b744eee7849e43a98e8895afaffd2f0d0456c152617cfbb39e968ecf59349225adaceb79f802d9342560ff985b5a793bf68c23a3be234ff4c51339";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
   virtual std::size_t original_coefficient_position(std::size_t i) const
   {
-    static const std::vector<std::size_t> position({0, 1, 2, 3});
+    static const std::vector<std::size_t> position({});
     return position[i];
   }
 
@@ -5931,7 +5359,7 @@ public:
   /// Return the number of coefficients (n)
   virtual std::size_t num_coefficients() const
   {
-    return 4;
+    return 0;
   }
 
   /// Return the number of cell domains
@@ -6001,27 +5429,7 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_finite_element_3();
-        break;
-      }
-    case 1:
-      {
-        return new computefreesurfacestress_onlytp_finite_element_0();
-        break;
-      }
-    case 2:
-      {
-        return new computefreesurfacestress_onlytp_finite_element_0();
-        break;
-      }
-    case 3:
-      {
-        return new computefreesurfacestress_onlytp_finite_element_0();
-        break;
-      }
-    case 4:
-      {
-        return new computefreesurfacestress_onlytp_finite_element_2();
+        return new discretecurvature_onlytp_finite_element_2();
         break;
       }
     }
@@ -6036,27 +5444,7 @@ public:
     {
     case 0:
       {
-        return new computefreesurfacestress_onlytp_dofmap_3();
-        break;
-      }
-    case 1:
-      {
-        return new computefreesurfacestress_onlytp_dofmap_0();
-        break;
-      }
-    case 2:
-      {
-        return new computefreesurfacestress_onlytp_dofmap_0();
-        break;
-      }
-    case 3:
-      {
-        return new computefreesurfacestress_onlytp_dofmap_0();
-        break;
-      }
-    case 4:
-      {
-        return new computefreesurfacestress_onlytp_dofmap_2();
+        return new discretecurvature_onlytp_dofmap_2();
         break;
       }
     }
@@ -6077,7 +5465,7 @@ public:
     {
     case 6:
       {
-        return new computefreesurfacestress_onlytp_exterior_facet_integral_0_6();
+        return new discretecurvature_onlytp_exterior_facet_integral_0_6();
         break;
       }
     }
@@ -6151,196 +5539,8 @@ public:
 #include <dolfin/adaptivity/ErrorControl.h>
 #include <dolfin/adaptivity/GoalFunctional.h>
 
-namespace computeFreeSurfaceStress_onlyTP
+namespace discreteCurvature_onlyTP
 {
-
-class CoefficientSpace_cosThetaS: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_cosThetaS(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_cosThetaS(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_cosThetaS(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_cosThetaS(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class CoefficientSpace_dt: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_dt(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_dt(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class CoefficientSpace_gamma: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_gamma(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_gamma(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_gamma(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_gamma(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_0()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
-
-class CoefficientSpace_t_partialOmega: public dolfin::FunctionSpace
-{
-public:
-
-  //--- Constructors for standard function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_t_partialOmega(const dolfin::Mesh& mesh):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_2()), mesh)))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_t_partialOmega(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_2()), *mesh)))
-  {
-    // Do nothing
-  }
-
-  //--- Constructors for constrained function space, 2 different versions ---
-
-  // Create standard function space (reference version)
-  CoefficientSpace_t_partialOmega(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
-    dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_2()), mesh,
-                              dolfin::reference_to_no_delete_pointer(constrained_domain))))
-  {
-    // Do nothing
-  }
-
-  // Create standard function space (shared pointer version)
-  CoefficientSpace_t_partialOmega(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_2()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_2()), *mesh, constrained_domain)))
-  {
-    // Do nothing
-  }
-
-};
 
 class Form_L_FunctionSpace_0: public dolfin::FunctionSpace
 {
@@ -6351,8 +5551,8 @@ public:
   // Create standard function space (reference version)
   Form_L_FunctionSpace_0(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_3()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new discretecurvature_onlytp_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new discretecurvature_onlytp_dofmap_2()), mesh)))
   {
     // Do nothing
   }
@@ -6360,8 +5560,8 @@ public:
   // Create standard function space (shared pointer version)
   Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_3()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new discretecurvature_onlytp_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new discretecurvature_onlytp_dofmap_2()), *mesh)))
   {
     // Do nothing
   }
@@ -6371,8 +5571,8 @@ public:
   // Create standard function space (reference version)
   Form_L_FunctionSpace_0(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_3()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new discretecurvature_onlytp_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new discretecurvature_onlytp_dofmap_2()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -6381,21 +5581,13 @@ public:
   // Create standard function space (shared pointer version)
   Form_L_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new computefreesurfacestress_onlytp_finite_element_3()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new computefreesurfacestress_onlytp_dofmap_3()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new discretecurvature_onlytp_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new discretecurvature_onlytp_dofmap_2()), *mesh, constrained_domain)))
   {
     // Do nothing
   }
 
 };
-
-typedef CoefficientSpace_dt Form_L_FunctionSpace_1;
-
-typedef CoefficientSpace_gamma Form_L_FunctionSpace_2;
-
-typedef CoefficientSpace_cosThetaS Form_L_FunctionSpace_3;
-
-typedef CoefficientSpace_t_partialOmega Form_L_FunctionSpace_4;
 
 class Form_L: public dolfin::Form
 {
@@ -6403,76 +5595,20 @@ public:
 
   // Constructor
   Form_L(const dolfin::FunctionSpace& V0):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
+    dolfin::Form(1, 0)
   {
     _function_spaces[0] = reference_to_no_delete_pointer(V0);
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
-  }
-
-  // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& cosThetaS, const dolfin::GenericFunction& t_partialOmega):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
-  {
-    _function_spaces[0] = reference_to_no_delete_pointer(V0);
-
-    this->dt = dt;
-    this->gamma = gamma;
-    this->cosThetaS = cosThetaS;
-    this->t_partialOmega = t_partialOmega;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
-  }
-
-  // Constructor
-  Form_L(const dolfin::FunctionSpace& V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> cosThetaS, std::shared_ptr<const dolfin::GenericFunction> t_partialOmega):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
-  {
-    _function_spaces[0] = reference_to_no_delete_pointer(V0);
-
-    this->dt = *dt;
-    this->gamma = *gamma;
-    this->cosThetaS = *cosThetaS;
-    this->t_partialOmega = *t_partialOmega;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new discretecurvature_onlytp_form_0());
   }
 
   // Constructor
   Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
+    dolfin::Form(1, 0)
   {
     _function_spaces[0] = V0;
 
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
-  }
-
-  // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, const dolfin::GenericFunction& dt, const dolfin::GenericFunction& gamma, const dolfin::GenericFunction& cosThetaS, const dolfin::GenericFunction& t_partialOmega):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
-  {
-    _function_spaces[0] = V0;
-
-    this->dt = dt;
-    this->gamma = gamma;
-    this->cosThetaS = cosThetaS;
-    this->t_partialOmega = t_partialOmega;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
-  }
-
-  // Constructor
-  Form_L(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> gamma, std::shared_ptr<const dolfin::GenericFunction> cosThetaS, std::shared_ptr<const dolfin::GenericFunction> t_partialOmega):
-    dolfin::Form(1, 4), dt(*this, 0), gamma(*this, 1), cosThetaS(*this, 2), t_partialOmega(*this, 3)
-  {
-    _function_spaces[0] = V0;
-
-    this->dt = *dt;
-    this->gamma = *gamma;
-    this->cosThetaS = *cosThetaS;
-    this->t_partialOmega = *t_partialOmega;
-
-    _ufc_form = std::shared_ptr<const ufc::form>(new computefreesurfacestress_onlytp_form_0());
+    _ufc_form = std::shared_ptr<const ufc::form>(new discretecurvature_onlytp_form_0());
   }
 
   // Destructor
@@ -6482,54 +5618,27 @@ public:
   /// Return the number of the coefficient with this name
   virtual std::size_t coefficient_number(const std::string& name) const
   {
-    if (name == "dt")
-      return 0;
-    else if (name == "gamma")
-      return 1;
-    else if (name == "cosThetaS")
-      return 2;
-    else if (name == "t_partialOmega")
-      return 3;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
-                         "Invalid coefficient");
+                         "There are no coefficients");
     return 0;
   }
 
   /// Return the name of the coefficient with this number
   virtual std::string coefficient_name(std::size_t i) const
   {
-    switch (i)
-    {
-    case 0:
-      return "dt";
-    case 1:
-      return "gamma";
-    case 2:
-      return "cosThetaS";
-    case 3:
-      return "t_partialOmega";
-    }
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
-                         "Invalid coefficient");
+                         "There are no coefficients");
     return "unnamed";
   }
 
   // Typedefs
   typedef Form_L_FunctionSpace_0 TestSpace;
-  typedef Form_L_FunctionSpace_1 CoefficientSpace_dt;
-  typedef Form_L_FunctionSpace_2 CoefficientSpace_gamma;
-  typedef Form_L_FunctionSpace_3 CoefficientSpace_cosThetaS;
-  typedef Form_L_FunctionSpace_4 CoefficientSpace_t_partialOmega;
 
   // Coefficients
-  dolfin::CoefficientAssigner dt;
-  dolfin::CoefficientAssigner gamma;
-  dolfin::CoefficientAssigner cosThetaS;
-  dolfin::CoefficientAssigner t_partialOmega;
 };
 
 // Class typedefs

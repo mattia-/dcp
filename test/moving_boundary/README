@@ -1,21 +1,6 @@
-??? MOVING BOUNDARY !!!
-
-
-This collection of files sets up the case for a test linear differential problem. We will use the Poisson equation with 
-mixed boundary conditions on the unit square:
-$$ 
--k \Delta u = f \in \Omega
-s.t.
-\nabla u \cdot n = g \in \Gamma_N = {(x, y) \in \Omega s.t. x \in [0, 1] and y = 0}
-u = h \in \partial \Omega \setminus \Gamma_N
-$$
-with 
-$$
-k = 1
-f = 1
-g = 1
-h = 0
-$$
+This collection of files sets up the case for a test free-surface problem for Navier-Stokes equations
+[cfr. Fumagalli,Parolini,Verani, MOX Report 03/2017.
+http://www.mate.polimi.it/biblioteca/add/qmox/03-2017.pdf]
 
 Steps to launch the code:
 1) create a directory in which to build the code. In the following steps, it will be supposed that such directory is
@@ -34,5 +19,5 @@ called "build" and was created in the same directory as the one where this READM
 4) compile
     $ make
 
-5) run the executable
-    $ ./src/main
+5) run the executable with possible input/output options
+    $ ./src/main [ -f INPUT_FILE ] [ -d OUTPUT_DIRECTORY_ABSOLUTE_PATH/ ]

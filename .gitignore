@@ -1,3 +1,9 @@
+# hidden files
+.*
+
+# ctags tag files
+tags
+
 # Compiled Object files
 *.slo
 *.lo

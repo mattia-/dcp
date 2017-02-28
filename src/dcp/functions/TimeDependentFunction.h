@@ -139,6 +139,17 @@ namespace dcp
              */
             void plot (std::string title, const bool& pause);
 
+            //! Compute time integral of the function
+            /*!
+             *  The time integral is a function in the same function space which at each point has value equal to the
+             *  integral in time of the function at that same point. If the time dependent function contains no data, an
+             *  error is issued. If instead the time dependent function only has one element, zero (as a function) is
+             *  returned.
+             *
+             *  \return the result of the time integration (move semantic is used if implemented by FEniCS)
+             */
+            dolfin::Function computeTimeIntegral ();
+
             /********************** OPERATORS ***********************/
             //! Assignement operator
             /*!

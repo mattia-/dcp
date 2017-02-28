@@ -19,6 +19,7 @@
 
 #include <dolfin/math/basic.h>
 #include <dolfin/plot/plot.h>
+#include <dolfin/la/Vector.h>
 #include <dcp/functions/TimeDependentFunction.h>
 #include <dcp/expressions/TimeDependentExpression.h>
 
@@ -177,6 +178,75 @@ namespace dcp
             }
         }
         dolfin::end (); // Plotting time-dependent function...
+    }
+
+
+
+    dolfin::Function TimeDependentFunction::computeTimeIntegral ()
+    {
+        // if TimeDependentFunction contains no data, return nothing
+        if (this->size () == 0)
+        {
+            dolfin::dolfin_error ("dcp: TimeDependentFunction.cpp",
+                                  "compute time integral",
+                                  "Function spaces differ within function in TimeDependentFunction data");
+        }
+
+        // if only one function is in the function space, return zero
+        if (this->size () == 1)
+        {
+            dolfin::Function result ((*this)[0].second);
+
+            // set result to zero
+            (*result.vector()) *= 0;
+
+            return result;
+        }
+
+        // if we get here, we are fine, and we have at least two elements in *this
+
+        // all of the function spaces are supposed to be the same; otherwise, dolfin will issue an error when trying to
+        // sum the functions anyway, so no need to check for it now, so create result using any function space
+        dolfin::Function result ((*this)[0].second);
+
+        // set result to zero
+        (*result.vector()) *= 0;
+
+        // auxiliary variables
+        // 1) variables to contain the previous and current function for the trapezoidal rule integration
+        dolfin::Function previousFunction (result);
+        dolfin::Function currentFunction (result);
+        // 2) tmp functions because dolfin does not allow argument aliasing in operations on FE functions
+        dolfin::Function tmp (result);
+        // 3) current time step
+        double dt = 0;
+        // 4) flag to change behaviour according to iteration
+        bool isFirstIteration = true;
+
+        // loop on elements and compute integral
+        dolfin::begin (dolfin::DBG, "Computing time integral...");
+        for (std::size_t i = 0; i < this->size (); ++i)
+        {
+            if (isFirstIteration)
+            {
+                isFirstIteration = false;
+                previousFunction = (*this)[i].second;
+            }
+            else
+            {
+                dt = fabs ((*this)[i].first - (*this)[i-1].first);
+                currentFunction = (*this)[i].second;
+
+                // result = result + (previousFunction + currentFunction) * 0.5 * dt;
+                tmp = (previousFunction + currentFunction) * 0.5 * dt;
+                result = result + tmp;
+
+                previousFunction = currentFunction;
+            }
+        }
+        dolfin::end (); // Computing time integral
+
+        return result;
     }
 
 

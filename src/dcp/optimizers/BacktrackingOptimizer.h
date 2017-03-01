@@ -186,7 +186,7 @@ namespace dcp
              *  the previous \c computeDotProduct function within the implementer
              */
             template <class T_ControlVariable>
-                void apply (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                void apply (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
                             dcp::GenericObjectiveFunctional& objectiveFunctional,
                             T_ControlVariable& initialGuess,
                             dcp::GenericImplementer<T_ControlVariable>& implementer) const;
@@ -226,7 +226,7 @@ namespace dcp
                                     T_ControlVariable& controlVariable,
                                     const T_ControlVariable& previousControlVariable,
                                     const T_ControlVariable& searchDirection,
-                                    const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                                    const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
                                     dcp::GenericObjectiveFunctional& objectiveFunctional,
                                     dcp::GenericImplementer<T_ControlVariable>& implementer) const;
 
@@ -278,7 +278,7 @@ namespace dcp
                                            T_ControlVariable& initialGuess,
                                            dcp::GenericImplementer<T_ControlVariable>& implementer) const
         {
-            std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systemAsVector;
+            std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systemAsVector;
             systemAsVector.push_back (dolfin::reference_to_no_delete_pointer (system));
 
             apply (systemAsVector, objectiveFunctional, initialGuess, implementer);
@@ -287,7 +287,7 @@ namespace dcp
 
 
     template <class T_ControlVariable>
-        void BacktrackingOptimizer::apply (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+        void BacktrackingOptimizer::apply (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
                                            dcp::GenericObjectiveFunctional& objectiveFunctional,
                                            T_ControlVariable& initialGuess,
                                            dcp::GenericImplementer<T_ControlVariable>& implementer) const
@@ -597,7 +597,7 @@ namespace dcp
              T_ControlVariable& controlVariable,
              const T_ControlVariable& previousControlVariable,
              const T_ControlVariable& searchDirection,
-             const std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systems,
+             const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
              dcp::GenericObjectiveFunctional& objectiveFunctional,
              dcp::GenericImplementer<T_ControlVariable>& implementer) const
     {

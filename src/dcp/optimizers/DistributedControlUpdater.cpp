@@ -34,8 +34,9 @@ namespace dcp
 
 
     /************************* OPERATORS ********************/
-    void DistributedControlUpdater::operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>> systems,
-                                                const dolfin::GenericFunction& coefficientValue) const
+    void DistributedControlUpdater::operator()
+        (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem>> systems,
+         const dolfin::GenericFunction& coefficientValue) const
     {
         dcp::GenericProblem& problem = (*(systems[0])) [problemName_];
 
@@ -46,8 +47,9 @@ namespace dcp
 
 
 
-    void DistributedControlUpdater::operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>> systems,
-                                                const dcp::TimeDependentFunction& coefficientValue) const
+    void DistributedControlUpdater::operator()
+        (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem>> systems,
+         const dcp::TimeDependentFunction& coefficientValue) const
     {
         dcp::GenericProblem& problem = (*(systems[0])) [problemName_];
         auto pointerToProblem = dynamic_cast<dcp::TimeDependentProblem*> (&problem);

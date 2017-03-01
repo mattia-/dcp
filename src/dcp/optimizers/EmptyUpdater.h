@@ -57,7 +57,7 @@ namespace dcp
              *  \param systems the systems on which to operate
              *  \param dirichletBCValue the new value for the control Dirichlet boundary condition
              */
-            void operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>> systems,
+            void operator() (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem>> systems,
                              const dolfin::GenericFunction& dirichletBCValue) const;
 
             //! Call operator [2]
@@ -68,7 +68,7 @@ namespace dcp
              *  \param systems the systems on which to operate
              *  \param dirichletBCValue the new value for the control Dirichlet boundary condition
              */
-            void operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem>> systems,
+            void operator() (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem>> systems,
                              const dcp::TimeDependentFunction& dirichletBCValue) const;
 
             // ---------------------------------------------------------------------------------------------//

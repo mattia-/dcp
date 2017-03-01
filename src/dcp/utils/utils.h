@@ -22,6 +22,7 @@
 
 #include "DotProduct.h"
 #include "dotproductforms.h"
+#include "plots.h"
 
 #endif
 

@@ -1,10 +1,12 @@
 # collect header files
-SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/DotProduct.h
+SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/plots.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/DotProduct.h
              ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
              ${CMAKE_CURRENT_SOURCE_DIR}/dotproductforms.h)
 
 # collect source files
-SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/DotProduct.cpp)
+SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/DotProduct.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/plots.cpp)
 
 # add files to shared library dependancies
 SET (CONTROL_PROBLEM_LIBRARY_SOURCES ${CONTROL_PROBLEM_LIBRARY_SOURCES} ${SOURCES} PARENT_SCOPE)

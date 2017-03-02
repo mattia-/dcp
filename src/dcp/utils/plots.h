@@ -29,21 +29,23 @@ namespace dolfin
     /*!
      *  \param function the function to be plotted
      *  \param title the title
-     *  \param pause switch to pause the execution after each plot
+     *  \param mode sets the plot mode. Possible values are \c "pause", which pauses the execution after the plot at
+     *  each timestep, and \c "continue", which does not. The choice of a string over a simple boolean switch is so that
+     *  the signature of the method is exactly the same as for normal dolfin plot functions
      */
-    void plot (dcp::TimeDependentFunction& function,
-               std::string title = "",
-               const bool& pause = true);
+    void plot (dcp::TimeDependentFunction& function, std::string title = "", std::string mode = "pause");
 
     //! Dolfin plotter [2]
     /*!
      *  \param function the function to be plotted
      *  \param title the title
-     *  \param pause switch to pause the execution after each plot
+     *  \param mode sets the plot mode. Possible values are \c "pause", which pauses the execution after the plot at
+     *  each timestep, and \c "continue", which does not. The choice of a string over a simple boolean switch is so that
+     *  the signature of the method is exactly the same as for normal dolfin plot functions
      */
     void plot (const std::shared_ptr<dcp::TimeDependentFunction> function,
                std::string title = "",
-               const bool& pause = true);
+               std::string mode = "pause");
 }
 
 #endif

@@ -2,11 +2,10 @@
 #include <assert.h>
 #include "myNavierstokesTimeCurvLinear.h"
 #include "myNavierstokesTimeCurvLinearPreviousDomain.h"
-#include <dcp/differential_problems/MeshManager.h> //"MeshManager.h"
-//#include "geometry.h"
-#include "MovingLinearProblem.h"
+#include <dcp/differential_problems/MeshManager.h>
+#include <dcp/differential_problems/MovingLinearProblem.h>
 #include "MovingTimeDependentProblem.h"
-#include <dcp/differential_problems/utilities.h> //#include "utilities.h"
+#include <dcp/differential_problems/utilities.h>
 #include <dcp/subdomains/Subdomain.h>
 #include "additionalForHeateq.h"
 #include "GetPot.h"
@@ -208,7 +207,7 @@ dolfin::interactive();
 
   heateq::FunctionSpace funSp (* meshManager.mesh());
   meshManager.storeOrderedDofIdxs (funSp, {""});
-  Ivan::MovingLinearProblem < heateq::FunctionSpace, additionalForHeateq::FunctionSpace,
+  dcp::MovingLinearProblem < heateq::FunctionSpace, additionalForHeateq::FunctionSpace,
                       heateq::BilinearForm, heateq::LinearForm,
                       heateqOld::LinearForm, additionalForHeateq::LinearForm >
         timeSteppingProblem (dolfin::reference_to_no_delete_pointer (funSp));

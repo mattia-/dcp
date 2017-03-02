@@ -24,6 +24,7 @@
 #include "utilities.h"
 #include "MeshManager.h"
 #include "MovingAbstractProblem.h"
+#include "MovingLinearProblem.h"
 #include "NonlinearProblem.h"
 #include "TimeDependentProblem.h"
 #include "EquationSystem.h"

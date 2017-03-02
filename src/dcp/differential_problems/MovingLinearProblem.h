@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef IVAN_DIFFERENTIAL_PROBLEMS_MOVINGLINEARPROBLEM_H_INCLUDE_GUARD
-#define IVAN_DIFFERENTIAL_PROBLEMS_MOVINGLINEARPROBLEM_H_INCLUDE_GUARD
+#ifndef DCP_DIFFERENTIAL_PROBLEMS_MOVINGLINEARPROBLEM_H_INCLUDE_GUARD
+#define DCP_DIFFERENTIAL_PROBLEMS_MOVINGLINEARPROBLEM_H_INCLUDE_GUARD
 
 // TODO forse in realta' questa classe potrebbe ereditare da qualcosa tipo dcp::EquationSystem
 
@@ -29,12 +29,12 @@
 #include <dcp/differential_problems/SubdomainType.h>
 #include <dcp/differential_problems/LinearProblem.h>
 #include <fstream>
-//#include "utilities.h"
-#include <dcp/differential_problems/MovingAbstractProblem.h> //"MovingAbstractProblem.h"
+#include <dcp/differential_problems/MovingAbstractProblem.h>
+#include <dcp/differential_problems/AdditionalProcessor.h>
 
 extern struct ProblemData problemData;
 
-namespace Ivan
+namespace dcp
 {
 
     /*! \class MovingLinearProblem MovingLinearProblem.h
@@ -75,11 +75,16 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
     typedef T_LinearSolverFactory LinearSolverFactory;
 
     //! Constructor
-    MovingLinearProblem (std::shared_ptr<dolfin::FunctionSpace> functionSpace, const std::vector<dolfin::la_index> & additionalFormDofs);
+    /*!
+     * @param functionSpace The problem FE space (@see #LinearProblem)
+     * @param additionalFormDofs Dofs for additional terms, to be added to the rhs of the problem
+     * @param additionalProcessor (passed through std::shared_ptr) Functor processing the values coming from the assembling of a \c T_AdditionalForm, before adding them to the rhs of the problem (@see #AdditionalProcessor)
+     */
+    MovingLinearProblem (std::shared_ptr<dolfin::FunctionSpace> functionSpace, const std::vector<dolfin::la_index> & additionalFormDofs, std::shared_ptr<AdditionalProcessor> additionalProcessor);
 
     //! Auxiliary constructor for the case when no additional terms must be added to the algebraic problem
     /*!
-     * It behaves exactly like passing an empty vector as the additionalFormDofs parameter in the other ctor.
+     * It behaves exactly like passing an empty vector as the additionalFormDofs parameter and a do-nothing additionalProcessor in the other ctor.
      * TODO: this issue should be taken into account also at the template-arguments level
      */
     MovingLinearProblem (std::shared_ptr<dolfin::FunctionSpace> functionSpace);
@@ -147,8 +152,10 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
     const std::vector<dolfin::la_index> & additionalFormDofs ()
     { return additionalFormDofs_; }
 
-    //! Clone method. Overrides method in \c AbstractProblem
+    //! TODO Clone method. Overrides method in \c AbstractProblem
     /*!
+     *  Still to be implemented.
+     *
      *  It uses the parameter \c clone_method to decide which type of cloning to perform.
      *  Possible values for such parameter are:
      *  \li deep_clone the new object is created calling the constructor that takes a mesh and a function 
@@ -161,7 +168,7 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
      *  
      *  \return a pointer to the cloned object
      */
-    virtual Ivan::MovingLinearProblem<T_FunctionSpace,T_AdditionalFunctionSpace,T_BilinearForm,T_LinearForm,T_PreviousForm,T_AdditionalForm,T_LinearSolverFactory>* clone () const override;
+    virtual dcp::MovingLinearProblem<T_FunctionSpace,T_AdditionalFunctionSpace,T_BilinearForm,T_LinearForm,T_PreviousForm,T_AdditionalForm,T_LinearSolverFactory>* clone () const override;
 
   protected:
 
@@ -169,7 +176,7 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
 	/*!
 	 *	This method sets \c processedVec as zero everywhere but in the entries
 	 * 	identified by \c additionalFormDofs_, where it is set
-	 *	equal to \c inputVec.
+	 *	by means of #additionalProcessor_.
 	 */
     virtual void processAdditionalVector (dolfin::Vector& processedVec, const dolfin::Vector& inputVec);
 
@@ -178,6 +185,7 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
     //T_AdditionalForm additionalForm_;
     std::shared_ptr<T_AdditionalForm> additionalForm_PUNTATORECHEMISERVEPERFAREDELLEPROVEPRIMADIPASSAREadditionalForm_DAFUORINELCOSTRUTTORE;
     dolfin::Form & additionalForm_;
+    std::shared_ptr<AdditionalProcessor> additionalProcessor_;
 
     std::shared_ptr<dolfin::GenericLinearSolver> linear_solver_;
     bool linear_solver_set_;
@@ -197,12 +205,12 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
 template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_BilinearForm, class T_LinearForm, class T_PreviousForm, class T_AdditionalForm, class T_LinearSolverFactory>
 MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_BilinearForm, T_LinearForm, T_PreviousForm, T_AdditionalForm, T_LinearSolverFactory>::
   MovingLinearProblem (std::shared_ptr<dolfin::FunctionSpace> functionSpace) :
-    MovingLinearProblem<T_FunctionSpace,T_AdditionalFunctionSpace,T_BilinearForm,T_LinearForm,T_PreviousForm,T_AdditionalForm,T_LinearSolverFactory> (functionSpace, std::vector<dolfin::la_index>())
-{
-}
+    MovingLinearProblem<T_FunctionSpace,T_AdditionalFunctionSpace,T_BilinearForm,T_LinearForm,T_PreviousForm,T_AdditionalForm,T_LinearSolverFactory> (functionSpace, std::vector<dolfin::la_index>(), std::make_shared<AdditionalProcessor>(AdditionalProcessor()))
+  {
+  }
 template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_BilinearForm, class T_LinearForm, class T_PreviousForm, class T_AdditionalForm, class T_LinearSolverFactory>
 MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_BilinearForm, T_LinearForm, T_PreviousForm, T_AdditionalForm, T_LinearSolverFactory>::
-  MovingLinearProblem (std::shared_ptr<dolfin::FunctionSpace> functionSpace, const std::vector<dolfin::la_index> & additionalFormDofs) :
+  MovingLinearProblem (std::shared_ptr<dolfin::FunctionSpace> functionSpace, const std::vector<dolfin::la_index> & additionalFormDofs, std::shared_ptr<AdditionalProcessor> additionalProcessor) :
     dcp::AbstractProblem(functionSpace),
       // explicit call to "grandparent" ctor req'd by virtual inheritance
     dcp::MovingAbstractProblem(functionSpace),
@@ -215,16 +223,17 @@ MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_BilinearForm,
 //AFS//    additionalForm_PUNTATORECHEMISERVEPERFAREDELLEPROVEPRIMADIPASSAREadditionalForm_DAFUORINELCOSTRUTTORE (new T_AdditionalForm (this->additionalFunctionSpace_)),
     additionalForm_PUNTATORECHEMISERVEPERFAREDELLEPROVEPRIMADIPASSAREadditionalForm_DAFUORINELCOSTRUTTORE (new T_AdditionalForm (std::shared_ptr<dolfin::FunctionSpace> (new T_AdditionalFunctionSpace (this->functionSpace_->mesh())))),
     additionalForm_ (* additionalForm_PUNTATORECHEMISERVEPERFAREDELLEPROVEPRIMADIPASSAREadditionalForm_DAFUORINELCOSTRUTTORE), //T_AdditionalForm (this->additionalFunctionSpace_)),
+    additionalProcessor_ (additionalProcessor),
     linear_solver_ (new dolfin::LinearSolver),
     linear_solver_set_ (false),
     previousForm_ (T_PreviousForm (functionSpace))
   {
-          std::ofstream outTP (problemData.savepath+"tpValues.csv", std::ofstream::out);
-          outTP << "tpVal, \n0, " << std::endl;
-          outTP.flush();
-          outTP.close();
-          std::ifstream outTPread (problemData.savepath+"tpValues.csv", std::ifstream::in);
-          outTPread.get();
+          std::ofstream outAddVal (problemData.savepath+"additionalValues.csv", std::ofstream::out);
+          outAddVal << "additionalValues, \n0, " << std::endl;
+          outAddVal.flush();
+          outAddVal.close();
+          std::ifstream outAddValread (problemData.savepath+"additionalValues.csv", std::ifstream::in);
+          outAddValread.get();
           std::ofstream residualFile (problemData.savepath+"residual.dat",std::ofstream::out);
           residualFile.close();
   }
@@ -351,11 +360,6 @@ template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_Biline
 void MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_BilinearForm, T_LinearForm, T_PreviousForm, T_AdditionalForm, T_LinearSolverFactory>::
   preassemble ()
   {
-const dolfin::GenericVector & oldVec ((this->solution_.size()>1) ? (* this->solution_[this->solution_.size()-2].second.vector()) : (* this->solution_.back().second.vector()));
-/*std::cerr << "preassVec (" << oldVec.size() << ") : ";
-for (std::size_t i (0); i!=oldVec.size(); ++i)
-  std::cerr << oldVec[i] << '=' << oldVec[i] << ", ";
-std::cerr << std::endl;*/
         dolfin::Assembler assembler;
 
         assembler.assemble (this->preassembled_, this->previousForm_);
@@ -388,10 +392,7 @@ void MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_Bilinear
         b += processedVec;
 
         for (auto it = this->dirichletBCs_.begin(); it != this->dirichletBCs_.end(); it++)
-        {
           (it->second).apply (A,b);
-//          std::cerr<<"TimeBC "<<it->first<<std::endl;
-        }
 
         linear_solver_->solve(A, * this->solution_.back().second.vector(), b);
 
@@ -411,9 +412,9 @@ void MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_Bilinear
           residualFile.close();
         }
 
-        std::ofstream outTP (problemData.savepath+"tpValues.csv", std::ofstream::app);
-        outTP << processedVec.inner (* this->solution_.back().second.vector()) / problemData.dt << ", " << std::endl;
-        outTP.close();
+        std::ofstream outAddVal (problemData.savepath+"additionalValues.csv", std::ofstream::app);
+        outAddVal << processedVec.inner (* this->solution_.back().second.vector()) / problemData.dt << ", " << std::endl;
+        outAddVal.close();
   }
 
 template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_BilinearForm, class T_LinearForm, class T_PreviousForm, class T_AdditionalForm, class T_LinearSolverFactory>
@@ -423,71 +424,21 @@ void MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_Bilinear
 //TODO generalizzare al caso di MeshFunction che non sia una VertexFunction
 // (se ho una linea tripla, invece di punti singoli, devo trattare interi edge, su cui vivono dof non di vertice)
 
-/*    const dolfin::GenericDofMap& dofmap (* this->additionalFunctionSpace_.dofmap());
-std::vector<dolfin::la_index> tutti_i_dof (dofmap.dofs());
-for (std::size_t i=0; i!=tutti_i_dof.size(); ++i) std::cerr << tutti_i_dof[i] << ' '; std::cerr << std::endl;
-    const dolfin::GenericDofMap& subdofmap (* dofmap.extract_sub_dofmap({0},*additionalFunctionSpace_.mesh()));
-    std::vector<std::size_t> dofs;
-    int idxs[2];
-    double * vals;//[2] = {0,0};
-    for (dolfin::VertexIterator v (* additionalFunctionSpace_.mesh()); !v.end(); ++v)
-    {
-      // if the vertex label is in labelSet_, the value is ok, hence the current iteration is skipped
-      // if the vertex label is not in labelSet_, the value (0) is ok, hence the current iteration is skipped
-      if (labelSet_.find((*meshFunction_)[*v]) == labelSet_.end())
-        continue;
-std::cerr << v->index() << ' ';
-
-      dofmap.tabulate_entity_dofs(dofs, v->dim(), v->index());
-if (dofs.size()!=2) { std::cerr << "che cavolo sta facendo??" << std::endl; exit(1);}
-
-      // NB : GenericDofMap::tabulate_entity_dofs works with local indices, whence set_local is used, instead of set
-      for (std::size_t i=0; i!=2; ++i)
-      {
-        idxs[i] = dofs[i];
-        std::cerr << idxs[i] << ' ';
-      } std::cerr << std::endl;
-      vec.get_local (vals, 2, idxs);
-      processedVec.set_local (vals, 2, idxs);
-    }
-*/
     processedVec.zero();
-/*    for (auto it=additionalFormDofs_.begin(); it!=additionalFormDofs_.end(); ++it)
-    {
-      processedVec.apply("insert");
-      processedVec.setitem (*it, vec[*it]);
-std::cerr << "processed values " << vec[*it] << ", ";
-    }
-*/
-    processedVec.setitem (additionalFormDofs_.back(), (90==problemData.thetaS ? 0 : problemData.dt*problemData.gamma*cos(problemData.thetaS*3.14159265/180.0)*problemData.lx));
-      // TODO generalizzazione geometrica (secondo l'idea del for di sopra,
-      //      che pero' da' dei nan se si raffina troppo in spazio (forse per il /h
-      //      che c'e' in computeFreeSurfaceStress_onlyTP.ufl))
-      // Al momento questa riga vale perche' il muro e' verticale (=> v.t = v_y) e perche' siamo in cilindriche (*lx)
-std::cerr << "processed values " << processedVec[additionalFormDofs_.back()] << ", ";
-std::cerr << std::endl;
+
+    (* additionalProcessor_) (processedVec, vec, additionalFormDofs_);
   }
 
 template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_BilinearForm, class T_LinearForm, class T_PreviousForm, class T_AdditionalForm, class T_LinearSolverFactory>
 void MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_BilinearForm, T_LinearForm, T_PreviousForm, T_AdditionalForm, T_LinearSolverFactory>::
   adapt ()
   {
-/*    this->bilinearForm_ = static_cast<const T_BilinearForm &> (dolfin::adapt (this->bilinearForm_, meshManager_->mesh()));
-    this->linearForm_ = static_cast<const T_LinearForm &> (dolfin::adapt (this->linearForm_, meshManager_->mesh()));
-    this->additionalForm_ = static_cast<const T_AdditionalForm &> (dolfin::adapt (this->additionalForm_, meshManager_->mesh()));
-    this->previousForm_ = static_cast<const T_PreviousForm &> (dolfin::adapt (this->previousForm_, meshManager_->mesh()));*/
-std::cerr << " OK fino a " << __LINE__ << std::endl;
     const std::shared_ptr<const dolfin::Mesh> mesh (dolfin::reference_to_no_delete_pointer (* this->functionSpace_->mesh()));
-std::cerr << " OK fino a " << __LINE__ << std::endl;
     dolfin::adapt (this->bilinearForm_, mesh);
-std::cerr << " OK fino a " << __LINE__ << std::endl;
     dolfin::adapt (this->linearForm_, mesh);
-std::cerr << " OK fino a " << __LINE__ << std::endl;
     dolfin::adapt (this->additionalForm_, mesh);
-std::cerr << " OK fino a " << __LINE__ << std::endl;
     dolfin::adapt (this->previousForm_, mesh);
-std::cerr << " OK fino a " << __LINE__ << std::endl;
-std::cerr << "Si', ha usato Ivan::MovingLinearProblem<...>::adapt()" << std::endl;
+std::cerr << "Si', ha usato dcp::MovingLinearProblem<...>::adapt()" << std::endl;
     exit(10);
   }
 
@@ -495,7 +446,7 @@ template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_Biline
 MovingLinearProblem<T_FunctionSpace,T_AdditionalFunctionSpace,T_BilinearForm,T_LinearForm,T_PreviousForm,T_AdditionalForm,T_LinearSolverFactory>* MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_BilinearForm, T_LinearForm, T_PreviousForm, T_AdditionalForm, T_LinearSolverFactory>::
   clone () const
   {
-    std::cerr << "TODO" << std::endl;
+    std::cerr << std::endl << "dcp::MovingLinearProblem::clone() is TODO" << std::endl;
     exit(10);
   }
 

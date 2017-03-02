@@ -4,7 +4,7 @@
 #include "myNavierstokesTimeCurvLinearPreviousDomain.h"
 #include <dcp/differential_problems/MeshManager.h> //"MeshManager.h"
 //#include "geometry.h"
-#include "MovingLinearProblem.h"
+#include <dcp/differential_problems/MovingLinearProblem.h>
 #include "MovingTimeDependentProblem.h"
 #include <dcp/differential_problems/utilities.h> //#include "utilities.h"
 #include <dcp/subdomains/Subdomain.h>
@@ -99,6 +99,18 @@ class InitialState : public dolfin::Expression
   private:
   
   double yLength_, bottomPressure_, inflowVelocity_;
+};
+
+class TPadditionalProcessor : public dcp::AdditionalProcessor
+{
+  public:
+
+    void operator() (dolfin::Vector & processedVec, const dolfin::Vector & vec, const std::vector<dolfin::la_index> & additionalDofs) override
+    {
+      processedVec.setitem (additionalDofs.back(), (90==problemData.thetaS ? 0 : problemData.dt*problemData.gamma*cos(problemData.thetaS*3.14159265/180.0)*problemData.lx));
+      
+std::cerr << "processed values " << processedVec[additionalDofs.back()] << ", ";
+    }
 };
 
 int main (int argc, char * argv[])
@@ -273,13 +285,15 @@ for (dolfin::la_index i=0; i!=numDofs_w; ++i)
 std::cerr << "w triple points : "; for (dolfin::la_index i=0; i!=triplePointDofs_w.size(); ++i) std::cerr << triplePointDofs_w[i] << ' '; std::cerr << std::endl;
 std::cerr << "                "; for (dolfin::la_index i=0; i!=triplePointDofs_w.size(); ++i) std::cerr << dofsCoords_w[2*triplePointDofs_w[i]] << ' ' << dofsCoords_w[2*triplePointDofs_w[i]+1] << '\t'; std::cerr << std::endl;
 
- 		Ivan::MovingLinearProblem < myNavierstokesTimeCurvLinear::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
+    TPadditionalProcessor tpAdditionalProcessor;
+
+ 		dcp::MovingLinearProblem < myNavierstokesTimeCurvLinear::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
                       myNavierstokesTimeCurvLinear::BilinearForm, myNavierstokesTimeCurvLinear::LinearForm,
                       myNavierstokesTimeCurvLinearPreviousDomain::LinearForm, computeFreeSurfaceStress_onlyTP::LinearForm >
 /*			  timeSteppingProblem (dolfin::reference_to_no_delete_pointer(additionalMeshFunction),
                              {4,5},
                              dolfin::reference_to_no_delete_pointer (V));*/
-        timeSteppingProblem (dolfin::reference_to_no_delete_pointer (V), triplePointDofs);
+        timeSteppingProblem (dolfin::reference_to_no_delete_pointer (V), triplePointDofs, std::make_shared<TPadditionalProcessor> (tpAdditionalProcessor));
 //REM//    timeSteppingProblem.setMeshManager (meshManager);
 			  
     // Create linear solver, set parameters and assign it to timeSteppingProblem

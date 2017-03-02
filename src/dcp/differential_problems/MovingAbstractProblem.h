@@ -17,8 +17,8 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#ifndef IVAN_DIFFERENTIAL_PROBLEMS_MOVINGABSTRACTPROBLEM_H_INCLUDE_GUARD
-#define IVAN_DIFFERENTIAL_PROBLEMS_MOVINGABSTRACTPROBLEM_H_INCLUDE_GUARD
+#ifndef SRC_DIFFERENTIAL_PROBLEMS_MOVINGABSTRACTPROBLEM_H_INCLUDE_GUARD
+#define SRC_DIFFERENTIAL_PROBLEMS_MOVINGABSTRACTPROBLEM_H_INCLUDE_GUARD
 
 // TODO forse in realta' questa classe potrebbe ereditare da qualcosa tipo dcp::EquationSystem
 
@@ -28,9 +28,9 @@
 #include <dolfin.h>
 #include <dcp/differential_problems/SubdomainType.h>
 #include <fstream>
-#include "MeshManager.h"
+#include <dcp/differential_problems/MeshManager.h>
 
-namespace Ivan
+namespace dcp
 {
 
     /*! \class MovingAbstractProblem MovingAbstractProblem.h

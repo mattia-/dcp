@@ -3,14 +3,18 @@
 
 #include <dcp/differential_problems/AbstractProblem.h>
 #include <dcp/differential_problems/LinearProblem.h>
-#include "myNavierstokesTimeCurvLinear.h"
-//#include "laplaceVec.h"
-#include "utilities.h"
+#include <dcp/differential_problems/utilities.h> //#include "utilities.h"
+#include <dcp/differential_problems/meshManagerUflTools.h>
 #include <limits>
 #include <algorithm>
+#include <iterator>
+#include <string>
 
 template <class T_MeshMover> class DepthEvaluator; //fwd declaration
 extern struct ProblemData problemData;
+
+namespace dcp
+{
 
 template <class T_MeshMover = dolfin::ALE>
 class MeshManager
@@ -18,7 +22,7 @@ class MeshManager
 
   public:
 
-//    typedef T_MeshMover MeshMover;
+    typedef T_MeshMover MeshMover;
 
     MeshManager () = delete;
   
@@ -38,12 +42,18 @@ class MeshManager
          const std::shared_ptr<dcp::AbstractProblem> aleProblem,
          const dolfin::FunctionSpace displCoeffSpace,
 				 const std::size_t noSlipComponent=std::numeric_limits<std::size_t>::max());
-/*	  MeshManager (const std::shared_ptr<T_MeshMover> meshMover, std::shared_ptr<dolfin::FunctionSpace> functionSpace);
-    MeshManager (const T_MeshMover& meshMover, dolfin::FunctionSpace& functionSpace);*/
-    // !!! servono altri costruttori?
+    //?? noSlipComponet
 
+    //! DEPRECATED (use #storeOrderedDofIdxs, instead)
     void getDofOrder (const dolfin::FunctionSpace & funSp, std::size_t component=0);
+    //! Initializer ...??
+    void storeOrderedDofIdxs (const dolfin::FunctionSpace & funSp, std::list<std::string> names, int component=-1);
+    void recursiveStoreOrderedDofIdxs (const dolfin::FunctionSpace & funSp, std::list<std::string> & names, const std::vector<double> & dofsCoords, std::map<std::string, std::vector<dolfin::la_index> > & orderedDofs);
 
+    /*************************** GETTERS ***********************/
+
+    //!@name getters of DEPRECATED members
+    //!@{
     const std::vector<std::size_t> & orderedDisplacementDofs () const
     {
         return orderedDisplacementDofs_;
@@ -62,7 +72,11 @@ class MeshManager
     const std::vector<dolfin::la_index> & selectedOrderedPressDofs () const { return selectedOrderedPressDofs_; }
 	  const std::vector<dolfin::la_index> & selectedOrderedWXDofs () const { return selectedOrderedWXDofs_; }
     const std::vector<dolfin::la_index> & selectedOrderedWYDofs () const { return selectedOrderedWYDofs_; }
+    //!@}
     
+    const std::map<std::string, std::vector<dolfin::la_index> > & orderedDofs () const { return orderedDofs_; }
+    const std::map<std::string, std::vector<dolfin::la_index> > & orderedDisplDofs () const { return orderedDisplDofs_; }
+
 //    const dolfin::FunctionSpace& functionSpace() const;
     std::shared_ptr<const dolfin::Mesh> mesh() const;
     std::shared_ptr<const dolfin::Mesh> oldMesh() const;
@@ -100,11 +114,14 @@ class MeshManager
 
   	std::shared_ptr<const dolfin::FacetFunction<std::size_t> > meshFacets () { return meshFacets_; }
 
+    void print2csv (const dolfin::Function & fun, const std::string & prependToFileName, const std::string & appendToFileName, bool printAlsoDisplacement) const;
+    void print2csv (const dolfin::Function & fun, const std::string & prependToFileName, const std::string & appendToFileName, const std::map<std::string,std::vector<dolfin::la_index> > & dofs) const;
+
   protected:
 
     T_MeshMover meshMover_;
     const std::shared_ptr<dolfin::Mesh> mesh_;
-    dolfin::FunctionSpace wFunSp_;
+    meshManagerUflTools::FunctionSpace wFunSp_; //dolfin::FunctionSpace wFunSp_;
     dolfin::Function w_;
     const dolfin::FunctionSpace & displCoeffSpace_;
     const std::shared_ptr <dcp::AbstractProblem> aleProblem_;
@@ -118,6 +135,9 @@ class MeshManager
   	const std::size_t noSlipComponent_;
     dolfin::MeshFunction<bool> on_boundary_;
     dolfin::MeshFunction<bool> on_to_be_neglected_boundary_;
+
+    //!@name DEPRECATED members
+    //!@{
     std::vector<std::size_t> orderedMeshIdxs_;
     std::vector<std::size_t> orderedDisplacementDofs_;
     std::vector<std::pair<double, double> > orderedDisplacementDofsCoords_;
@@ -131,6 +151,10 @@ class MeshManager
     std::vector<dolfin::la_index> selectedOrderedPressDofs_;
     std::vector<dolfin::la_index> selectedOrderedWXDofs_;
     std::vector<dolfin::la_index> selectedOrderedWYDofs_;
+    //!@}
+
+ std::map<std::string,std::vector<dolfin::la_index> > orderedDofs_;
+ std::map<std::string,std::vector<dolfin::la_index> > orderedDisplDofs_;
 
     //ImposedDisplacement imposedDisplacement_;
     //ImposedFromFile imposedDisplacement_;
@@ -214,10 +238,10 @@ MeshManager<T_MeshMover>::MeshManager (const std::shared_ptr<dolfin::Mesh> mesh,
                      const std::shared_ptr<dcp::AbstractProblem> aleProblem,
                      const dolfin::FunctionSpace displCoeffSpace,
 									   const std::size_t noSlipComponent) :
-    meshMover_ (),
+  meshMover_ (),
 	mesh_ (mesh),
 	//wFunSp_ (laplaceVec::FunctionSpace(*mesh_)),
-	wFunSp_ (myNavierstokesTimeCurvLinear::CoefficientSpace_w (*mesh_)),
+	wFunSp_ (mesh_), //SPACE//displCoeffSpace), //myNavierstokesTimeCurvLinear::CoefficientSpace_w (*mesh_)),
 	w_ (wFunSp_),
   displCoeffSpace_ (displCoeffSpace),
 //REM//	aleFunSp_ (laplaceALE::FunctionSpace (*mesh_)),
@@ -242,12 +266,15 @@ MeshManager<T_MeshMover>::MeshManager (const std::shared_ptr<dolfin::Mesh> mesh,
     selectedOrderedPressDofs_ (),
     selectedOrderedWXDofs_ (),
     selectedOrderedWYDofs_ (),
+ orderedDofs_(),
+ orderedDisplDofs_(),
     displacementIsImposed_ (false),
     oldMesh_ (* mesh),
     uno_ (1.0),
     zero_ (0.0),
     penalty_ (1.0e20)
 {
+std::cerr << displCoeffSpace_.str(true) << std::endl;
     const std::vector<double> & coords (mesh_->coordinates());
 //for (auto it=coords.begin(); it!=coords.end(); ++it) std::cerr << *it << ' '; std::cerr << std::endl;
     std::vector<std::tuple<std::size_t,double,double> > ordered;
@@ -255,6 +282,10 @@ MeshManager<T_MeshMover>::MeshManager (const std::shared_ptr<dolfin::Mesh> mesh,
       ordered.push_back (std::make_tuple (k, coords[2*k], coords[2*k+1]));
     std::sort (ordered.begin(),ordered.end(),compare);
     std::transform (ordered.begin(),ordered.end(),orderedMeshIdxs_.begin(),getFirst);
+
+    const std::vector<double> displCoords (wFunSp_.dofmap()->tabulate_all_coordinates(* mesh_));
+    std::list<std::string> names ({"wx","wy"});
+    recursiveStoreOrderedDofIdxs (wFunSp_, names, displCoords, orderedDisplDofs_);
 
     dolfin::Constant zeroVec (0.0,0.0);
 /*REM//    laplacePb_->setCoefficient ("bilinear_form",dolfin::reference_to_no_delete_pointer(uno_),"k");
@@ -293,7 +324,6 @@ void MeshManager<T_MeshMover>::getDofOrder (const dolfin::FunctionSpace & funSp,
 //std::cerr << *it << ' ' << dofsCoords[2*(*it)] << ' ' << dofsCoords[2*(*it)+1] << ' ' << subcomp << std::endl;
       }
     }
-std::cerr << "CHECK " << ordered.size() << std::endl;
     std::sort (ordered.begin(),ordered.end(),compareDofs);
     orderedDisplacementDofs_.resize (ordered.size());
     orderedDisplacementDofsCoords_.resize (ordered.size());
@@ -317,7 +347,6 @@ std::cerr << "CHECK " << ordered.size() << std::endl;
     std::sort (orderedUY.begin(),orderedUY.end(),compareDofs);
     orderedUYDofs_.resize (orderedUY.size());
     std::transform (orderedUY.begin(),orderedUY.end(),orderedUYDofs_.begin(),getFirstDofs);
-std::cerr << "CHECK " << orderedUYDofs_.size() << std::endl;
 
     std::vector<std::tuple<std::size_t,double,double,std::size_t> > orderedPress;
     std::vector<dolfin::la_index> dofsPress (funSp[1]->dofmap()->dofs());
@@ -418,6 +447,46 @@ std::cerr << "selectedDofPos (" << selectedDofPos.size() << ") "; for (auto e : 
 }
 
 template <class T_MeshMover>
+void MeshManager<T_MeshMover>::storeOrderedDofIdxs (const dolfin::FunctionSpace & funSp, std::list<std::string> names, int component)
+{
+    const std::vector<double> & dofsCoords (funSp.dofmap()->tabulate_all_coordinates (* mesh_));
+
+    if (-1 == component)
+      recursiveStoreOrderedDofIdxs (funSp, names, dofsCoords, orderedDofs_);
+    else
+      recursiveStoreOrderedDofIdxs (* funSp[component], names, dofsCoords, orderedDofs_);
+
+    return;
+}
+
+template <class T_MeshMover>
+void MeshManager<T_MeshMover>::recursiveStoreOrderedDofIdxs (const dolfin::FunctionSpace & funSp, std::list<std::string> & names, const std::vector<double> & dofsCoords, std::map<std::string, std::vector<dolfin::la_index> > & stored)
+{
+  std::size_t numComp (funSp.element()->num_sub_elements());
+
+  if (0 == numComp)
+  {
+    std::vector<dolfin::la_index> dofs (funSp.dofmap()->dofs());
+    std::vector<std::tuple<dolfin::la_index,double,double> > orderingTool(dofs.size());
+    auto itT (orderingTool.begin());
+    std::transform (dofs.begin(), dofs.end(), orderingTool.begin(), [& dofsCoords](dolfin::la_index idx)
+      { return std::make_tuple (idx, dofsCoords[2*idx], dofsCoords[2*idx+1]); });
+    std::sort (orderingTool.begin(),orderingTool.end(),compare);
+
+    stored.insert (std::make_pair(names.front(), std::vector<dolfin::la_index> (dofs.size())));
+    std::vector<dolfin::la_index> & ordDofs (stored[names.front()]);
+    std::transform (orderingTool.begin(), orderingTool.end(), ordDofs.begin(), [](decltype(* orderingTool.begin()) & t)
+      { return std::get<0> (t); } );
+
+    names.pop_front();
+    return;
+  }
+
+  for (std::size_t comp (0); comp!=numComp; ++comp)
+    recursiveStoreOrderedDofIdxs (* funSp[comp], names, dofsCoords, stored);
+}
+
+template <class T_MeshMover>
 std::shared_ptr<const dolfin::Mesh> MeshManager<T_MeshMover>::mesh() const
 {
     return mesh_;
@@ -487,6 +556,7 @@ std::cerr << "     imposed displacement" << std::endl;
 
     displacementIsImposed_ = false;
     this->computeDisplacement (displ[0], component, dt);
+    //?? togliere il [0] in qualche modo
     displacementIsImposed_ = true;
 
     // avoid re-computation
@@ -519,6 +589,7 @@ std::cerr << " OK fino a " << __LINE__ << std::endl;
   dolfin::Function displCoeff (displCoeffSpace_);
   /*dolfin::assign (dolfin::reference_to_no_delete_pointer(displCoeff[1]), dolfin::reference_to_no_delete_pointer(displacement));
   (* displCoeff.vector()) *= 0.01;*/
+std::cerr << displCoeff.function_space()->str(true) << " | " << displacement.function_space()->str(true) << std::endl;
   dolfin::assign (dolfin::reference_to_no_delete_pointer(displCoeff), dolfin::reference_to_no_delete_pointer(displacement));
     // TODO trovare un modo per passare anche la componente a cui assegnare, se serve
   aleProblem_->setCoefficient ("linear_form",dolfin::reference_to_no_delete_pointer(displCoeff),"u");
@@ -527,6 +598,7 @@ std::cerr << " OK fino a " << __LINE__ << std::endl;
   aleProblem_->solve();
   w_.vector()->zero();
   dolfin::assign (dolfin::reference_to_no_delete_pointer (w_[1]), dolfin::reference_to_no_delete_pointer (aleProblem_->solution()));
+  //TODO generalize to non-vertical displacements
   * w_.vector() *= dt;
 
   // avoid re-computation
@@ -586,6 +658,26 @@ void MeshManager<T_MeshMover>::setDisplacement (const dolfin::Function & displac
 {
   * w_.vector() = * displacement.vector();
 }
+
+template <class T_MeshMover>
+void MeshManager<T_MeshMover>::print2csv (const dolfin::Function & fun, const std::string & prependToFileName, const std::string & appendToFileName, bool printAlsoDisplacement) const
+{
+  print2csv (fun, prependToFileName, appendToFileName, orderedDofs_);
+  if (printAlsoDisplacement)
+    print2csv (w_, prependToFileName, appendToFileName, orderedDisplDofs_);
+}
+template <class T_MeshMover>
+void MeshManager<T_MeshMover>::print2csv (const dolfin::Function & fun, const std::string & prependToFileName, const std::string & appendToFileName, const std::map<std::string,std::vector<dolfin::la_index> > & dofs) const
+{ 
+  auto orderedDofsCoords (fun.function_space()->dofmap()->tabulate_all_coordinates (* this->mesh_));
+  for (auto it (dofs.begin()); it!=dofs.end(); ++it)
+  {
+    std::string filename (prependToFileName+it->first+appendToFileName+".csv");
+    dcp::print2csv (fun, filename, it->second.begin(), it->second.end(), orderedDofsCoords);
+  }
+}
+
+} // end of namespace
 
 #endif // MESHMANAGER_H_INCLUDE_GUARD
 

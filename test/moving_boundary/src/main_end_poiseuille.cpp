@@ -247,7 +247,7 @@ for (dolfin::la_index i=0; i!=numDofs; ++i)
 std::cerr << "triple points : "; for (dolfin::la_index i=0; i!=triplePointDofs.size(); ++i) std::cerr << triplePointDofs[i] << ' '; std::cerr << std::endl;
 std::cerr << "                "; for (dolfin::la_index i=0; i!=triplePointDofs.size(); ++i) std::cerr << dofsCoords[2*triplePointDofs[i]] << ' ' << dofsCoords[2*triplePointDofs[i]+1] << '\t'; std::cerr << std::endl;
 
- 		Ivan::MovingLinearProblem < myNavierstokesTimeCurvLinear::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
+ 		dcp::MovingLinearProblem < myNavierstokesTimeCurvLinear::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
                       myNavierstokesTimeCurvLinear::BilinearForm, myNavierstokesTimeCurvLinear::LinearForm,
                       myNavierstokesTimeCurvLinearPreviousDomain::LinearForm, computeFreeSurfaceStress_onlyTP::LinearForm >
 /*			  timeSteppingProblem (dolfin::reference_to_no_delete_pointer(additionalMeshFunction),
@@ -263,7 +263,7 @@ std::cerr << "                "; for (dolfin::la_index i=0; i!=triplePointDofs.s
 //    meshManager.setImposedDisplacement (dolfin::reference_to_no_delete_pointer (V));
 
 #ifdef PARAB
- 		Ivan::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (meshManager),
+ 		dcp::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (meshManager),
 		 																 										 dolfin::reference_to_no_delete_pointer (timeSteppingProblem),
                                                    			 t0,
                                                    			 problemData.dt, 
@@ -273,7 +273,7 @@ std::cerr << "                "; for (dolfin::la_index i=0; i!=triplePointDofs.s
                                                    			 {"bilinear_form", "linear_form"}
                                                   			 );
 #else
- 		Ivan::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (meshManager),
+ 		dcp::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (meshManager),
 		 																 										 dolfin::reference_to_no_delete_pointer (timeSteppingProblem),
                                                    			 t0,
                                                    			 problemData.dt, 

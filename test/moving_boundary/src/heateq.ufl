@@ -4,10 +4,8 @@
 cell = triangle
 
 # define function spaces
-V = FiniteElement ("Lagrange", cell, 2)
-#V = VectorElement ("Lagrange", cell, 2)
-Vf = VectorElement ("Lagrange", cell, 2)
-S = FiniteElement ("Lagrange", cell, 2)
+V = FiniteElement ("Lagrange", cell, 1) #2)
+S = FiniteElement ("Lagrange", cell, 1) #2)
 W = VectorElement ("Lagrange", cell, 1)
 
 # define test and trial functions
@@ -16,7 +14,7 @@ v = TestFunction (V)
 
 # define coefficients
 nu = Constant (cell)
-f = Coefficient (Vf)
+f = Coefficient (S)
 g = Coefficient (S)
 datum = Coefficient (V)
 u_old = Coefficient (V)
@@ -35,6 +33,6 @@ a = inner (u, v) * dx \
 #    + 1e20 * inner (u, v) * ds(2)
 
 # define linear form 
-L = dt * inner (f[1], v) * dx + inner (g, v) * ds(2)
+L = dt * inner (f, v) * dx + inner (g, v) * ds(2)
 #L = dt * inner (f, v) * dx + inner (g, v[0]) * ds(2) \
 #    + 1e20 * inner (datum, v) * ds(2)

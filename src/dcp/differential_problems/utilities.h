@@ -29,7 +29,6 @@
 #include <dolfin.h>
 #include <string>
 #include <math.h>
-#include "myNavierstokesTimeCurvLinear.h"
 
 #include "GetPot.h"
 extern GetPot inputData;
@@ -508,7 +507,7 @@ class XY : public dolfin::Expression
     {
         values[0] = x[0];
         values[1] = x[1] ;
-        values[2] = 0;
+        values[2] = x[0]+x[1];
     }
     
     std::size_t value_rank() const
@@ -1002,6 +1001,9 @@ std::size_t getFirst (const std::tuple<std::size_t,double,double> t);
 std::size_t getFirstDofs (const std::tuple<std::size_t,double,double,std::size_t> t);
 std::pair<double,double> getDofsCoords (const std::tuple<std::size_t,double,double,std::size_t> t);
 
+namespace dcp
+{
+void print2csv (const dolfin::Function & fun, std::string & filename, const std::vector<dolfin::la_index>::const_iterator dofsBegin, const std::vector<dolfin::la_index>::const_iterator dofsEnd, const std::vector<double> & dofsCoords);
 void print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords);
 void print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin1, const std::vector<std::size_t>::const_iterator dofsBegin2, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords);
 
@@ -1018,6 +1020,7 @@ void print2csv (const std::vector<const T_val *> vals, const std::vector<const T
       file << vals[var][i] << ", ";
     file << std::endl;
   }
+}
 }
 
 class NormalAtVertex;

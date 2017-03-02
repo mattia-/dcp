@@ -21,6 +21,9 @@
 #define SRC_DIFFERENTIAL_PROBLEMS_DIFFERENTIAL_PROBLEMS_H_INCLUDE_GUARD
 
 #include "LinearProblem.h"
+#include "utilities.h"
+#include "MeshManager.h"
+#include "MovingAbstractProblem.h"
 #include "NonlinearProblem.h"
 #include "TimeDependentProblem.h"
 #include "EquationSystem.h"

@@ -7,22 +7,22 @@
 # LJ REDUCED UNITS (GERBEAU)
 
 #----------------- mesh -----------------#
-  lx = 46e-5
-  ly = 46e-5
-  nx = 16
-  ny = 32
+  lx = 1
+  ly = 1
+  nx = 2 
+  ny = 2
 
 
 #----------------- time -----------------#
-  dt = 2e-5   #[s]
+  dt = 1   #[s]
   t0 = 0      #[s]
   # if T not given or T<t0, nT is considered
 #  T  = 2
-  nT = 3
+  nT = 30
 
 #---------------- physics ---------------#
-  mu  = 2081e-5
-  rho = 1115
+  mu  = 1
+  rho = 1
   gamma = 0 # 436e-7
   beta = 66e-4
   thetaS = 90 # 698e-1   #[deg]
@@ -47,7 +47,7 @@
 
   wallVelY = 0 # -0.01
 
-  fileFrequency = 100
+  fileFrequency = 1
 
   gravityOn = 981e-2
 

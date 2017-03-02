@@ -21,20 +21,16 @@
 //#define MULTISTEP
 //#define PARAB
 //#define TUTTELECOMP
-#define POSTPROCESSOR
+//#define POSTPROCESSOR
 
 //#include <dcp/differential_problems/MovingTimeDependentProblem.h>
 #include "MovingTimeDependentProblem.h"
+
+// serve per il preassemble
+#include <dcp/differential_problems/MovingAbstractProblem.h> //"MovingAbstractProblem.h"
+
 #include <dolfin/log/dolfin_log.h>
 #include <regex>
-//#include "utilities.h"
-
-// TODO toglierle: servono solo per il preassemble
-//#include "heateq.h"
-//#include "heateqOld.h"
-#include "myNavierstokesTimeCurvLinear.h"
-#include "myNavierstokesTimeCurvLinearPreviousDomain.h"
-#include "computeFreeSurfaceStress_onlyTP.h"
 
 #undef EVITAPLOT
 
@@ -43,7 +39,7 @@ namespace Ivan
     /******************* CONSTRUCTORS *******************/
     MovingTimeDependentProblem::MovingTimeDependentProblem 
 //        (const std::shared_ptr<geometry::MeshManager<dolfin::ALE,dolfin::FunctionSpace> > meshManager,
-        (const std::shared_ptr<MeshManager<> > meshManager,
+        (const std::shared_ptr<dcp::MeshManager<> > meshManager,
 			 	 const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
          const double& startTime,
          const double& dt,
@@ -51,6 +47,7 @@ namespace Ivan
          std::initializer_list<std::string> dtCoefficientTypes,
          std::initializer_list<std::string> previousSolutionCoefficientTypes,
          std::initializer_list<std::string> wCoefficientTypes,
+         int solCompForALEPb,
          const unsigned int& nTimeSchemeSteps)
         : 
             TimeDependentProblem (timeSteppingProblem,
@@ -59,12 +56,16 @@ namespace Ivan
                                   previousSolutionCoefficientTypes,
                                   nTimeSchemeSteps),
             meshManager_ (meshManager), //std::shared_ptr<dolfin::ALE>(new dolfin::ALE()),timeSteppingProblem->functionSpace())
+            solCompForALEPb_ (solCompForALEPb),
             postProcessor_ (* this)
     { 
         dolfin::begin (dolfin::DBG, "Building MovingTimeDependentProblem...");
         
         dolfin::log (dolfin::DBG, "Setting up parameters...");
+
         parameters.add ("mesh_displacement_name", "w");
+        //TODO This should be set in the main
+
         dolfin::Parameters wCoefficientTypesParameter ("mesh_displacement_coefficient_types");
         for (auto& i : wCoefficientTypes)
         {
@@ -72,14 +73,6 @@ namespace Ivan
         }
         parameters.add (wCoefficientTypesParameter);
 
-#ifdef TUTTELECOMP
-        parameters["time_stepping_solution_component"] = -1;
-        parameters["plot_component"] = -1;
-#else
-        parameters["time_stepping_solution_component"] = 0;
-#endif
-          // TODO rimettere default a -1 e capire come passarlo da fuori
-        
         dolfin::end ();
         
         dolfin::log (dolfin::DBG, "MovingTimeDependentProblem object created");
@@ -100,7 +93,6 @@ std::cerr << " ----- extrapolation of ALE velocity was used -----" << std::endl;
     /******************* GETTERS *******************/
     std::shared_ptr<const dolfin::Mesh> MovingTimeDependentProblem::mesh () const
     {
-//        return timeSteppingProblem_ -> mesh ();
         return meshManager_->mesh ();
     }
 
@@ -113,7 +105,7 @@ std::cerr << " ----- extrapolation of ALE velocity was used -----" << std::endl;
 
 
 
-    MeshManager<> & MovingTimeDependentProblem::meshManager () const
+    dcp::MeshManager<> & MovingTimeDependentProblem::meshManager () const
     {
         return * meshManager_;
     }
@@ -138,7 +130,7 @@ std::cerr << " ----- extrapolation of ALE velocity was used -----" << std::endl;
         // parse solve type
         if (type != "default" && type != "step" && type != "clear_default" && type != "clear_step")
         {
-            dolfin::dolfin_error ("dcp: MovingTimeDependentProblem.h", 
+            dolfin::dolfin_error ("Ivan: MovingTimeDependentProblem.h", 
                                   "solve",
                                   "Unknown solve type \"%s\" requested",
                                   type.c_str ());
@@ -187,18 +179,17 @@ std::cerr << " ----- extrapolation of ALE velocity was used -----" << std::endl;
         // ---- Problem solution ---- //
         dolfin::begin (dolfin::DBG, "Solving time dependent problem...");
         
-        
         // functions used to step through the time loop
         dolfin::Function tmpSolution = solution_.back ().second;
         dolfin::Function oldSolution (tmpSolution);
         dolfin::Function displacement (tmpSolution);
 		const dolfin::Function * w (meshManager_->displacement().get());  // non-const pointer to const dolfin::Function
 		//w = meshManager_->computeDisplacement(displacement,"normal",dt).get();
-		w = meshManager_->computeDisplacement(displacement[0],"normal",dt).get();
-      //TODO questa componente va passata da fuori
+		w = meshManager_->computeDisplacement(solCompForALEPb_ == -1 ? displacement : displacement[solCompForALEPb_],"normal",dt).get();
         
         std::shared_ptr<dolfin::VTKPlotter> plotter;
 
+std::cerr << __LINE__ << std::endl;
         // start time loop. The loop variable timeStepFlag is true only if the solve type requested is "step" and
         // the first step has already been peformed
         int timeStep = 0;
@@ -210,7 +201,10 @@ postProcessor_ (timeStep);
 if (timeStep % problemData.fileFrequency <= 2)
 {
     if (problemData.saveDataInFile)
-  		saveDataInFile (tmpSolution, *w, timeStep);
+    {
+  		saveDataInFile (tmpSolution, timeStep);
+//REM//  		saveDataInFileOld (tmpSolution, *w, timeStep);
+    }
     if (problemData.savePvd)
     {
       solFileName = problemData.savepath+"solution"+std::to_string(timeStep)+".pvd";
@@ -239,12 +233,10 @@ postProcessor_.onOldDomain (timeStep);
 #endif
 }
 
-            //std::static_pointer_cast<
-            //  Ivan::MovingLinearProblem <heateq::FunctionSpace, heateq::FunctionSpace, heateq::BilinearForm, heateq::LinearForm, heateqOld::LinearForm, heateqOld::LinearForm> >
            // std::static_pointer_cast<Ivan::MovingLinearProblem < myNavierstokesTimeCurvLinear::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
            //           myNavierstokesTimeCurvLinear::BilinearForm, myNavierstokesTimeCurvLinear::LinearForm,
            //           myNavierstokesTimeCurvLinearPreviousDomain::LinearForm, computeFreeSurfaceStress_onlyTP::LinearForm > >
-           std::dynamic_pointer_cast<Ivan::MovingAbstractProblem>
+           std::dynamic_pointer_cast<dcp::MovingAbstractProblem>
                 (timeSteppingProblem_)->preassemble ();
 			// TODO considerare la presenza di un preassemble in AbstractProblem, per evitare casting
 			//      o magari usare la solve() passando "preassemble" come stringa
@@ -260,13 +252,6 @@ std::cerr << std::endl;*/
             
             setTimeDependentDirichletBCs ();
             
-//            std::static_pointer_cast<
-//              Ivan::MovingLinearProblem <heateq::FunctionSpace, heateq::FunctionSpace, heateq::BilinearForm, heateq::LinearForm, heateqOld::LinearForm, heateqOld::LinearForm> >
-//                (timeSteppingProblem_)->preassemble ();
-//			// TODO considerare la presenza di un preassemble in AbstractProblem, per evitare casting
-//            //meshManager_->moveMesh(tmpSolution[0],"normal",dt);
-//            meshManager_->moveMesh();
-
             for (auto& i : wCoefficientTypes)
             {
                 timeSteppingProblem_->setCoefficient (i, dolfin::reference_to_no_delete_pointer (*w), "w");
@@ -289,11 +274,7 @@ else
 #ifndef EVITAPLOT
             // plot solution according to time step and plot interval
  //           plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause);
-  #ifdef TUTTELECOMP
-            plotSolution (tmpSolution, timeStep, 1, -1, false);//dolfin::interactive();
-  #else
-            plotSolution (tmpSolution, timeStep, 1, 0, false);//dolfin::interactive();
-  #endif
+            plotSolution (tmpSolution, timeStep, 1, parameters["plot_component"], false);//dolfin::interactive();
 //            plotSolution (tmpSolution, timeStep, 1, 1, false);//dolfin::interactive();
             dolfin::plot (*meshManager_->mesh(),"inside mesh");//dolfin::interactive();
 #endif
@@ -324,7 +305,7 @@ postProcessor_ (timeStep);
 #endif
 */
             //w = meshManager_->computeDisplacement(displacement,"normal",dt).get();
-            w = meshManager_->computeDisplacement(displacement[0],"normal",dt).get();
+            w = meshManager_->computeDisplacement(solCompForALEPb_ == -1 ? displacement : displacement[solCompForALEPb_],"normal",dt).get();
               //TODO questa componente va passata da fuori
 #ifndef EVITAPLOT
             dolfin::plot (*w, "w"); //dolfin::interactive();
@@ -333,7 +314,10 @@ postProcessor_ (timeStep);
 if (timeStep % problemData.fileFrequency <= 2)
 {
     if (problemData.saveDataInFile)
-  		saveDataInFile (tmpSolution, *w, timeStep);
+    {
+  		saveDataInFile (tmpSolution, timeStep);
+//REM//  		saveDataInFileOld (tmpSolution, *w, timeStep);
+    }
     if (problemData.savePvd)
     {
       solFileName = problemData.savepath+"solution"+std::to_string(timeStep)+".pvd";
@@ -391,7 +375,7 @@ if (timeStep % problemData.fileFrequency <= 2)
         }
         else
         {
-            dolfin::dolfin_error ("dcp: MovingTimeDependentProblem.cpp",
+            dolfin::dolfin_error ("Ivan: MovingTimeDependentProblem.cpp",
                                   "clone",
                                   "Cannot clone time dependent differential problem. Unknown clone method: \"%s\"",
                                   cloneMethod.c_str ());
@@ -428,22 +412,26 @@ if (timeStep % problemData.fileFrequency <= 2)
 	
 	
 	/******************* PROTECTED METHODS *******************/
-    void MovingTimeDependentProblem::saveDataInFile (const dolfin::Function& tmpSolution,
+    void MovingTimeDependentProblem::saveDataInFile (const dolfin::Function& tmpSolution, const int& timeStep) const
+	{
+    this->meshManager_->print2csv (tmpSolution, problemData.savepath+"SOL", "."+std::to_string(timeStep), true);
+	}
+    void MovingTimeDependentProblem::saveDataInFileOld (const dolfin::Function& tmpSolution,
 													 const dolfin::Function& w,
 													 const int& timeStep) const
 	{
-print2csv (tmpSolution, problemData.savepath+"sol_p.csv."+std::to_string(timeStep),
+dcp::print2csv (tmpSolution, problemData.savepath+"sol_p.csv."+std::to_string(timeStep),
            meshManager_->orderedPressDofs().begin(),
            meshManager_->orderedPressDofs().end(),
            tmpSolution.function_space()->dofmap()->tabulate_all_coordinates (* meshManager_->mesh())
            );
-print2csv (tmpSolution, problemData.savepath+"sol_vel.csv."+std::to_string(timeStep),
+dcp::print2csv (tmpSolution, problemData.savepath+"sol_vel.csv."+std::to_string(timeStep),
            meshManager_->orderedUXDofs().begin(),
            meshManager_->orderedUYDofs().begin(),
            meshManager_->orderedUXDofs().end(),
            tmpSolution.function_space()->dofmap()->tabulate_all_coordinates (* meshManager_->mesh())
            );
-print2csv (w, problemData.savepath+"displacement.csv."+std::to_string(timeStep),
+dcp::print2csv (w, problemData.savepath+"displacement.csv."+std::to_string(timeStep),
            meshManager_->orderedWXDofs().begin(),
            meshManager_->orderedWYDofs().begin(),
            meshManager_->orderedWXDofs().end(),
@@ -463,12 +451,10 @@ displacementHDF5File.close ();
 
     void MovingTimeDependentProblem::adapt ()
   {
-    //std::static_pointer_cast<
-    //  Ivan::MovingLinearProblem <heateq::FunctionSpace, heateq::FunctionSpace, heateq::BilinearForm, heateq::LinearForm, heateqOld::LinearForm, heateqOld::LinearForm> >
           //  std::static_pointer_cast<Ivan::MovingLinearProblem < myNavierstokesTimeCurvLinear::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
           //            myNavierstokesTimeCurvLinear::BilinearForm, myNavierstokesTimeCurvLinear::LinearForm,
           //            myNavierstokesTimeCurvLinearPreviousDomain::LinearForm, computeFreeSurfaceStress_onlyTP::LinearForm > >
-          std::dynamic_pointer_cast<Ivan::MovingAbstractProblem>
+          std::dynamic_pointer_cast<dcp::MovingAbstractProblem>
             (timeSteppingProblem_)->adapt ();
   }
 	

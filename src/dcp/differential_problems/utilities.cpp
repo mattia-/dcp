@@ -1,4 +1,4 @@
-#include "utilities.h"
+#include <dcp/differential_problems/utilities.h> //"utilities.h"
 #include <stdio.h>
 
 #ifdef SprittlesShikhmurzaev
@@ -96,17 +96,29 @@ std::pair<double,double> getDofsCoords (const std::tuple<std::size_t,double,doub
     return std::make_pair(std::get<1>(t), std::get<2>(t));
 }
 
-void print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords)
+void dcp::print2csv (const dolfin::Function & fun, std::string & filename, const std::vector<dolfin::la_index>::const_iterator dofsBegin, const std::vector<dolfin::la_index>::const_iterator dofsEnd, const std::vector<double> & dofsCoords)
 {
     const dolfin::GenericVector & vec (* fun.vector());
     std::ofstream file (filename.c_str(), std::ofstream::out);
     file.precision (15);
-    file << "x coord, y coord, z coord, scalar" << std::endl;
-    for (std::vector<std::size_t>::const_iterator it (dofsBegin); it!=dofsEnd; ++it)
-      file << dofsCoords[2*(*it)] << ", " << dofsCoords[2*(*it)+1] << ", 0, " << vec[*it] << std::endl;
+    file << "x,y,z,scalar," << std::endl;
+    file << std::scientific;
+      // NB keep std::scientific, otherwise importing csv in ParaView may yield (mysterious) errors
+    for (std::vector<dolfin::la_index>::const_iterator it (dofsBegin); it!=dofsEnd; ++it)
+      file << dofsCoords[2*(*it)] << "," << dofsCoords[2*(*it)+1] << ",0," << vec[*it] << "," << std::endl;
     file.close();
 }
-void print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin1, const std::vector<std::size_t>::const_iterator dofsBegin2, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords)
+void dcp::print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords)
+{
+    const dolfin::GenericVector & vec (* fun.vector());
+    std::ofstream file (filename.c_str(), std::ofstream::out);
+    file.precision (15);
+    file << "x,y,z,scalar" << std::endl;
+    for (std::vector<std::size_t>::const_iterator it (dofsBegin); it!=dofsEnd; ++it)
+      file << dofsCoords[2*(*it)] << "," << dofsCoords[2*(*it)+1] << ",0," << vec[*it] << std::endl;
+    file.close();
+}
+void dcp::print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin1, const std::vector<std::size_t>::const_iterator dofsBegin2, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords)
 {
     const dolfin::GenericVector & vec (* fun.vector());
     std::ofstream file (filename.c_str(), std::ofstream::out);

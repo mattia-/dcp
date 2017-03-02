@@ -1,10 +1,10 @@
 #include "MovingTimeDependentProblem.h"
 #include "discreteCurvature.h"
 #include "discreteCurvature_onlyTP.h"
-#include "myNavierstokesTimeCurvLinear.h"
-#include "myNavierstokesTimeCurvLinearPreviousDomain.h"
+//addNotInMovingAbstract// #include "myNavierstokesTimeCurvLinear.h"
+//addNotInMovingAbstract// #include "myNavierstokesTimeCurvLinearPreviousDomain.h"
 #include "computeFreeSurfaceStress_onlyTP.h"
-#include "utilities.h"
+#include <dcp/differential_problems/utilities.h> //"utilities.h"
 
 //#define GCL
   // if defined, assembles and file-writes the GCL dofs
@@ -16,7 +16,6 @@ namespace Ivan
 {
 
     PostProcessor::PostProcessor (MovingTimeDependentProblem & pb) :
-      //PostProcessor::PostProcessor (pb, problemData.savepath+"mainEnergyForms.csv", problemData.savepath+"intGCL.csv", problemData.savepath+"divGCL.csv", problemData.savepath+"selectedDofs.csv")
       PostProcessor::PostProcessor (pb, problemData.savepath+"balanceTerms.csv", problemData.savepath+"intGCL.csv", problemData.savepath+"divGCL.csv", problemData.savepath+"selectedDofs.csv")
     {}
 
@@ -159,12 +158,6 @@ std::cerr << "checkNu " << problemData.nu << std::endl;
       formsNvaluesOnOld_["epsg"].first->set_coefficient ("dt", dolfin::reference_to_no_delete_pointer (* coefficients_["dt"]));
       formsNvaluesOnOld_["epsg"].first->set_coefficient ("f", dolfin::reference_to_no_delete_pointer (* coefficients_["gravityVector"])); 
       formsDepOnDispl_.push_back (formsNvaluesOnOld_["epsg"].first);
-
-      /*enPtr.reset (new mainEnergyForms::Form_epsg (* pb_.mesh()));
-      formsNvalues_.emplace ("epsg", std::make_pair (enPtr, double ()));
-      formsNvalues_["epsg"].first->set_coefficient ("dt", dolfin::reference_to_no_delete_pointer (* coefficients_["dt"]));
-      formsNvalues_["epsg"].first->set_coefficient ("f", dolfin::reference_to_no_delete_pointer (* coefficients_["gravityVector"])); 
-      formsDepOnDispl_.push_back (formsNvalues_["epsg"].first);*/
 
       enPtr.reset (new balanceTerms::Form_tgDivw (* pb_.mesh()));
       formsNvaluesOnOld_.emplace ("tgDivw", std::make_pair (enPtr, double ()));
@@ -318,12 +311,12 @@ for (dolfin::la_index i=0; i!=numDofs_w; ++i)
       dolfin::assemble (bdiv1, * gclForms_["divGCL1"]);
       dolfin::Function bdivFun1 (gclSpace1_);
       * bdivFun1.vector() = bdiv1;
-      print2csv (bdivFun1, divGCLFileName_+"old1."+std::to_string(timeStep), bIdxs1.begin(), bIdxs1.end(), bCoords1);
+      dcp::print2csv (bdivFun1, divGCLFileName_+"old1."+std::to_string(timeStep), bIdxs1.begin(), bIdxs1.end(), bCoords1);
 
       dolfin::assemble (bdiv2, * gclForms_["divGCL2"]);
       dolfin::Function bdivFun2 (gclSpace2_);
       * bdivFun2.vector() = bdiv2;
-      print2csv (bdivFun2, divGCLFileName_+"old2."+std::to_string(timeStep), bIdxs2.begin(), bIdxs2.end(), bCoords2);
+      dcp::print2csv (bdivFun2, divGCLFileName_+"old2."+std::to_string(timeStep), bIdxs2.begin(), bIdxs2.end(), bCoords2);
 #endif
     }
 
@@ -343,7 +336,7 @@ for (dolfin::la_index i=0; i!=numDofs_w; ++i)
 
       for (auto & formNvalue : formsNvalues_)
       {
-//        std::cerr << "processing " << formNvalue.first << std::endl;
+        std::cerr << "processing " << formNvalue.first << std::endl;
         formNvalue.second.second = dolfin::assemble (* formNvalue.second.first);
       }
 
@@ -396,20 +389,20 @@ std::vector<double> blabladof (w.function_space()->dofmap()->tabulate_all_coordi
       dolfin::assemble (b1, * gclForms_["intGCL1"]);
       dolfin::Function bFun1 (gclSpace1_);
       * bFun1.vector() = b1;
-      print2csv (bFun1, intGCLFileName_+"1."+std::to_string(timeStep), bIdxs1.begin(), bIdxs1.end(), bCoords1);
+      dcp::print2csv (bFun1, intGCLFileName_+"1."+std::to_string(timeStep), bIdxs1.begin(), bIdxs1.end(), bCoords1);
       dolfin::Vector bdiv1;
       dolfin::assemble (bdiv1, * gclForms_["divGCL1"]);
       * bFun1.vector() = bdiv1;
-      print2csv (bFun1, divGCLFileName_+"1."+std::to_string(timeStep), bIdxs1.begin(), bIdxs1.end(), bCoords1);
+      dcp::print2csv (bFun1, divGCLFileName_+"1."+std::to_string(timeStep), bIdxs1.begin(), bIdxs1.end(), bCoords1);
       dolfin::Vector b2;
       dolfin::assemble (b2, * gclForms_["intGCL2"]);
       dolfin::Function bFun2 (gclSpace2_);
       * bFun2.vector() = b2;
-      print2csv (bFun2, intGCLFileName_+"2."+std::to_string(timeStep), bIdxs2.begin(), bIdxs2.end(), bCoords2);
+      dcp::print2csv (bFun2, intGCLFileName_+"2."+std::to_string(timeStep), bIdxs2.begin(), bIdxs2.end(), bCoords2);
       dolfin::Vector bdiv2;
       dolfin::assemble (bdiv2, * gclForms_["divGCL2"]);
       * bFun2.vector() = bdiv2;
-      print2csv (bFun2, divGCLFileName_+"2."+std::to_string(timeStep), bIdxs2.begin(), bIdxs2.end(), bCoords2);
+      dcp::print2csv (bFun2, divGCLFileName_+"2."+std::to_string(timeStep), bIdxs2.begin(), bIdxs2.end(), bCoords2);
 #endif
 
 //std::cerr<<"uxDofsIdxs ("<<uxDofsNum_<< ") "; for (dolfin::la_index i (0); i<uxDofsNum_; ++i) std::cerr << uxDofsIdxs_[i] << ", "; std::cerr<<std::endl;

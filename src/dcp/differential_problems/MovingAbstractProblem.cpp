@@ -17,9 +17,9 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include "MovingAbstractProblem.h"
+#include <dcp/differential_problems/MovingAbstractProblem.h>
 
-namespace Ivan
+namespace dcp
 {
     /************************* CONSTRUCTOR *********************/
 

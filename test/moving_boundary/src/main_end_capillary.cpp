@@ -2,11 +2,11 @@
 #include <assert.h>
 #include "myNavierstokesTimeCurvLinear.h"
 #include "myNavierstokesTimeCurvLinearPreviousDomain.h"
-#include "MeshManager.h"
+#include <dcp/differential_problems/MeshManager.h> //"MeshManager.h"
 //#include "geometry.h"
 #include "MovingLinearProblem.h"
 #include "MovingTimeDependentProblem.h"
-#include "utilities.h"
+#include <dcp/differential_problems/utilities.h> //#include "utilities.h"
 #include <dcp/subdomains/Subdomain.h>
 #include "computeFreeSurfaceStress_onlyTP.h"
 #include "GetPot.h"
@@ -213,7 +213,7 @@ std::unordered_map<std::size_t, double> bdval;
 dirBCbottom.get_boundary_values(bdval);
     aleProblem.addDirichletBC (dirBCbottom, std::string("bottom"));
     laplaceALE::LinearForm::CoefficientSpace_u displCoeffSpace (mesh);
- 		MeshManager<> meshManager (dolfin::reference_to_no_delete_pointer (mesh),
+ 		dcp::MeshManager<> meshManager (dolfin::reference_to_no_delete_pointer (mesh),
 															dolfin::reference_to_no_delete_pointer (meshFacets),
                               dolfin::reference_to_no_delete_pointer (aleProblem),
                               displCoeffSpace,
@@ -222,6 +222,7 @@ dirBCbottom.get_boundary_values(bdval);
  		// Function space, mesh manager setting and time stepping problem
  		myNavierstokesTimeCurvLinear::FunctionSpace V (* meshManager.mesh());
     meshManager.getDofOrder (V,0);
+  meshManager.storeOrderedDofIdxs (V, {"ux","uy","p"});
 
 //left    TriplePointLeftVertex triplePointLeftVertex;
     TriplePointRightVertex triplePointRightVertex;
@@ -310,6 +311,8 @@ std::cerr << "                "; for (dolfin::la_index i=0; i!=triplePointDofs_w
                                                    			 {"bilinear_form"}
                                                   			 );
 #endif
+
+    navierStokesProblem.parameters["time_stepping_solution_component"] = 0;
     
 #ifndef EVITAPLOT
     dolfin::plot (mesh,"out"); dolfin::interactive ();

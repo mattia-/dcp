@@ -45,13 +45,9 @@
 #include <dcp/subdomains/Subdomain.h>
 #include <math.h>
 
-#include "MeshManager.h"
-#include "utilities.h"
+#include <dcp/differential_problems/MeshManager.h> //"MeshManager.h"
+#include <dcp/differential_problems/utilities.h> //"utilities.h"
 
-// TODO toglierle: servono solo per il preassemble
-#include "MovingAbstractProblem.h"
-
-//#include "mainEnergyForms.h"
 #include "balanceTerms.h"
 
 #include "GetPot.h"
@@ -68,7 +64,7 @@ namespace Ivan
      *  \brief Class for output during the solution of MovingTimeDependentProblem
      *
      *  The problem to be post-processed is stored as a 
-     *  <tt> dcp::MovingTimeDependentProblem </tt>
+     *  <tt> Ivan::MovingTimeDependentProblem </tt>
      */
 
     class PostProcessor
@@ -146,9 +142,10 @@ namespace Ivan
 
             /******************* CONSTRUCTORS *******************/
             //! Default constructor is deleted. The class is not default constructable.
+            /*!
+             * @see dcp::TimeDependentProblem
+             */
             MovingTimeDependentProblem () = delete;
-                        //TODO: check it compiles: default constructor is already deleted in TimeDependentProblem
-                        // if it does not compile, remove this constructor from this file
 
             //!  Constructor
             /*!
@@ -241,15 +238,16 @@ namespace Ivan
              *  default value to the empty string, so that by default the plot title contains only the value of the 
              *  current time when the plot method is called.
              */
-            MovingTimeDependentProblem (const std::shared_ptr<MeshManager<> > meshManager,
-                                                                             const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
-                                                                             const double& startTime,
-                                                         const double& dt,
-                                             const double& endTime,
-                                         std::initializer_list<std::string> dtCoefficientTypes,
-                                         std::initializer_list<std::string> previousSolutionCoefficientTypes,
-                                         std::initializer_list<std::string> wCoefficientTypes,
-                                         const unsigned int& nTimeSchemeSteps = 1);
+            MovingTimeDependentProblem (const std::shared_ptr<dcp::MeshManager<> > meshManager,
+                                        const std::shared_ptr<dcp::AbstractProblem> timeSteppingProblem,
+                                        const double& startTime,
+                                        const double& dt,
+                                        const double& endTime,
+                                        std::initializer_list<std::string> dtCoefficientTypes,
+                                        std::initializer_list<std::string> previousSolutionCoefficientTypes,
+                                        std::initializer_list<std::string> wCoefficientTypes,
+                                        int solCompForALEPb = 0,
+                                        const unsigned int& nTimeSchemeSteps = 1);
 
 
             /******************* DESTRUCTOR *******************/
@@ -278,7 +276,7 @@ namespace Ivan
             /*!
              *  \return a const reference to the problem's mesh manager
              */
-            virtual MeshManager<> & meshManager () const;
+            virtual dcp::MeshManager<> & meshManager () const;
 
 
             /******************* SETTERS *******************/
@@ -334,20 +332,25 @@ namespace Ivan
         protected:
             
             //! The mesh manager
-//            geometry::MeshManager<dolfin::ALE,dolfin::FunctionSpace> meshManager_;
-            std::shared_ptr<MeshManager<> > meshManager_;
-            // TODO preferirei std::shared_ptr<const MeshManager<> >, ma poi dovrei mettere const tutti i metodi di MeshManager e usare mutable...
+            std::shared_ptr<dcp::MeshManager<> > meshManager_;
+            // TODO preferirei std::shared_ptr<const dcp::MeshManager<> >, ma poi dovrei mettere const tutti i metodi di dcp::MeshManager e usare mutable...
+
+            std::size_t solCompForALEPb_;
 
             PostProcessor postProcessor_;
             
-			//! Save solution, displacement and other output data, used inside the time loop and thus kept protected.
-			//! TODO : introduce this kind of method in dcp::AbstractProblem ?
-			/*!
-			 *	\param tmpSolution the current solution
-			 *	\param w the mesh displacement
-			 *	\param timStep the current time step
-			 */
+			      //! Save solution, displacement and other output data, used inside the time loop and thus kept protected.
+			      //! TODO : introduce this kind of method in dcp::AbstractProblem ?
+			      /*!
+			       *	\param tmpSolution the current solution
+			       *	\param w the mesh displacement
+			       *	\param timStep the current time step
+			       */
             virtual void saveDataInFile (const dolfin::Function& tmpSolution,
+                                         const int& timeStep) const;
+          
+            //! DEPRECATED version of #saveDatainFile
+            virtual void saveDataInFileOld (const dolfin::Function& tmpSolution,
                                          const dolfin::Function& w,
                                          const int& timeStep) const;
     

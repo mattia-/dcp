@@ -1,0 +1,7 @@
+cell = triangle
+
+W = VectorElement ("Lagrange", cell, 1);
+
+w = TestFunction (W)
+
+L = w[0] * dx

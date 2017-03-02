@@ -4,9 +4,9 @@
 cell = triangle
 
 # define function spaces
-V = FiniteElement ("Lagrange", cell, 2)
+V = FiniteElement ("Lagrange", cell, 1) #2)
 #V = VectorElement ("Lagrange", cell, 2)
-S = FiniteElement ("Lagrange", cell, 2)
+S = FiniteElement ("Lagrange", cell, 1) #2)
 
 # define test and trial functions
 u = TrialFunction (V)

@@ -30,7 +30,7 @@
 #include <dcp/differential_problems/LinearProblem.h>
 #include <fstream>
 //#include "utilities.h"
-#include "MovingAbstractProblem.h"
+#include <dcp/differential_problems/MovingAbstractProblem.h> //"MovingAbstractProblem.h"
 
 extern struct ProblemData problemData;
 
@@ -55,13 +55,13 @@ namespace Ivan
 	 *  \f$ a_\Omega \left(u , v\right) : V \left(\Omega\right) \times V \left(\Omega\right) \rightarrow \mathds{R}\f$ generic bilinear form on \f$V \left(\Omega\right)\f$, with integration occurring over \f$ \Omega \f$,
      *  and \f$ F_\Omega \left(v\right) : V \rightarrow \mathds{R}, \widetilde{F}_{\widetilde{\Omega} \left(v\right) : V \rightarrow \mathds{R} \f$ linear forms on the same space, with integration occurring over \f$ \Omega , \widetilde{\Omega} \f$, respectively.
      *  
-     *  It inherits publicly from \c LinearProblem and it extends
-     *  its functionalities to a moving-domain differential problem.
+     *  It inherits publicly from #LinearProblem AND #MovingAbstractProblem in order to
+     *  extend the functionalities of #LinearProblem to the moving-domain case.
      */
 
 template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_BilinearForm, class T_LinearForm, class T_PreviousForm, class T_AdditionalForm, class T_LinearSolverFactory = dcp::LinearSolverFactory>
 class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearForm, T_LinearSolverFactory>,
-                            public MovingAbstractProblem
+                            public dcp::MovingAbstractProblem
 {
 
   public:
@@ -74,8 +74,15 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
     typedef T_AdditionalForm AdditionalForm;
     typedef T_LinearSolverFactory LinearSolverFactory;
 
-    // Constructor
+    //! Constructor
     MovingLinearProblem (std::shared_ptr<dolfin::FunctionSpace> functionSpace, const std::vector<dolfin::la_index> & additionalFormDofs);
+
+    //! Auxiliary constructor for the case when no additional terms must be added to the algebraic problem
+    /*!
+     * It behaves exactly like passing an empty vector as the additionalFormDofs parameter in the other ctor.
+     * TODO: this issue should be taken into account also at the template-arguments level
+     */
+    MovingLinearProblem (std::shared_ptr<dolfin::FunctionSpace> functionSpace);
 
     // Return solution function (non const version)
     // TODO sarebbe meglio tenere solo quella const di dcp::LinearProblem;
@@ -123,7 +130,7 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
     virtual void solve (const std::string& type = "default") override;
 
     //! Set mesh-and-dofs manager
-    virtual void setMeshManager (const MeshManager<dolfin::ALE> & meshManager)
+    virtual void setMeshManager (const dcp::MeshManager<dolfin::ALE> & meshManager)
 		{ meshManager_ = & meshManager; }
 
     //! Update the problem after mesh changing
@@ -133,7 +140,8 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
     virtual void adapt ();
     //TODO remove! if not necessary
 
-    T_AdditionalForm & additionalForm ()
+    //T_AdditionalForm & additionalForm ()
+    dolfin::Form & additionalForm ()
 		{ return additionalForm_; }
 
     const std::vector<dolfin::la_index> & additionalFormDofs ()
@@ -166,8 +174,10 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
     virtual void processAdditionalVector (dolfin::Vector& processedVec, const dolfin::Vector& inputVec);
 
     const std::vector<dolfin::la_index> & additionalFormDofs_;
-    dolfin::FunctionSpace additionalFunctionSpace_;
-    T_AdditionalForm additionalForm_;
+//AFS//    dolfin::FunctionSpace additionalFunctionSpace_;
+    //T_AdditionalForm additionalForm_;
+    std::shared_ptr<T_AdditionalForm> additionalForm_PUNTATORECHEMISERVEPERFAREDELLEPROVEPRIMADIPASSAREadditionalForm_DAFUORINELCOSTRUTTORE;
+    dolfin::Form & additionalForm_;
 
     std::shared_ptr<dolfin::GenericLinearSolver> linear_solver_;
     bool linear_solver_set_;
@@ -175,7 +185,7 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
     T_PreviousForm previousForm_;
     dolfin::Vector preassembled_;
   
-    const MeshManager<dolfin::ALE> * meshManager_;
+    const dcp::MeshManager<dolfin::ALE> * meshManager_;
 
 }; //end of class definition
 
@@ -186,17 +196,27 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
 
 template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_BilinearForm, class T_LinearForm, class T_PreviousForm, class T_AdditionalForm, class T_LinearSolverFactory>
 MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_BilinearForm, T_LinearForm, T_PreviousForm, T_AdditionalForm, T_LinearSolverFactory>::
+  MovingLinearProblem (std::shared_ptr<dolfin::FunctionSpace> functionSpace) :
+    MovingLinearProblem<T_FunctionSpace,T_AdditionalFunctionSpace,T_BilinearForm,T_LinearForm,T_PreviousForm,T_AdditionalForm,T_LinearSolverFactory> (functionSpace, std::vector<dolfin::la_index>())
+{
+}
+template <class T_FunctionSpace, class T_AdditionalFunctionSpace, class T_BilinearForm, class T_LinearForm, class T_PreviousForm, class T_AdditionalForm, class T_LinearSolverFactory>
+MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_BilinearForm, T_LinearForm, T_PreviousForm, T_AdditionalForm, T_LinearSolverFactory>::
   MovingLinearProblem (std::shared_ptr<dolfin::FunctionSpace> functionSpace, const std::vector<dolfin::la_index> & additionalFormDofs) :
     dcp::AbstractProblem(functionSpace),
       // explicit call to "grandparent" ctor req'd by virtual inheritance
-    Ivan::MovingAbstractProblem(functionSpace),
+    dcp::MovingAbstractProblem(functionSpace),
       // explicit call to ALL parents ctor req'd by virtual inheritance
     dcp::LinearProblem<T_BilinearForm,T_LinearForm,T_LinearSolverFactory> (functionSpace),
     additionalFormDofs_ (additionalFormDofs),
-    additionalFunctionSpace_ (T_AdditionalFunctionSpace(this->functionSpace_->mesh())),
+//AFS//    additionalFunctionSpace_ (T_AdditionalFunctionSpace(this->functionSpace_->mesh())),
 		// In this way, the mesh object is shared between \c additionalFunctionSpace_
 		// and \c functionSpace_, so that moving the mesh affects both.
-    additionalForm_ (T_AdditionalForm (this->additionalFunctionSpace_)),
+//AFS//    additionalForm_PUNTATORECHEMISERVEPERFAREDELLEPROVEPRIMADIPASSAREadditionalForm_DAFUORINELCOSTRUTTORE (new T_AdditionalForm (this->additionalFunctionSpace_)),
+    additionalForm_PUNTATORECHEMISERVEPERFAREDELLEPROVEPRIMADIPASSAREadditionalForm_DAFUORINELCOSTRUTTORE (new T_AdditionalForm (std::shared_ptr<dolfin::FunctionSpace> (new T_AdditionalFunctionSpace (this->functionSpace_->mesh())))),
+    additionalForm_ (* additionalForm_PUNTATORECHEMISERVEPERFAREDELLEPROVEPRIMADIPASSAREadditionalForm_DAFUORINELCOSTRUTTORE), //T_AdditionalForm (this->additionalFunctionSpace_)),
+    linear_solver_ (new dolfin::LinearSolver),
+    linear_solver_set_ (false),
     previousForm_ (T_PreviousForm (functionSpace))
   {
           std::ofstream outTP (problemData.savepath+"tpValues.csv", std::ofstream::out);
@@ -357,7 +377,7 @@ void MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_Bilinear
 
         dolfin::Vector vec (MPI_COMM_WORLD,b.size());
 #ifndef EVITAPLOT
-  dolfin::plot (*additionalFunctionSpace_.mesh(),"additional mesh"); //dolfin::interactive ();
+//AFS//  dolfin::plot (*additionalFunctionSpace_.mesh(),"additional mesh"); //dolfin::interactive ();
 #endif
         assembler.assemble (vec, this->additionalForm_);
         dolfin::Vector processedVec (MPI_COMM_WORLD,vec.size());

@@ -277,7 +277,7 @@ namespace dcp
             }
 
             // use expression here (not pointerToExpression), so that every kind of expression can be assigned to
-            // elemen.second
+            // element.second
             element.second = expression;
             dolfin::end (); // Setting function values for time %f...
         }

@@ -6,6 +6,7 @@
 //#include "geometry.h"
 #include <dcp/differential_problems/MovingLinearProblem.h>
 #include "MovingTimeDependentProblem.h"
+#include "PostProcessor.h"
 #include <dcp/differential_problems/utilities.h> //#include "utilities.h"
 #include <dcp/subdomains/Subdomain.h>
 #include "computeFreeSurfaceStress_onlyTP.h"
@@ -325,6 +326,8 @@ std::cerr << "                "; for (dolfin::la_index i=0; i!=triplePointDofs_w
                                                    			 {"bilinear_form"}
                                                   			 );
 #endif
+
+    navierStokesProblem.setPostProcessor (new Ivan::PostProcessor(navierStokesProblem));
 
     navierStokesProblem.parameters["time_stepping_solution_component"] = 0;
     

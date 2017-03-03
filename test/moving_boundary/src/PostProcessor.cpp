@@ -1,4 +1,5 @@
 #include "MovingTimeDependentProblem.h"
+#include "PostProcessor.h"
 #include "discreteCurvature.h"
 #include "discreteCurvature_onlyTP.h"
 //addNotInMovingAbstract// #include "myNavierstokesTimeCurvLinear.h"
@@ -20,17 +21,13 @@ namespace Ivan
     {}
 
     PostProcessor::PostProcessor (MovingTimeDependentProblem & pb, std::string balanceFileName, std::string intGCLFileName, std::string divGCLFileName, std::string selectedDofsFileName) :
-      pb_ (pb),
-      coefficients_ (),
-      formsNvalues_ (),
-      formsNvaluesOnOld_ (),
+      DefaultPostProcessor (pb),
       formsDepOnSol_ (),
       formsDepOnOld_ (),
       formsDepOnDispl_ (),
       formsDepOnDir_ (),
       gclSpace1_ (* pb_.mesh()),
       gclSpace2_ (* pb_.mesh()),
-      gclForms_ (),
       balanceFileName_ (balanceFileName),
       intGCLFileName_ (intGCLFileName),
       divGCLFileName_ (divGCLFileName),
@@ -239,7 +236,7 @@ std::cerr << " OK fino a " << __LINE__ << std::endl;
 #endif
 
       // Dirichlet datum and meshFunction setting
-      std::shared_ptr<const dolfin::MeshFunction<std::size_t> > meshFunction (pb_.meshManager_->meshFacets());
+      std::shared_ptr<const dolfin::MeshFunction<std::size_t> > meshFunction (pb_.meshManager().meshFacets());
       for (auto & formNvalue : formsNvalues_)
         formNvalue.second.first -> set_exterior_facet_domains (meshFunction);
       for (auto & formNvalue : formsNvaluesOnOld_)
@@ -252,14 +249,14 @@ std::cerr << " OK fino a " << __LINE__ << std::endl;
       balanceFile.close();
 #endif
 
-      uxDofsIdxs_ = pb_.meshManager_->selectedOrderedUXDofs().data(); uyDofsIdxs_ = pb_.meshManager_->selectedOrderedUYDofs().data();
-      pDofsIdxs_ = pb_.meshManager_->selectedOrderedPressDofs().data();
-      wxDofsIdxs_ = pb_.meshManager_->selectedOrderedWXDofs().data(); wyDofsIdxs_ = pb_.meshManager_->selectedOrderedWYDofs().data();
+      uxDofsIdxs_ = pb_.meshManager().selectedOrderedUXDofs().data(); uyDofsIdxs_ = pb_.meshManager().selectedOrderedUYDofs().data();
+      pDofsIdxs_ = pb_.meshManager().selectedOrderedPressDofs().data();
+      wxDofsIdxs_ = pb_.meshManager().selectedOrderedWXDofs().data(); wyDofsIdxs_ = pb_.meshManager().selectedOrderedWYDofs().data();
 
-const dolfin::GenericDofMap& dofmap_w (* pb_.meshManager_->displacement()->function_space()->dofmap());
+const dolfin::GenericDofMap& dofmap_w (* pb_.meshManager().displacement()->function_space()->dofmap());
 dolfin::la_index numDofs_w (dofmap_w.dofs().size());
 std::vector<dolfin::la_index> displacementDofs (dofmap_w.dofs());
-std::vector<double> dofsCoords_w (dofmap_w.tabulate_all_coordinates (* pb_.meshManager_->mesh()));
+std::vector<double> dofsCoords_w (dofmap_w.tabulate_all_coordinates (* pb_.meshManager().mesh()));
 std::vector<dolfin::la_index> triplePointDofs_w;
 assert (dofsCoords_w.size()==2*numDofs_w);
 TriplePointRightVertex triplePointRightVertex;
@@ -291,8 +288,8 @@ for (dolfin::la_index i=0; i!=numDofs_w; ++i)
       dolfin::Vector bdiv2;
 
       const dolfin::Function & sol (pb_.solution()),
-                          & oldSol (pb_.solution_.size()>1 ? pb_.solution_[pb_.solution_.size()-2].second : sol),
-                               & w (* pb_.meshManager_->displacement());
+                          & oldSol (pb_.solutions().size()>1 ? pb_.solutions()[pb_.solutions().size()-2].second : sol),
+                               & w (* pb_.meshManager().displacement());
       for (auto & form : formsDepOnSol_)
         //form -> set_coefficient ("u", dolfin::reference_to_no_delete_pointer (sol));
         form -> set_coefficient ("sol", dolfin::reference_to_no_delete_pointer (sol));
@@ -323,8 +320,8 @@ for (dolfin::la_index i=0; i!=numDofs_w; ++i)
     void PostProcessor::operator() (int timeStep, const MovingTimeDependentProblem * const pb)
     {
       const dolfin::Function & sol (pb_.solution()),
-                          & oldSol (pb_.solution_.size()>1 ? pb_.solution_[pb_.solution_.size()-2].second : sol),
-                               & w (* pb_.meshManager_->displacement());
+                          & oldSol (pb_.solutions().size()>1 ? pb_.solutions()[pb_.solutions().size()-2].second : sol),
+                               & w (* pb_.meshManager().displacement());
       for (auto & form : formsDepOnSol_)
         //form -> set_coefficient ("u", dolfin::reference_to_no_delete_pointer (sol));
         form -> set_coefficient ("sol", dolfin::reference_to_no_delete_pointer (sol));

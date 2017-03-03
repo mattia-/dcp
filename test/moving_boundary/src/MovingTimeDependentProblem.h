@@ -48,7 +48,7 @@
 #include <dcp/differential_problems/MeshManager.h> //"MeshManager.h"
 #include <dcp/differential_problems/utilities.h> //"utilities.h"
 
-#include "balanceTerms.h"
+#include "DefaultPostProcessor.h"
 
 #include "GetPot.h"
 extern GetPot inputData;
@@ -56,58 +56,6 @@ extern GetPot inputData;
 //TODO: namespace->aegir
 namespace Ivan
 {
-
-    class MovingTimeDependentProblem;
-
-
-    /*! \class PostProcessor MovingTimeDependentProblem.h
-     *  \brief Class for output during the solution of MovingTimeDependentProblem
-     *
-     *  The problem to be post-processed is stored as a 
-     *  <tt> Ivan::MovingTimeDependentProblem </tt>
-     */
-
-    class PostProcessor
-    {
-        // ---------------------------------------------------------------------------------------------//  
-
-        public:
-
-          PostProcessor (MovingTimeDependentProblem & pb);
-          PostProcessor (MovingTimeDependentProblem & pb, std::string balanceFileName, std::string intGCLFileName, std::string divGCLFileName, std::string selectedDofsFileName);
-
-          void operator() (int timeStep) { (*this) (timeStep, & (this->pb_)); }
-          void operator() (int timeStep, const MovingTimeDependentProblem * const pb);
-          void onOldDomain (int timeStep) { this->onOldDomain (timeStep, & (this->pb_)); }
-          void onOldDomain (int timeStep, const MovingTimeDependentProblem * const pb);
-
-          virtual ~PostProcessor ();
-
-        private:
-          MovingTimeDependentProblem & pb_;
-          std::map<std::string, std::shared_ptr<dolfin::GenericFunction> > coefficients_;
-          //std::vector<std::pair<std::shared_ptr<dolfin::Form>, double> > formsNvalues_;
-          std::map<std::string, std::pair<std::shared_ptr<dolfin::Form>, double> > formsNvalues_, formsNvaluesOnOld_;
-          std::vector<std::shared_ptr<dolfin::Form> > formsDepOnSol_, formsDepOnOld_, formsDepOnDispl_, formsDepOnDir_;
-          balanceTerms::Form_intGCL1::TestSpace gclSpace1_;
-          balanceTerms::Form_intGCL2::TestSpace gclSpace2_;
-          std::map<std::string, std::shared_ptr<dolfin::Form> > gclForms_;
-          //std::string outputFileName_, intGCLFileName_, divGCLFileName_, selectedDofsFileName_;
-          std::string balanceFileName_, intGCLFileName_, divGCLFileName_, selectedDofsFileName_;
-          dolfin::la_index uxDofsNum_, uyDofsNum_, pDofsNum_, wxDofsNum_, wyDofsNum_;
-          double * uxDofsVals_, * uyDofsVals_, * pDofsVals_, * wxDofsVals_, * wyDofsVals_;
-          const dolfin::la_index * uxDofsIdxs_, * uyDofsIdxs_, * pDofsIdxs_, * wxDofsIdxs_, * wyDofsIdxs_;
-
-//          std::shared_ptr <dcp::AbstractProblem> curvatureProblem_;
-          std::shared_ptr<dolfin::Form> curvatureBilinearForm_, curvatureLinearForm_, curvatureAdditionalForm_;
-//addNotInMovingAbstract//          const std::vector<dolfin::la_index> & additionalFormDofs_;
-//addNotInMovingAbstract//          dolfin::la_index * addIdxs_, * addIdxs_w_;
-//addNotInMovingAbstract//          double * addVals_, * addVals_w_;
-          dolfin::Matrix curvatureMatrix_;
-          dolfin::Vector curvatureTgDiv_, curvatureRhs_;
-          dolfin::Function auxiliary_;
-          dolfin::LinearSolver linearSolver_;
-    };
 
     /*! \class MovingTimeDependentProblem MovingTimeDependentProblem.h
      *  \brief Class for time dependent differential problems with moving domain.
@@ -286,6 +234,9 @@ namespace Ivan
              */
             virtual void initializeMesh (dolfin::Expression & displacement);
 
+            //! Method to set the post-processor
+            virtual void setPostProcessor (Ivan::DefaultPostProcessor * postProcessor);
+
             
             /******************* METHODS *******************/
 
@@ -337,7 +288,7 @@ namespace Ivan
 
             std::size_t solCompForALEPb_;
 
-            PostProcessor postProcessor_;
+            std::shared_ptr<DefaultPostProcessor> postProcessor_;
             
 			      //! Save solution, displacement and other output data, used inside the time loop and thus kept protected.
 			      //! TODO : introduce this kind of method in dcp::AbstractProblem ?
@@ -365,7 +316,7 @@ namespace Ivan
         private:
 
 
-        friend class PostProcessor;
+        friend class DefaultPostProcessor;
 
     };
 }

@@ -61,6 +61,8 @@ namespace dcp
                                   problemName_.c_str ());
         }
 
+        pointerToProblem->removeTimeDependentCoefficient (coefficientName_, coefficientType_);
+
         pointerToProblem->addTimeDependentCoefficient (coefficientType_,
                                                        dolfin::reference_to_no_delete_pointer (coefficientValue),
                                                        coefficientName_);

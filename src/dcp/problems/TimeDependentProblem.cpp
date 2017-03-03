@@ -680,17 +680,6 @@ namespace dcp
     {
         auto coefficientID = std::make_pair (coefficientName, coefficientType);
 
-        // check if coefficient with the same name exists in the map of time-dependent functions and stop here in this
-        // case
-        if (timeDependentFunctionCoefficients_.find (coefficientID) != timeDependentFunctionCoefficients_.end ())
-        {
-            dolfin::warning
-                ("Time dependent coefficient expression not inserted because key (\"%s\", \"%s\") is already present in map of time-dependent functions",
-                 coefficientName.c_str (),
-                 coefficientType.c_str ());
-            return false;
-        }
-
         dolfin::begin (dolfin::DBG,
                        "Inserting time dependent coefficient expression in map with name \"%s\" and type \"%s\"...",
                        coefficientName.c_str (),
@@ -718,17 +707,6 @@ namespace dcp
          const std::string& coefficientName)
     {
         auto coefficientID = std::make_pair (coefficientName, coefficientType);
-
-        // check if coefficient with the same name exists in the map of time-dependent expressions and stop here in this
-        // case
-        if (timeDependentExpressionCoefficients_.find (coefficientID) != timeDependentExpressionCoefficients_.end ())
-        {
-            dolfin::warning
-                ("Time dependent coefficient expression not inserted because key (\"%s\", \"%s\") is already present in map of time-dependent functions",
-                 coefficientName.c_str (),
-                 coefficientType.c_str ());
-            return false;
-        }
 
         dolfin::begin (dolfin::DBG,
                        "Inserting time dependent coefficient function in map with name \"%s\" and type \"%s\"...",
@@ -766,9 +744,10 @@ namespace dcp
 
         if (nErasedElements == 0)
         {
-            dolfin::warning ("Time dependent coefficient with key (\"%s\", \"%s\") not removed: key was not found in any time-dependent coefficients map",
-                             coefficientName.c_str (),
-                             coefficientType.c_str ());
+            dolfin::warning
+                ("Time dependent coefficient with key (\"%s\", \"%s\") not removed: key was not found in any time-dependent coefficients map",
+                 coefficientName.c_str (),
+                 coefficientType.c_str ());
         }
 
         dolfin::end ();

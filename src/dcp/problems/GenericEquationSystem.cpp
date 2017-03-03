@@ -1022,7 +1022,7 @@ namespace dcp
 
             if (writeSubiterationSolutions == true)
             {
-                dolfin::begin ("Writing subiteration solution to file...");
+                dolfin::begin (dolfin::DBG, "Writing subiteration solution to file...");
                 (this -> operator[] (*problemName)).writeSolutionToFile ("stashed");
                 dolfin::end ();
             }
@@ -1108,7 +1108,7 @@ namespace dcp
 
             if (writeSubiterationSolutions == true)
             {
-                dolfin::begin ("Writing subiteration solution to file...");
+                dolfin::begin (dolfin::DBG, "Writing subiteration solution to file...");
                 (this -> operator[] (*problemName)).writeSolutionToFile ("stashed");
                 dolfin::end ();
             }

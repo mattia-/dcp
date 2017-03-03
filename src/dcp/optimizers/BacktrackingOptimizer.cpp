@@ -222,7 +222,7 @@ namespace dcp
             originalFilenames.clear ();
         }
 
-        dolfin::begin ("Setting file names for in-loop output to file...");
+        dolfin::begin (dolfin::DBG, "Setting file names for in-loop output to file...");
         // loop through problems in systems and perform the right action according to action
         std::size_t counter = 0;
         for (std::size_t i = 0; i < systems.size (); ++i)

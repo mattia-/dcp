@@ -899,7 +899,7 @@ namespace dcp
     template <class T_ControlVariable>
         void BacktrackingOptimizer::write_ (const T_ControlVariable& toWrite, const std::string& filename) const
         {
-            dolfin::begin ("Writing internal variables to file...");
+            dolfin::begin (dolfin::DBG, "Writing internal variables to file...");
 
             dolfin::File outfile (filename);
             outfile << toWrite;

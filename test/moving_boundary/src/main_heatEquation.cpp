@@ -4,9 +4,10 @@
 #include "myNavierstokesTimeCurvLinearPreviousDomain.h"
 #include <dcp/differential_problems/MeshManager.h>
 #include <dcp/differential_problems/MovingLinearProblem.h>
-#include "MovingTimeDependentProblem.h"
+#include <dcp/differential_problems/MovingTimeDependentProblem.h>
 #include <dcp/differential_problems/utilities.h>
 #include <dcp/subdomains/Subdomain.h>
+
 #include "additionalForHeateq.h"
 #include "GetPot.h"
 #include "laplaceALEScal.h"
@@ -215,7 +216,7 @@ dolfin::interactive();
 for (auto & e : meshManager.orderedDofs()) std::cerr << e.first << "   "; std::cerr << std::endl;
 for (auto & e : meshManager.orderedDisplDofs()) std::cerr << e.first << "   "; std::cerr << std::endl;
 
-	Ivan::MovingTimeDependentProblem heatEquation (dolfin::reference_to_no_delete_pointer (meshManager),
+	dcp::MovingTimeDependentProblem heatEquation (dolfin::reference_to_no_delete_pointer (meshManager),
 		 																 					  dolfin::reference_to_no_delete_pointer (timeSteppingProblem),
                                                 0,
                                                 problemData.dt,

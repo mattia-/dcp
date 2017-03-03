@@ -1,4 +1,4 @@
-#include "MovingTimeDependentProblem.h"
+//#include "MovingTimeDependentProblem.h"  // not required: it is already included by DefaultPostProcessor.h
 #include "PostProcessor.h"
 #include "discreteCurvature.h"
 #include "discreteCurvature_onlyTP.h"
@@ -16,11 +16,11 @@
 namespace Ivan
 {
 
-    PostProcessor::PostProcessor (MovingTimeDependentProblem & pb) :
+    PostProcessor::PostProcessor (dcp::MovingTimeDependentProblem & pb) :
       PostProcessor::PostProcessor (pb, problemData.savepath+"balanceTerms.csv", problemData.savepath+"intGCL.csv", problemData.savepath+"divGCL.csv", problemData.savepath+"selectedDofs.csv")
     {}
 
-    PostProcessor::PostProcessor (MovingTimeDependentProblem & pb, std::string balanceFileName, std::string intGCLFileName, std::string divGCLFileName, std::string selectedDofsFileName) :
+    PostProcessor::PostProcessor (dcp::MovingTimeDependentProblem & pb, std::string balanceFileName, std::string intGCLFileName, std::string divGCLFileName, std::string selectedDofsFileName) :
       DefaultPostProcessor (pb),
       formsDepOnSol_ (),
       formsDepOnOld_ (),
@@ -276,7 +276,7 @@ for (dolfin::la_index i=0; i!=numDofs_w; ++i)
     }
 
 
-    void PostProcessor::onOldDomain (int timeStep, const MovingTimeDependentProblem * const pb)
+    void PostProcessor::onOldDomain (int timeStep, const dcp::MovingTimeDependentProblem * const pb)
     {
       std::vector<double> bCoords1 (gclSpace1_.dofmap()->tabulate_all_coordinates (* pb_.mesh()));
       std::vector<std::size_t> bIdxs1 (bCoords1.size()/2);
@@ -317,7 +317,7 @@ for (dolfin::la_index i=0; i!=numDofs_w; ++i)
 #endif
     }
 
-    void PostProcessor::operator() (int timeStep, const MovingTimeDependentProblem * const pb)
+    void PostProcessor::operator() (int timeStep, const dcp::MovingTimeDependentProblem * const pb)
     {
       const dolfin::Function & sol (pb_.solution()),
                           & oldSol (pb_.solutions().size()>1 ? pb_.solutions()[pb_.solutions().size()-2].second : sol),

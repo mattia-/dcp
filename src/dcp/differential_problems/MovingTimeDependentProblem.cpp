@@ -1,5 +1,5 @@
 /* 
- *  Copyright (C) 2015, Ivan Fumagalli, ivan.fumagalli.if@gmail.com
+ *  Copyright (C) 2017, Ivan Fumagalli, ivan.fumagalli.if@gmail.com
  * 
  *  This file is part of the DCP library
  *   
@@ -22,8 +22,7 @@
 //#define PARAB
 //#define TUTTELECOMP
 
-//#include <dcp/differential_problems/MovingTimeDependentProblem.h>
-#include "MovingTimeDependentProblem.h"
+#include <dcp/differential_problems/MovingTimeDependentProblem.h>
 
 // serve per il preassemble
 #include <dcp/differential_problems/MovingAbstractProblem.h>
@@ -33,7 +32,7 @@
 
 #undef EVITAPLOT
 
-namespace Ivan
+namespace dcp
 {
     /******************* CONSTRUCTORS *******************/
     MovingTimeDependentProblem::MovingTimeDependentProblem 
@@ -117,7 +116,7 @@ std::cerr << " ----- extrapolation of ALE velocity was used -----" << std::endl;
         meshManager_->moveMesh (displ[0], "init", 1);
     }
 
-    void MovingTimeDependentProblem::setPostProcessor (Ivan::DefaultPostProcessor * postProcessor)
+    void MovingTimeDependentProblem::setPostProcessor (dcp::DefaultPostProcessor * postProcessor)
     {
         postProcessor_.reset(postProcessor);
     }
@@ -132,7 +131,7 @@ std::cerr << " ----- extrapolation of ALE velocity was used -----" << std::endl;
         // parse solve type
         if (type != "default" && type != "step" && type != "clear_default" && type != "clear_step")
         {
-            dolfin::dolfin_error ("Ivan: MovingTimeDependentProblem.h", 
+            dolfin::dolfin_error ("dcp: MovingTimeDependentProblem.h", 
                                   "solve",
                                   "Unknown solve type \"%s\" requested",
                                   type.c_str ());
@@ -332,7 +331,7 @@ std::cerr << std::endl;*/
     }
     
 
-    Ivan::MovingTimeDependentProblem* MovingTimeDependentProblem::clone () const
+    dcp::MovingTimeDependentProblem* MovingTimeDependentProblem::clone () const
     {
         dolfin::begin (dolfin::DBG, "Cloning object...");
         
@@ -342,13 +341,13 @@ std::cerr << std::endl;*/
         dolfin::log (dolfin::DBG, "Creating new object of type MovingTimeDependentProblem...");
         
         // create new object
-        Ivan::MovingTimeDependentProblem* clonedProblem = nullptr;
+        dcp::MovingTimeDependentProblem* clonedProblem = nullptr;
         if (cloneMethod == "shallow_clone")
         {
             // note that we pass an empty initializer_list to the constructor as dtCoefficientTypes and 
             // previousSolutionCoefficientTypes, because they will be copied when the parameters are copied anyway
             clonedProblem = 
-                new Ivan::MovingTimeDependentProblem (this->meshManager_, this->timeSteppingProblem_, startTime_, dt_, endTime_, {}, {}, {});
+                new dcp::MovingTimeDependentProblem (this->meshManager_, this->timeSteppingProblem_, startTime_, dt_, endTime_, {}, {}, {});
             clonedProblem->timeDependentDirichletBCs_ = this->timeDependentDirichletBCs_;
         }
         else if (cloneMethod == "deep_clone")
@@ -356,11 +355,11 @@ std::cerr << std::endl;*/
             // note that we pass an empty initializer_list to the constructor as dtCoefficientTypes and 
             // previousSolutionCoefficientTypes, because they will be copied when the parameters are copied anyway
             clonedProblem = 
-                new Ivan::MovingTimeDependentProblem (this->meshManager_, this->timeSteppingProblem_, startTime_, dt_, endTime_, {}, {}, {});
+                new dcp::MovingTimeDependentProblem (this->meshManager_, this->timeSteppingProblem_, startTime_, dt_, endTime_, {}, {}, {});
         }
         else
         {
-            dolfin::dolfin_error ("Ivan: MovingTimeDependentProblem.cpp",
+            dolfin::dolfin_error ("dcp: MovingTimeDependentProblem.cpp",
                                   "clone",
                                   "Cannot clone time dependent differential problem. Unknown clone method: \"%s\"",
                                   cloneMethod.c_str ());

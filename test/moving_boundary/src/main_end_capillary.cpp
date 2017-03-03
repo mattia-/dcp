@@ -5,10 +5,11 @@
 #include <dcp/differential_problems/MeshManager.h> //"MeshManager.h"
 //#include "geometry.h"
 #include <dcp/differential_problems/MovingLinearProblem.h>
-#include "MovingTimeDependentProblem.h"
-#include "PostProcessor.h"
+#include <dcp/differential_problems/MovingTimeDependentProblem.h>
 #include <dcp/differential_problems/utilities.h> //#include "utilities.h"
 #include <dcp/subdomains/Subdomain.h>
+
+#include "PostProcessor.h"
 #include "computeFreeSurfaceStress_onlyTP.h"
 #include "GetPot.h"
 #include "laplaceALE.h"
@@ -306,7 +307,7 @@ std::cerr << "                "; for (dolfin::la_index i=0; i!=triplePointDofs_w
 #endif
 
 #ifdef PARAB
- 		Ivan::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (meshManager),
+ 		dcp::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (meshManager),
 		 																 										 dolfin::reference_to_no_delete_pointer (timeSteppingProblem),
                                                    			 t0,
                                                    			 problemData.dt, 
@@ -316,7 +317,7 @@ std::cerr << "                "; for (dolfin::la_index i=0; i!=triplePointDofs_w
                                                    			 {"bilinear_form", "linear_form"}
                                                   			 );
 #else
- 		Ivan::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (meshManager),
+ 		dcp::MovingTimeDependentProblem navierStokesProblem (dolfin::reference_to_no_delete_pointer (meshManager),
 		 																 										 dolfin::reference_to_no_delete_pointer (timeSteppingProblem),
                                                    			 t0,
                                                    			 problemData.dt, 

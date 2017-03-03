@@ -5,6 +5,8 @@ SET (HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/AbstractProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/MovingAbstractProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/AdditionalProcessor.h
              ${CMAKE_CURRENT_SOURCE_DIR}/MovingLinearProblem.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/MovingTimeDependentProblem.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/DefaultPostProcessor.h
              ${CMAKE_CURRENT_SOURCE_DIR}/NonlinearProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentProblem.h
              ${CMAKE_CURRENT_SOURCE_DIR}/AbstractEquationSystem.h
@@ -22,6 +24,7 @@ SET (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/EquationSystem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/TimeDependentProblem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/AbstractProblem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/MovingAbstractProblem.cpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/MovingTimeDependentProblem.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/utilities.cpp
              ${CMAKE_CURRENT_SOURCE_DIR}/AbstractEquationSystem.cpp)
 

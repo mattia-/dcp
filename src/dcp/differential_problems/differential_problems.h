@@ -25,6 +25,8 @@
 #include "MeshManager.h"
 #include "MovingAbstractProblem.h"
 #include "MovingLinearProblem.h"
+#include "MovingTimeDependentProblem.h"
+#include "DefaultPostProcessor.h"
 #include "NonlinearProblem.h"
 #include "TimeDependentProblem.h"
 #include "EquationSystem.h"

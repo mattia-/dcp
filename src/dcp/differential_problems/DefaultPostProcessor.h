@@ -39,13 +39,15 @@
 #include <dcp/subdomains/Subdomain.h>
 #include <dcp/differential_problems/MeshManager.h>
 #include <dcp/differential_problems/utilities.h>
+#include <dcp/differential_problems/MovingTimeDependentProblem.h>
+
 
 //TODO: namespace->aegir
-namespace Ivan
+namespace dcp
 {
 
+//! Forward declaration
 class MovingTimeDependentProblem;
-
 
 /*! \class DefaultPostProcessor DefaultPostProcessor.h
  *  \brief Default interface for output during the solution of MovingTimeDependentProblem
@@ -54,7 +56,7 @@ class MovingTimeDependentProblem;
  *  Inherit from this class to pass a post-processor to MovingTimeDependentProblem.
  *
  *  The problem to be post-processed is stored as a 
- *  <tt> Ivan::MovingTimeDependentProblem </tt>
+ *  <tt> dcp::MovingTimeDependentProblem </tt>
  */
 
 class DefaultPostProcessor

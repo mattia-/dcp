@@ -1,5 +1,5 @@
 /* 
- *  Copyright (C) 2015, Ivan Fumagalli, ivan.fumagalli.if@gmail.com
+ *  Copyright (C) 2017, Ivan Fumagalli, ivan.fumagalli.if@gmail.com
  * 
  *  This file is part of the DCP library
  *   
@@ -48,14 +48,17 @@
 #include <dcp/differential_problems/MeshManager.h> //"MeshManager.h"
 #include <dcp/differential_problems/utilities.h> //"utilities.h"
 
-#include "DefaultPostProcessor.h"
+#include <dcp/differential_problems/DefaultPostProcessor.h>
 
 #include "GetPot.h"
 extern GetPot inputData;
 
 //TODO: namespace->aegir
-namespace Ivan
+namespace dcp
 {
+
+//! Forward declaration
+class DefaultPostProcessor;
 
     /*! \class MovingTimeDependentProblem MovingTimeDependentProblem.h
      *  \brief Class for time dependent differential problems with moving domain.
@@ -235,7 +238,7 @@ namespace Ivan
             virtual void initializeMesh (dolfin::Expression & displacement);
 
             //! Method to set the post-processor
-            virtual void setPostProcessor (Ivan::DefaultPostProcessor * postProcessor);
+            virtual void setPostProcessor (dcp::DefaultPostProcessor * postProcessor);
 
             
             /******************* METHODS *******************/

@@ -39,8 +39,8 @@
 #include <dcp/subdomains/Subdomain.h>
 #include <dcp/differential_problems/MeshManager.h>
 #include <dcp/differential_problems/utilities.h>
+#include <dcp/differential_problems/DefaultPostProcessor.h>
 
-#include "DefaultPostProcessor.h"
 #include "balanceTerms.h"
 
 #include "GetPot.h"
@@ -51,25 +51,25 @@ namespace Ivan
 {
 
 /*! \class PostProcessor PostProcessor.h
- *  \brief Class for output during the solution of MovingTimeDependentProblem
+ *  \brief Class for output during the solution of dcp::MovingTimeDependentProblem
  *
  *  The problem to be post-processed is stored as a 
- *  <tt> Ivan::MovingTimeDependentProblem </tt>
+ *  <tt> dcp::MovingTimeDependentProblem </tt>
  */
 
-class PostProcessor : public DefaultPostProcessor
+class PostProcessor : public dcp::DefaultPostProcessor
 {
     // ---------------------------------------------------------------------------------------------//  
 
     public:
 
-      PostProcessor (MovingTimeDependentProblem & pb);
-      PostProcessor (MovingTimeDependentProblem & pb, std::string balanceFileName, std::string intGCLFileName, std::string divGCLFileName, std::string selectedDofsFileName);
+      PostProcessor (dcp::MovingTimeDependentProblem & pb);
+      PostProcessor (dcp::MovingTimeDependentProblem & pb, std::string balanceFileName, std::string intGCLFileName, std::string divGCLFileName, std::string selectedDofsFileName);
 
       void operator() (int timeStep) { (*this) (timeStep, & (this->pb_)); }
-      void operator() (int timeStep, const MovingTimeDependentProblem * const pb);
+      void operator() (int timeStep, const dcp::MovingTimeDependentProblem * const pb);
       void onOldDomain (int timeStep) { this->onOldDomain (timeStep, & (this->pb_)); }
-      void onOldDomain (int timeStep, const MovingTimeDependentProblem * const pb);
+      void onOldDomain (int timeStep, const dcp::MovingTimeDependentProblem * const pb);
 
       virtual ~PostProcessor ();
 

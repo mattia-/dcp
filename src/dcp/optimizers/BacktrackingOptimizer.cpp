@@ -271,8 +271,8 @@ namespace dcp
                                           "Unknown action \"%s\"",
                                           action.c_str ());
                 }
+                counter++;
             }
-            counter++;
         }
 
         dolfin::end (); // Setting file names for in-loop output to file

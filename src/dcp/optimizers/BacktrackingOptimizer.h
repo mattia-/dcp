@@ -23,11 +23,15 @@
 #include <functional>
 #include <string>
 #include <fstream>
+#include <regex>
 #include <dolfin/function/GenericFunction.h>
 #include <dolfin/function/Function.h>
+#include <dolfin/plot/plot.h>
 #include <dcp/optimizers/GenericDescentMethod.h>
 #include <dcp/objective_functionals/GenericObjectiveFunctional.h>
 #include <dcp/optimizers/GenericImplementer.h>
+#include <dcp/functions/TimeDependentFunction.h>
+#include <dcp/utils/plots.h>
 
 namespace dcp
 {
@@ -107,6 +111,25 @@ namespace dcp
              *        Default value: 20
              *      - \c "output_file_name" the name of the output file to write results to.
              *        Default value: empty (which means that output will be written to terminal only).
+             *      - \c "plot_search_direction" a flag to request that the method plot the search direction every time
+             *        a new one is computed.
+             *        Default value: \c false
+             *      - \c "plot_control_variable" a flag to request that the method plot the control variable every time
+             *        its value changes.
+             *        Default value: \c false
+             *      - \c "pause_internal_plots" a flag to request that the execution be stopped after each plot of the
+             *        control variable and search direction.
+             *        Default value: \c false
+             *      - \c "write_search_direction" a flag to request that the method write the search direction to file
+             *        every time a new one is computed.
+             *        Default value: \c false
+             *      - \c "write_control_variable" a flag to request that the method write the control variable to file
+             *        every time its value changes.
+             *        Default value: \c false
+             *      - \c "search_direction_file_name" name of the file to which the search direction should be written.
+             *        Default value: "search_direction.pvd"
+             *      - \c "control_variable_file_name" name of the file to which the control variable should be written.
+             *        Default value: "control_variable.pvd"
              */
             BacktrackingOptimizer ();
 
@@ -119,7 +142,7 @@ namespace dcp
 
 
             /********************** METHODS ***********************/
-            //! Perform optimization on the input problem using the gradient method with backtracking
+            //! Perform minimization on the input problem using the gradient method with backtracking
             /*!
              *  Just a wrapper to allow easier calls to the real \c apply() method, which is the one that takes a vector
              *  of systems as input. See that function's documentation for in-depth explaination of the arguments
@@ -137,7 +160,7 @@ namespace dcp
                             T_ControlVariable& initialGuess,
                             dcp::GenericImplementer<T_ControlVariable>& implementer) const;
 
-            //! Perform optimization on the input problem using the gradient method with backtracking
+            //! Perform minimization on the input problem using the gradient method with backtracking
             /*!
              *  The type \c T_ControlVariable must satisfy the following constraints:
              *  \li be copy-constructible
@@ -184,6 +207,18 @@ namespace dcp
              *  method to compute the norm of the gradient or of the increment of the control variable (passed as
              *  argument to the function); it is used for the convergence check, if needed. Note that this could use
              *  the previous \c computeDotProduct function within the implementer
+             *
+             *
+             *  Note that this method will honor the write- and plot-related parameters in the problems passed within
+             *  \c systems . This means that all plots that would be performed during a standard solution of the systems
+             *  are performed, and the same goes for the writing to file. This means that if an output to file is
+             *  desired, the parameters \c "write_interval" and \c "write_after_solve" (for objects of type
+             *  \c dcp::LinearProblem or \c dcp::NonlinearProblem and of type \c dcp::TimeDependentProblem respectively)
+             *  must be properly set in order for some output to be printed. Nonetheless, during the method, the names
+             *  of the file to which the solutions are written are changed and the iteration number is prepended, so
+             *  that it is clear what iteration generated what set of files.
+             *  Conversely, for the control and the search direction values, see parameters \c "write_control_variable"
+             *  and \c "write_search_direction" in this class
              */
             template <class T_ControlVariable>
                 void apply (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
@@ -205,6 +240,9 @@ namespace dcp
              *  the value of the alpha at the last iteration.
              *  \param backtrackingIteration the iterations performed in the backtracking loop. At the end of the
              *  function, it will contain the total number of iterations performed.
+             *  \param minimizationIteration the current iteration in the minimization loop, to be used for plots and
+             *  writing to file
+             *  \param originalFilenames vector of original filenames for the problems' output
              *  \param controlVariable the control variable. At the end of the function, it will contain the
              *  control variable at the last iteration.
              *  \param previousFunctionalValue the control variable at the beginning of the backtracking loop.
@@ -223,6 +261,8 @@ namespace dcp
                                     const double& gradientDotSearchDirection,
                                     double& alpha,
                                     int& backtrackingIteration,
+                                    const int& minimizationIteration,
+                                    std::vector<std::string>& originalFilenames,
                                     T_ControlVariable& controlVariable,
                                     const T_ControlVariable& previousControlVariable,
                                     const T_ControlVariable& searchDirection,
@@ -234,20 +274,20 @@ namespace dcp
             /*!
              *  Input parameters:
              *  \param iteration the current iteration when the function is called
-             *  \param OUTSTREAM the stream to print to
+             *  \param outstream the stream to print to
              *  \param functionalValue the value of the functional
              *  \param alpha the backtracking parameter
-             *  \param backtrackingIterations the number of iterations performed in the backtracking loop
+             *  \param backtrackingIteration the number of iterations performed in the backtracking loop
              *  \param gradientNorm the norm of the gradient of the functional
              *  \param relativeIncrement the relative increment of the optimal solution found
              */
-            void print_ (std::ostream& OUTSTREAM,
-                         const int& iteration,
-                         const double& functionalValue,
-                         const double& alpha,
-                         const int& backtrackingIterations,
-                         const double& gradientNorm,
-                         const double& relativeIncrement) const;
+            void printResults_ (std::ostream& outstream,
+                                const int& iteration,
+                                const double& functionalValue,
+                                const double& alpha,
+                                const int& backtrackingIteration,
+                                const double& gradientNorm,
+                                const double& relativeIncrement) const;
 
             //! Function to open output file and print the header
             /*!
@@ -255,7 +295,51 @@ namespace dcp
              *
              *  \return \c true if the file was opened, \c false otherwise
              */
-            bool openOutputFile_ (std::ofstream& outfile) const;
+            bool openResultsFile_ (std::ofstream& outfile) const;
+
+            //! Function to perform plots within the minimization and backtracking loops
+            /*!
+             *  \param toPlot function to plot
+             *  \param title the title
+             */
+            template <class T_ControlVariable>
+                void plot_ (T_ControlVariable& toPlot, const std::string& title) const;
+
+            //! Function to write to file within the minimization and backtracking loops
+            /*!
+             *  This is just provided for ease of use in case of derived classes. In this case, it is not really needed.
+             *
+             *  \param toWrite function to plot
+             *  \param filename the file name
+             */
+            template <class T_ControlVariable>
+                void write_ (const T_ControlVariable& toWrite, const std::string& filename) const;
+
+            //! Method used to set the filenames of the problems in the system
+            /*!
+             *  This method (internal use only) sets the names of the output files of the problems. Input parameters
+             *  are:
+             *  \c param systems the systems being used for the minimization procedure
+             *  \c param originalFilenames a vector that contains the original file names
+             *  \c param action a string to switch between behaviours. Possible values:
+             *  \li \c "fill_originals" : stores the original file names into \c originalFilenames
+             *  \li \c "set_minimization" : sets the file names to output the results within a minimization iteration
+             *  \li \c "set_backtracking" : sets the file names to output the results within a backtracking iteration
+             *  \li \c "restore_originals" : resets the original values
+             *  \c param minimizationIteration the minimization iteration, used to set the proper name
+             *  \c param backtrackingIteration the backtracking iteration, used to set the proper name
+             *
+             *
+             * When \c "fill_originals" is used as \c action, the problems are looped through and the filename saved to
+             * \c originalFilenames. We then use the same loop to change and later restore the filenames. That is why
+             * there is no need for a map or other wild data structure, since if we use the same loop the order will be
+             * the same (assuming the problems in the systems do not change, which they don't do in this class)
+             */
+            void setFilenames_ (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                                std::vector<std::string>& originalFilenames,
+                                const std::string& action,
+                                const int& minimizationIteration = 0,
+                                const int& backtrackingIteration = 0) const;
 
             /********************** VARIABLES ***********************/
 
@@ -287,23 +371,28 @@ namespace dcp
 
 
     template <class T_ControlVariable>
-        void BacktrackingOptimizer::apply (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
-                                           dcp::GenericObjectiveFunctional& objectiveFunctional,
-                                           T_ControlVariable& initialGuess,
-                                           dcp::GenericImplementer<T_ControlVariable>& implementer) const
+        void BacktrackingOptimizer::apply
+            (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+             dcp::GenericObjectiveFunctional& objectiveFunctional,
+             T_ControlVariable& initialGuess,
+             dcp::GenericImplementer<T_ControlVariable>& implementer) const
     {
         // ------------------------------------------------------------------------------------------------------- //
-        // minimization loop settings
+        //                                      minimization loop settings                                         //
         // ------------------------------------------------------------------------------------------------------- //
         // get parameters values
-        double c_1                        = this->parameters ["c_1"];
-        double alpha_0                    = this->parameters ["alpha_0"];
-        double rho                        = this->parameters ["rho"];
-        double gradientNormTolerance      = this->parameters ["gradient_norm_tolerance"];
-        double relativeIncrementTolerance = this->parameters ["relative_increment_tolerance"];
-        std::string convergenceCriterion  = this->parameters ["convergence_criterion"];
-        int maxMinimizationIterations     = this->parameters ["max_minimization_iterations"];
-        int maxBacktrackingIterations     = this->parameters ["max_backtracking_iterations"];
+        double c_1                        = this->parameters["c_1"];
+        double alpha_0                    = this->parameters["alpha_0"];
+        double rho                        = this->parameters["rho"];
+        double gradientNormTolerance      = this->parameters["gradient_norm_tolerance"];
+        double relativeIncrementTolerance = this->parameters["relative_increment_tolerance"];
+        std::string convergenceCriterion  = this->parameters["convergence_criterion"];
+        int maxMinimizationIterations     = this->parameters["max_minimization_iterations"];
+        int maxBacktrackingIterations     = this->parameters["max_backtracking_iterations"];
+        bool plotControlVariable          = this->parameters["plot_control_variable"];
+        bool plotSearchDirection          = this->parameters["plot_search_direction"];
+        bool writeControlVariable         = this->parameters["write_control_variable"];
+        bool writeSearchDirection         = this->parameters["write_search_direction"];
 
         // define loop variables
         double alpha;
@@ -323,7 +412,11 @@ namespace dcp
 
         // define output file and print header if necessary
         std::ofstream outfile;
-        bool hasOutputFile = openOutputFile_ (outfile);
+        bool hasOutputFile = openResultsFile_ (outfile);
+
+        // get all original filenames, so that we can restore them later
+        std::vector<std::string> originalFilenames;
+        setFilenames_ (systems, originalFilenames, "fill_originals");
 
         // all linear problems in system[0] should be reassembled every time. So we set the parameter
         // "force_reassemble_system" to true for every one of them
@@ -382,19 +475,20 @@ namespace dcp
                                   convergenceCriterion.c_str ());
         }
         // ------------------------------------------------------------------------------------------------------- //
-        // end of minimization loop setting
+        //                                  end of minimization loop setting                                       //
         // ------------------------------------------------------------------------------------------------------- //
 
 
         // update and solve the system for the first time
         dolfin::begin (dolfin::PROGRESS, "Minimization loop initialization...");
 
-        dolfin::begin (dolfin::PROGRESS, "Updating systems using control initial guess...");
+        dolfin::begin (dolfin::PROGRESS, "Updating systems...");
         implementer.update (systems, controlVariable);
-        dolfin::end (); // Updating systems using control initial guess
+        dolfin::end (); // Updating systems
 
         // solve problems
         dolfin::begin (dolfin::PROGRESS, "Solving...");
+        setFilenames_ (systems, originalFilenames, "set_minimization", 0);
         implementer.solve (systems, "all");
         dolfin::end (); // Solving
 
@@ -437,7 +531,13 @@ namespace dcp
         // print results to file
         if (hasOutputFile)
         {
-            print_ (outfile, minimizationIteration, currentFunctionalValue, 0, 0, gradientNorm, relativeIncrement);
+            printResults_ (outfile,
+                           minimizationIteration,
+                           currentFunctionalValue,
+                           0,
+                           0,
+                           gradientNorm,
+                           relativeIncrement);
         }
 
         while (isConverged () == false && minimizationIteration < maxMinimizationIterations)
@@ -459,12 +559,35 @@ namespace dcp
             functionalGradient = objectiveFunctional.gradient ();
             dolfin::begin (dolfin::PROGRESS, "Computing search direction...");
             searchDirection = implementer.computeSearchDirection (functionalGradient);
-            dolfin::end ();
+
+            if (plotSearchDirection == true)
+            {
+                std::string title =
+                    "search direction, minimization iteration: " + std::to_string (minimizationIteration);
+                plot_ (searchDirection, title);
+            }
+            if (writeSearchDirection == true)
+            {
+                // regex matching the extension, aka all the characters after the last dot (included)
+                std::regex extensionRegex ("(\\.[^.]*$)");
+
+                // add the minimization iteration number before the extension ($n is the n-th backreference of
+                // the match) in the filename taken from parameters
+                std::string filename = std::regex_replace
+                        (std::string(parameters["search_direction_file_name"]),
+                         extensionRegex,
+                         "_minimization_iteration_" + std::to_string (minimizationIteration) + "$1");
+
+                // write to file
+                write_ (searchDirection, filename);
+            }
+
+            dolfin::end (); // Computing search direction
 
             // compute dot product between gradient and search direction
             dolfin::begin (dolfin::DBG, "Computing dot product between gradient and search direction...");
             gradientDotSearchDirection = implementer.computeDotProduct (functionalGradient, searchDirection);
-            dolfin::end ();
+            dolfin::end (); // Computing dot product between gradient and seach direction
 
             // ------------------------ solution of system with alpha_0 ------------------------ //
             dolfin::log (dolfin::PROGRESS, "Alpha = %f", alpha);
@@ -473,22 +596,46 @@ namespace dcp
             dolfin::begin (dolfin::PROGRESS, "Updating control variable...");
             T_ControlVariable previousControlVariable (controlVariable);
             controlVariable = previousControlVariable + (searchDirection * alpha);
-            dolfin::end ();
+
+            if (plotControlVariable == true)
+            {
+                std::string title =
+                    "control variable, minimization iteration: " + std::to_string (minimizationIteration);
+                plot_ (controlVariable, title);
+            }
+            if (writeControlVariable == true)
+            {
+                // regex matching the extension, aka all the characters after the last dot (included)
+                std::regex extensionRegex ("(\\.[^.]*$)");
+
+                // add the minimization iteration number before the extension ($n is the n-th backreference of
+                // the match) in the filename taken from parameters
+                std::string filename = std::regex_replace
+                        (std::string(parameters["control_variable_file_name"]),
+                         extensionRegex,
+                         "_minimization_iteration_" + std::to_string (minimizationIteration) + "$1");
+
+                // write to file
+                write_ (controlVariable, filename);
+            }
+
+            dolfin::end (); // Updating control variable
 
             // update system
-            dolfin::begin (dolfin::PROGRESS, "Updating systems using control initial guess...");
+            dolfin::begin (dolfin::PROGRESS, "Updating systems...");
             implementer.update (systems, controlVariable);
-            dolfin::end (); // Updating systems using control initial guess
+            dolfin::end (); // Updating systems
 
             // solve system (only primal problem)
             dolfin::begin (dolfin::PROGRESS, "Solving...");
+            setFilenames_ (systems, originalFilenames, "set_minimization", minimizationIteration);
             implementer.solve (systems, "primal");
             dolfin::end (); // Solving
 
             // update value of the functional
             dolfin::begin (dolfin::PROGRESS, "Evaluating functional...");
             currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
-            dolfin::end ();
+            dolfin::end (); // Evaluating functional
 
             dolfin::log (dolfin::PROGRESS, "Functional value = %f\n", currentFunctionalValue);
             // ------------------------ end of solution of system with alpha_0 ------------------------ //
@@ -499,6 +646,8 @@ namespace dcp
                                gradientDotSearchDirection,
                                alpha,
                                backtrackingIteration,
+                               minimizationIteration,
+                               originalFilenames,
                                controlVariable,
                                previousControlVariable,
                                searchDirection,
@@ -508,6 +657,7 @@ namespace dcp
 
             // solve adjoint problem after backtracking, so we get the updated functional gradient
             dolfin::begin (dolfin::PROGRESS, "Solving...");
+            setFilenames_ (systems, originalFilenames, "set_minimization", minimizationIteration);
             implementer.solve (systems, "adjoint");
             dolfin::end (); // Solving
 
@@ -544,13 +694,13 @@ namespace dcp
             if (hasOutputFile)
             {
                 dolfin::log (dolfin::DBG, "Printing results to file...");
-                print_ (outfile,
-                        minimizationIteration,
-                        currentFunctionalValue,
-                        alpha,
-                        backtrackingIteration,
-                        gradientNorm,
-                        relativeIncrement);
+                printResults_ (outfile,
+                               minimizationIteration,
+                               currentFunctionalValue,
+                               alpha,
+                               backtrackingIteration,
+                               gradientNorm,
+                               relativeIncrement);
             }
 
             dolfin::end (); // "Minimization iteration %d"
@@ -583,6 +733,9 @@ namespace dcp
         {
             outfile.close ();
         }
+
+        // reset filenames
+        setFilenames_ (systems, originalFilenames, "restore_originals");
     }
 
 
@@ -594,6 +747,8 @@ namespace dcp
              const double& gradientDotSearchDirection,
              double& alpha,
              int& backtrackingIteration,
+             const int& minimizationIteration,
+             std::vector<std::string>& originalFilenames,
              T_ControlVariable& controlVariable,
              const T_ControlVariable& previousControlVariable,
              const T_ControlVariable& searchDirection,
@@ -605,6 +760,8 @@ namespace dcp
         double c_1 = this->parameters ["c_1"];
         double rho = this->parameters ["rho"];
         int maxBacktrackingIterations = this->parameters ["max_backtracking_iterations"];
+        bool plotControlVariable = this->parameters["plot_control_variable"];
+        bool writeControlVariable = this->parameters["write_control_variable"];
 
         // function to check if sufficient-decrease condition is satisfied
         auto sufficientDecreaseConditionIsSatisfied = [&c_1, &gradientDotSearchDirection]
@@ -627,29 +784,55 @@ namespace dcp
             // update control variable value
             dolfin::begin (dolfin::PROGRESS, "Updating control variable...");
             controlVariable = previousControlVariable + (searchDirection * alpha);
-            dolfin::end ();
+
+            if (plotControlVariable == true)
+            {
+                std::string title =
+                    "control variable, minimization iteration: " + std::to_string (minimizationIteration) +
+                    ", backtracking iteration: " + std::to_string (backtrackingIteration);
+                plot_ (controlVariable, title);
+            }
+            if (writeControlVariable == true)
+            {
+                // regex matching the extension, aka all the characters after the last dot (included)
+                std::regex extensionRegex ("(\\.[^.]*$)");
+
+                // add the minimization iteration number before the extension ($n is the n-th backreference of
+                // the match) in the filename taken from parameters
+                std::string filename = std::regex_replace
+                        (std::string(parameters["control_variable_file_name"]),
+                         extensionRegex,
+                         "_minimization_iteration_" + std::to_string (minimizationIteration)
+                         + "_backtracking_iteration_" + std::to_string (backtrackingIteration) + "$1");
+
+                // write to file
+                write_ (controlVariable, filename);
+            }
+
+            dolfin::end (); // Updating control variable
 
             // update system
-            dolfin::begin (dolfin::PROGRESS, "Updating differential problem...");
+            dolfin::begin (dolfin::PROGRESS, "Updating systems...");
             implementer.update (systems, controlVariable);
-            dolfin::end ();
+            dolfin::end (); // Updating systems
 
             // solve system (only primal problem)
             dolfin::begin (dolfin::PROGRESS, "Solving...");
+            setFilenames_ (systems, originalFilenames, "set_backtracking", minimizationIteration, backtrackingIteration);
             implementer.solve (systems, "primal");
             dolfin::end (); // Solving
 
             // update value of the functional
             dolfin::begin (dolfin::PROGRESS, "Evaluating functional...");
             currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
-            dolfin::end ();
+            dolfin::end (); // Evaluating functional
 
             dolfin::log (dolfin::PROGRESS, "Functional value = %f", currentFunctionalValue);
 
             dolfin::log (dolfin::PROGRESS, "");
         }
 
-        dolfin::end ();
+        dolfin::end (); // Starting backtracking loop
 
         if (sufficientDecreaseConditionIsSatisfied (previousFunctionalValue, currentFunctionalValue, alpha) == false)
         {
@@ -667,6 +850,62 @@ namespace dcp
         }
     }
 
+
+
+    // WARNING: we do not use template specialization for dcp::TimeDependentFunction because this needs to work also
+    // with any class derived from it, so a dynamic_pointer_cast is used instead
+    template <class T_ControlVariable>
+        void BacktrackingOptimizer::plot_ (T_ControlVariable& toPlot, const std::string& title) const
+        {
+            dolfin::begin (dolfin::DBG, "Plotting internal variables...");
+
+            bool pause = parameters["pause_internal_plots"];
+            std::string mode = "auto"; // default value
+
+            // check if the function to plot is a dcp::TimeDependentFunction
+            // NOTE: we go thorugh a pointer because otherwise we would have to have a try-catch, with a dynamic_cast on
+            // something that would not be used, and the compiler would issue a warning every time, which is pretty
+            // annoying; instead of adding fake/useless instructions, this seemed the cleanest way
+            std::shared_ptr<dcp::TimeDependentFunction> castFunction =
+                std::dynamic_pointer_cast<dcp::TimeDependentFunction> (dolfin::reference_to_no_delete_pointer (toPlot));
+
+            // check if cast was successful
+            if (castFunction != nullptr)
+            {
+                if (pause == true)
+                {
+                    mode = "pause";
+                }
+                else
+                {
+                    mode = "continue";
+                }
+            }
+
+            // perform actual plot
+            dolfin::plot (toPlot, title, mode);
+
+            // pause execution if needed (aka, if the function was NOT a dcp::TimeDependentFunction)
+            if (castFunction == nullptr && pause == true)
+            {
+                dolfin::interactive ();
+            }
+
+            dolfin::end (); // Plotting internal variables
+        }
+
+
+
+    template <class T_ControlVariable>
+        void BacktrackingOptimizer::write_ (const T_ControlVariable& toWrite, const std::string& filename) const
+        {
+            dolfin::begin ("Writing internal variables to file...");
+
+            dolfin::File outfile (filename);
+            outfile << toWrite;
+
+            dolfin::end (); // Writing internal variables to file
+        }
 }
 
 #endif

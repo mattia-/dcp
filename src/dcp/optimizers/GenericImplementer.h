@@ -73,7 +73,7 @@ namespace dcp
                  */
                 virtual void setDotProduct (const dolfin::Form& dotProductForm);
 
-                //! Set the way the search direction is computed on every loop iteration during minimization
+                //! Set the way the search direction is computed on every loop iteration during optimization
                 /*!
                  *  \param searchDirectionComputer the object to be used to compute the search direction
                  */

@@ -84,6 +84,10 @@ namespace dcp
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be
                  *        reassembled every time the \c solve method is called. Default value: \c false
+                 *      - \c "plot_after_solve" if set to \c true, \c plotSolution() will be automatically
+                 *        called once \c solve() has ended. Defaul value: \c false
+                 *      - \c "write_after_solve" if set to \c true, \c writeSolutionToFile() will be automatically
+                 *        called once \c solve() has ended. Defaul value: \c false
                  */
                 LinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace);
 
@@ -107,6 +111,10 @@ namespace dcp
                  *        the linear system when the \ solve method is called. Default value: \c false
                  *      - \c "force_reassemble_system" a flag that, if set to \c true, causes the system to be
                  *        reassembled every time the \c solve method is called. Default value: \c false
+                 *      - \c "plot_after_solve" if set to \c true, \c plotSolution() will be automatically
+                 *        called once \c solve() has ended. Defaul value: \c false
+                 *      - \c "write_after_solve" if set to \c true, \c writeSolutionToFile() will be automatically
+                 *        called once \c solve() has ended. Defaul value: \c false
                  */
                 LinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace,
                                const T_BilinearForm& bilinearForm,
@@ -416,6 +424,8 @@ namespace dcp
             parameters.add ("solver_preconditioner", solverPreconditioner_);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);
+            parameters.add ("plot_after_solve", false);
+            parameters.add ("write_after_solve", false);
 
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver_ ();
@@ -454,6 +464,8 @@ namespace dcp
             parameters.add ("solver_preconditioner", solverPreconditioner_);
             parameters.add ("system_is_assembled", false);
             parameters.add ("force_reassemble_system", false);
+            parameters.add ("plot_after_solve", false);
+            parameters.add ("write_after_solve", false);
 
             dolfin::begin (dolfin::DBG, "Creating solver...");
             solver_ = createSolver_ ();
@@ -928,6 +940,18 @@ namespace dcp
             }
 
             dolfin::end ();
+
+
+            // post-solve operations
+            if (bool(parameters["plot_after_solve"]) == true)
+            {
+                plotSolution ();
+            }
+
+            if (bool(parameters["write_after_solve"]) == true)
+            {
+                writeSolutionToFile ();
+            }
         }
 
 

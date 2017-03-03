@@ -80,6 +80,10 @@ namespace dcp
                  *      - \c "jacobian_form_solution_name" (see input arguments)
                  *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver
                  *        parameters
+                 *      - \c "plot_after_solve" if set to \c true, \c plotSolution() will be automatically
+                 *        called once \c solve() has ended. Defaul value: \c false
+                 *      - \c "write_after_solve" if set to \c true, \c writeSolutionToFile() will be automatically
+                 *        called once \c solve() has ended. Defaul value: \c false
                  */
                 NonlinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace,
                                   const std::string& residualFormSolutionName,
@@ -103,6 +107,10 @@ namespace dcp
                  *      - \c "jacobian_form_solution_name" (see input arguments)
                  *      - \c "solver_parameters_set_name" the name of the parameters set containing the solver
                  *        parameters
+                 *      - \c "plot_after_solve" if set to \c true, \c plotSolution() will be automatically
+                 *        called once \c solve() has ended. Defaul value: \c false
+                 *      - \c "write_after_solve" if set to \c true, \c writeSolutionToFile() will be automatically
+                 *        called once \c solve() has ended. Defaul value: \c false
                  */
                 NonlinearProblem (const std::shared_ptr<const dolfin::FunctionSpace> functionSpace,
                                   const T_ResidualForm& residualForm,
@@ -262,6 +270,8 @@ namespace dcp
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
+            parameters.add ("plot_after_solve", false);
+            parameters.add ("write_after_solve", false);
 
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
@@ -313,6 +323,8 @@ namespace dcp
                 parameters.add ("jacobian_form_solution_name", jacobianFormSolutionName);
             }
             parameters.add ("solver_parameters_set_name", "nonlinear_variational_solver");
+            parameters.add ("plot_after_solve", false);
+            parameters.add ("write_after_solve", false);
 
             dolfin::log (dolfin::DBG, "Setting initial guess...");
             if (jacobianFormSolutionName.empty ())
@@ -564,6 +576,18 @@ namespace dcp
                                    jacobianForm_,
                                    parameters (solverParametersSetName));
                 }
+            }
+
+
+            // post-solve operations
+            if (bool(parameters["plot_after_solve"]) == true)
+            {
+                plotSolution ();
+            }
+
+            if (bool(parameters["write_after_solve"]) == true)
+            {
+                writeSolutionToFile ();
             }
         }
 

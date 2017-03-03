@@ -1,0 +1,26 @@
+This collection of files sets up the case for a test control problem
+governed by free-surface Navier-Stokes equations
+[cf. Fumagalli,Parolini,Verani, MOX Report 03/2017.
+http://www.mate.polimi.it/biblioteca/add/qmox/03-2017.pdf]
+via instantaneous control
+[cf. M. Hinze, Habilitationsschrift (2000)]
+
+Steps to launch the code:
+1) create a directory in which to build the code. In the following steps, it will be supposed that such directory is
+called "build" and was created in the same directory as the one where this README file is
+    $ mkdir build
+
+2) change directory
+    $ cd build
+
+3) launch cmake
+    $ cmake ..
+   
+   various options can be passed to cmake. For example, to allow compiler optimizations, run
+    $ cmake .. -DCMAKE_BUILD_TYPE=RELEASE
+
+4) compile
+    $ make
+
+5) run the executable with possible input/output options
+    $ ./src/main [ -f INPUT_FILE ] [ -d OUTPUT_DIRECTORY_ABSOLUTE_PATH/ ]

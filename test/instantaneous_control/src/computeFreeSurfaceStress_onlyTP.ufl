@@ -1,0 +1,57 @@
+#/* 
+# *  Copyright (C) 2015, Ivan Fumagalli, ivan.fumagalli@polimi.it
+# * 
+# *  This file is part of the DCP library
+# *   
+# *   The DCP library is free software: you can redistribute it and/or modify
+# *   it under the terms of the GNU General Public License as published by
+# *   the Free Software Foundation, either version 3 of the License, or
+# *   (at your option) any later version.
+# *
+# *   The DCP library is distributed in the hope that it will be useful,
+# *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+# *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# *   GNU General Public License for more details.
+# *
+# *   You should have received a copy of the GNU General Public License
+# *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
+# */ 
+
+# UFL file to compute the surface tension stresses on a free surface
+# (labelled by 1)
+#
+
+cell = triangle
+V = VectorElement ("Lagrange", cell, 1)
+Q = FiniteElement ("Lagrange", cell, 1)
+T = V * Q
+
+#up = Coefficient (T)
+test = TestFunction (T)
+
+#u, p = split (up)
+v, q = split (test)
+dt = Constant (cell)
+gamma = Constant (cell)
+n = FacetNormal(cell)
+h = MaxFacetEdgeLength(cell)
+cosThetaS = Constant(cell)
+t_partialOmega = Coefficient(V)
+m_symmetryAxis = Coefficient(V)
+
+#th = pi/2
+#A = as_matrix([[cos(th) , -sin(th)] , [sin(th) , cos(th)]])
+A = as_matrix ([ [0 , -1] , [1 , 0] ])
+
+# OPPOSITE w.r.t. myNavierstokesTimeCurv.ufl
+# because there we move this term to the lhs
+#
+# with free-slip
+#L =   (6.0/h) * dt * gamma * inner (v, A*n) * ds(5) \
+#    - (6.0/h) * dt * gamma * inner (v, A*n) * ds(6)
+# with GNBC
+#L =   (6.0/h) * dt * gamma * cosThetaS * inner(t_partialOmega, v) * ds(5) \
+#    + (6.0/h) * dt * gamma * cosThetaS * inner(t_partialOmega, v) * ds(6)
+# with GNBC in 6, symmetry axis through 5
+L =   (2.0/h) * dt * gamma * cosThetaS * inner(t_partialOmega, v) * ds(6) #\
+#    + (6.0/h) * dt * gamma * inner(m_symmetryAxis, v) * ds(5)

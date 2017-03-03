@@ -1,0 +1,74 @@
+# input_main_cyl_sloshing.txt
+#
+# NB : using dots doesn't work: this strange scientific notation is required
+# NB2: default values for float/double in .cpp need the dot,
+#      otherwise an int is read
+
+# LJ REDUCED UNITS (GERBEAU)
+
+#----------------- mesh -----------------#
+  lx = 46e-5
+  ly = 46e-5
+  nx = 16
+  ny = 80
+
+
+#----------------- time -----------------#
+  dt = 2e-5   #[s]
+  t0 = 0      #[s]
+  # if T not given or T<t0, nT is considered
+  # T  = 5e-2 # 6
+  nT = 100
+
+  fileFrequency = 1
+  saveDataInFile = 1
+  savePvd = 1
+
+#---------------- physics ---------------#
+  mu  = 2081e-5
+  rho = 1115
+  gamma = 436e-7
+  betaSuH = 7e-3
+  thetaS = 698e-1   #[deg]
+
+#----------------- misc -----------------#
+  inflowDirichlet = 0
+#  ustar = 
+  zeta0_x = 0
+  #zeta0_y = 4454e-5   # 9.81*(0.005-ly)  [m2/s2] = [Pa/(kg/m3)]
+  #zeta0_y = 451e-5   # 9.81*ly  [m2/s2] = [Pa/(kg/m3)]
+  #zeta0_y = 496e-5   # 1.1 * 9.81*ly  [m2/s2] = [Pa/(kg/m3)]
+  #zeta0_y = -451e-4 # counterPress
+  # zeta0_y = 0
+##  zeta0_y = -600e-4 # h_end = 2*gamma*cos(thetaS)/(rho*g*r) = 667e-5  =>   zeta0_y = 9.81*(ly-h_end) = 609e-4 [m2/s2]
+  zeta0_y = 451e-5 # h_0 = ly  =>   zeta0_y = 9.81*ly = 451e-5 [m2/s2]
+  stressAbove0_x = 0
+  stressAbove0_y = 0 # 3000e-5 # 9.81 * 0.005 ??
+
+  inflowVelocity = 0
+
+  lambdastar = 1 #0.5
+
+  noStokes = 1
+
+  stabBulk = 1
+  stabSigma = 1
+  stabSGCL = 0
+  stabPress = 4e-1 # 1e-1
+
+  wallVelY = 0 # -0.01
+
+  gravityOn = 981e-2
+
+  startFromFlat = 1
+
+#  restartMeshFile = /u/numer/ifumagalli/dcp_test_output/tmpHalfCyl8leBeta_2N05t_2beta/mesh
+#  restartFile = /u/numer/ifumagalli/dcp_test_output/tmpHalfCyl8leBeta_2N05t_2beta/sol
+#  restartDisplFile = /u/numer/ifumagalli/dcp_test_output/tmpHalfCyl8leBeta_2N05t_2beta/displ
+#  restartTimeStep = 13100
+
+#  restartMeshFile = /u/numer/ifumagalli/dcp_test_output/tmp/mesh
+#  restartFile = /u/numer/ifumagalli/dcp_test_output/tmp/sol
+#  restartDisplFile = /u/numer/ifumagalli/dcp_test_output/tmp/displ
+#  restartTimeStep = 40
+

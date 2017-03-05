@@ -248,11 +248,11 @@ namespace dcp
             (dcp::TimeDependentEquationSystem& primalSystem)
         {
 
-            for (std::size_t i = 0; i < primalSystem.size (); ++i)
+            for (const auto& name : primalSystem.problemsNames ())
             {
-                dolfin::begin (dolfin::DBG, "Initializing problem number %d in primal problem...", i);
-                primalSystem[i].clear ();
-                primalSystem[i].restoreState ("initial_state", true);
+                dolfin::begin (dolfin::DBG, "Initializing problem \"%s\" in primal system...", name.c_str ());
+                primalSystem[name].clear ();
+                primalSystem[name].restoreState ("initial_state", true);
                 dolfin::end (); // Initializing problem number %d in primal problem
             }
         }
@@ -264,11 +264,11 @@ namespace dcp
             (dcp::TimeDependentEquationSystem& adjointSystem,
              const dcp::TimeDependentEquationSystem& primalSystem)
         {
-            for (std::size_t i = 0; i < adjointSystem.size (); ++i)
+            for (const auto& name : adjointSystem.problemsNames ())
             {
-                dolfin::begin (dolfin::DBG, "Initializing problem number %d in adjoint problem...", i);
-                adjointSystem[i].clear ();
-                adjointSystem[i].restoreState ("initial_state", true);
+                dolfin::begin (dolfin::DBG, "Initializing problem \"%s\" in adjoint system...", name.c_str ());
+                adjointSystem[name].clear ();
+                adjointSystem[name].restoreState ("initial_state", true);
                 dolfin::end (); // Initializing problem number %d in adjoint problem
             }
         }

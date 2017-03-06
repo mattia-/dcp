@@ -68,7 +68,7 @@ namespace dcp
              *  \param system the system on which to operate
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
-            void operator() (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem>> systems,
+            void operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
                              const dolfin::GenericFunction& coefficientValue) const;
 
             //! Call operator [2]
@@ -79,7 +79,7 @@ namespace dcp
              *  \param system the system on which to operate
              *  \param coefficientValue the new value for the control parameter identified by \c coefficientName_
              */
-            void operator() (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem>> systems,
+            void operator() (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
                              const dcp::TimeDependentFunction& coefficientValue) const;
 
         // ---------------------------------------------------------------------------------------------//

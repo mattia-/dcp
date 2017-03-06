@@ -210,7 +210,7 @@ namespace dcp
 
 
     void BacktrackingOptimizer::setFilenames_
-        (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+        (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
          std::vector<std::string>& originalFilenames,
          const std::string& action,
          const int& minimizationIteration,

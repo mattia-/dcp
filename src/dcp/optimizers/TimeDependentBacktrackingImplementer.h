@@ -86,7 +86,7 @@ namespace dcp
              *  \li \c adjoint
              *  with obvious meaning
              */
-            virtual void solve (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+            virtual void solve (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
                                 const std::string& solveType) override;
 
             //! Initialize primal problem for solving
@@ -197,7 +197,7 @@ namespace dcp
     /********************** METHODS ***********************/
     template <class T_ControlVariable>
         void TimeDependentBacktrackingImplementer<T_ControlVariable>::solve
-            (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+            (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
              const std::string& solveType)
         {
             // get primal and adjoint problems

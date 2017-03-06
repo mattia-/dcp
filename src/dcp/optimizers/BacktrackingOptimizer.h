@@ -221,7 +221,7 @@ namespace dcp
              *  and \c "write_search_direction" in this class
              */
             template <class T_ControlVariable>
-                void apply (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                void apply (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
                             dcp::GenericObjectiveFunctional& objectiveFunctional,
                             T_ControlVariable& initialGuess,
                             dcp::GenericImplementer<T_ControlVariable>& implementer) const;
@@ -266,7 +266,7 @@ namespace dcp
                                     T_ControlVariable& controlVariable,
                                     const T_ControlVariable& previousControlVariable,
                                     const T_ControlVariable& searchDirection,
-                                    const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                                    const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
                                     dcp::GenericObjectiveFunctional& objectiveFunctional,
                                     dcp::GenericImplementer<T_ControlVariable>& implementer) const;
 
@@ -335,7 +335,7 @@ namespace dcp
              * there is no need for a map or other wild data structure, since if we use the same loop the order will be
              * the same (assuming the problems in the systems do not change, which they don't do in this class)
              */
-            void setFilenames_ (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+            void setFilenames_ (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
                                 std::vector<std::string>& originalFilenames,
                                 const std::string& action,
                                 const int& minimizationIteration = 0,
@@ -362,7 +362,7 @@ namespace dcp
                                            T_ControlVariable& initialGuess,
                                            dcp::GenericImplementer<T_ControlVariable>& implementer) const
         {
-            std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systemAsVector;
+            std::vector<std::shared_ptr<dcp::GenericEquationSystem> > systemAsVector;
             systemAsVector.push_back (dolfin::reference_to_no_delete_pointer (system));
 
             apply (systemAsVector, objectiveFunctional, initialGuess, implementer);
@@ -372,7 +372,7 @@ namespace dcp
 
     template <class T_ControlVariable>
         void BacktrackingOptimizer::apply
-            (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+            (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
              dcp::GenericObjectiveFunctional& objectiveFunctional,
              T_ControlVariable& initialGuess,
              dcp::GenericImplementer<T_ControlVariable>& implementer) const
@@ -752,7 +752,7 @@ namespace dcp
              T_ControlVariable& controlVariable,
              const T_ControlVariable& previousControlVariable,
              const T_ControlVariable& searchDirection,
-             const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+             const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
              dcp::GenericObjectiveFunctional& objectiveFunctional,
              dcp::GenericImplementer<T_ControlVariable>& implementer) const
     {

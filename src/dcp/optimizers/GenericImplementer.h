@@ -38,7 +38,7 @@ namespace dcp
             public:
                 /************************* TYPEDEFS ************************/
                 typedef T_ControlVariable_        T_ControlVariable;
-                typedef std::function<void (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem>>,
+                typedef std::function<void (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >&,
                                             const T_ControlVariable&)> Updater;
                 typedef std::function<T_ControlVariable (const T_ControlVariable&)> SearchDirectionComputer;
 
@@ -87,7 +87,7 @@ namespace dcp
                  *  \param systems the set of systems to be solved
                  *  \param control the current value of the control function
                  */
-                virtual void update (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                virtual void update (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
                                      const T_ControlVariable& control);
 
                 //! Solve the equation systems representing the primal and the adjoint problem.
@@ -99,7 +99,7 @@ namespace dcp
                  *  \li \c adjoint
                  *  with obvious meaning
                  */
-                virtual void solve (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+                virtual void solve (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
                                     const std::string& solveType) = 0;
 
                 //! Compute the dot product of the given functions
@@ -211,7 +211,7 @@ namespace dcp
 
     template <class T_ControlVariable>
         void GenericImplementer<T_ControlVariable>::update
-            (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem> > systems,
+            (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
              const T_ControlVariable& control)
         {
             updater_ (systems, control);

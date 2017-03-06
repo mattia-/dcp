@@ -23,7 +23,7 @@ namespace dcp
 {
     /************************* OPERATORS ********************/
     void EmptyUpdater::operator()
-        (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem>> systems,
+        (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
          const dolfin::GenericFunction& dirichletBCValue) const
     {
     }
@@ -31,7 +31,7 @@ namespace dcp
 
 
     void EmptyUpdater::operator()
-        (const std::vector<const std::shared_ptr<dcp::GenericEquationSystem>> systems,
+        (const std::vector<std::shared_ptr<dcp::GenericEquationSystem> >& systems,
          const dcp::TimeDependentFunction& dirichletBCValue) const
     {
     }

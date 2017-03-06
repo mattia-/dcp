@@ -90,7 +90,7 @@ namespace dcp
                 << backtrackingIterations
                 << std::setw (18)
                 << gradientNorm
-                << std::setw (23)
+                // << std::setw (23) // do not call setw, since it is the last number and we do not want trailing spaces
                 << relativeIncrement
                 << std::endl;
         }
@@ -106,7 +106,7 @@ namespace dcp
                 << alpha
                 << std::setw (28)
                 << backtrackingIterations
-                << std::setw (23)
+                // << std::setw (23) // do not call setw, since it is the last number and we do not want trailing spaces
                 << relativeIncrement
                 << std::endl;
         }
@@ -122,7 +122,7 @@ namespace dcp
                 << alpha
                 << std::setw (28)
                 << backtrackingIterations
-                << std::setw (18)
+                // << std::setw (18) // do not call setw, since it is the last number and we do not want trailing spaces
                 << gradientNorm
                 << std::endl;
         }

@@ -117,7 +117,7 @@ namespace dcp
              */
             virtual const std::map<std::string, dolfin::DirichletBC>& dirichletBCs () const;
 
-            //! Get const reference to the problem's solution
+            //! Get reference to the problem's solution (const version)
             /*!
              *  \param solutionType the type of the solution to return. This allows to return the solution stored
              *  in \c solution_ or the stashed solution stored in \c stashedSolution_ according to the input string.
@@ -130,6 +130,20 @@ namespace dcp
              *  \return a const reference to the second field of the last element of the protected member \c solution
              */
             virtual const dolfin::Function& solution (const std::string& solutionType = "default") const;
+
+            //! Get reference to the problem's solution (non const version)
+            /*!
+             *  \param solutionType the type of the solution to return. This allows to return the solution stored
+             *  in \c solution_ or the stashed solution stored in \c stashedSolution_ according to the input string.
+             *  Possible values:
+             *  \li \c "default" the real solution, stored in \c solution_
+             *  \li \c "stashed" the stashed solution
+             *
+             *  Default value: \c "default"
+             *
+             *  \return a const reference to the second field of the last element of the protected member \c solution
+             */
+            virtual dolfin::Function& solution (const std::string& solutionType = "default");
 
             /********************** SETTERS ***********************/
             //! Set problem coefficients [1]

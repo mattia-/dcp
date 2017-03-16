@@ -116,6 +116,28 @@ namespace dcp
 
 
 
+    dolfin::Function& GenericProblem::solution (const std::string& solutionType)
+    {
+        if (solutionType == "default")
+        {
+            return solution_.back ().second;
+        }
+        else if (solutionType == "stashed")
+        {
+            return stashedSolution_;
+        }
+        else
+        {
+            dolfin::dolfin_error ("dcp: GenericProblem.cpp",
+                                  "solution",
+                                  "Unkown solution type \"%s\" requested", solutionType.c_str ());
+            return stashedSolution_; // just to suppress the compilation warning, dolfin_error will cause the program
+                                     // to exit anyway
+        }
+    }
+
+
+
     /********************** SETTERS ***********************/
     bool GenericProblem::addDirichletBC (const dolfin::GenericFunction& condition,
                                          const dolfin::SubDomain& boundary,

@@ -159,6 +159,13 @@ namespace dcp
 
 
 
+    dcp::TimeDependentFunction& TimeDependentProblem::solutionsVector ()
+    {
+        return solution_;
+    }
+
+
+
     std::shared_ptr<const dcp::Time> TimeDependentProblem::time () const
     {
         return time_;

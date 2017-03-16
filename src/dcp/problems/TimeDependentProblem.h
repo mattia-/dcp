@@ -330,12 +330,19 @@ namespace dcp
              */
             virtual const std::map<std::string, dolfin::DirichletBC>& dirichletBCs () const override;
 
-            //! Get const reference to the problem's solutions vector. Note that this returns also the time values
-            //! associated with the solutions
+            //! Get reference to the problem's solutions vector (const version). Note that this returns also the time
+            //! values associated with the solutions
             /*!
              *  \return a const reference to the problem's time-solution pairs vector
              */
             virtual const dcp::TimeDependentFunction& solutionsVector () const;
+
+            //! Get reference to the problem's solutions vector (non const version). Note that this returns also the
+            //! time values associated with the solutions
+            /*!
+             *  \return a const reference to the problem's time-solution pairs vector
+             */
+            virtual dcp::TimeDependentFunction& solutionsVector ();
 
             //! Get shared pointer to the current simulation time
             /*!

@@ -554,9 +554,13 @@ namespace dcp
             previousFunctionalValue = currentFunctionalValue;
 
             // get current functional gradient;
-            // note both primal and adjoint problem have been solver before the loop on the first iteration and then
-            // at the end of the previous iteration, so the functional gradient is coherent
+            // note that both primal and adjoint problem have been solved before the loop on the first iteration and
+            // then at the end of the previous iteration, so the functional gradient is coherent
+            dolfin::begin (dolfin::PROGRESS, "Computing functional gradient...");
             functionalGradient = objectiveFunctional.gradient ();
+            dolfin::end (); // Computing functional gradient
+
+            // compute serach direction
             dolfin::begin (dolfin::PROGRESS, "Computing search direction...");
             searchDirection = implementer.computeSearchDirection (functionalGradient);
 

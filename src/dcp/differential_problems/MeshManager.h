@@ -93,6 +93,15 @@ class MeshManager
     }
     std::shared_ptr <const dolfin::Function> moveMesh (const dolfin::Function& displacement, const std::string& component="all", const double dt=1.0);
     std::shared_ptr <const dolfin::Function> computeDisplacement (const dolfin::Function& displacement, const std::string& component="all", const double dt=1.0);
+    std::shared_ptr <const dolfin::Function> moveMeshBack (const std::string& component="all")
+    {
+        oldMesh_ = * mesh_;
+        dolfin::Vector vec (* w_lastMover_.vector());
+        vec *= -1;
+        std::shared_ptr <const dolfin::Function> antiDispl (new dolfin::Function (dolfin::reference_to_no_delete_pointer (wFunSp_), dolfin::reference_to_no_delete_pointer (vec)));
+        mesh_->move (* antiDispl);
+        return antiDispl;
+    }
 
     std::shared_ptr <const dolfin::Function> displacement () const
 	{ return dolfin::reference_to_no_delete_pointer (w_); }
@@ -123,6 +132,7 @@ class MeshManager
     const std::shared_ptr<dolfin::Mesh> mesh_;
     meshManagerUflTools::FunctionSpace wFunSp_; //dolfin::FunctionSpace wFunSp_;
     dolfin::Function w_;
+    dolfin::Function w_lastMover_;
     const dolfin::FunctionSpace & displCoeffSpace_;
     const std::shared_ptr <dcp::AbstractProblem> aleProblem_;
 //REM//    dcp::LinearProblem<laplaceALE::BilinearForm, laplaceALE::LinearForm> laplacePb_;
@@ -243,6 +253,7 @@ MeshManager<T_MeshMover>::MeshManager (const std::shared_ptr<dolfin::Mesh> mesh,
 	//wFunSp_ (laplaceVec::FunctionSpace(*mesh_)),
 	wFunSp_ (mesh_), //SPACE//displCoeffSpace), //myNavierstokesTimeCurvLinear::CoefficientSpace_w (*mesh_)),
 	w_ (wFunSp_),
+	w_lastMover_ (wFunSp_),
   displCoeffSpace_ (displCoeffSpace),
 //REM//	aleFunSp_ (laplaceALE::FunctionSpace (*mesh_)),
   aleProblem_ (aleProblem),
@@ -511,7 +522,10 @@ std::shared_ptr <const dolfin::Function> MeshManager<T_MeshMover>::moveMesh (con
  		// move the mesh and update mesh-dependent quantities
     oldMesh_ = * mesh_;
  		if (component != "hard")
+    {
+      w_lastMover_ = w_;
       mesh_->move (w_);
+    }
     else
     {
 /*      dolfin::Mesh tmpMesh (* mesh_);
@@ -673,7 +687,7 @@ void MeshManager<T_MeshMover>::print2csv (const dolfin::Function & fun, const st
   for (auto it (dofs.begin()); it!=dofs.end(); ++it)
   {
     std::string filename (prependToFileName+it->first+appendToFileName+".csv");
-    dcp::print2csv (fun, filename, it->second.begin(), it->second.end(), orderedDofsCoords);
+    dcp::print2csv (fun, it->first, filename, it->second.begin(), it->second.end(), orderedDofsCoords);
   }
 }
 

@@ -55,7 +55,14 @@ namespace dcp
             solution_.emplace_back (std::make_pair (t_ + stepNumber * dt, 
                                                     dolfin::Function (timeSteppingProblem_->functionSpace ())));
         }
-        dolfin::log (dolfin::DBG, "Created %d initial solutions", stepNumber + 1);
+// TODO check if other parameters (e.g. maybe "purge_interval" already do the same in other branches
+        if (! parameters.has_key("store_interval"))
+            parameters.add ("store_interval", 1);
+        for (unsigned int i (0); i < int (parameters["store_interval"]); ++i)
+            solution_.emplace_back (std::make_pair (t_ + stepNumber * dt, 
+                                                    dolfin::Function (timeSteppingProblem_->functionSpace ())));
+        dolfin::log (dolfin::DBG, "Created %d initial solutions", stepNumber + int (parameters["store_interval"]));
+std::cerr << __FILE__ << __LINE__ << ' ' << solution_.size() << std::endl;
         
         // set the correct value for t_, since it was not incremented during the previous loop.
         // Use stepNumber - 1 since t_ will be incremented at the *beginning* of the time loop, not at the end
@@ -67,7 +74,6 @@ namespace dcp
         parameters.add ("problem_type", "time_dependent");
         parameters.add ("dt_name", "dt");
         parameters.add ("previous_solution_name", "u_old");
-        parameters.add ("store_interval", 1);
         parameters.add ("plot_interval", 0);
         parameters.add ("time_stepping_solution_component", -1);
         parameters.add ("pause", false);

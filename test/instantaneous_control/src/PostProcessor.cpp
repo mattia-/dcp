@@ -2,8 +2,8 @@
 #include "PostProcessor.h"
 #include "discreteCurvature.h"
 #include "discreteCurvature_onlyTP.h"
-//addNotInMovingAbstract// #include "myNavierstokesTimeCurvLinear.h"
-//addNotInMovingAbstract// #include "myNavierstokesTimeCurvLinearPreviousDomain.h"
+//addNotInMovingAbstract// #include "navierstokes.h"
+//addNotInMovingAbstract// #include "navierstokesPreviousDomain.h"
 #include "computeFreeSurfaceStress_onlyTP.h"
 #include <dcp/differential_problems/utilities.h> //"utilities.h"
 
@@ -47,9 +47,9 @@ namespace Ivan
       curvatureLinearForm_ (new discreteCurvature::LinearForm (* pb_.functionSpace())),
       curvatureAdditionalForm_ (new discreteCurvature_onlyTP::LinearForm (* pb_.functionSpace())),
 //addNotInMovingAbstract//      additionalFormDofs_ (std::static_pointer_cast<Ivan::MovingLinearProblem 
-//addNotInMovingAbstract//                    < myNavierstokesTimeCurvLinear::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
-//addNotInMovingAbstract//                      myNavierstokesTimeCurvLinear::BilinearForm, myNavierstokesTimeCurvLinear::LinearForm,
-//addNotInMovingAbstract//                      myNavierstokesTimeCurvLinearPreviousDomain::LinearForm, computeFreeSurfaceStress_onlyTP::LinearForm > >
+//addNotInMovingAbstract//                    < navierstokes::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
+//addNotInMovingAbstract//                      navierstokes::BilinearForm, navierstokes::LinearForm,
+//addNotInMovingAbstract//                      navierstokesPreviousDomain::LinearForm, computeFreeSurfaceStress_onlyTP::LinearForm > >
 //addNotInMovingAbstract//                    (pb_.timeSteppingProblem_)->additionalFormDofs ()),
 //addNotInMovingAbstract//      addIdxs_ (new dolfin::la_index [2]),
 //addNotInMovingAbstract//      addIdxs_w_ (new dolfin::la_index [2]),

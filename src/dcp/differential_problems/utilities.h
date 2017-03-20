@@ -1003,6 +1003,7 @@ std::pair<double,double> getDofsCoords (const std::tuple<std::size_t,double,doub
 
 namespace dcp
 {
+void print2csv (const dolfin::Function & fun, const std::string & valname, const std::string & filename, const std::vector<dolfin::la_index>::const_iterator dofsBegin, const std::vector<dolfin::la_index>::const_iterator dofsEnd, const std::vector<double> & dofsCoords);
 void print2csv (const dolfin::Function & fun, std::string & filename, const std::vector<dolfin::la_index>::const_iterator dofsBegin, const std::vector<dolfin::la_index>::const_iterator dofsEnd, const std::vector<double> & dofsCoords);
 void print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords);
 void print2csv (const dolfin::Function & fun, std::string filename, const std::vector<std::size_t>::const_iterator dofsBegin1, const std::vector<std::size_t>::const_iterator dofsBegin2, const std::vector<std::size_t>::const_iterator dofsEnd, const std::vector<double> & dofsCoords);

@@ -265,6 +265,8 @@ class DefaultPostProcessor;
              */
             virtual void solve (const std::string& type = "default") override;
             
+            virtual void actualStepSolve (const dolfin::Function & displacement, dolfin::Function & tmpSol, const std::size_t & timeStep, const dolfin::Function * w, const std::vector<std::string> & wCoefficientTypes, const bool & advanceRequested, const std::string & type);
+
             //! Clone method. Overrides method in \c TimeDependentProblem, but performs exactly the same actions
             /*!
              *  It uses the parameter \c clone_method to decide which type of cloning to perform.
@@ -293,6 +295,17 @@ class DefaultPostProcessor;
 
             std::shared_ptr<DefaultPostProcessor> postProcessor_;
             
+            //! Temporary solutions of the differential problem.
+            std::vector <std::pair <double, dolfin::Function> > tmpSolution_;
+            
+            //! Lessens time value \c t_. It just performs the dencrement <tt>t += parameters ["dt"]</tt>.
+            /*!
+             *  Used to restore the value of \c t_ after the solution if no time advancing and mesh motion
+             *  are required: the inherited #advanceTime() performs some linking, too, hence it is required
+             *  during #solve().
+             */
+            virtual void lessenTime ();
+
 			      //! Save solution, displacement and other output data, used inside the time loop and thus kept protected.
 			      //! TODO : introduce this kind of method in dcp::AbstractProblem ?
 			      /*!
@@ -314,6 +327,16 @@ class DefaultPostProcessor;
              */
             virtual void adapt ();
 
+            //! Store a temporary solution. 
+            /*!
+             *  \param solution the solution to be stored
+             *  \param timeStep the current time step
+             *  \param storeInterval the store interval (see constructor documentation)
+            */
+            virtual void storeTmpSolution (const dolfin::Function& solution, 
+                                           const int& timeStep, 
+                                           const int& storeInterval);
+            
             // ---------------------------------------------------------------------------------------------//
 
         private:

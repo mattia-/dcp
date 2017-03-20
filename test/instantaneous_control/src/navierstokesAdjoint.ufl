@@ -1,5 +1,5 @@
 #/* 
-# *  Copyright (C) 2015, Ivan Fumagalli, ivan.fumagalli@polimi.it
+# *  Copyright (C) 2017, Ivan Fumagalli, ivan.fumagalli@polimi.it
 # * 
 # *  This file is part of the DCP library
 # *   
@@ -29,13 +29,14 @@ V = VectorElement ("Lagrange", cell, 1)
 Q = FiniteElement ("Lagrange", cell, 1)
 T = V * Q
 W = VectorElement ("Lagrange", cell, 1)
+Wscal = FiniteElement ("Lagrange", cell, 1)
 
 # define test and trial functions
 trial = TrialFunction (T)
 test = TestFunction (T)
 
-u, p = split (trial)
-v, q = split (test)
+z, q = split (trial)
+v, p = split (test)
 
 x = SpatialCoordinate (cell)
 
@@ -47,18 +48,20 @@ lambdastar = Constant (cell)
 noStokes = Constant (cell)
 stabBulk = Constant (cell)
 stabSigma = Constant (cell)
+stabSGCL = Constant (cell)
 n = FacetNormal(cell)
-h = MaxFacetEdgeLength(cell)
+h = MinFacetEdgeLength(cell)
 h_dx = Circumradius(cell)
+u = Coefficient (V)
 u_old = Coefficient (V)
 uDir = Coefficient (V)
-#w = Coefficient(V)
-w = Coefficient(W)
+# w = Coefficient (Wscal)
+w = Coefficient (W)
 beta = Constant (cell)
 stressAbove = Coefficient (V)
 dummy, normalStressAbove = split (stressAbove)
 stressBelow = Coefficient (V)
-gravityVector = VectorConstant (cell)
+zeroVector = VectorConstant (cell)
 wallVelocity = Coefficient (V)
 
 stabPress = Constant (cell)
@@ -75,34 +78,26 @@ rescale = Constant (cell)
 #A = as_matrix ([ [0 , -1] , [1 , 0] ])
 
 # define bilinear form
-a = inner (u, v) * dx \
-    + dt * 2.0 * nu * inner (sym (grad (u)), sym (grad (v))) * dx \
-    + noStokes * dt * inner (grad (u) * (u_old+uDir), v) * dx \
-    - inner (grad (u) * w, v) * dx \
-    - div (w) * inner (u, v) * dx \
-    - dt * inner (p, div (v)) * dx \
-    + dt * inner (div(u), q) * dx \
-    + dt * beta/h * inner (u, v) * ds(3) \
-    + stabBulk * dt * 0.5 * div (u_old) * inner (u, v) * dx \
-    + stabBulk * dt * 0.5 * div (uDir) * inner (u, v) * dx \
-    - stabSigma * 0.5 * dot (dt*u_old+dt*uDir-w, n) * inner (u, v) * ds(1) \
-    + dt * stabPress * h_dx*h_dx * inner (grad (p), grad (q)) * dx
-    + stabSGCL * 0.5*dt*dt * gamma * (n[0]*Dx(u[0]*n[0]/n[1]+u[1],1) - n[1]*Dx(u[0]*n[0]/n[1]+u[1],0) ) * ( n[0]*Dx(v[0]*n[0]/n[1]+v[1],1) - n[1]*Dx(v[0]*n[0]/n[1]+v[1],0) ) * x[0] * ds(1)
+a = inner (v, z) * x[0] * dx \
+    + dt * 2.0 * nu * inner (sym (grad (v)), sym (grad (z))) * x[0] * dx \
+    + noStokes * dt * inner (grad (v) * (u_old+uDir), z) * x[0] * dx \
+    - inner (grad (v) * w, z) * x[0] * dx \
+    - (Dx(x[0]*w[0],0) + x[0]*Dx(w[1],1)) * inner (v, z) * dx \
+    - dt * inner (p, Dx(x[0]*z[0],0) + x[0]*Dx(z[1],1)) * dx \
+    + dt * inner (Dx(x[0]*v[0],0) + x[0]*Dx(v[1],1), q) * dx \
+    + dt * beta/h * inner (v, z) * x[0] * ds(3) \
+    + stabBulk * dt * 0.5 * (Dx(x[0]*u_old[0],0) + x[0]*Dx(u_old[1],1)) * inner (v, z) * dx \
+    + stabBulk * dt * 0.5 * (Dx(x[0]*uDir[0],0) + x[0]*Dx(uDir[1],1)) * inner (v, z) * dx \
+    - stabSigma * 0.5 * dot (dt*u_old+dt*uDir-w, n) * inner (v, z) * x[0] * ds(1) \
+    + dt * stabPress * h_dx*h_dx * inner (grad (p), grad (q)) * dx \
+    + stabSGCL * 0.5*dt*dt * gamma * (n[0]*Dx(v[0]*n[0]/n[1]+v[1],1) - n[1]*Dx(v[0]*n[0]/n[1]+v[1],0) ) * ( n[0]*Dx(z[0]*n[0]/n[1]+z[1],1) - n[1]*Dx(z[0]*n[0]/n[1]+z[1],0) ) * x[0] * ds(1)
     #+ dt * stabPress * inner (grad (p), grad (q)) * dx
-#-outer NON SI PUO'    + gamma * dt * tr ((Identity-outer(n,n)) * grad(v))  * ds(1)
+#-outer NON SI PUO'    + gamma * dt * tr ((Identity-outer(n,n)) * grad(z))  * ds(1)
+
+#    - inner (grad (v) * (w*as_vector([0, 1])), z) * x[0] * dx \
+#    - x[0]*Dx(w,1) * inner (v, z) * dx \
+#
+#    - stabSigma * 0.5 * dot (dt*u_old+dt*uDir-(w*as_vector([0, 1])), n) * inner (v, z) * x[0] * ds(1) \
 
 # define linear form
-L = lambdastar * dt * inner(gravityVector, v) * dx \
-    - rescale * dt * gamma * div (v) * ds(1) \
-    + dt * gamma * inner (grad(v), outer (n,n)) * ds(1) \
-    + dt * beta/h * inner (wallVelocity, v) * ds(3) \
-    + lambdastar * dt * inner (normalStressAbove*n, v) * ds(1) \
-    + lambdastar * dt * inner (stressBelow, v) * ds(2) \
-    - inner (uDir, v) * dx \
-    - stabBulk * dt * inner (grad (uDir) * (u_old+uDir), v) * dx \
-    + inner (grad (uDir) * w, v) * dx \
-    + div (w) * inner (uDir, v) * dx \
-    + dt * 2.0 * nu * inner (sym (grad (uDir)), sym (grad (v))) * dx \
-    - dt * inner (div (uDir), q) * dx \
-#    + dt * stabPress * h_dx*h_dx * inner (grad(q), gravityVector) * dx
-    ###+ dt * stabPress * h_dx*h_dx * inner (grad(q), gravityVector) * x[0] * dx
+L = dt * inner (u, v) * x[0] * dx 

@@ -129,7 +129,8 @@ std::cerr << " ----- extrapolation of ALE velocity was used -----" << std::endl;
         std::string solFileName;
 
         // parse solve type
-        if (type != "default" && type != "step" && type != "clear_default" && type != "clear_step")
+        //if (type != "default" && type != "step" && type != "clear_default" && type != "clear_step")
+        if (type != "default" && type != "step" && type != "noAdvance_step" && type != "clear_default" && type != "clear_step" && type != "clear_noAdvance_step")
         {
             dolfin::dolfin_error ("dcp: MovingTimeDependentProblem.h", 
                                   "solve",
@@ -157,6 +158,9 @@ std::cerr << " ----- extrapolation of ALE velocity was used -----" << std::endl;
         // flag to check if the solver must perform just one time step
         bool oneStepRequested = std::regex_match (type, std::regex (".*step.*"));
         
+        // flag to check if the time has to be advanced (and the mesh moved)
+        bool advanceRequested= ! std::regex_match (type, std::regex (".*noAdvance.*"));
+
         // get parameters' values
         dolfin::Constant dt (dt_);
         std::string dtName = parameters ["dt_name"];
@@ -182,7 +186,7 @@ std::cerr << " ----- extrapolation of ALE velocity was used -----" << std::endl;
         
         // functions used to step through the time loop
         dolfin::Function tmpSolution = solution_.back ().second;
-        dolfin::Function oldSolution (tmpSolution);
+        dolfin::Function & oldSolution (tmpSolution);
         dolfin::Function displacement (tmpSolution);
 		    const dolfin::Function * w (meshManager_->displacement().get());  // non-const pointer to const dolfin::Function
         // start time loop. The loop variable timeStepFlag is true only if the solve type requested is "step" and
@@ -213,28 +217,124 @@ std::cerr << " ----- extrapolation of ALE velocity was used -----" << std::endl;
             {
                 dolfin::begin (dolfin::INFO, "===== Timestep %d =====", timeStep);
             }
+
+            oldSolution = solution_.back ().second;
+            displacement = oldSolution;            
+#ifdef MULTISTEP
+            *displacement.vector() *= 2;
+            *displacement.vector() -= * oldSolution.vector();
+#endif
+
+            actualStepSolve (displacement, tmpSolution, timeStep, w, wCoefficientTypes, advanceRequested, type);
+
+            if (advanceRequested)
+                // save solution in solution_ according to time step and store interval.
+                storeSolution (tmpSolution, timeStep, storeInterval);
+            else
+                // save solution in tmpSolution_ according to time step and store interval.
+                storeTmpSolution (tmpSolution, timeStep, storeInterval);
             
+#ifndef EVITAPLOT
+            // plot solution according to time step and plot interval
+ //           plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause);
+            plotSolution (tmpSolution, timeStep, 1, parameters["plot_component"], false);//dolfin::interactive();
+//            plotSolution (tmpSolution, timeStep, 1, 1, false);//dolfin::interactive();
+            dolfin::plot (*meshManager_->mesh(),"inside mesh");//dolfin::interactive();
+#endif
+
+            if (advanceRequested)
+                if (timeStep % problemData.fileFrequency <= 2)
+                  (* postProcessor_) (timeStep);
+
+/*            displacement = tmpSolution;
+#ifdef MULTISTEP
+            *displacement.vector() *= 2;
+            *displacement.vector() -= * oldSolution.vector();
+#endif
+//#ifdef PARAB
+//            dolfin::Function displDir (* postProcessor_.uDirSize3_.function_space());
+//#ifdef TUTTELECOMP
+//            dolfin::assign (dolfin::reference_to_no_delete_pointer (displDir[0]), dolfin::reference_to_no_delete_pointer (displacement));
+//#else
+//            dolfin::assign (dolfin::reference_to_no_delete_pointer (displDir[0]), dolfin::reference_to_no_delete_pointer (displacement[0]));
+//#endif
+//            * displDir.vector() += * postProcessor_.uDirSize3_.vector();
+//            w = meshManager_->computeDisplacement(displDir[0],"normal",dt).get();
+//#else
+//            w = meshManager_->computeDisplacement(displacement[0],"normal",dt).get();
+//#endif
+//
+            //w = meshManager_->computeDisplacement(displacement,"normal",dt).get();
+            w = meshManager_->computeDisplacement(solCompForALEPb_ == -1 ? displacement : displacement[solCompForALEPb_],"normal",dt).get();
+              //TODO questa componente va passata da fuori
+#ifndef EVITAPLOT
+            dolfin::plot (*w, "w"); //dolfin::interactive();
+#endif
+*/
+
+            if (advanceRequested)
+                if (timeStep % problemData.fileFrequency <= 2)
+                {
+                    if (problemData.saveDataInFile)
+                    {
+                  		saveDataInFile (tmpSolution, timeStep);
+//REM//  		    saveDataInFileOld (tmpSolution, *w, timeStep);
+                    }
+                    if (problemData.savePvd)
+                    {
+                      solFileName = problemData.savepath+"solution"+std::to_string(timeStep)+".pvd";
+                      dolfin::File solFile (solFileName);
+                      solFile << tmpSolution;
+                    }
+                }
+
+            if (oneStepRequested == true)
+            {
+                timeStepFlag = true;
+            }
+             
+            // dolfin::end matching dolfin::begin inside if statement
+            if (oneStepRequested == false)
+            {
+                dolfin::end ();
+            }
+
+            if (! advanceRequested)
+            {
+                lessenTime ();
+                meshManager_->moveMeshBack ();
+            }
+        
+        }
+        
+        if (advanceRequested)
+        {
+            // At this point, we just need to make sure that the solution on the last iteration was saved even though
+            // timeStep % storeInterval != 0 (but it must not be saved twice!)
+            storeLastStepSolution (tmpSolution, timeStep, storeInterval);
+        }
+
+        dolfin::end ();
+    }
+    
+
+    void MovingTimeDependentProblem::actualStepSolve (const dolfin::Function & displacement, dolfin::Function & tmpSol, const std::size_t & timeStep, const dolfin::Function * w, const std::vector<std::string> & wCoefficientTypes, const bool & advanceRequested, const std::string & type)
+    {
             advanceTime ();
 
-            if (timeStep % problemData.fileFrequency <= 2)
-              postProcessor_->onOldDomain (timeStep);
+            if (advanceRequested)
+            {
+                if (timeStep % problemData.fileFrequency <= 2)
+                    postProcessor_->onOldDomain (timeStep);
+            }
 
-           // std::static_pointer_cast<Ivan::MovingLinearProblem < myNavierstokesTimeCurvLinear::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
-           //           myNavierstokesTimeCurvLinear::BilinearForm, myNavierstokesTimeCurvLinear::LinearForm,
-           //           myNavierstokesTimeCurvLinearPreviousDomain::LinearForm, computeFreeSurfaceStress_onlyTP::LinearForm > >
            std::dynamic_pointer_cast<dcp::MovingAbstractProblem>
                 (timeSteppingProblem_)->preassemble ();
 			// TODO considerare la presenza di un preassemble in AbstractProblem, per evitare casting
 			//      o magari usare la solve() passando "preassemble" come stringa
 
-    		    w = meshManager_->computeDisplacement(solCompForALEPb_ == -1 ? displacement : displacement[solCompForALEPb_],"normal",dt).get();
-            //meshManager_->moveMesh(tmpSolution[0],"normal",dt);
+    		    w = meshManager_->computeDisplacement(solCompForALEPb_ == -1 ? displacement : displacement[solCompForALEPb_],"normal",dt_).get();
             meshManager_->moveMesh();
-/*std::cerr << "displ : ";
-for (std::size_t i (0); i!=w->vector()->size(); ++i)
-  std::cerr << std::setprecision(10) << (* w->vector())[i] << ", ";
-std::cerr << std::endl;*/
-            //this->adapt ();
             
             setTimeDependentCoefficients ();
             
@@ -247,89 +347,20 @@ std::cerr << std::endl;*/
             
             dolfin::begin (dolfin::INFO, "Solving time stepping problem...");
 
-            if (timeStep % problemData.fileFrequency <= 2)
+dolfin::plot (timeSteppingProblem_->solution(), "MTDPb "+type+" "+std::to_string(t_));
+dolfin::interactive ();
+            if (advanceRequested && timeStep % problemData.fileFrequency <= 2)
               timeSteppingProblem_->solve ("save_residual");
             else
               timeSteppingProblem_->solve ();
+dolfin::plot (timeSteppingProblem_->solution(), "MTDPb "+type+" "+std::to_string(t_)+" after");
+dolfin::interactive ();
             
+std::cerr << __FILE__ << __LINE__ << " " << solution_.size() << std::endl;
       			dolfin::end ();
 
-            oldSolution = tmpSolution;
-            tmpSolution = timeSteppingProblem_->solution ();
-            // save solution in solution_ according to time step and store interval.
-            storeSolution (tmpSolution, timeStep, storeInterval);
-            
-#ifndef EVITAPLOT
-            // plot solution according to time step and plot interval
- //           plotSolution (tmpSolution, timeStep, plotInterval, plotComponent, pause);
-            plotSolution (tmpSolution, timeStep, 1, parameters["plot_component"], false);//dolfin::interactive();
-//            plotSolution (tmpSolution, timeStep, 1, 1, false);//dolfin::interactive();
-            dolfin::plot (*meshManager_->mesh(),"inside mesh");//dolfin::interactive();
-#endif
-
-            if (timeStep % problemData.fileFrequency <= 2)
-              (* postProcessor_) (timeStep);
-
-            displacement = tmpSolution;
-#ifdef MULTISTEP
-            *displacement.vector() *= 2;
-            *displacement.vector() -= * oldSolution.vector();
-#endif
-/*#ifdef PARAB
-            dolfin::Function displDir (* postProcessor_.uDirSize3_.function_space());
-#ifdef TUTTELECOMP
-            dolfin::assign (dolfin::reference_to_no_delete_pointer (displDir[0]), dolfin::reference_to_no_delete_pointer (displacement));
-#else
-            dolfin::assign (dolfin::reference_to_no_delete_pointer (displDir[0]), dolfin::reference_to_no_delete_pointer (displacement[0]));
-#endif
-            * displDir.vector() += * postProcessor_.uDirSize3_.vector();
-            w = meshManager_->computeDisplacement(displDir[0],"normal",dt).get();
-#else
-            w = meshManager_->computeDisplacement(displacement[0],"normal",dt).get();
-#endif
-*/
-            //w = meshManager_->computeDisplacement(displacement,"normal",dt).get();
-            w = meshManager_->computeDisplacement(solCompForALEPb_ == -1 ? displacement : displacement[solCompForALEPb_],"normal",dt).get();
-              //TODO questa componente va passata da fuori
-#ifndef EVITAPLOT
-            dolfin::plot (*w, "w"); //dolfin::interactive();
-#endif
-
-            if (timeStep % problemData.fileFrequency <= 2)
-            {
-                if (problemData.saveDataInFile)
-                {
-              		saveDataInFile (tmpSolution, timeStep);
-//REM//  		saveDataInFileOld (tmpSolution, *w, timeStep);
-                }
-                if (problemData.savePvd)
-                {
-                  solFileName = problemData.savepath+"solution"+std::to_string(timeStep)+".pvd";
-                  dolfin::File solFile (solFileName);
-                  solFile << tmpSolution;
-                }
-            }
-
-            if (oneStepRequested == true)
-            {
-                timeStepFlag = true;
-            }
-             
-            // dolfin::end matching dolfin::begin inside if statement
-            if (oneStepRequested == false)
-            {
-                dolfin::end ();
-            }
-        
-        }
-        
-        // At this point, we just need to make sure that the solution on the last iteration was saved even though
-        // timeStep % storeInterval != 0 (but it must not be saved twice!)
-        storeLastStepSolution (tmpSolution, timeStep, storeInterval);
-
-        dolfin::end ();
+            tmpSol = timeSteppingProblem_->solution ();
     }
-    
 
     dcp::MovingTimeDependentProblem* MovingTimeDependentProblem::clone () const
     {
@@ -396,6 +427,13 @@ std::cerr << std::endl;*/
 	
 	
 	/******************* PROTECTED METHODS *******************/
+  void MovingTimeDependentProblem::lessenTime ()
+  {
+      t_ -= dt_;
+
+      dolfin::log (dolfin::INFO, "TIME = %f s", t_);
+  }
+
     void MovingTimeDependentProblem::saveDataInFile (const dolfin::Function& tmpSolution, const int& timeStep) const
 	{
     this->meshManager_->print2csv (tmpSolution, problemData.savepath+"SOL", "."+std::to_string(timeStep), true);
@@ -442,4 +480,11 @@ displacementHDF5File.close ();
             (timeSteppingProblem_)->adapt ();
   }
 	
+    void MovingTimeDependentProblem::storeTmpSolution (const dolfin::Function& solution, 
+                                                       const int& timeStep, 
+                                                       const int& storeInterval)
+  {
+      dolfin::log (dolfin::DBG, "Saving time stepping problem solution in temporary solutions vector...");
+      tmpSolution_.push_back (std::make_pair (t_, solution));
+  } 
 } //end of namespace

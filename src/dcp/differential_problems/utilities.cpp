@@ -96,6 +96,18 @@ std::pair<double,double> getDofsCoords (const std::tuple<std::size_t,double,doub
     return std::make_pair(std::get<1>(t), std::get<2>(t));
 }
 
+void dcp::print2csv (const dolfin::Function & fun, const std::string & valname, const std::string & filename, const std::vector<dolfin::la_index>::const_iterator dofsBegin, const std::vector<dolfin::la_index>::const_iterator dofsEnd, const std::vector<double> & dofsCoords)
+{
+    const dolfin::GenericVector & vec (* fun.vector());
+    std::ofstream file (filename.c_str(), std::ofstream::out);
+    file.precision (15);
+    file << "x,y,z,"+valname+"," << std::endl;
+    file << std::scientific;
+      // NB keep std::scientific, otherwise importing csv in ParaView may yield (mysterious) errors
+    for (std::vector<dolfin::la_index>::const_iterator it (dofsBegin); it!=dofsEnd; ++it)
+      file << dofsCoords[2*(*it)] << "," << dofsCoords[2*(*it)+1] << ",0," << vec[*it] << "," << std::endl;
+    file.close();
+}
 void dcp::print2csv (const dolfin::Function & fun, std::string & filename, const std::vector<dolfin::la_index>::const_iterator dofsBegin, const std::vector<dolfin::la_index>::const_iterator dofsEnd, const std::vector<double> & dofsCoords)
 {
     const dolfin::GenericVector & vec (* fun.vector());

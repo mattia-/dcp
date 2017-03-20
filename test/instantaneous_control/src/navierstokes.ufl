@@ -1,5 +1,5 @@
 #/* 
-# *  Copyright (C) 2015, Ivan Fumagalli, ivan.fumagalli@polimi.it
+# *  Copyright (C) 2017, Ivan Fumagalli, ivan.fumagalli@polimi.it
 # * 
 # *  This file is part of the DCP library
 # *   
@@ -59,6 +59,7 @@ beta = Constant (cell)
 stressAbove = Coefficient (V)
 dummy, normalStressAbove = split (stressAbove)
 stressBelow = Coefficient (V)
+control = VectorConstant (cell)
 gravityVector = VectorConstant (cell)
 wallVelocity = Coefficient (V)
 
@@ -98,7 +99,7 @@ L = lambdastar * dt * inner(gravityVector, v) * x[0] * dx \
     + dt * gamma * inner (grad(v), outer (n,n)) * x[0] * ds(1) \
     + dt * beta/h * inner (wallVelocity, v) * x[0] * ds(3) \
     + lambdastar * dt * inner (normalStressAbove*n, v) * x[0] * ds(1) \
-    + lambdastar * dt * inner (stressBelow, v) * x[0] * ds(2) \
+    + lambdastar * dt * inner (stressBelow + control, v) * x[0] * ds(2) \
     - inner (uDir, v) * x[0] * dx \
     - stabBulk * dt * inner (grad (uDir) * (u_old+uDir), v) * x[0] * dx \
     + inner (grad (uDir) * w, v) * x[0] * dx \

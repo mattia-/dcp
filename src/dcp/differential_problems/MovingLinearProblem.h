@@ -40,21 +40,6 @@ namespace dcp
     /*! \class MovingLinearProblem MovingLinearProblem.h
      *  \brief Class for linear differential problems with moving domain.
      *
-     *  This class represents problem of the form
-     *  \f[
-     *      \mbox{Find } u \in V \left(\Omega\right) : 
-     *      a_\Omega \left(u , v\right) 
-     *      = 
-     *      F_\Omega \left(v\right) 
-	 *		+
-	 *		\widetilde{F}_{\widetilde{\Omega}} \left(v\right)
-     *      \ \forall\,v\,\in\,V \left(\Omega\right)
-     *  \f]
-     *  with \f$ \Omega, \widtilde{\Omega} \f$ two domains in \f$ \mathbb{R}^d \f$,
-	 *	\f$ V \left(\Omega\right)\f$ Hilbert spaces of functions over the domain \f$\Omega\f$,
-	 *  \f$ a_\Omega \left(u , v\right) : V \left(\Omega\right) \times V \left(\Omega\right) \rightarrow \mathds{R}\f$ generic bilinear form on \f$V \left(\Omega\right)\f$, with integration occurring over \f$ \Omega \f$,
-     *  and \f$ F_\Omega \left(v\right) : V \rightarrow \mathds{R}, \widetilde{F}_{\widetilde{\Omega} \left(v\right) : V \rightarrow \mathds{R} \f$ linear forms on the same space, with integration occurring over \f$ \Omega , \widetilde{\Omega} \f$, respectively.
-     *  
      *  It inherits publicly from #LinearProblem AND #MovingAbstractProblem in order to
      *  extend the functionalities of #LinearProblem to the moving-domain case.
      */
@@ -134,10 +119,6 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
      */
     virtual void solve (const std::string& type = "default") override;
 
-    //! Set mesh-and-dofs manager
-    virtual void setMeshManager (const dcp::MeshManager<dolfin::ALE> & meshManager)
-		{ meshManager_ = & meshManager; }
-
     //! Update the problem after mesh changing
     /*! After the mesh has changed, the forms, function spaces and functions defined on it have to be updated.
      *  This update is performed via dolfin::adapt
@@ -193,8 +174,6 @@ class MovingLinearProblem : public dcp::LinearProblem <T_BilinearForm, T_LinearF
     T_PreviousForm previousForm_;
     dolfin::Vector preassembled_;
   
-    const dcp::MeshManager<dolfin::ALE> * meshManager_;
-
 }; //end of class definition
 
 
@@ -376,6 +355,12 @@ void MovingLinearProblem <T_FunctionSpace, T_AdditionalFunctionSpace, T_Bilinear
 
         dolfin::Vector b;
         assembler.assemble (b, this->linearForm_);
+
+        if (0 == this->preassembled_.size())
+        {
+          this->preassembled_.init(MPI_COMM_WORLD, b.size());
+          dolfin::warning ("MovingLinearProblem::preassembled_ was void: initialized to zero");
+        }
 
         b += this->preassembled_;
 

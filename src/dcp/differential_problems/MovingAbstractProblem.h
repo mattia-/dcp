@@ -72,6 +72,10 @@ class MovingAbstractProblem : virtual public dcp::AbstractProblem
     //! Set mesh-and-dofs manager
     virtual void setMeshManager (const MeshManager<dolfin::ALE> & meshManager);
 
+    //! Get mesh-and-dofs manager
+    virtual dcp::MeshManager<>  meshManager () const
+      { return * meshManager_; }
+
     //! Update the problem after mesh changing
     /*! After the mesh has changed, the forms, function spaces and functions defined on it have to be updated.
      *  This update is performed via dolfin::adapt

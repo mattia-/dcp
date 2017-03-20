@@ -1,5 +1,5 @@
 /* 
- *  Copyright (C) 2014, Mattia Tamellini, mattia.tamellini@gmail.com
+ *  Copyright (C) 2017, Ivan Fumagalli, ivan.fumagalli@polimi.it
  * 
  *  This file is part of the DCP library
  *   
@@ -17,27 +17,54 @@
  *   along with the DCP library.  If not, see <http://www.gnu.org/licenses/>. 
  */ 
 
-#include <dcp/differential_problems/TimeDependentEquationSystem.h>
+#include "InstantaneousControl.h"// <dcp/differential_problems/InstantaneousControl.h>
 #include <dcp/differential_problems/TimeDependentProblem.h>
+#include <dcp/differential_problems/MovingTimeDependentProblem.h>
 #include <utility>
 #include <tuple>
 #include <dolfin.h>
 #include <algorithm>
 #include <dolfin/log/dolfin_log.h>
 
+#include <dcp/differential_problems/LinearProblem.h>
+#include "navierstokesAdjoint.h"
+
+extern struct ProblemData problemData;
+
 namespace dcp
 {
     /******************* CONSTRUCTORS ******************/
-    TimeDependentEquationSystem::TimeDependentEquationSystem () : 
-        AbstractEquationSystem ()
+    //InstantaneousControl::InstantaneousControl (std::shared_ptr<dolfin::Form> objectiveFunctional, std::shared_ptr<dolfin::GenericFunction> control) :
+    InstantaneousControl::InstantaneousControl (std::shared_ptr<dolfin::Form> objectiveFunctional, std::shared_ptr<dolfin::Constant> control) :
+        EquationSystem (),
+        objectiveFunctional_ (objectiveFunctional),
+        control_ (control)
     { 
-        dolfin::log (dolfin::DBG, "TimeDependentEquationSystem object created");
+        dolfin::log (dolfin::DBG, "InstantaneousControl object created");
+    }
+
+    //InstantaneousControl::InstantaneousControl (std::shared_ptr<dolfin::Form> objectiveFunctional, std::shared_ptr<dolfin::Form> projector, std::shared_ptr<dolfin::GenericFunction> control) :
+    InstantaneousControl::InstantaneousControl (std::shared_ptr<dolfin::Form> objectiveFunctional, std::shared_ptr<dolfin::Form> projector, std::shared_ptr<dolfin::Constant> control) :
+        EquationSystem (),
+        objectiveFunctional_ (objectiveFunctional),
+        projector_ (projector),
+        control_ (control)
+    { 
+        dolfin::log (dolfin::DBG, "InstantaneousControl object created");
     }
 
     
 
     /******************* METHODS *******************/
-    void TimeDependentEquationSystem::addLinkToPreviousSolution (const std::string& linkFrom, 
+    void InstantaneousControl::addProblem (const std::string& problemName, dcp::AbstractProblem& problem, bool isTimeDependent)
+    {
+        this->EquationSystem::addProblem (problemName, problem);
+
+        if (isTimeDependent)
+          timeDependentStoredProblems_.insert (std::make_pair (problemName, this->storedProblems_[problemName]));
+    }
+
+    void InstantaneousControl::addLinkToPreviousSolution (const std::string& linkFrom, 
                                                                  const std::string& linkedCoefficientName,
                                                                  const std::string& linkedCoefficientType, 
                                                                  const std::string& linkTo,
@@ -121,9 +148,18 @@ namespace dcp
         dolfin::end ();
     }
 
-
-
-    void TimeDependentEquationSystem::addLinkToPreviousSolution (const std::string& linkFrom, 
+    bool InstantaneousControl::isFinished ()
+    {
+        std::size_t nFinished = 0;
+        for (auto mapElement : timeDependentStoredProblems_)
+        {
+            dcp::TimeDependentProblem& tmp = static_cast<dcp::TimeDependentProblem&> (*(mapElement.second));
+            nFinished += tmp.isFinished ();
+        }
+        return (nFinished == timeDependentStoredProblems_.size ());
+    }
+    
+    void InstantaneousControl::addLinkToPreviousSolution (const std::string& linkFrom, 
                                                                  const std::string& linkedCoefficientName,
                                                                  const std::string& linkedCoefficientType, 
                                                                  const std::string& linkTo,
@@ -154,7 +190,6 @@ namespace dcp
             
             // perform linking
 //            linkProblemToPreviousSolution (link);
-// TODO: commented out to avoid segfault: check if issue is already solved in a different branch
         }
         else if (forceRelinking == true) // if key found in map but forceRelinking set to true, erase 
         // current link and insert the new one
@@ -212,118 +247,175 @@ namespace dcp
         }
         dolfin::end ();
     }
-            
 
-
-    bool TimeDependentEquationSystem::removeLinkToPreviousSolution (const std::string& linkFrom, 
-                                                                    const std::string& linkedCoefficientName,
-                                                                    const std::string& linkedCoefficientType)
+    void InstantaneousControl::solve (const bool& forceRelinking)
     {
-        auto linkKey = std::make_tuple (linkFrom, linkedCoefficientName, linkedCoefficientType);
-        return (linksToPreviousSolutions_.erase (linkKey)) == 1 ? true : false;
-    }
-            
+        // instrumental variables
+        dolfin::Array<double> controlValues (2);
+        std::array<double, 2> cP ({0.5*problemData.lx,0});
+        dolfin::Array<double> controlPoint (2, cP.data());
+        std::string controlName (parameters["control_name"]);
+        double alpha (parameters["alpha"]);
+        double alphaMin (parameters["alpha_min"]);
 
+        // evaluation of the initial value of the functional
+        objectiveFunctional_->set_coefficient ("u", dolfin::reference_to_no_delete_pointer ((*this)["primal"].solution()[0]));
+        objectiveFunctional_->set_coefficient (controlName, control_);
+        rescale_.setFactor (parameters["penaltyFactor"]);
+        //rescale_.setTime (0);
+        rescale_.setN (0);
+        objectiveFunctional_->set_coefficient ("rescale", dolfin::reference_to_no_delete_pointer(rescale_));
+        objFunValues_.push_back (dolfin::assemble (* objectiveFunctional_));
 
-    bool TimeDependentEquationSystem::isFinished ()
-    {
-        std::size_t nFinished = 0;
-        for (auto mapElement : storedProblems_)
-        {
-            dcp::TimeDependentProblem& tmp = static_cast<dcp::TimeDependentProblem&> (*(mapElement.second));
-            nFinished += tmp.isFinished ();
-        }
-        return (nFinished == storedProblems_.size ());
-    }
-    
+        // file-recording of the initial values
+        control_->eval (controlValues, controlPoint);
+        std::ofstream file_toBeReset ((problemData.savepath+"objFunBefore_ctrl_alpha_objFun.csv").c_str(), std::ofstream::out);
+        file_toBeReset.close();
+        file_toBeReset.precision (15);
+        file_toBeReset << objFunValues_.back() << ',' << controlValues[1] << ',' << alpha << std::endl;
+        file_toBeReset.close();
+        this->meshManager().print2csv (
+                                (*this)["primal"].solution (), 
+                                problemData.savepath+"primal", "0",
+                                true );
+        this->meshManager().print2csv (
+                                (*this)["adjoint"].solution (), 
+                                problemData.savepath+"adjoint", "0",
+                                true );
 
-
-    const dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::string& name) const
-    {
-        auto problemIterator = storedProblems_.find (name);
-        if (problemIterator == storedProblems_.end ())
-        {
-            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
-                                  "operator[]", 
-                                  "Problem \"%s\" not found in stored problems map", 
-                                  name.c_str ());
-        }
-        return *(std::dynamic_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
-    }
-
-
-
-    dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::string& name)
-    {
-        auto problemIterator = storedProblems_.find (name);
-        if (problemIterator == storedProblems_.end ())
-        {
-            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
-                                  "operator[]", 
-                                  "Problem \"%s\" not found in stored problems map", 
-                                  name.c_str ());
-        }
-        return *(std::dynamic_pointer_cast<dcp::TimeDependentProblem> (problemIterator->second));
-    }
-
-
-
-    const dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::size_t& position) const
-    {
-        if (position >= solveOrder_.size ())
-        {
-            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
-                                  "operator[]",
-                                  "Input value \"%d\" is greater than problems vector size",
-                                  position);
-        }
-        return this->operator[] (solveOrder_ [position]);
-    }
-
-
-
-    dcp::TimeDependentProblem& TimeDependentEquationSystem::operator[] (const std::size_t& position)
-    {
-        if (position >= solveOrder_.size ())
-        {
-            dolfin::dolfin_error ("dcp: TimeDependentEquationSystem.cpp",
-                                  "operator[]",
-                                  "Input value \"%d\" is greater than problems vector size",
-                                  position);
-        }
-        return this->operator[] (solveOrder_ [position]);
-    }
-
-
-
-    void TimeDependentEquationSystem::solve (const bool& forceRelinking)
-    {
         // this function iterates over solveOrder_ and calls solve (problemName) for each problem, thus delegating
         // to the latter function the task of performing the actual parameters setting and solving.
         // The loop is repeated until isFinished() returns true, that is until all problems' time loops are ended
         dolfin::begin ("Solving problems...");
         
-        int iterationCounter = 0;
+        int iterationCounter = 0; 
         while (isFinished () == 0)
         {
+
+            double alpha (parameters["alpha"]);
+            double alphaMin (parameters["alpha_min"]);
+
             iterationCounter++;
             dolfin::log (dolfin::INFO, "=====================================");
             dolfin::log (dolfin::INFO, "TIME DEPENDENT SYSTEM ITERATION: %d", iterationCounter);
             dolfin::begin (dolfin::INFO, "=====================================");
-            for (auto problem : solveOrder_)
-            {
-                solve (problem, forceRelinking);
-            }
+
+            dolfin::begin ("Solving auxiliary problems...");
+
+            // 1) primal state problem first solution and file-recording
+            (*this)["primal"].setCoefficient ("linear_form", control_, controlName);
+            solve("primal", forceRelinking, false);
+std::cerr << __FILE__ << ' ' << __LINE__ << std::endl;
+
+            this->meshManager().print2csv (
+                                    (*this)["primal"].solution (), 
+                                    problemData.savepath+"primalBefore",std::to_string(iterationCounter),
+                                    true );
+
+            // 2) ALE problem solution (for adjoint problem)
+//            solve("ALE", true);//forceRelinking);
+            dolfin::Function w (* static_cast<dcp::MovingTimeDependentProblem &> ((*this)["primal"]) .meshManager ().displacement() );
+            (*this)["adjoint"].setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (w), "w");
+            const dolfin::Function & primalSol ((*this)["primal"].solution ());
+            (*this)["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (primalSol[0]), "u");
+            const dolfin::Function & primalOldSol ((static_cast<dcp::TimeDependentProblem &>((*this)["primal"]).solutions ().end() - 1)->second);
+            (*this)["adjoint"].setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (primalOldSol[0]), "u_old");
+
+            // 3) adjoint problem solution and file-recording
+            solve("adjoint", false);//forceRelinking);
+
+            this->meshManager().print2csv (
+                                    (*this)["adjoint"].solution (), 
+                                    problemData.savepath+"adjoint",std::to_string(iterationCounter),
+                                    true );
+
+            dolfin::end ();
+
+            // 4) first evaluation of the functional
+            objectiveFunctional_->set_coefficient ("u", dolfin::reference_to_no_delete_pointer ((*this)["primal"].solution()[0]));
+            objectiveFunctional_->set_coefficient (controlName, control_);
+            //rescale_.setTime (static_cast<dcp::TimeDependentProblem&> ((*this)["primal"]).time());
+            rescale_.setN (iterationCounter - 1);
+            objectiveFunctional_->set_coefficient ("rescale", dolfin::reference_to_no_delete_pointer(rescale_));
+            objFunValues_.push_back (dolfin::assemble (* objectiveFunctional_));
+
+            // 5) construction of the control increment and back-tracking
+            dolfin::begin("Computing the new control...");
+            projector_->set_coefficient ("u", dolfin::reference_to_no_delete_pointer ((*this)["adjoint"].solution ()[0]));
+            double projected (dolfin::assemble (* projector_));
+            double rescaleValue (rescale_.value());
+            control_->eval (controlValues, controlPoint);
+            control_.reset (new dolfin::Constant (0, 
+                controlValues[1]
+                + alpha
+                * static_cast<dcp::TimeDependentProblem&> ((*this)["primal"]).dt()
+                * ( projected
+                    - rescaleValue * problemData.lx * controlValues[1] ) ) );
+
+            alpha = this->chooseIncrementStep (alpha, alphaMin, controlValues, controlPoint, controlName, projected, forceRelinking);
+
+//imposedControl
+/*control_.reset (new dolfin::Constant(0, -100e-6 * sin (2*DOLFIN_PI/10 * iterationCounter-1)));
+std::ofstream ctrlFile ((problemData.savepath+"ctrlFile.csv").c_str(), std::ofstream::app);
+control_->eval (controlValues, controlPoint);
+ctrlFile << controlValues[1] << std::endl;*/
+
+            dolfin::end ();
+
+            // 6) solution of the primal problem with the improved control
+            dolfin::begin ("Solving the corrected primal problem...");
+
+            (*this)["primal"].setCoefficient ("linear_form", control_, controlName);
+            solve("primal", forceRelinking, true);
+
+            this->meshManager().print2csv (
+                                    (*this)["primal"].solution (), 
+                                    problemData.savepath+"primal",std::to_string(iterationCounter),
+                                    true );
+            std::ofstream file ((problemData.savepath+"objFunBefore_ctrl_alpha_objFun.csv").c_str(), std::ofstream::app);
+            file.precision (15);
+            file << objFunValues_.back() << ',' << controlValues[1] << ',' << alpha << ',';
+            objectiveFunctional_->set_coefficient ("u", dolfin::reference_to_no_delete_pointer ((*this)["primal"].solution()[0]));
+            objectiveFunctional_->set_coefficient (controlName, control_);
+            //rescale_.setTime (static_cast<dcp::TimeDependentProblem&> ((*this)["primal"]).time());
+            rescale_.setN (iterationCounter - 1);
+            objectiveFunctional_->set_coefficient ("rescale", dolfin::reference_to_no_delete_pointer(rescale_));
+            objFunValues_.back () = dolfin::assemble (* objectiveFunctional_);
+            file << objFunValues_.back() << std::endl;
+            file.close();
+
+            dolfin::end ();
+
             dolfin::log (dolfin::INFO, "");
             dolfin::end ();
         }
-        
+
         dolfin::end ();
     }
 
 
 
-    void TimeDependentEquationSystem::solve (const std::string& problemName, const bool& forceRelinking)
+    void InstantaneousControl::solve (const std::string& problemName, const bool& forceRelinking)
+    {
+        solve (problemName, forceRelinking, true);
+    }
+
+
+
+    void InstantaneousControl::solve (const char* problemName, const bool& forceRelinking)
+    {
+        solve (std::string (problemName), forceRelinking);
+    }
+    
+
+    void InstantaneousControl::setMeshManager (const MeshManager<dolfin::ALE> & meshManager)
+      { meshManager_ = & meshManager; }
+
+    dcp::MeshManager<> InstantaneousControl::meshManager () const
+      { return * meshManager_; }
+
+    /******************* PROTECTED METHODS *******************/
+    void InstantaneousControl::solve (const std::string& problemName, const bool& forceRelinking, const bool advanceTimeDependentProblem)
     {
         dolfin::begin ("Solving problem \"%s\"...", problemName.c_str ());
 
@@ -376,22 +468,61 @@ namespace dcp
         // 2)
         // solve problem
         dolfin::log (dolfin::PROGRESS, "Calling solve method on problem...");
-        problem.solve ("step");
+        
+        auto tdProblemIterator = timeDependentStoredProblems_.find (problemName);
+        if (tdProblemIterator != timeDependentStoredProblems_.end())
+          if (advanceTimeDependentProblem)
+            problem.solve ("step");
+          else
+            problem.solve ("noAdvance_step");
+        else
+          problem.solve ();
         
         dolfin::end ();
     }
 
-
-
-    void TimeDependentEquationSystem::solve (const char* problemName, const bool& forceRelinking)
+    double InstantaneousControl::chooseIncrementStep (const double alpha, const double alphaMin, dolfin::Array<double> & controlValues, const dolfin::Array<double> & controlPoint, const std::string & controlName, const double & projectedAdjoint, const bool& forceRelinking)
     {
-        solve (std::string (problemName), forceRelinking);
+        if (alpha<=alphaMin)
+          return alphaMin;
+
+        control_->eval (controlValues, controlPoint);
+        double rescaleValue (rescale_.value());
+        /*control_.reset (new dolfin::Constant (0, 
+            controlValues[1]
+            - alpha
+            * static_cast<dcp::TimeDependentProblem&> ((*this)["primal"]).dt()
+            * ( controlValues[1] * rescaleValue * problemData.lx
+//                * static_cast<dcp::TimeDependentProblem&> ((*this)["primal"]).time()
+//                * static_cast<dcp::TimeDependentProblem&> ((*this)["primal"]).time()
+                + projectedAdjoint )
+            ) );  */
+        control_.reset (new dolfin::Constant (0, 
+            controlValues[1]
+            + alpha
+            * static_cast<dcp::TimeDependentProblem&> ((*this)["primal"]).dt()
+            * ( projectedAdjoint
+                - rescaleValue * problemData.lx * controlValues[1] ) ) );
+
+        (*this)["primal"].setCoefficient ("linear_form", control_, controlName);
+        solve("primal", forceRelinking, false);
+
+        objectiveFunctional_->set_coefficient ("u", dolfin::reference_to_no_delete_pointer ((*this)["primal"].solution()[0]));
+        objectiveFunctional_->set_coefficient (controlName, control_);
+        //rescale_.setTime (static_cast<dcp::TimeDependentProblem&> ((*this)["primal"]).time());
+        double objFunVal (dolfin::assemble (* objectiveFunctional_));
+std::cerr << "VALS " << objFunVal << "  " << objFunValues_.back () << "   alpha " << alpha << std::endl;
+
+        if (objFunVal < objFunValues_.back ())
+        {
+            objFunValues_.push_back (dolfin::assemble (* objectiveFunctional_));
+            return alpha;
+        }
+        else
+            return this->chooseIncrementStep (0.5 * alpha, alphaMin, controlValues, controlPoint, controlName, projectedAdjoint, forceRelinking);
     }
-    
 
-
-    /******************* PROTECTED METHODS *******************/
-    void TimeDependentEquationSystem::linkProblemToPreviousSolution (const PreviousSolutionLink& link)
+    void InstantaneousControl::linkProblemToPreviousSolution (const PreviousSolutionLink& link)
     {
         if (std::get<1> (link.second) == -1)
         {
@@ -493,6 +624,14 @@ namespace dcp
             const dolfin::Function& targetFunction = (targetProblemSolutionsVector.rbegin() + nStepsBack)->second;
 
             int component = std::get<1> (link.second);
+/*std::cerr << __LINE__ << " ; ";
+std::cerr << targetProblemSolutionsVector.size() << " ; ";
+std::cerr << std::boolalpha << (targetProblemSolutionsVector.rend() == (targetProblemSolutionsVector.rbegin() + nStepsBack)) << " ; ";
+std::cerr << (targetProblemSolutionsVector.rend() - (targetProblemSolutionsVector.rbegin() + nStepsBack)) << " ; ";
+std::cerr << targetFunction.id() << " ; ";
+std::cerr << std::get<0> (link.second) << " ; ";
+std::cerr << targetFunction.str(true) << " ; ";
+std::cerr << component << std::endl;*/
             problem.setCoefficient (std::get<2> (link.first), 
                                     dolfin::reference_to_no_delete_pointer (targetFunction [component]),
                                     std::get<1> (link.first));

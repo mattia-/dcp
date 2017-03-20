@@ -1,12 +1,15 @@
 #include <dolfin.h>
 #include <assert.h>
-#include "myNavierstokesTimeCurvLinear.h"
-#include "myNavierstokesTimeCurvLinearPreviousDomain.h"
+#include "navierstokes.h"
+#include "navierstokesPreviousDomain.h"
+#include "navierstokesAdjoint.h"
+#include "navierstokesAdjointAdditional.h"
 #include <dcp/differential_problems/MeshManager.h> //"MeshManager.h"
 //#include "geometry.h"
 #include <dcp/differential_problems/MovingLinearProblem.h>
 #include <dcp/differential_problems/MovingTimeDependentProblem.h>
 #include <dcp/differential_problems/utilities.h> //#include "utilities.h"
+#include "InstantaneousControl.h" //<dcp/differential_problems/TimeDependentEquationSystem.h>
 #include <dcp/subdomains/Subdomain.h>
 
 #include "PostProcessor.h"
@@ -26,82 +29,6 @@
 GetPot inputData;
 
 ProblemData problemData;
-
-class InitialDisplacement : public dolfin::Expression
-{
-  public:
-
-  void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
-  {
-      //values[0] = 2*x[0]-x[0]*x[0]/problemData.lx-x[0]  +  0;
-      //values[1] = 2*x[1]-x[1]*x[1]/problemData.ly-x[1]  +  0.1*x[1]*(x[0]/problemData.lx-0.5)*2;
-
-//      values[0] = pow (x[0], 0.5)/pow (problemData.lx, -0.5)  +  0;
-/*      values[0] = 0.5*problemData.lx*( sin(3.1415926536*x[0]/problemData.lx - 1.5707963268) + 1 );
-      values[1] = pow (x[1], 0.3)/pow (problemData.ly, -0.7); 
-
-//      values[1] += 0.1*values[1]*(values[0]/problemData.lx-0.5)*2;
-*/
-      values[0] = 0;
-      //values[1] = 0.1*x[1]*(x[0]/problemData.lx-0.5)*2;
-      values[1] = -0.25*x[1]*(x[0]/problemData.lx)*(x[0]/problemData.lx);
-      //values[1] = 0.1*x[1]*(1 - (x[0]/problemData.lx)*(x[0]/problemData.lx));
-      values[2] = 0;
-  }
-
-  std::size_t value_rank() const
-  {
-    return 1;
-  }
-
-  std::size_t value_dimension(std::size_t i) const
-  {
-    return 3;
-  }
-};
-
-class InitialState : public dolfin::Expression
-{
-  public:
-
-  void eval(dolfin::Array<double>& values, const dolfin::Array<double>& x) const
-  {
-      // we start with hydrostatic pressure distribution
-      values[0] = 0;
-#ifdef PARAB
-      values[1] = 0;//inflowVelocity_ * 1/(problemData.lx*problemData.lx)*(problemData.lx+x[0])*(problemData.lx-x[0]);
-      //values[1] = inflowVelocity_*x[1]/problemData.ly;
-#else
-      values[1] = inflowVelocity_;
-#endif
-      values[2] = (1-x[1]/yLength_)*bottomPressure_;
-  }
-
-  std::size_t value_rank() const
-  {
-    return 1;
-  }
-
-  std::size_t value_dimension(std::size_t i) const
-  {
-    return 3;
-  }
-
-  void setHydrostatics (double yLength, double bottomPressure)
-  {
-    yLength_ = yLength;
-    bottomPressure_ = bottomPressure;
-  }
-
-  void setInflow (double inflowVelocity)
-  {
-    inflowVelocity_ = inflowVelocity;
-  }
-
-  private:
-  
-  double yLength_, bottomPressure_, inflowVelocity_;
-};
 
 class TPadditionalProcessor : public dcp::AdditionalProcessor
 {
@@ -145,7 +72,7 @@ dolfin::parameters["allow_extrapolation"] = true;
     if (T <= t0)
     {
       std::size_t nT (inputData("nT", 0));
-      T = t0 + nT*dt;
+      T = t0 + nT*problemData.dt;
     }
 std::cerr << "T  " << T << "   t0 " << t0;
       
@@ -234,13 +161,12 @@ dirBCbottom.get_boundary_values(bdval);
                               0);
 
  		// Function space, mesh manager setting and time stepping problem
- 		myNavierstokesTimeCurvLinear::FunctionSpace V (* meshManager.mesh());
-    meshManager.getDofOrder (V,0);
-  meshManager.storeOrderedDofIdxs (V, {"ux","uy","p"});
+ 		navierstokes::FunctionSpace V (* meshManager.mesh());
+    meshManager.storeOrderedDofIdxs (V, {"ux","uy","p"});
 
 //left    TriplePointLeftVertex triplePointLeftVertex;
     TriplePointRightVertex triplePointRightVertex;
-/*myNavierstokesTimeCurvLinear::BilinearForm form (V,V);
+/*navierstokes::BilinearForm form (V,V);
 form.check();
     dolfin::VertexFunction<std::size_t> additionalMeshFunction (meshManager.mesh());
     additionalMeshFunction.set_all (0);
@@ -255,7 +181,7 @@ for (dolfin::VertexIterator v (* meshManager.mesh()); !v.end(); ++v)
 }
 //std::cerr << additionalMeshFunction.str(true) << std::endl;*/
 const dolfin::GenericDofMap& dofmap (* V.dofmap());
-// NB: qui sto usando la dofmap di un myNavierstokesTimeCurvLinear::FunctionSpace, mentre poi lo uso per processare un vettore che viene da computeFreeSurfaceStress_onlyTP::FunctionSpace
+// NB: qui sto usando la dofmap di un navierstokes::FunctionSpace, mentre poi lo uso per processare un vettore che viene da computeFreeSurfaceStress_onlyTP::FunctionSpace
 dolfin::la_index numDofs (dofmap.dofs().size());
 const dolfin::GenericDofMap& subdofmap (* V[0]->dofmap());
 std::vector<dolfin::la_index> velocityDofs (subdofmap.dofs());
@@ -289,9 +215,9 @@ std::cerr << "                "; for (dolfin::la_index i=0; i!=triplePointDofs_w
 
     TPadditionalProcessor tpAdditionalProcessor;
 
- 		dcp::MovingLinearProblem < myNavierstokesTimeCurvLinear::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
-                      myNavierstokesTimeCurvLinear::BilinearForm, myNavierstokesTimeCurvLinear::LinearForm,
-                      myNavierstokesTimeCurvLinearPreviousDomain::LinearForm, computeFreeSurfaceStress_onlyTP::LinearForm >
+ 		dcp::MovingLinearProblem < navierstokes::FunctionSpace, computeFreeSurfaceStress_onlyTP::FunctionSpace,
+                      navierstokes::BilinearForm, navierstokes::LinearForm,
+                      navierstokesPreviousDomain::LinearForm, computeFreeSurfaceStress_onlyTP::LinearForm >
 /*			  timeSteppingProblem (dolfin::reference_to_no_delete_pointer(additionalMeshFunction),
                              {4,5},
                              dolfin::reference_to_no_delete_pointer (V));*/
@@ -328,10 +254,18 @@ std::cerr << "                "; for (dolfin::la_index i=0; i!=triplePointDofs_w
                                                   			 );
 #endif
 
-    navierStokesProblem.setPostProcessor (new Ivan::PostProcessor(navierStokesProblem));
-
+    navierStokesProblem.parameters["store_interval"] = 2;
     navierStokesProblem.parameters["time_stepping_solution_component"] = 0;
     
+/*    dolfin::Constant initialSolution (0,0,0);
+std::cerr << __LINE__ << std::endl;
+    navierStokesProblem.setInitialSolution (initialSolution);
+std::cerr << __LINE__ << std::endl;
+    navierStokesProblem.setInitialSolution (initialSolution, 2);
+*/
+
+    //navierStokesProblem.setPostProcessor (new Ivan::PostProcessor(navierStokesProblem));
+
 #ifndef EVITAPLOT
     dolfin::plot (mesh,"out"); dolfin::interactive ();
     dolfin::plot (* meshManager.mesh(),"meshManager"); dolfin::interactive ();
@@ -454,6 +388,80 @@ dirBCinflow.get_boundary_values(bdval);
 dirBCoutflow.get_boundary_values(bdval);
     navierStokesProblem.addDirichletBC (dirBCoutflow, std::string("outflow"));
 
+    // ------- adjoint problem ------ //
+
+ 		dcp::MovingLinearProblem < navierstokesAdjoint::FunctionSpace, navierstokesAdjointAdditional::FunctionSpace,
+                      navierstokesAdjoint::BilinearForm, navierstokesAdjoint::LinearForm,
+                      navierstokesAdjointAdditional::Form_previous, navierstokesAdjointAdditional::Form_additional >
+        adjointProblem (dolfin::reference_to_no_delete_pointer (V));
+
+    adjointProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (dt),"dt");
+    adjointProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (nu),"nu");
+  	adjointProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (beta),"beta");
+  	adjointProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (noStokes),"noStokes");
+  	adjointProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (stabBulk),"stabBulk");
+  	adjointProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (stabSigma),"stabSigma");
+  	adjointProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (stabSGCL),"stabSGCL");
+  	adjointProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (gamma),"gamma");
+  	adjointProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (stabPress),"stabPress");
+#ifdef PARAB
+    adjointProblem.setCoefficient ("bilinear_form", dolfin::reference_to_no_delete_pointer (inflowProfile), "uDir");
+#endif
+    adjointProblem.setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (dt),"dt");
+    //?? MANCA u_old!!
+//dolfin::Function u_old (* meshManager.displacement()); u_old = zeroVec; adjointProblem.setCoefficient ("linear_form",dolfin::reference_to_no_delete_pointer(u_old),"u_old");
+//adjointProblem.setCoefficient ("bilinear_form",dolfin::reference_to_no_delete_pointer(zeroVec),"u_old");
+std::cerr << __LINE__ << std::endl;
+//    adjointProblem.setCoefficient ("linear_form",dolfin::reference_to_no_delete_pointer(zeroVec),"zeroVector");
+    adjointProblem.setCoefficient ("additional_form",dolfin::reference_to_no_delete_pointer(zeroVec),"zeroVector");
+    adjointProblem.setCoefficient ("previous_form",dolfin::reference_to_no_delete_pointer(zeroVec),"zeroVector");
+
+		// Setting mesh labelling inside problem
+		adjointProblem.setIntegrationSubdomain ("bilinear_form",
+      dolfin::reference_to_no_delete_pointer (meshFacets), dcp::SubdomainType::BOUNDARY_FACETS);
+
+    adjointProblem.addDirichletBC (dirBCwall, std::string("wall"));
+    adjointProblem.addDirichletBC (dirBCsymm, std::string("symmetry"));
+    adjointProblem.addDirichletBC (dirBCoutflow, std::string("outflow"));
+    if (problemData.inflowDirichlet)
+    {
+      dolfin::DirichletBC dirBCinflow (* (* navierStokesProblem.functionSpace())[0], zeroVec, inflowBoundary, "geometric");
+dirBCinflow.get_boundary_values(bdval);
+      adjointProblem.addDirichletBC (dirBCinflow, std::string("inflow"));
+    }
+
+    // ------- system of equations ------- //
+
+    navierstokesAdjointAdditional::Form_functional J (meshManager.mesh());
+		J.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer (meshFacets));
+
+    navierstokesAdjointAdditional::Form_integralNormal projector (meshManager.mesh());
+    projector.set_exterior_facet_domains (dolfin::reference_to_no_delete_pointer (meshFacets));
+
+  	dolfin::Constant control (0.0,0.0);
+    dcp::InstantaneousControl tdSystem (dolfin::reference_to_no_delete_pointer (J), dolfin::reference_to_no_delete_pointer (projector), dolfin::reference_to_no_delete_pointer (control));
+    tdSystem.parameters.add("control_name", "control");
+
+    double penaltyFactor = inputData ("penaltyFactor", 1.0);
+    tdSystem.parameters.add("penaltyFactor", penaltyFactor);
+
+    double alpha = inputData ("alpha", 1.0);
+    tdSystem.parameters.add("alpha", alpha);
+    double alphaMin = inputData ("alphaMin", 1.0);
+    tdSystem.parameters.add("alpha_min", alphaMin);
+
+    tdSystem.setMeshManager (meshManager);
+
+    tdSystem.addProblem ("primal", navierStokesProblem);
+    tdSystem.addProblem ("adjoint", adjointProblem, false);
+    tdSystem.addProblem ("ALE", aleProblem, false);
+
+//     tdSystem.addLink ("adjoint", "primalSol", "linear_form", "primal");
+//    tdSystem.addLinkToPreviousSolution ("adjoint", "u_old", "bilinear_form", "primal", 0, 1);
+//    tdSystem.addLink ("adjoint", "w", "bilinear_form", "ALE");
+//    tdSystem.addLink ("adjoint", "u", "linear_form", "primal", 0);
+    tdSystem.addLink ("ALE", "u", "linear_form", "primal", 0);
+
 /*XY xy;
 dolfin::Function w (* meshManager.displacement()->function_space());
 w = xy;
@@ -474,22 +482,6 @@ meshManager.moveMesh (w,"normal",1);
 XYZ xyz;
 dolfin::Function sol (V);
 sol = xyz;*/
-
-//#ifdef INITDISPL
-    if ( ! problemData.startFromFlat )
-    {
-      std::cerr << "Setting initial displacement" << std::endl;
-      InitialDisplacement initialDisplacement;
-      navierStokesProblem.initializeMesh (initialDisplacement);
-//      XYZ xyzExpr;
-//      dolfin::Function xyz (V);
-//      xyz = xyzExpr;
-//      dolfin::plot (xyz);
-//      dolfin::interactive();
-//      dolfin::File meshTmpFile ("meshTmp.pvd");
-//      meshTmpFile << xyz;
-    }
-//#endif
 
 // restart - mesh
     std::string restartMeshFilename (inputData ("restartMeshFile", ""));
@@ -528,35 +520,16 @@ std::cerr << " OK fino a " << __LINE__ << std::endl;
 dolfin::interactive();
     }
 
-// restart - solution and displacement
-    if (restartMeshFilename.empty())
-    {
-      InitialState initialSolution;
-      initialSolution.setHydrostatics (problemData.ly, inputData("zeta0_y", 0.0));
-      initialSolution.setInflow (inputData("inflowVelocity",0.0));
-      navierStokesProblem.setInitialSolution (initialSolution);
-    }
-    else
-    {
-      std::string restartFilename (inputData ("restartFile", ""));
-      std::string restartDisplFilename (inputData ("restartDisplFile", ""));
-      restartFilename += restartTimeStep; restartFilename += ".hdf5";
-      restartDisplFilename += restartTimeStep; restartDisplFilename += ".hdf5";
-std::cerr << "Restart : meshFile=" << restartMeshFilename << ", solFile=" << restartFilename << ", displFile=" << restartDisplFilename << ", timeStep=" << restartTimeStep << std::endl;
 
-      dolfin::Function initialSolution (V);
-      dolfin::HDF5File restartFile (MPI_COMM_WORLD, restartFilename, "r");
-      restartFile.read (initialSolution, restartTimeStep);
-      restartFile.close();
-      navierStokesProblem.setInitialSolution (initialSolution);
-      navierStokesProblem.startTime() = std::stoi (restartTimeStep) * problemData.dt;
 
-      dolfin::Function initialDispl (meshManager.displacementFunctionSpace());
-      dolfin::HDF5File restartDisplFile (MPI_COMM_WORLD, restartDisplFilename, "r");
-      restartDisplFile.read (initialDispl, restartTimeStep);
-      restartDisplFile.close();
-      navierStokesProblem.meshManager().setDisplacement (initialDispl);
-    }
+    dolfin::Function tdsol (tdSystem.solution("primal"));
+    tdSystem.solve();
+    tdsol = tdSystem.solution("primal");
+    std::cerr << std::endl << "Simulation completed!" << std::endl;
+ 		return 0;
+
+
+
 
 dolfin::Function sol (navierStokesProblem.solution());
 //dolfin::plot (sol[0], "sol velocity");

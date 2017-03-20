@@ -1,5 +1,5 @@
 #/* 
-# *  Copyright (C) 2015, Ivan Fumagalli, ivan.fumagalli@polimi.it
+# *  Copyright (C) 2017, Ivan Fumagalli, ivan.fumagalli@polimi.it
 # * 
 # *  This file is part of the DCP library
 # *   
@@ -28,30 +28,60 @@ cell = triangle
 V = VectorElement ("Lagrange", cell, 1)
 Q = FiniteElement ("Lagrange", cell, 1)
 T = V * Q
+W = VectorElement ("Lagrange", cell, 1)
+Wscal = FiniteElement ("Lagrange", cell, 1)
 
-# define test function
+# define test and trial functions
 test = TestFunction (T)
 
-v, q = split (test)
+v, p = split (test)
 
 x = SpatialCoordinate (cell)
 
 # define coefficients
+nu = Constant (cell)
+gamma = Constant (cell)
+dt = Constant (cell)
+lambdastar = Constant (cell)
+noStokes = Constant (cell)
+stabBulk = Constant (cell)
+stabSigma = Constant (cell)
+stabSGCL = Constant (cell)
+n = FacetNormal(cell)
+h = MinFacetEdgeLength(cell)
+h_dx = Circumradius(cell)
+u = Coefficient (V)
 u_old = Coefficient (V)
 uDir = Coefficient (V)
-lambdastar = Constant (cell)
-dt = Constant (cell)
-gravityVector = VectorConstant (cell)
-#gamma = Constant (cell)
-n = FacetNormal(cell)
-#beta = Constant (cell)
-#wallVelocity = Coefficient (V)
+w = Coefficient (Wscal) # Coefficient (W)
+beta = Constant (cell)
 stressAbove = Coefficient (V)
 dummy, normalStressAbove = split (stressAbove)
-stressBelow = Coefficient (V)
+control = Coefficient (V)
+zeroVector = VectorConstant (cell)
+wallVelocity = Coefficient (V)
 
-# define linear form
-L = inner (u_old+uDir, v) * x[0] * dx \
-    + (1-lambdastar) * dt * inner(gravityVector, v) * x[0] * dx \
-    + (1-lambdastar) * dt * inner (normalStressAbove*n, v) * x[0] * ds(1) \
-    + (1-lambdastar) * dt * inner (stressBelow, v) * x[0] * ds(2)
+stabPress = Constant (cell)
+
+rescale = Constant (cell)
+
+#wr,wth = split (w)
+#ur,uth = split (u)
+#vr,vth = split (v)
+#ur_old,uth_old = split (u_old)
+
+#th = pi/2
+#A = as_matrix([[cos(th) , -sin(th)] , [sin(th) , cos(th)]])
+#A = as_matrix ([ [0 , -1] , [1 , 0] ])
+
+# define forms
+previous = inner (zeroVector, v) * dx
+
+additional = inner (zeroVector, v) * dx
+
+functional = 0.5 * inner (u, u) * x[0] * dx \
+           + 0.5 * rescale * inner (control, control) * x[0] * ds(2)
+
+integralNormal = inner (u, n) * x[0] * ds(2)
+
+forms = [previous, additional, functional, integralNormal]

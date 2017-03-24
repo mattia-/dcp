@@ -949,6 +949,8 @@ namespace dcp
              *  Possible values are:
              *  \li \c "default" : plot all the functions in \c solution_
              *  \li \c "last" : plot only the last solution stored in \c solution_
+             *  \li \c "position_<N>" : write to file the <tt>N</tt>-th element stored in \c solution_ . An error is
+             *  issued if \c N is greater than \c solution_ 's size
              *  \li \c "stashed" : plot the stashed solution
              */
             virtual void plotSolution (const std::string& plotType = "default") override;
@@ -960,6 +962,8 @@ namespace dcp
              *  Possible values are:
              *  \li \c "default" : write to file all the functions in \c solution_
              *  \li \c "last" : write to file only the last solution stored in \c solution_
+             *  \li \c "position_<N>" : write to file the <tt>N</tt>-th element stored in \c solution_ . An error is
+             *  issued if \c N is greater than \c solution_ 's size
              *  \li \c "stashed" : write to file the stashed solution
              */
             virtual void writeSolutionToFile (const std::string& writeType = "default") override;

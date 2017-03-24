@@ -1072,8 +1072,13 @@ namespace dcp
 
     void TimeDependentProblem::plotSolution (const std::string& plotType)
     {
+        std::regex positionRegex ("^(position_)([0-9]*)$");
+
         // check if plotType is known
-        if (plotType != "default" && plotType != "last" && plotType != "stashed")
+        if (plotType != "default"
+            && plotType != "last"
+            && plotType != "stashed"
+            && std::regex_match (plotType, positionRegex) == false)
         {
             dolfin::warning ("Unknown plot type \"%s\". No plot performed", plotType.c_str ());
             return;
@@ -1200,6 +1205,65 @@ namespace dcp
             }
 
         }
+        else if (std::regex_match (plotType, positionRegex))
+        {
+            // get proper element in vector
+            std::size_t position = std::stoi (std::regex_replace (plotType, positionRegex, "$2"));
+            if (position > solution_.size ())
+            {
+                dolfin::dolfin_error ("dcp: TimeDependentProblem.cpp",
+                                      "plot solution",
+                                      "Value \"%s\" as \"plotType\" requested elemend %d in solutions vector, but it has size %d",
+                                      plotType.c_str (),
+                                      position,
+                                      solution_.size ());
+            }
+            auto timeSolutionPair = solution_[position];
+
+            // get time
+            double time = timeSolutionPair.first;
+
+            for (std::size_t i = 0; i < plotComponents.size (); ++i)
+            {
+                int component = plotComponents[i];
+
+                // get right function to plot
+                if (component == -1)
+                {
+                    functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second);
+                    dolfin::log (dolfin::DBG, "Plotting problem solution, all components...");
+                }
+                else
+                {
+                    functionToPlot = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second [component]);
+                    dolfin::log (dolfin::DBG, "Plotting problem solution, component %d...", component);
+                }
+
+                std::string plotTitle = parameters ["plot_title"];
+                if (plotTitle.empty())
+                {
+                    plotTitle = "Time = " + std::to_string (time);
+                }
+                else
+                {
+                    plotTitle = "Time = " + std::to_string (time) + ", " + plotTitle;
+                }
+
+                if (component != -1)
+                {
+                    plotTitle += ", component " + std::to_string (component);
+                }
+
+                // actual plotting
+                plot_ (solutionPlotters_[i], functionToPlot, plotTitle);
+            }
+
+            if (pause)
+            {
+                dolfin::interactive ();
+            }
+
+        }
         else // aka plotType == "stashed", otherwise we would have exited on the first check
         {
             for (std::size_t i = 0; i < plotComponents.size (); ++i)
@@ -1253,9 +1317,13 @@ namespace dcp
     void TimeDependentProblem::writeSolutionToFile (const std::string& writeType)
     {
         dolfin::begin (dolfin::DBG, "Saving solution to file...");
+        std::regex positionRegex ("^(position_)([0-9]*)$");
 
         // check if writeType is known
-        if (writeType != "default" && writeType != "last" && writeType != "stashed")
+        if (writeType != "default"
+            && writeType != "last"
+            && writeType != "stashed"
+            && std::regex_match (writeType, positionRegex) == false)
         {
             dolfin::warning ("Unknown write type \"%s\". No write performed", writeType.c_str ());
             return;
@@ -1356,6 +1424,62 @@ namespace dcp
         {
             // get last element in vector
             auto timeSolutionPair = solution_.back ();
+
+            // get time
+            double time = timeSolutionPair.first;
+
+            for (std::size_t i = 0; i < writeComponents.size (); ++i)
+            {
+                int component = writeComponents[i];
+
+                // get right function to write
+                if (component == -1)
+                {
+                    functionToWrite = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second);
+                }
+                else
+                {
+                    functionToWrite = dolfin::reference_to_no_delete_pointer (timeSolutionPair.second [component]);
+                }
+
+                // file name that keeps track also of the component to be written to file
+                std::string filenameWithComponent = solutionFileName_;
+                if (component != -1)
+                {
+                    // regex matching the extension, aka all the characters after the last dot (included)
+                    std::regex extensionRegex ("(\\.[^.]*$)");
+
+                    // add the component number before the extension ($n is the n-th backreference of the match)
+                    filenameWithComponent = std::regex_replace (filenameWithComponent,
+                                                                extensionRegex,
+                                                                "_component" + std::to_string (component) + "$1");
+                }
+
+                // actual writing
+                if (binaryWrite_ == false)
+                {
+                    write_ (solutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                }
+                else
+                {
+                    write_ (binarySolutionWriters_[i], functionToWrite, filenameWithComponent, time);
+                }
+            }
+        }
+        else if (std::regex_match (writeType, positionRegex))
+        {
+            // get proper element in vector
+            std::size_t position = std::stoi (std::regex_replace (writeType, positionRegex, "$2"));
+            if (position > solution_.size ())
+            {
+                dolfin::dolfin_error ("dcp: TimeDependentProblem.cpp",
+                                      "write solution to file",
+                                      "Value \"%s\" as \"writeType\" requested elemend %d in solutions vector, but it has size %d",
+                                      writeType.c_str (),
+                                      position,
+                                      solution_.size ());
+            }
+            auto timeSolutionPair = solution_[position];
 
             // get time
             double time = timeSolutionPair.first;

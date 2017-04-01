@@ -68,7 +68,7 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Creating TimeDependentFunction object...");
         double currentTime = t0;
         std::size_t counter = 0;
-        while (currentTime <= tf)
+        while (currentTime <= tf + DOLFIN_EPS)
         {
             this->emplace_back (std::make_pair (currentTime, dolfin::Function (functionSpace)));
 

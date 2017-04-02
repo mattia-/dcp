@@ -28,7 +28,6 @@
 #include <string>
 #include <functional>
 #include <cmath>
-#include <iomanip>
 
 namespace dcp
 {
@@ -78,53 +77,44 @@ namespace dcp
 
         if (convergenceCriterion == "both")
         {
-            outstream << "  "
-                << std::left
-                << std::setw (14)
-                << iteration
-                << std::setw (21)
-                << functionalValue
-                << std::setw (15)
-                << alpha
-                << std::setw (28)
-                << backtrackingIterations
-                << std::setw (18)
-                << gradientNorm
-                // << std::setw (23) // do not call setw, since it is the last number and we do not want trailing spaces
-                << relativeIncrement
-                << std::endl;
+            outstream << iteration
+                      << " "
+                      << functionalValue
+                      << " "
+                      << alpha
+                      << " "
+                      << backtrackingIterations
+                      << " "
+                      << gradientNorm
+                      << " "
+                      << relativeIncrement
+                      << std::endl;
         }
         else if (convergenceCriterion == "increment")
         {
-            outstream << "  "
-                << std::left
-                << std::setw (14)
-                << iteration
-                << std::setw (21)
-                << functionalValue
-                << std::setw (15)
-                << alpha
-                << std::setw (28)
-                << backtrackingIterations
-                // << std::setw (23) // do not call setw, since it is the last number and we do not want trailing spaces
-                << relativeIncrement
-                << std::endl;
+            outstream << iteration
+                      << " "
+                      << functionalValue
+                      << " "
+                      << alpha
+                      << " "
+                      << backtrackingIterations
+                      << " "
+                      << relativeIncrement
+                      << std::endl;
         }
         else if (convergenceCriterion == "gradient")
         {
-            outstream << "  "
-                << std::left
-                << std::setw (14)
-                << iteration
-                << std::setw (21)
-                << functionalValue
-                << std::setw (15)
-                << alpha
-                << std::setw (28)
-                << backtrackingIterations
-                // << std::setw (18) // do not call setw, since it is the last number and we do not want trailing spaces
-                << gradientNorm
-                << std::endl;
+            outstream << iteration
+                      << " "
+                      << functionalValue
+                      << " "
+                      << alpha
+                      << " "
+                      << backtrackingIterations
+                      << " "
+                      << gradientNorm
+                      << std::endl;
         }
         else
         {
@@ -155,41 +145,29 @@ namespace dcp
 
             if (convergenceCriterion == "both")
             {
-                outfile << "# Iteration"
-                        << "     "
-                        << "Functional_value"
-                        << "     "
-                        << "Alpha"
-                        << "          "
-                        << "Backtracking_iterations"
-                        << "     "
-                        << "Gradient_norm"
-                        << "     "
+                outfile << "#Iteration "
+                        << "Functional_value "
+                        << "Alpha "
+                        << "Backtracking_iterations "
+                        << "Gradient_norm "
                         << "Relative_increment"
                         << std::endl;
             }
             else if (convergenceCriterion == "increment")
             {
-                outfile << "# Iteration"
-                        << "     "
-                        << "Functional_value"
-                        << "     "
-                        << "Alpha"
-                        << "          "
-                        << "Backtracking_iterations"
-                        << "     "
+                outfile << "#Iteration "
+                        << "Functional_value "
+                        << "Alpha "
+                        << "Backtracking_iterations "
                         << "Relative_increment"
                         << std::endl;
             }
             else if (convergenceCriterion == "gradient")
             {
-                outfile << "# Iteration"
-                        << "     "
-                        << "Functional_value"
-                        << "Alpha"
-                        << "          "
-                        << "Backtracking_iterations"
-                        << "     "
+                outfile << "#Iteration "
+                        << "Functional_value "
+                        << "Alpha "
+                        << "Backtracking_iterations "
                         << "Gradient_norm"
                         << std::endl;
             }

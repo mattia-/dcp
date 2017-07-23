@@ -182,7 +182,7 @@ namespace dcp
 
 
 
-    dolfin::Function TimeDependentFunction::computeTimeIntegral ()
+    dolfin::Function TimeDependentFunction::computeTimeIntegral () const
     {
         // if TimeDependentFunction contains no data, return nothing
         if (this->size () == 0)

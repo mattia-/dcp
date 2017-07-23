@@ -148,7 +148,7 @@ namespace dcp
              *
              *  \return the result of the time integration (move semantic is used if implemented by FEniCS)
              */
-            dolfin::Function computeTimeIntegral ();
+            dolfin::Function computeTimeIntegral () const;
 
             /********************** OPERATORS ***********************/
             //! Assignement operator

@@ -115,6 +115,33 @@ std::cerr << "processed values " << processedVec[additionalDofs.back()] << ", ";
     }
 };
 
+class BetaEvaluator
+{
+  public :
+    BetaEvaluator () = delete;
+    BetaEvaluator (dcp::DepthEvaluator<dolfin::ALE> & de, double beta1, double beta2, double delta) :
+      de_(de),
+      beta_({beta1,beta2}),
+      delta_(delta)
+    {}
+    
+    void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
+    {
+      dolfin::Array<double> domainHeight (1);
+      de_ (domainHeight, x, t);
+      values[0] = ( x[1] < (domainHeight[0]-delta_)
+                      ? beta_[0]
+                      : ( x[1] > domainHeight[0]-0.5*delta_
+                          ? beta_[1]
+                          : beta_[0]+2*(beta_[0]-beta_[1])/delta_*(domainHeight[0]-delta_-x[1]) ) );
+    }
+
+  protected :
+    dcp::DepthEvaluator<dolfin::ALE> & de_;
+    const std::array<double,2> beta_;
+    const double delta_;
+};
+
 int main (int argc, char * argv[])
 {
  		dolfin::init(argc, argv);
@@ -155,7 +182,7 @@ std::cerr << "T  " << T << "   t0 " << t0;
             st  (inputData("st", 0.0)),
             ca  (inputData("ca", 0.0));
 	  problemData.beta = inputData("betaSuH", 0.0);
-	  dolfin::Constant beta (problemData.beta);
+//beta//	  dolfin::Constant beta (problemData.beta);
 	  problemData.lambdastar = inputData("lambdastar", 0.5);
 	  dolfin::Constant lambdastar (problemData.lambdastar);
 	  problemData.noStokes = inputData("noStokes", 1.0);
@@ -235,8 +262,10 @@ dirBCbottom.get_boundary_values(bdval);
 
  		// Function space, mesh manager setting and time stepping problem
  		myNavierstokesTimeCurvLinear::FunctionSpace V (* meshManager.mesh());
-    meshManager.getDofOrder (V,0);
+//    meshManager.getDofOrder (V,0);
   meshManager.storeOrderedDofIdxs (V, {"ux","uy","p"});
+std::cerr << meshManager.orderedDofs().size() << std::endl;
+for (auto & s : meshManager.orderedDofs()) std::cerr << s.first; std::cerr << std::endl;
 
 //left    TriplePointLeftVertex triplePointLeftVertex;
     TriplePointRightVertex triplePointRightVertex;
@@ -346,12 +375,36 @@ std::cerr << "                "; for (dolfin::la_index i=0; i!=triplePointDofs_w
 
 		// Setting the time-dependent problem
   	dolfin::Constant stressBelow (inputData("zeta0_x" ,0.0), inputData("zeta0_y", 0.0));//9.81*ly);
- 	  //DepthEvaluator<> stressBelowEvaluator (& meshManager);
+ 	  //dcp::DepthEvaluator<dolfin::ALE> depthEvaluator (& meshManager);
+ 	  //class StressBelowEvaluator
+ 	  //{
+ 	  //  public :
+ 	  //    StressBelowEvaluator () = delete;
+ 	  //    StressBelowEvaluator (dcp::DepthEvaluator & de) :
+ 	  //      de_(de)
+ 	  //    {}
+ 	  //    
+ 	  //    void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
+ 	  //    {
+ 	  //      de_ (values, x, t);
+ 	  //      values[0] *= - 9.81;
+ 	  //    }
+ 	  //
+ 	  //  protected :
+ 	  //    const dcp::DepthEvaluator<dolfin::ALE> & de_;
+ 	  //}
+ 	  //StressBelowEvaluator stressBelowEvaluator (depthEvaluator);
  	  //dcp::TimeDependentExpression stressBelow(2, stressBelowEvaluator);
     InflowProfile inflowProfile;
     inflowProfile.setInflow (inputData("inflowVelocity",0.0));
  	  BoundaryStressEvaluator stressAboveEvaluator (inputData("stressAbove0_x", 0.0), - inputData("stressAbove0_y", 0.0));
  	  dcp::TimeDependentExpression stressAbove(2, stressAboveEvaluator);
+ 	  dcp::DepthEvaluator<dolfin::ALE> depthEvaluator (& meshManager);
+    BetaEvaluator betaEvaluator (depthEvaluator,
+                                 inputData("betaUno",0.0),
+                                 inputData("betaDue",0.0),
+                                 problemData.lx/10.0);
+ 	  dcp::TimeDependentExpression beta(betaEvaluator);
     dolfin::Constant gravityVector(0,-inputData("gravityOn",1.0));
     dolfin::Constant zeroVec (0,0);
 	  double wallVelY = inputData("wallVelY", 0.0);

@@ -7273,7 +7273,6 @@ public:
     // Compute facet normals from the facet scale factor constants
     
     // Facet area
-    const double facet_area = det;
     
     // Compute cell volume
     
@@ -7282,52 +7281,65 @@ public:
     
     
     // Array of quadrature weights.
-    static const double W2[2] = {0.5, 0.5};
-    // Quadrature points on the UFC reference element: (0.211324865405187), (0.788675134594813)
+    static const double W3[3] = {0.277777777777778, 0.444444444444444, 0.277777777777778};
+    // Quadrature points on the UFC reference element: (0.112701665379258), (0.5), (0.887298334620742)
     
     // Values of basis functions at quadrature points.
-    static const double FE0_f0_C0[2][2] = \
-    {{0.788675134594813, 0.211324865405187},
-    {0.211324865405187, 0.788675134594813}};
+    static const double FE0_f0[3][2] = \
+    {{0.887298334620742, 0.112701665379258},
+    {0.5, 0.5},
+    {0.112701665379258, 0.887298334620742}};
     
     // Array of non-zero columns
-    static const unsigned int nzc10[2] = {1, 2};
+    static const unsigned int nzc0[2] = {1, 2};
     
     // Array of non-zero columns
-    static const unsigned int nzc11[2] = {4, 5};
+    static const unsigned int nzc1[2] = {0, 2};
     
     // Array of non-zero columns
-    static const unsigned int nzc13[2] = {0, 2};
+    static const unsigned int nzc2[2] = {0, 1};
     
     // Array of non-zero columns
-    static const unsigned int nzc14[2] = {3, 5};
+    static const unsigned int nzc13[2] = {1, 2};
     
     // Array of non-zero columns
-    static const unsigned int nzc16[2] = {0, 1};
+    static const unsigned int nzc14[2] = {4, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc17[2] = {3, 4};
+    static const unsigned int nzc16[2] = {0, 2};
     
-    static const double FEA2_f0[2][3] = \
-    {{0.0, 0.788675134594813, 0.211324865405187},
-    {0.0, 0.211324865405187, 0.788675134594813}};
+    // Array of non-zero columns
+    static const unsigned int nzc17[2] = {3, 5};
     
-    static const double FEA2_f1[2][3] = \
-    {{0.788675134594813, 0.0, 0.211324865405187},
-    {0.211324865405187, 0.0, 0.788675134594813}};
+    // Array of non-zero columns
+    static const unsigned int nzc19[2] = {0, 1};
     
-    static const double FEA2_f2[2][3] = \
-    {{0.788675134594813, 0.211324865405187, 0.0},
-    {0.211324865405187, 0.788675134594813, 0.0}};
+    // Array of non-zero columns
+    static const unsigned int nzc20[2] = {3, 4};
+    
+    static const double FEA3_f0[3][3] = \
+    {{0.0, 0.887298334620742, 0.112701665379258},
+    {0.0, 0.5, 0.5},
+    {0.0, 0.112701665379258, 0.887298334620742}};
+    
+    static const double FEA3_f1[3][3] = \
+    {{0.887298334620742, 0.0, 0.112701665379258},
+    {0.5, 0.0, 0.5},
+    {0.112701665379258, 0.0, 0.887298334620742}};
+    
+    static const double FEA3_f2[3][3] = \
+    {{0.887298334620742, 0.112701665379258, 0.0},
+    {0.5, 0.5, 0.0},
+    {0.112701665379258, 0.887298334620742, 0.0}};
     
     // Reset values in the element tensor.
     for (unsigned int r = 0; r < 81; r++)
     {
       A[r] = 0.0;
     } // end loop over 'r'
-    // Number of operations to compute geometry constants: 3.
+    // Number of operations to compute geometry constants: 1.
     double G[1];
-    G[0] = det*w[10][0]*w[2][0]/facet_area;
+    G[0] = det*w[2][0];
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
@@ -7335,24 +7347,33 @@ public:
     {
     case 0:
       {
-        // Total number of operations to compute element tensor (from this point): 72
+        // Total number of operations to compute element tensor (from this point): 123
       
       // Loop quadrature points for integral.
       
       // Declare array to hold physical coordinate of quadrature point.
-      double X2[2];
-      // Number of operations to compute element tensor for following IP loop = 72
-      for (unsigned int ip = 0; ip < 2; ip++)
+      double X3[2];
+      // Number of operations to compute element tensor for following IP loop = 123
+      for (unsigned int ip = 0; ip < 3; ip++)
       {
         
         // Compute physical coordinate of quadrature point, operations: 10.
-        X2[0] = FEA2_f0[ip][0]*vertex_coordinates[0] +                  FEA2_f0[ip][1]*vertex_coordinates[2] + FEA2_f0[ip][2]*vertex_coordinates[4];
-        X2[1] = FEA2_f0[ip][0]*vertex_coordinates[1] +                  FEA2_f0[ip][1]*vertex_coordinates[3] + FEA2_f0[ip][2]*vertex_coordinates[5];
+        X3[0] = FEA3_f0[ip][0]*vertex_coordinates[0] +                  FEA3_f0[ip][1]*vertex_coordinates[2] + FEA3_f0[ip][2]*vertex_coordinates[4];
+        X3[1] = FEA3_f0[ip][0]*vertex_coordinates[1] +                  FEA3_f0[ip][1]*vertex_coordinates[3] + FEA3_f0[ip][2]*vertex_coordinates[5];
         
-        // Number of operations to compute ip constants: 2
+        // Coefficient declarations.
+        double F0 = 0.0;
+        
+        // Total number of operations to compute function values = 4
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0[ip][r]*w[10][nzc0[r]];
+        } // end loop over 'r'
+        
+        // Number of operations to compute ip constants: 3
         double I[1];
-        // Number of operations: 2
-        I[0] = G[0]*W2[ip]*X2[0];
+        // Number of operations: 3
+        I[0] = F0*G[0]*W3[ip]*X3[0];
         
         
         // Number of operations for primary indices: 24
@@ -7361,9 +7382,9 @@ public:
           for (unsigned int k = 0; k < 2; k++)
           {
             // Number of operations to compute entry: 3
-            A[nzc10[j]*9 + nzc10[k]] += FE0_f0_C0[ip][j]*FE0_f0_C0[ip][k]*I[0];
+            A[nzc13[j]*9 + nzc13[k]] += FE0_f0[ip][j]*FE0_f0[ip][k]*I[0];
             // Number of operations to compute entry: 3
-            A[nzc11[j]*9 + nzc11[k]] += FE0_f0_C0[ip][j]*FE0_f0_C0[ip][k]*I[0];
+            A[nzc14[j]*9 + nzc14[k]] += FE0_f0[ip][j]*FE0_f0[ip][k]*I[0];
           } // end loop over 'k'
         } // end loop over 'j'
       } // end loop over 'ip'
@@ -7371,24 +7392,33 @@ public:
       }
     case 1:
       {
-        // Total number of operations to compute element tensor (from this point): 72
+        // Total number of operations to compute element tensor (from this point): 123
       
       // Loop quadrature points for integral.
       
       // Declare array to hold physical coordinate of quadrature point.
-      double X2[2];
-      // Number of operations to compute element tensor for following IP loop = 72
-      for (unsigned int ip = 0; ip < 2; ip++)
+      double X3[2];
+      // Number of operations to compute element tensor for following IP loop = 123
+      for (unsigned int ip = 0; ip < 3; ip++)
       {
         
         // Compute physical coordinate of quadrature point, operations: 10.
-        X2[0] = FEA2_f1[ip][0]*vertex_coordinates[0] +                  FEA2_f1[ip][1]*vertex_coordinates[2] + FEA2_f1[ip][2]*vertex_coordinates[4];
-        X2[1] = FEA2_f1[ip][0]*vertex_coordinates[1] +                  FEA2_f1[ip][1]*vertex_coordinates[3] + FEA2_f1[ip][2]*vertex_coordinates[5];
+        X3[0] = FEA3_f1[ip][0]*vertex_coordinates[0] +                  FEA3_f1[ip][1]*vertex_coordinates[2] + FEA3_f1[ip][2]*vertex_coordinates[4];
+        X3[1] = FEA3_f1[ip][0]*vertex_coordinates[1] +                  FEA3_f1[ip][1]*vertex_coordinates[3] + FEA3_f1[ip][2]*vertex_coordinates[5];
         
-        // Number of operations to compute ip constants: 2
+        // Coefficient declarations.
+        double F0 = 0.0;
+        
+        // Total number of operations to compute function values = 4
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0[ip][r]*w[10][nzc1[r]];
+        } // end loop over 'r'
+        
+        // Number of operations to compute ip constants: 3
         double I[1];
-        // Number of operations: 2
-        I[0] = G[0]*W2[ip]*X2[0];
+        // Number of operations: 3
+        I[0] = F0*G[0]*W3[ip]*X3[0];
         
         
         // Number of operations for primary indices: 24
@@ -7397,9 +7427,9 @@ public:
           for (unsigned int k = 0; k < 2; k++)
           {
             // Number of operations to compute entry: 3
-            A[nzc13[j]*9 + nzc13[k]] += FE0_f0_C0[ip][j]*FE0_f0_C0[ip][k]*I[0];
+            A[nzc16[j]*9 + nzc16[k]] += FE0_f0[ip][j]*FE0_f0[ip][k]*I[0];
             // Number of operations to compute entry: 3
-            A[nzc14[j]*9 + nzc14[k]] += FE0_f0_C0[ip][j]*FE0_f0_C0[ip][k]*I[0];
+            A[nzc17[j]*9 + nzc17[k]] += FE0_f0[ip][j]*FE0_f0[ip][k]*I[0];
           } // end loop over 'k'
         } // end loop over 'j'
       } // end loop over 'ip'
@@ -7407,24 +7437,33 @@ public:
       }
     case 2:
       {
-        // Total number of operations to compute element tensor (from this point): 72
+        // Total number of operations to compute element tensor (from this point): 123
       
       // Loop quadrature points for integral.
       
       // Declare array to hold physical coordinate of quadrature point.
-      double X2[2];
-      // Number of operations to compute element tensor for following IP loop = 72
-      for (unsigned int ip = 0; ip < 2; ip++)
+      double X3[2];
+      // Number of operations to compute element tensor for following IP loop = 123
+      for (unsigned int ip = 0; ip < 3; ip++)
       {
         
         // Compute physical coordinate of quadrature point, operations: 10.
-        X2[0] = FEA2_f2[ip][0]*vertex_coordinates[0] +                  FEA2_f2[ip][1]*vertex_coordinates[2] + FEA2_f2[ip][2]*vertex_coordinates[4];
-        X2[1] = FEA2_f2[ip][0]*vertex_coordinates[1] +                  FEA2_f2[ip][1]*vertex_coordinates[3] + FEA2_f2[ip][2]*vertex_coordinates[5];
+        X3[0] = FEA3_f2[ip][0]*vertex_coordinates[0] +                  FEA3_f2[ip][1]*vertex_coordinates[2] + FEA3_f2[ip][2]*vertex_coordinates[4];
+        X3[1] = FEA3_f2[ip][0]*vertex_coordinates[1] +                  FEA3_f2[ip][1]*vertex_coordinates[3] + FEA3_f2[ip][2]*vertex_coordinates[5];
         
-        // Number of operations to compute ip constants: 2
+        // Coefficient declarations.
+        double F0 = 0.0;
+        
+        // Total number of operations to compute function values = 4
+        for (unsigned int r = 0; r < 2; r++)
+        {
+          F0 += FE0_f0[ip][r]*w[10][nzc2[r]];
+        } // end loop over 'r'
+        
+        // Number of operations to compute ip constants: 3
         double I[1];
-        // Number of operations: 2
-        I[0] = G[0]*W2[ip]*X2[0];
+        // Number of operations: 3
+        I[0] = F0*G[0]*W3[ip]*X3[0];
         
         
         // Number of operations for primary indices: 24
@@ -7433,9 +7472,9 @@ public:
           for (unsigned int k = 0; k < 2; k++)
           {
             // Number of operations to compute entry: 3
-            A[nzc16[j]*9 + nzc16[k]] += FE0_f0_C0[ip][j]*FE0_f0_C0[ip][k]*I[0];
+            A[nzc19[j]*9 + nzc19[k]] += FE0_f0[ip][j]*FE0_f0[ip][k]*I[0];
             // Number of operations to compute entry: 3
-            A[nzc17[j]*9 + nzc17[k]] += FE0_f0_C0[ip][j]*FE0_f0_C0[ip][k]*I[0];
+            A[nzc20[j]*9 + nzc20[k]] += FE0_f0[ip][j]*FE0_f0[ip][k]*I[0];
           } // end loop over 'k'
         } // end loop over 'j'
       } // end loop over 'ip'
@@ -8401,7 +8440,6 @@ public:
     // Compute facet normals from the facet scale factor constants
     
     // Facet area
-    const double facet_area = det;
     
     // Compute cell volume
     
@@ -8410,70 +8448,83 @@ public:
     
     
     // Array of quadrature weights.
-    static const double W2[2] = {0.5, 0.5};
-    // Quadrature points on the UFC reference element: (0.211324865405187), (0.788675134594813)
+    static const double W3[3] = {0.277777777777778, 0.444444444444444, 0.277777777777778};
+    // Quadrature points on the UFC reference element: (0.112701665379258), (0.5), (0.887298334620742)
     
     // Values of basis functions at quadrature points.
-    static const double FE0_f0_C0[2][2] = \
-    {{0.788675134594813, 0.211324865405187},
-    {0.211324865405187, 0.788675134594813}};
+    static const double FE0_f0[3][2] = \
+    {{0.887298334620742, 0.112701665379258},
+    {0.5, 0.5},
+    {0.112701665379258, 0.887298334620742}};
     
     // Array of non-zero columns
     static const unsigned int nzc0[2] = {1, 2};
     
     // Array of non-zero columns
-    static const unsigned int nzc3[2] = {4, 5};
+    static const unsigned int nzc1[2] = {0, 2};
     
     // Array of non-zero columns
-    static const unsigned int nzc6[2] = {0, 2};
+    static const unsigned int nzc2[2] = {0, 1};
     
     // Array of non-zero columns
-    static const unsigned int nzc7[2] = {3, 5};
+    static const unsigned int nzc3[2] = {1, 2};
     
     // Array of non-zero columns
-    static const unsigned int nzc8[2] = {0, 1};
+    static const unsigned int nzc6[2] = {4, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc9[2] = {3, 4};
+    static const unsigned int nzc9[2] = {0, 2};
     
     // Array of non-zero columns
-    static const unsigned int nzc10[2] = {1, 2};
+    static const unsigned int nzc10[2] = {3, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc11[2] = {4, 5};
+    static const unsigned int nzc11[2] = {0, 1};
     
     // Array of non-zero columns
-    static const unsigned int nzc13[2] = {0, 2};
+    static const unsigned int nzc12[2] = {3, 4};
     
     // Array of non-zero columns
-    static const unsigned int nzc14[2] = {3, 5};
+    static const unsigned int nzc13[2] = {1, 2};
     
     // Array of non-zero columns
-    static const unsigned int nzc16[2] = {0, 1};
+    static const unsigned int nzc14[2] = {4, 5};
     
     // Array of non-zero columns
-    static const unsigned int nzc17[2] = {3, 4};
+    static const unsigned int nzc16[2] = {0, 2};
     
-    static const double FEA2_f0[2][3] = \
-    {{0.0, 0.788675134594813, 0.211324865405187},
-    {0.0, 0.211324865405187, 0.788675134594813}};
+    // Array of non-zero columns
+    static const unsigned int nzc17[2] = {3, 5};
     
-    static const double FEA2_f1[2][3] = \
-    {{0.788675134594813, 0.0, 0.211324865405187},
-    {0.211324865405187, 0.0, 0.788675134594813}};
+    // Array of non-zero columns
+    static const unsigned int nzc19[2] = {0, 1};
     
-    static const double FEA2_f2[2][3] = \
-    {{0.788675134594813, 0.211324865405187, 0.0},
-    {0.211324865405187, 0.788675134594813, 0.0}};
+    // Array of non-zero columns
+    static const unsigned int nzc20[2] = {3, 4};
+    
+    static const double FEA3_f0[3][3] = \
+    {{0.0, 0.887298334620742, 0.112701665379258},
+    {0.0, 0.5, 0.5},
+    {0.0, 0.112701665379258, 0.887298334620742}};
+    
+    static const double FEA3_f1[3][3] = \
+    {{0.887298334620742, 0.0, 0.112701665379258},
+    {0.5, 0.0, 0.5},
+    {0.112701665379258, 0.0, 0.887298334620742}};
+    
+    static const double FEA3_f2[3][3] = \
+    {{0.887298334620742, 0.112701665379258, 0.0},
+    {0.5, 0.5, 0.0},
+    {0.112701665379258, 0.887298334620742, 0.0}};
     
     // Reset values in the element tensor.
     for (unsigned int r = 0; r < 9; r++)
     {
       A[r] = 0.0;
     } // end loop over 'r'
-    // Number of operations to compute geometry constants: 3.
+    // Number of operations to compute geometry constants: 1.
     double G[1];
-    G[0] = det*w[2][0]*w[8][0]/facet_area;
+    G[0] = det*w[2][0];
     
     // Compute element tensor using UFL quadrature representation
     // Optimisations: ('eliminate zeros', True), ('ignore ones', True), ('ignore zero tables', True), ('optimisation', 'simplify_expressions'), ('remove zero terms', True)
@@ -8481,141 +8532,147 @@ public:
     {
     case 0:
       {
-        // Total number of operations to compute element tensor (from this point): 64
+        // Total number of operations to compute element tensor (from this point): 114
       
       // Loop quadrature points for integral.
       
       // Declare array to hold physical coordinate of quadrature point.
-      double X2[2];
-      // Number of operations to compute element tensor for following IP loop = 64
-      for (unsigned int ip = 0; ip < 2; ip++)
+      double X3[2];
+      // Number of operations to compute element tensor for following IP loop = 114
+      for (unsigned int ip = 0; ip < 3; ip++)
       {
         
         // Compute physical coordinate of quadrature point, operations: 10.
-        X2[0] = FEA2_f0[ip][0]*vertex_coordinates[0] +                  FEA2_f0[ip][1]*vertex_coordinates[2] + FEA2_f0[ip][2]*vertex_coordinates[4];
-        X2[1] = FEA2_f0[ip][0]*vertex_coordinates[1] +                  FEA2_f0[ip][1]*vertex_coordinates[3] + FEA2_f0[ip][2]*vertex_coordinates[5];
+        X3[0] = FEA3_f0[ip][0]*vertex_coordinates[0] +                  FEA3_f0[ip][1]*vertex_coordinates[2] + FEA3_f0[ip][2]*vertex_coordinates[4];
+        X3[1] = FEA3_f0[ip][0]*vertex_coordinates[1] +                  FEA3_f0[ip][1]*vertex_coordinates[3] + FEA3_f0[ip][2]*vertex_coordinates[5];
         
         // Coefficient declarations.
         double F0 = 0.0;
         double F1 = 0.0;
+        double F2 = 0.0;
         
-        // Total number of operations to compute function values = 8
+        // Total number of operations to compute function values = 12
         for (unsigned int r = 0; r < 2; r++)
         {
-          F0 += FE0_f0_C0[ip][r]*w[12][nzc0[r]];
-          F1 += FE0_f0_C0[ip][r]*w[12][nzc3[r]];
+          F0 += FE0_f0[ip][r]*w[8][nzc0[r]];
+          F1 += FE0_f0[ip][r]*w[12][nzc3[r]];
+          F2 += FE0_f0[ip][r]*w[12][nzc6[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 6
+        // Number of operations to compute ip constants: 8
         double I[2];
-        // Number of operations: 3
-        I[0] = F0*G[0]*W2[ip]*X2[0];
+        // Number of operations: 4
+        I[0] = F0*F1*G[0]*W3[ip]*X3[0];
         
-        // Number of operations: 3
-        I[1] = F1*G[0]*W2[ip]*X2[0];
+        // Number of operations: 4
+        I[1] = F0*F2*G[0]*W3[ip]*X3[0];
         
         
         // Number of operations for primary indices: 8
         for (unsigned int j = 0; j < 2; j++)
         {
           // Number of operations to compute entry: 2
-          A[nzc10[j]] += FE0_f0_C0[ip][j]*I[0];
+          A[nzc13[j]] += FE0_f0[ip][j]*I[0];
           // Number of operations to compute entry: 2
-          A[nzc11[j]] += FE0_f0_C0[ip][j]*I[1];
+          A[nzc14[j]] += FE0_f0[ip][j]*I[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
       }
     case 1:
       {
-        // Total number of operations to compute element tensor (from this point): 64
+        // Total number of operations to compute element tensor (from this point): 114
       
       // Loop quadrature points for integral.
       
       // Declare array to hold physical coordinate of quadrature point.
-      double X2[2];
-      // Number of operations to compute element tensor for following IP loop = 64
-      for (unsigned int ip = 0; ip < 2; ip++)
+      double X3[2];
+      // Number of operations to compute element tensor for following IP loop = 114
+      for (unsigned int ip = 0; ip < 3; ip++)
       {
         
         // Compute physical coordinate of quadrature point, operations: 10.
-        X2[0] = FEA2_f1[ip][0]*vertex_coordinates[0] +                  FEA2_f1[ip][1]*vertex_coordinates[2] + FEA2_f1[ip][2]*vertex_coordinates[4];
-        X2[1] = FEA2_f1[ip][0]*vertex_coordinates[1] +                  FEA2_f1[ip][1]*vertex_coordinates[3] + FEA2_f1[ip][2]*vertex_coordinates[5];
+        X3[0] = FEA3_f1[ip][0]*vertex_coordinates[0] +                  FEA3_f1[ip][1]*vertex_coordinates[2] + FEA3_f1[ip][2]*vertex_coordinates[4];
+        X3[1] = FEA3_f1[ip][0]*vertex_coordinates[1] +                  FEA3_f1[ip][1]*vertex_coordinates[3] + FEA3_f1[ip][2]*vertex_coordinates[5];
         
         // Coefficient declarations.
         double F0 = 0.0;
         double F1 = 0.0;
+        double F2 = 0.0;
         
-        // Total number of operations to compute function values = 8
+        // Total number of operations to compute function values = 12
         for (unsigned int r = 0; r < 2; r++)
         {
-          F0 += FE0_f0_C0[ip][r]*w[12][nzc6[r]];
-          F1 += FE0_f0_C0[ip][r]*w[12][nzc7[r]];
+          F0 += FE0_f0[ip][r]*w[8][nzc1[r]];
+          F1 += FE0_f0[ip][r]*w[12][nzc9[r]];
+          F2 += FE0_f0[ip][r]*w[12][nzc10[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 6
+        // Number of operations to compute ip constants: 8
         double I[2];
-        // Number of operations: 3
-        I[0] = F0*G[0]*W2[ip]*X2[0];
+        // Number of operations: 4
+        I[0] = F0*F1*G[0]*W3[ip]*X3[0];
         
-        // Number of operations: 3
-        I[1] = F1*G[0]*W2[ip]*X2[0];
+        // Number of operations: 4
+        I[1] = F0*F2*G[0]*W3[ip]*X3[0];
         
         
         // Number of operations for primary indices: 8
         for (unsigned int j = 0; j < 2; j++)
         {
           // Number of operations to compute entry: 2
-          A[nzc13[j]] += FE0_f0_C0[ip][j]*I[0];
+          A[nzc16[j]] += FE0_f0[ip][j]*I[0];
           // Number of operations to compute entry: 2
-          A[nzc14[j]] += FE0_f0_C0[ip][j]*I[1];
+          A[nzc17[j]] += FE0_f0[ip][j]*I[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
       }
     case 2:
       {
-        // Total number of operations to compute element tensor (from this point): 64
+        // Total number of operations to compute element tensor (from this point): 114
       
       // Loop quadrature points for integral.
       
       // Declare array to hold physical coordinate of quadrature point.
-      double X2[2];
-      // Number of operations to compute element tensor for following IP loop = 64
-      for (unsigned int ip = 0; ip < 2; ip++)
+      double X3[2];
+      // Number of operations to compute element tensor for following IP loop = 114
+      for (unsigned int ip = 0; ip < 3; ip++)
       {
         
         // Compute physical coordinate of quadrature point, operations: 10.
-        X2[0] = FEA2_f2[ip][0]*vertex_coordinates[0] +                  FEA2_f2[ip][1]*vertex_coordinates[2] + FEA2_f2[ip][2]*vertex_coordinates[4];
-        X2[1] = FEA2_f2[ip][0]*vertex_coordinates[1] +                  FEA2_f2[ip][1]*vertex_coordinates[3] + FEA2_f2[ip][2]*vertex_coordinates[5];
+        X3[0] = FEA3_f2[ip][0]*vertex_coordinates[0] +                  FEA3_f2[ip][1]*vertex_coordinates[2] + FEA3_f2[ip][2]*vertex_coordinates[4];
+        X3[1] = FEA3_f2[ip][0]*vertex_coordinates[1] +                  FEA3_f2[ip][1]*vertex_coordinates[3] + FEA3_f2[ip][2]*vertex_coordinates[5];
         
         // Coefficient declarations.
         double F0 = 0.0;
         double F1 = 0.0;
+        double F2 = 0.0;
         
-        // Total number of operations to compute function values = 8
+        // Total number of operations to compute function values = 12
         for (unsigned int r = 0; r < 2; r++)
         {
-          F0 += FE0_f0_C0[ip][r]*w[12][nzc8[r]];
-          F1 += FE0_f0_C0[ip][r]*w[12][nzc9[r]];
+          F0 += FE0_f0[ip][r]*w[8][nzc2[r]];
+          F1 += FE0_f0[ip][r]*w[12][nzc11[r]];
+          F2 += FE0_f0[ip][r]*w[12][nzc12[r]];
         } // end loop over 'r'
         
-        // Number of operations to compute ip constants: 6
+        // Number of operations to compute ip constants: 8
         double I[2];
-        // Number of operations: 3
-        I[0] = F0*G[0]*W2[ip]*X2[0];
+        // Number of operations: 4
+        I[0] = F0*F1*G[0]*W3[ip]*X3[0];
         
-        // Number of operations: 3
-        I[1] = F1*G[0]*W2[ip]*X2[0];
+        // Number of operations: 4
+        I[1] = F0*F2*G[0]*W3[ip]*X3[0];
         
         
         // Number of operations for primary indices: 8
         for (unsigned int j = 0; j < 2; j++)
         {
           // Number of operations to compute entry: 2
-          A[nzc16[j]] += FE0_f0_C0[ip][j]*I[0];
+          A[nzc19[j]] += FE0_f0[ip][j]*I[0];
           // Number of operations to compute entry: 2
-          A[nzc17[j]] += FE0_f0_C0[ip][j]*I[1];
+          A[nzc20[j]] += FE0_f0[ip][j]*I[1];
         } // end loop over 'j'
       } // end loop over 'ip'
         break;
@@ -8660,7 +8717,7 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "015caac1d1eed2d4540dd80d53d43c272f3c31da7ff3fe5e25a80a79b2bc9227d45a65540265f8893508221d99b9dfb6faee6c7bd49ddacea6d372d69541350d";
+    return "b2b8896bd1e540c28104929ec79b54f65214d875e288ae18a4684f640a25c19fb0fa6564ebe1fa7aec24ee30e58a04a5c41eaa1bd7edb2f9beaedc449ef5d74a";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
@@ -8809,7 +8866,7 @@ public:
       }
     case 12:
       {
-        return new mynavierstokestimecurvlinear_finite_element_0();
+        return new mynavierstokestimecurvlinear_finite_element_2();
         break;
       }
     case 13:
@@ -8889,7 +8946,7 @@ public:
       }
     case 12:
       {
-        return new mynavierstokestimecurvlinear_dofmap_0();
+        return new mynavierstokestimecurvlinear_dofmap_2();
         break;
       }
     case 13:
@@ -9012,7 +9069,7 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "a17f902473127fd96e3eaf913a6fcc1a2ff38415758ccac392889c132cde0688b70e75a5c2b17b65cc39bbaa5f77026d1e61ed766f4a80b38679163a075780a1";
+    return "450f9ba1960c3f147f316de74176962f4e7a36d4fefb70f9134006ab054ec8af84f9d738ad9331c31ff4c9135e0628227ff3d4028bcef99ed393be55021e7942";
   }
 
   /// Return original coefficient position for each coefficient (0 <= i < n)
@@ -9146,7 +9203,7 @@ public:
       }
     case 9:
       {
-        return new mynavierstokestimecurvlinear_finite_element_0();
+        return new mynavierstokestimecurvlinear_finite_element_2();
         break;
       }
     case 10:
@@ -9231,7 +9288,7 @@ public:
       }
     case 9:
       {
-        return new mynavierstokestimecurvlinear_dofmap_0();
+        return new mynavierstokestimecurvlinear_dofmap_2();
         break;
       }
     case 10:
@@ -9373,8 +9430,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_beta(const dolfin::Mesh& mesh):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinear_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinear_dofmap_0()), mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinear_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinear_dofmap_2()), mesh)))
   {
     // Do nothing
   }
@@ -9382,8 +9439,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_beta(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinear_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinear_dofmap_0()), *mesh)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinear_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinear_dofmap_2()), *mesh)))
   {
     // Do nothing
   }
@@ -9393,8 +9450,8 @@ public:
   // Create standard function space (reference version)
   CoefficientSpace_beta(const dolfin::Mesh& mesh, const dolfin::SubDomain& constrained_domain):
     dolfin::FunctionSpace(dolfin::reference_to_no_delete_pointer(mesh),
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinear_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinear_dofmap_0()), mesh,
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinear_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinear_dofmap_2()), mesh,
                               dolfin::reference_to_no_delete_pointer(constrained_domain))))
   {
     // Do nothing
@@ -9403,8 +9460,8 @@ public:
   // Create standard function space (shared pointer version)
   CoefficientSpace_beta(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinear_finite_element_0()))),
-                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinear_dofmap_0()), *mesh, constrained_domain)))
+                          std::shared_ptr<const dolfin::FiniteElement>(new dolfin::FiniteElement(std::shared_ptr<ufc::finite_element>(new mynavierstokestimecurvlinear_finite_element_2()))),
+                          std::shared_ptr<const dolfin::DofMap>(new dolfin::DofMap(std::shared_ptr<ufc::dofmap>(new mynavierstokestimecurvlinear_dofmap_2()), *mesh, constrained_domain)))
   {
     // Do nothing
   }

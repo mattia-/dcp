@@ -356,7 +356,6 @@ dolfin::interactive ();
 dolfin::plot (timeSteppingProblem_->solution(), "MTDPb "+type+" "+std::to_string(t_)+" after");
 dolfin::interactive ();
             
-std::cerr << __FILE__ << __LINE__ << " " << solution_.size() << std::endl;
       			dolfin::end ();
 
             tmpSol = timeSteppingProblem_->solution ();

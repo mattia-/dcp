@@ -10,11 +10,11 @@
 #include <iterator>
 #include <string>
 
-template <class T_MeshMover> class DepthEvaluator; //fwd declaration
 extern struct ProblemData problemData;
 
 namespace dcp
 {
+template <class T_MeshMover> class DepthEvaluator; //fwd declaration
 
 template <class T_MeshMover = dolfin::ALE>
 class MeshManager
@@ -185,24 +185,26 @@ class DepthEvaluator
 
     public:
         DepthEvaluator () = delete;
-        DepthEvaluator (const MeshManager<T_MeshMover> * mm) :
+        DepthEvaluator (MeshManager<T_MeshMover> * mm) :
           meshManager_ (mm)
           {}
 
         void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x, const double& t)
         {
-            values[0] = 0;
-            values[1] = - 9.81 * (std::find_if
-                                  ( meshManager_->orderedDisplacementDofsCoords_.cbegin(), meshManager_->orderedDisplacementDofsCoords_.cend(),
-                                    [&x, &problemData] (std::pair<double,double> xy)
-                                    {
-                                      return dolfin::near (x[0], xy.first, 0.1*problemData.lx/problemData.nx);
-                                    }
-                                  ) -> second) ;
+            const std::vector<double> displCoords (meshManager_->wFunSp_.dofmap()->tabulate_all_coordinates(* meshManager_->mesh_));
+            values[0] = displCoords [2*meshManager_->orderedDisplDofs_["wy"][meshManager_->orderedDisplDofs_["wy"].size()-1]];
+            //values[0] = std::find_if
+            //                      ( meshManager_->orderedDisplacementDofsCoords_.cbegin(), meshManager_->orderedDisplacementDofsCoords_.cend(),
+            //                        [&x, &problemData] (std::pair<double,double> xy)
+            //                        {
+            //                          return dolfin::near (x[0], xy.first, 0.1*problemData.lx/problemData.nx);
+            //                        }
+            //                      )
+            //            -> second;
         }
 
     protected:
-        const MeshManager<T_MeshMover> * meshManager_;
+        MeshManager<T_MeshMover> * meshManager_;
 };/*class DepthEvaluator : public dolfin::Expression
 {
 public:

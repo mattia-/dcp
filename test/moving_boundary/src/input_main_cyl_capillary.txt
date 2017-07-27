@@ -17,7 +17,7 @@
   dt = 2e-5   #[s]
   t0 = 0      #[s]
   # if T not given or T<t0, nT is considered
-  # T  = 5e-2 # 6
+  # T  = 1e-1 # 5e-2 # 6
   nT = 100
 
   fileFrequency = 1
@@ -28,7 +28,17 @@
   mu  = 2081e-5
   rho = 1115
   gamma = 436e-7
-  betaSuH = 7e-3
+  # betaSuH = 7e-3
+  betaUno = 608 # 0.5*7e-3/(46e-5/80)
+  betaDue = 608e-1 # betaUno/10
+#  betaUno = 1217 # 7e-3/(46e-5/80)
+#  betaDue = 608e-1 # betaUno/20
+#  betaUno = 2434 # 2*7e-3/(46e-5/80)
+#  betaDue = 1216e-1 # betaUno/20
+#  betaDue = 812e-1 # betaUno/30
+#  betaDue = 608e-1 # betaUno/40
+#  betaUno = 4868 # 4*7e-3/(46e-5/80)
+#  betaDue = 608e-1 # betaUno/80
   thetaS = 698e-1   #[deg]
 
 #----------------- misc -----------------#

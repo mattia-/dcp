@@ -39,13 +39,13 @@ namespace dcp
      *  distinguish among different possible objects to be built. For example, it could be a string containing
      *  the name of the object
      *  \arg the type of the builder. By default, this is set to a function that takes no arguments
-     *  and returns a unique_ptr to the created object
+     *  and returns a shared_ptr to the created object
      */
     template
         <
             class T_GenericProduct_,
             class T_Identifier_,
-            class T_Builder_ = std::function <std::unique_ptr<T_GenericProduct_> ()>
+            class T_Builder_ = std::function <std::shared_ptr<T_GenericProduct_> ()>
         >
             class GenericFactory
             {
@@ -61,7 +61,7 @@ namespace dcp
                     /*!
                       The pointer is null if no match was found for the identifier.
                       */
-                    std::unique_ptr<T_GenericProduct> create (const T_Identifier& identifier) const;
+                    std::shared_ptr<T_GenericProduct> create (const T_Identifier& identifier) const;
 
                     //! Register the given rule
                     void add (const T_Identifier& identifier, const T_Builder& builder);
@@ -123,7 +123,7 @@ namespace dcp
             class T_Identifier,
             class T_Builder
         >
-        std::unique_ptr <T_GenericProduct>
+        std::shared_ptr <T_GenericProduct>
         GenericFactory<T_GenericProduct, T_Identifier, T_Builder>::create(const T_Identifier& identifier) const
         {
             auto f = storedData_.find (identifier);
@@ -134,7 +134,7 @@ namespace dcp
             }
             else
             {
-                return std::unique_ptr<T_GenericProduct> (f->second());
+                return std::shared_ptr<T_GenericProduct> (f->second());
             }
         }
 

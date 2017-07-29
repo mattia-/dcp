@@ -359,7 +359,7 @@ namespace dcp
                  *  and \c solver_preconditioner. It will also set the protected members \c solverType_, \c
                  *  solverMethod_ and \c solverPreconditioner_.
                  */
-                std::unique_ptr<dolfin::GenericLinearSolver> createSolver_ ();
+                std::shared_ptr<dolfin::GenericLinearSolver> createSolver_ ();
 
                 //! The bilinear form
                 T_BilinearForm bilinearForm_;
@@ -371,7 +371,7 @@ namespace dcp
                 /*!
                  *  We use a pointer so that polymorphism can be applied.
                  */
-                std::unique_ptr<dolfin::GenericLinearSolver> solver_;
+                std::shared_ptr<dolfin::GenericLinearSolver> solver_;
 
                 //! Matrix to hold the problem's discrete operator
                 std::shared_ptr<dolfin::GenericMatrix> problemMatrix_;
@@ -1024,7 +1024,7 @@ namespace dcp
 
 
     template <class T_BilinearForm, class T_LinearForm, class T_LinearSolverFactory>
-        std::unique_ptr<dolfin::GenericLinearSolver>
+        std::shared_ptr<dolfin::GenericLinearSolver>
         LinearProblem<T_BilinearForm, T_LinearForm, T_LinearSolverFactory>::
         createSolver_ ()
         {
@@ -1032,7 +1032,7 @@ namespace dcp
             std::string desiredSolverMethod = parameters["solver_method"];
             std::string desiredSolverPreconditioner = parameters["solver_preconditioner"];
 
-            std::unique_ptr<dolfin::GenericLinearSolver> solver;
+            std::shared_ptr<dolfin::GenericLinearSolver> solver;
 
             if (desiredSolverType == "lu_solver")
             {

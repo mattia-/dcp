@@ -55,9 +55,9 @@ namespace dcp
 
                 //! The builder for the default construction. It must comply with the signature which we
                 //! want to use for our factory
-                static std::unique_ptr<T_Factory_GenericProduct> Build ()
+                static std::shared_ptr<T_Factory_GenericProduct> Build ()
                 {
-                    return std::unique_ptr<T_Factory_GenericProduct> (new T_ConcreteProduct ());
+                    return std::shared_ptr<T_Factory_GenericProduct> (new T_ConcreteProduct ());
                 }
 
             private:

@@ -74,7 +74,7 @@ namespace dcp
             {
                 dolfin::dolfin_error ("dcp: DotProduct.cpp",
                                       "perform dot product between objects of type dcp::TimeDependentFunction",
-                                      "Mismatch in time value at position %d; the two values are %f and %f",
+                                      "Mismatch in time value at position %d; the two values are %g and %g",
                                       i,
                                       left[i].first,
                                       right[i].first);

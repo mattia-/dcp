@@ -538,7 +538,7 @@ namespace dcp
                 (*(std::get<0> ((result.first)->second)))[position];
 
             dolfin::log (dolfin::DBG,
-                         "Time in time-dependent BC at position %d is %f",
+                         "Time in time-dependent BC at position %d is %g",
                          position,
                          conditionElement.first);
 
@@ -610,7 +610,7 @@ namespace dcp
                 (*(std::get<0> ((result.first)->second)))[position];
 
             dolfin::log (dolfin::DBG,
-                         "Time in time-dependent BC at position %d is %f",
+                         "Time in time-dependent BC at position %d is %g",
                          position,
                          conditionElement.first);
 
@@ -850,7 +850,7 @@ namespace dcp
         else
         {
             dolfin::log (dolfin::DBG,
-                         "State saved with name \"%s\": time value %f, timestep %d, size of solutions vector: %d",
+                         "State saved with name \"%s\": time value %g, timestep %d, size of solutions vector: %d",
                          stateName.c_str (),
                          std::get<0> (newState),
                          std::get<1> (newState),
@@ -893,7 +893,7 @@ namespace dcp
         // reset time
         dolfin::begin (dolfin::DBG, "Resetting time...");
         time_->setTo (std::get<0> (state));
-        dolfin::log (dolfin::DBG, "Time is now %f", time_->value());
+        dolfin::log (dolfin::DBG, "Time is now %g", time_->value());
         dolfin::end (); // Resetting time
 
         // reset timestep
@@ -1694,7 +1694,7 @@ namespace dcp
     {
         advanceTime ();
 
-        dolfin::log (dolfin::PROGRESS, "TIME = %f s", time_->value ());
+        dolfin::log (dolfin::PROGRESS, "TIME = %g s", time_->value ());
 
         steadySolve_ ();
     }
@@ -1827,7 +1827,7 @@ namespace dcp
         const dcp::TimeDependentFunction::value_type& condition = (*(std::get<0> (bcIterator->second)))[position];
 
         dolfin::log (dolfin::DBG,
-                     "Time in time-dependent BC at position %d is %f",
+                     "Time in time-dependent BC at position %d is %g",
                      position,
                      condition.first);
 
@@ -1904,7 +1904,7 @@ namespace dcp
 
             auto& function = (*(coefficientPair.second))[position];
             dolfin::log (dolfin::DBG,
-                         "Time in time-dependent coefficient at position %d is %f",
+                         "Time in time-dependent coefficient at position %d is %g",
                          position,
                          function.first);
 

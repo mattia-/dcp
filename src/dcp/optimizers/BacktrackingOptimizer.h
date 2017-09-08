@@ -508,11 +508,11 @@ namespace dcp
 
         dolfin::log (dolfin::DBG, "==========================\nMINIMIZATION LOOP SETTINGS\n==========================");
         dolfin::log (dolfin::DBG, "Parameters value are:");
-        dolfin::log (dolfin::DBG, "c_1 = %f", c_1);
-        dolfin::log (dolfin::DBG, "alpha_0 = %f", alpha_0);
-        dolfin::log (dolfin::DBG, "rho = %f", rho);
-        dolfin::log (dolfin::DBG, "gradient norm tolerance = %f", gradientNormTolerance);
-        dolfin::log (dolfin::DBG, "relative increment tolerance = %f", relativeIncrementTolerance);
+        dolfin::log (dolfin::DBG, "c_1 = %g", c_1);
+        dolfin::log (dolfin::DBG, "alpha_0 = %g", alpha_0);
+        dolfin::log (dolfin::DBG, "rho = %g", rho);
+        dolfin::log (dolfin::DBG, "gradient norm tolerance = %g", gradientNormTolerance);
+        dolfin::log (dolfin::DBG, "relative increment tolerance = %g", relativeIncrementTolerance);
         dolfin::log (dolfin::DBG, "convergence criterion = %s", convergenceCriterion.c_str ());
         dolfin::log (dolfin::DBG, "maximum minimization iterations = %d", maxMinimizationIterations);
         dolfin::log (dolfin::DBG, "maximum backtracking iterations = %d", maxBacktrackingIterations);
@@ -520,8 +520,8 @@ namespace dcp
 
         dolfin::log (dolfin::PROGRESS,
                      "\n============================\nLOOP VARIABLES INITIAL VALUE\n============================");
-        dolfin::log (dolfin::PROGRESS, "gradient norm = %f", gradientNorm);
-        dolfin::log (dolfin::PROGRESS, "functional value = %f\n", currentFunctionalValue);
+        dolfin::log (dolfin::PROGRESS, "gradient norm = %g", gradientNorm);
+        dolfin::log (dolfin::PROGRESS, "functional value = %g\n", currentFunctionalValue);
 
         dolfin::log (dolfin::PROGRESS, "***************************");
         dolfin::log (dolfin::PROGRESS, "**** MINIMIZATION LOOP ****");
@@ -594,7 +594,7 @@ namespace dcp
             dolfin::end (); // Computing dot product between gradient and seach direction
 
             // ------------------------ solution of system with alpha_0 ------------------------ //
-            dolfin::log (dolfin::PROGRESS, "Alpha = %f", alpha);
+            dolfin::log (dolfin::PROGRESS, "Alpha = %g", alpha);
 
             // update control variable value
             dolfin::begin (dolfin::PROGRESS, "Updating control variable...");
@@ -641,7 +641,7 @@ namespace dcp
             currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
             dolfin::end (); // Evaluating functional
 
-            dolfin::log (dolfin::PROGRESS, "Functional value = %f\n", currentFunctionalValue);
+            dolfin::log (dolfin::PROGRESS, "Functional value = %g\n", currentFunctionalValue);
             // ------------------------ end of solution of system with alpha_0 ------------------------ //
 
             // backtracking loop
@@ -673,7 +673,7 @@ namespace dcp
                 gradientNorm = implementer.computeNorm (functionalGradient);
                 dolfin::end ();
 
-                dolfin::log (dolfin::PROGRESS, "Gradient norm = %f", gradientNorm);
+                dolfin::log (dolfin::PROGRESS, "Gradient norm = %g", gradientNorm);
             }
 
 
@@ -690,10 +690,10 @@ namespace dcp
                 // compute relative increment. We add DOLFIN_EPS at the denominator in case previousControlVariableNorm
                 // is zero (like at the first iteration)
                 relativeIncrement = incrementNorm / (previousControlVariableNorm + DOLFIN_EPS);
-                dolfin::log (dolfin::PROGRESS, "Relative increment = %f", relativeIncrement);
+                dolfin::log (dolfin::PROGRESS, "Relative increment = %g", relativeIncrement);
             }
 
-            dolfin::log (dolfin::PROGRESS, "Functional value = %f\n", currentFunctionalValue);
+            dolfin::log (dolfin::PROGRESS, "Functional value = %g\n", currentFunctionalValue);
 
             if (hasOutputFile)
             {
@@ -718,17 +718,17 @@ namespace dcp
             dolfin::log (dolfin::PROGRESS, "End of Minimization loop");
             dolfin::warning ("Maximum number of iterations reached");
             dolfin::log (dolfin::PROGRESS, "Iterations performed: %d", minimizationIteration);
-            dolfin::log (dolfin::PROGRESS, "Gradient norm = %f", gradientNorm);
-            dolfin::log (dolfin::PROGRESS, "Relative increment = %f", relativeIncrement);
-            dolfin::log (dolfin::PROGRESS, "Functional value = %f\n", currentFunctionalValue);
+            dolfin::log (dolfin::PROGRESS, "Gradient norm = %g", gradientNorm);
+            dolfin::log (dolfin::PROGRESS, "Relative increment = %g", relativeIncrement);
+            dolfin::log (dolfin::PROGRESS, "Functional value = %g\n", currentFunctionalValue);
         }
         else
         {
             dolfin::log (dolfin::PROGRESS, "End of Minimization loop");
             dolfin::log (dolfin::PROGRESS, "Iterations performed: %d", minimizationIteration);
-            dolfin::log (dolfin::PROGRESS, "Gradient norm = %f", gradientNorm);
-            dolfin::log (dolfin::PROGRESS, "Relative increment = %f", relativeIncrement);
-            dolfin::log (dolfin::PROGRESS, "Functional value = %f\n", currentFunctionalValue);
+            dolfin::log (dolfin::PROGRESS, "Gradient norm = %g", gradientNorm);
+            dolfin::log (dolfin::PROGRESS, "Relative increment = %g", relativeIncrement);
+            dolfin::log (dolfin::PROGRESS, "Functional value = %g\n", currentFunctionalValue);
         }
 
         dolfin::log (dolfin::PROGRESS, "-----------------------------\n");
@@ -783,7 +783,7 @@ namespace dcp
             alpha = alpha * rho;
 
             dolfin::log (dolfin::PROGRESS, "========== Backtracking iteration %d ==========", backtrackingIteration);
-            dolfin::log (dolfin::PROGRESS, "Alpha = %f", alpha);
+            dolfin::log (dolfin::PROGRESS, "Alpha = %g", alpha);
 
             // update control variable value
             dolfin::begin (dolfin::PROGRESS, "Updating control variable...");
@@ -831,7 +831,7 @@ namespace dcp
             currentFunctionalValue = objectiveFunctional.evaluateFunctional ();
             dolfin::end (); // Evaluating functional
 
-            dolfin::log (dolfin::PROGRESS, "Functional value = %f", currentFunctionalValue);
+            dolfin::log (dolfin::PROGRESS, "Functional value = %g", currentFunctionalValue);
 
             dolfin::log (dolfin::PROGRESS, "");
         }
@@ -842,14 +842,14 @@ namespace dcp
         {
             dolfin::log (dolfin::PROGRESS, "");
             dolfin::warning ("Backtracking loop ended because maximum number of iterations was reached");
-            dolfin::log (dolfin::PROGRESS, "Alpha (determined with backtracking) = %f", alpha);
+            dolfin::log (dolfin::PROGRESS, "Alpha (determined with backtracking) = %g", alpha);
             return false;
         }
         else
         {
             dolfin::log (dolfin::PROGRESS, "");
             dolfin::log (dolfin::PROGRESS, "Backtracking loop ended. Iterations performed: %d\n", backtrackingIteration);
-            dolfin::log (dolfin::PROGRESS, "Alpha (determined with backtracking) = %f\n", alpha);
+            dolfin::log (dolfin::PROGRESS, "Alpha (determined with backtracking) = %g\n", alpha);
             return true;
         }
     }

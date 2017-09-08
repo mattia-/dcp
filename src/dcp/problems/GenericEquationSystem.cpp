@@ -828,7 +828,7 @@ namespace dcp
         int maxIterations = parameters ["subiterations_maximum_iterations"];
         bool plotSubiterationSolutions = parameters["plot_subiteration_solutions"];
         bool writeSubiterationSolutions = parameters["write_subiteration_solutions_to_file"];
-        dolfin::log (dolfin::DBG, "Tolerance: %f ", tolerance);
+        dolfin::log (dolfin::DBG, "Tolerance: %g ", tolerance);
         dolfin::log (dolfin::DBG, "Maximum subiterations number: %d ", maxIterations);
         dolfin::log (dolfin::DBG, "Plot subiterations solutions: %s ", plotSubiterationSolutions ? "true" : "false");
         dolfin::log (dolfin::DBG,
@@ -911,13 +911,13 @@ namespace dcp
 
             maxIncrementNorm = *(std::max_element (incrementsNorms.begin (), incrementsNorms.end ()));
 
-            dolfin::log (dolfin::INFO, "Max norm of relative increment: %f", maxIncrementNorm);
+            dolfin::log (dolfin::INFO, "Max norm of relative increment: %g", maxIncrementNorm);
 
             dolfin::begin (dolfin::DBG, "Relative increments norms are:");
             for (std::size_t i = 0; i < sortedConvergenceCheckProblemNames.size (); ++i)
             {
                 dolfin::log (dolfin::DBG,
-                             "Problem \"%s\": norm of relative increment = %f",
+                             "Problem \"%s\": norm of relative increment = %g",
                              sortedConvergenceCheckProblemNames[i].c_str (),
                              incrementsNorms[i]);
             }

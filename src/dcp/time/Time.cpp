@@ -27,7 +27,7 @@ namespace dcp
     {
         dolfin::begin (dolfin::DBG, "Building Time...");
 
-        dolfin::log (dolfin::DBG, "Set time value to %f", time_);
+        dolfin::log (dolfin::DBG, "Set time value to %g", time_);
 
         dolfin::end ();
 

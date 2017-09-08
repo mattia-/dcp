@@ -270,7 +270,7 @@ namespace dcp
         dolfin::begin (dolfin::DBG, "Setting time-dependent function values from expression...");
         for (auto& element : (*this))
         {
-            dolfin::begin (dolfin::DBG, "Setting function values for time %f...", element.first);
+            dolfin::begin (dolfin::DBG, "Setting function values for time %g...", element.first);
             if (isTimeDependentExpression)
             {
                 pointerToExpression->setTime (element.first);
@@ -279,7 +279,7 @@ namespace dcp
             // use expression here (not pointerToExpression), so that every kind of expression can be assigned to
             // element.second
             element.second = expression;
-            dolfin::end (); // Setting function values for time %f...
+            dolfin::end (); // Setting function values for time %g...
         }
         dolfin::end (); // Setting time-dependent function values from expression
 
@@ -319,7 +319,7 @@ namespace dcp
             {
                 dolfin::dolfin_error ("dcp: TimeDependentFunction.cpp",
                                       "perform sum between objects of type dcp::TimeDependentFunction in operator+",
-                                      "Mismatch in time value at position %d; the two values are %f and %f",
+                                      "Mismatch in time value at position %d; the two values are %g and %g",
                                       i,
                                       left[i].first,
                                       right[i].first);

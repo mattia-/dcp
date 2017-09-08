@@ -815,7 +815,7 @@ namespace dcp
     {
         advanceTime ();
 
-        dolfin::log (dolfin::PROGRESS, "TIME = %f s", time_ -> value ());
+        dolfin::log (dolfin::PROGRESS, "TIME = %g s", time_ -> value ());
 
         auto problemName = solveOrder_.cbegin ();
         while (problemName != solveOrder_.cend ())

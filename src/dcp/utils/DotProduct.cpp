@@ -87,7 +87,7 @@ namespace dcp
             }
             else
             {
-                dt = fabs (left[i].first - left[i-1].first);
+                dt = std::abs (left[i].first - left[i-1].first);
                 currentDotProduct = compute (left[i].second, right[i].second);
                 result += 0.5 * (previousDotProduct + currentDotProduct) * dt;
 

@@ -234,7 +234,7 @@ namespace dcp
             }
             else
             {
-                dt = fabs ((*this)[i].first - (*this)[i-1].first);
+                dt = std::abs ((*this)[i].first - (*this)[i-1].first);
                 currentFunction = (*this)[i].second;
 
                 // result = result + (previousFunction + currentFunction) * 0.5 * dt;

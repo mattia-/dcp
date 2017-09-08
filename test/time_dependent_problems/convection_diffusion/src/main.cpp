@@ -112,8 +112,8 @@ int main (int argc, char* argv[])
     dolfin::Function difference (V);
     difference = newFinalSolution - oldFinalSolution;
 
-    double maxDifference = std::max (fabs (difference.vector()->max ()),
-                                     fabs (difference.vector()->min ()));
+    double maxDifference = std::max (std::abs (difference.vector()->max ()),
+                                     std::abs (difference.vector()->min ()));
 
     std::cout << "MAX DIFFERENCE IS: " << maxDifference << std::endl;
 

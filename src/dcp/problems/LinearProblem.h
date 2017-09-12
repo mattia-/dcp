@@ -924,7 +924,7 @@ namespace dcp
             assembleLinearSystem ();
 
             dolfin::begin (dolfin::DBG, "Solving system...");
-            solver_ -> set_operator (dolfin::reference_to_no_delete_pointer (*problemMatrix_));
+            solver_ -> set_operator (problemMatrix_);
             if (solveType == "default")
             {
                 solver_ -> solve (*(solution_.back ().second.vector ()), *rhsVector_);

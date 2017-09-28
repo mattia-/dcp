@@ -30,4 +30,4 @@ u = Coefficient (V)
 u_0  = Coefficient (V)
 
 # define expression of functional
-J = 0.5 * inner (u - u_0, u - u_0) * dx (1)
+J = 0.5 * inner (u - u_0, u - u_0) * dx

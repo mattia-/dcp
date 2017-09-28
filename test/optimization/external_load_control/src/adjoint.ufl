@@ -37,4 +37,4 @@ u_0 = Coefficient (W)
 a = inner (grad (w), grad (z)) * dx
 
 # linear form
-L = inner (u_0 - u, z) * dx (1)
+L = inner (u - u_0, z) * dx

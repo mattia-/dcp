@@ -34,43 +34,30 @@ class DirichletBoundary
         }
 };
 
-class ObservationDomain
+class TargetSolutionEvaluator
 {
     public:
-        bool operator() (const dolfin::Array<double>& x, bool on_boundary)
+        void operator() (dolfin::Array<double>& values, const dolfin::Array<double>& x)
         {
-            return x[0] <= 0.75 && x[0] >= 0.25 && x[1] <= 0.75 && x[1] >= 0.25;
+            values[0] = x[0] * (1 - x[0]) * x[1] * (1 - x[1]);
         }
 };
 
 class GradientEvaluator
 {
     public:
-        GradientEvaluator () :
-            observationDomain_ ((ObservationDomain ()))
-        {
-
-        }
-
         void operator() (dolfin::Array<double>& values,
                          const dolfin::Array<double>& x,
                          const std::map <std::string, std::shared_ptr<const dolfin::GenericFunction> >& variables)
         {
-            dolfin::Array<double> uValues (1);
-            dolfin::Array<double> u0Values (1);
-            variables.find("u")->second -> eval (uValues, x);
-            variables.find("u_0")->second -> eval (u0Values, x);
-            values[0] = observationDomain_.inside (x, false) ? (uValues[0] - u0Values[0]) : 0;
+            variables.find("u_hat")->second -> eval (values, x);
         }
-
-    protected:
-        dcp::Subdomain observationDomain_;
 };
 
 
 int main (int argc, char* argv[])
 {
-    dolfin::set_log_level (dolfin::DBG);
+    dolfin::set_log_level (dolfin::PROGRESS);
 
     // mesh
     auto mesh = std::make_shared<dolfin::UnitSquareMesh> (20, 20);
@@ -94,19 +81,11 @@ int main (int argc, char* argv[])
     problems.addProblem ("adjoint", adjointProblem);
 
     // define constants
-    dolfin::Constant u_0 (1.0);
+    dcp::Expression u_0 ((TargetSolutionEvaluator ()));
     dolfin::Constant dirichletBC (0.0);
 
     // define boundary conditions subdomains
     dcp::Subdomain dirichletBoundary ((DirichletBoundary ()));
-
-    // define observation subdomain
-    dcp::Subdomain observationDomain ((ObservationDomain ()));
-
-    // define intergration subdomains
-    dolfin::CellFunction<std::size_t> meshCells (mesh);
-    meshCells.set_all (0);
-    observationDomain.mark (meshCells, 1);
 
     // primal problem settings
     problems["primal"].addDirichletBC (dirichletBC, dirichletBoundary);
@@ -114,9 +93,6 @@ int main (int argc, char* argv[])
     // adjoint problem settings
     problems["adjoint"].addDirichletBC (dirichletBC, dirichletBoundary);
     problems["adjoint"].setCoefficient ("linear_form", dolfin::reference_to_no_delete_pointer (u_0), "u_0");
-    problems["adjoint"].setIntegrationSubdomain ("linear_form",
-                                                  dolfin::reference_to_no_delete_pointer (meshCells),
-                                                  dcp::SubdomainType::INTERNAL_CELLS);
 
     problems.addLink ("adjoint", "u", "linear_form", "primal");
 
@@ -138,15 +114,9 @@ int main (int argc, char* argv[])
                                         dolfin::reference_to_no_delete_pointer (problems.solution ("primal")),
                                         "u");
 
-    objectiveFunctional.setIntegrationSubdomain (dolfin::reference_to_no_delete_pointer (meshCells),
-                                                  dcp::SubdomainType::INTERNAL_CELLS);
-
     objectiveFunctional.setCoefficient ("gradient",
-                                        dolfin::reference_to_no_delete_pointer (problems.solution ("primal")),
-                                        "u");
-    objectiveFunctional.setCoefficient ("gradient",
-                                        dolfin::reference_to_no_delete_pointer (u_0),
-                                        "u_0");
+                                        dolfin::reference_to_no_delete_pointer (problems.solution ("adjoint")),
+                                        "u_hat");
 
 
     // ============
@@ -157,7 +127,7 @@ int main (int argc, char* argv[])
     // define optimizer
     dcp::BacktrackingOptimizer backtrackingOptimizer;
     backtrackingOptimizer.parameters ["output_file_name"] = "results.txt";
-    backtrackingOptimizer.parameters ["max_minimization_iterations"] = 1000;
+    backtrackingOptimizer.parameters ["max_minimization_iterations"] = 100;
 
     dcp::BacktrackingImplementer<dolfin::Function> implementer
         (dcp::DistributedControlUpdater ("primal", "linear_form", "g"));
@@ -179,7 +149,11 @@ int main (int argc, char* argv[])
     dolfin::plot (problems.solution ("primal"), "Primal Solution");
     dolfin::plot (target, "Target Solution");
     dolfin::plot (g, "Control");
-    dolfin::plot (meshCells, "Control region");
+    dolfin::plot (difference, "Difference between target and recovered");
+    dolfin::plot (mesh, "Mesh");
+    dolfin::plot (problems.solution ("primal"), "Primal Solution");
+    dolfin::plot (target, "Target Solution");
+    dolfin::plot (g, "Control");
     dolfin::plot (difference, "Difference between target and recovered");
     // dolfin::interactive ();
 
